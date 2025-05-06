@@ -8,7 +8,7 @@ las finanzas desde una plataforma práctica e intuitiva.
 
 ---
 
-Desarrolladores 
+# Desarrolladores 
 - Rodrigo Emilio Monterrosa Bernal – [@MonterrosaB](https://github.com/MonterrosaB)
 - Daniel Isaác Granados Cañas – [@danielgranados123](https://github.com/danielgranados123)
 - Bryan Eduardo Cornejo Peréz – [@bCornejoPe](https://github.com/bCornejoPe)
@@ -18,7 +18,7 @@ Desarrolladores
 
 ---
 
-#Descripción del proyecto
+# Descripción del Proyecto
 
 Rosé Candle Co. es una plataforma web y móvil que permite a los clientes explorar y comprar velas aromáticas naturales, mientras brinda al equipo administrativo herramientas para:
 
@@ -31,8 +31,7 @@ El objetivo es optimizar el emprendimiento y mejorar tanto la experiencia del cl
 
 ---
 
-#Tecnologías utilizadas
-
+# Tecnologías Utilizadas
 #Frontend
 - **React Native** — Aplicación móvil para clientes  
 - **React.js con Vite** — Panel web administrativo  
@@ -46,9 +45,8 @@ El objetivo es optimizar el emprendimiento y mejorar tanto la experiencia del cl
 - **JWT & Bcrypt** — Autenticación segura  
 
 # Control de versiones
-- **Git & GitHub**  
+- **GitHub**  
   - Issues utilizados para organizar tareas  
-  - Proyecto de GitHub (*Project*) para gestionar el flujo de trabajo (kanban)
 
 ---
 
