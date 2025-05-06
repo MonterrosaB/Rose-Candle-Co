@@ -8,7 +8,7 @@ las finanzas desde una plataforma práctica e intuitiva.
 
 ---
 
-Autores
+Desarrolladores 
 - Rodrigo Emilio Monterrosa Bernal – [@MonterrosaB](https://github.com/MonterrosaB)
 - Daniel Isaác Granados Cañas – [@danielgranados123](https://github.com/danielgranados123)
 - Bryan Eduardo Cornejo Peréz – [@bCornejoPe](https://github.com/bCornejoPe)
