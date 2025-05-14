@@ -2,15 +2,16 @@
     Campos:
         name
         surnames
+        phone
+        dui
         email
         password
         user
-        phone
 */
 
 import { Schema, model } from "mongoose"
 
-const customerSchema = new Schema({
+const employeeSchema = new Schema({
     name: {
         type: String,
         require: true,
@@ -30,6 +31,20 @@ const customerSchema = new Schema({
             'Debe ser un correo electrónico válido',
         ],
     },
+    phone: {
+        type: String,
+        require: true,
+        match: [
+            /^\d{4}-\d{4}$/,
+            'Número de teléfono inválido (1234-5678)'
+        ]
+    },
+    dui: {
+        type: String,
+        require: true,
+        unique: true,
+        match: [/^[0-9]{8}-[0-9]$/, 'El DUI debe tener 8 números, un guion y un dígito']
+    },
     password: {
         type: String,
         require: true,
@@ -42,22 +57,17 @@ const customerSchema = new Schema({
     user: {
         type: String,
         require: true,
-        match: [
-            /^[a-zA-Z0-9_]+$/, 'El usuario solo puede contener letras, números y guiones bajos'
-        ]
+        unique: true,
+        match: [/^[a-zA-Z0-9_]+$/, 'El usuario solo puede contener letras, números y guiones bajos']
     },
-    phone: {
-        type: String,
-        require: true,
-        match: [
-            /^\d{4}-\d{4}$/,,
-            'Número de teléfono inválido'
-        ]
+    isActive: {
+        type: Boolean,
+        require: true
     },
 }, {
     timestamps: true,
     strict: false
-})
+});
 
 // Exporto
-export default model("Customers", customerSchema)
+export default model("Employees", employeeSchema)
