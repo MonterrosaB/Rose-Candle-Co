@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 
 import Star from '../../assets/star.svg?react'; // circulos del fondo
-import AnimatedLine from '../../global/components/AnimatedLine.tsx'; // linea animada
-//import AnimatedStar from '../../global/components/AnimatedStar.tsx'; // estrella/circulo animada
+import AnimatedLine from '../../global/components/AnimatedLine.jsx'; // linea animada
+//import AnimatedStar from '../../global/components/AnimatedStar.jsx'; // estrella/circulo animada
 
 import LoginForm from './components/LoginForm.jsx'; // componente del formulario
 
