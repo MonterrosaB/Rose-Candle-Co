@@ -1,0 +1,1 @@
+// Codigo para animar la estrella (que orbite lentamente)
