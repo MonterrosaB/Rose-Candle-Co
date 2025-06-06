@@ -9,7 +9,8 @@ import productPriceHistoryRoutes from "./src/routes/productPriceHistory.js";
 import collectionsRoutes from "./src/routes/collections.js";
 import shoppingCartRoutes from "./src/routes/shoppingcart.js"
 import salesOrderRoutes from "./src/routes/salesOrder.js"
-// Constante para la libreria que importé
+
+// Constante para la libreria de express
 const app = express();
 
 // Que acepte datos json
