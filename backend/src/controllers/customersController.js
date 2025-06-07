@@ -87,7 +87,7 @@ customersController.updateCustomers = async (req, res) => {
             return res.status(400).json({message: "Customer not found"}) // Error del cliente, cliente no encontrado
         }    
 
-        res.status(200).json({ message: "Customer updated"})
+        res.status(200).json({ message: "Customer updated"}) // Todo bien
 
     } catch (error) {
         console.log("error "+error)

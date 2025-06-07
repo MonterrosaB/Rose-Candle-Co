@@ -1,3 +1,16 @@
+/* 
+    Colección para orden
+
+    Campos:
+        idShoppingCart
+        paymentMethod
+        address
+        saleDate
+        shippingTotal
+        total
+        shippingState
+*/
+
 import { Schema, model } from "mongoose";
 
 const shippingStateSchema = new Schema({
@@ -15,36 +28,42 @@ const SalesOrderSchema = new Schema({
     idShoppingCart: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "ShoppingCart"
+        ref: "ShoppingCart", // Modelo de ShoppingCart
+        trim: true
     },
     paymentMethod: {
         type: String,
         required: true,
         enum: ["credit card", "paypal", "cash", "bank transfer"] 
     },
-    adress: {
+    address: {
         type: String,
-        required: true
+        required: true,
+        minLength: 5,
+        trim: true
     },
     saleDate: {
         type: Date,
-        required: true
+        required: true,
+        trim: true
     },
     shippingTotal: {
         type: Number,
-        required: true
+        required: true,
+        trim: true
     },
-    Total: {
+    total: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     shippingState: {
         type: [shippingStateSchema],
         default: []
     }
 }, {
-    timestamps: false,
-    strict: true
+    timestamps: true,
+    strict: false
 });
 
 export default model("SalesOrder", SalesOrderSchema);
