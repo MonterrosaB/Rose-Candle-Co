@@ -7,7 +7,7 @@ const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
  
   return (
-    <nav className="relative shadow-sm h-20">
+    <nav className="relative h-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full relative">
           {/* Menú izquierdo */}
@@ -28,7 +28,7 @@ const Nav = () => {
             </a>
           </div>
  
-          {/* Logo absolutamente centrado */}
+          {/* Logo centrado */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <img src={Logo} alt="Logo" className="h-12" />
           </div>
