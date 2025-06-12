@@ -35,7 +35,7 @@ const Footer = () => {
               <FaInstagram className="text-xl text-[#F9F7F3] hover:text-[#1C1C1C] transition duration-300" />
             </a>
             <a
-              href=""
+              href="https://www.facebook.com/share/18oEHos2hv/?mibextid=wwXIfr"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-[#F9F7F3] rounded-full p-2 transition duration-300 hover:bg-[#F9F7F3]"
