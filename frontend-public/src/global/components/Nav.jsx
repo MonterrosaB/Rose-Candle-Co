@@ -9,14 +9,14 @@ const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="relative h-20">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#F9F7F3]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div className="flex items-center justify-between h-full relative">
-          {/* Menú izquierdo */}
+        <div className="flex items-center justify-between h-20 relative">
+          {/* Menú */}
           <div className="hidden md:flex space-x-6">
             <NavLink
               to="/"
-              className={({ isActive }) => // Para que se mantenga de color negro si se está en esa página
+              className={({ isActive }) =>
                 isActive
                   ? "text-gray-700 font-medium"
                   : "text-[#c1c1c1] hover:text-gray-700 font-medium"
@@ -59,7 +59,7 @@ const Nav = () => {
             </NavLink>
           </div>
 
-          {/* Íconos a la derecha */}
+          {/* Íconos */}
           <div className="hidden md:flex items-center space-x-4">
             <a href="/login" className="text-gray-700 hover:text-black text-xl">
               <FaRegUser />
@@ -69,12 +69,12 @@ const Nav = () => {
             </a>
           </div>
 
-          {/* Logo centrado */}
+          {/* Logo */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <img src={Logo} alt="Logo" className="h-12" />
           </div>
 
-          {/* Botón hamburguesa móvil */}
+          {/* Botón hamburguesa */}
           <div className="md:hidden absolute right-4 top-1/2 transform -translate-y-1/2">
             <button
               onClick={() => setIsOpen(!isOpen)}

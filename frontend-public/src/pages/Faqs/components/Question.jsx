@@ -4,14 +4,14 @@ const Question = ({ Icon, question, answer }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="mb-4">
+    <div className="-mb-8">
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center w-full px-4 py-3 focus:outline-none"
       >
         {/* Icono de pregunta */}
         <div className="flex items-center justify-center w-10 h-10 rounded-lg border-2 border-black text-black">
-          {Icon && <Icon size={20} />}
+          {Icon && <Icon size={30} />}
         </div>
 
         {/* Pregunta */}
