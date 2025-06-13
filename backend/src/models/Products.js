@@ -49,42 +49,23 @@ const productsSchema = new Schema(
       type: [String],
       minLength: 3,
       maxLength: 100,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return value.every((item) => /^[a-zA-Z\s]+$/.test(item)); // Validar que todos los componentes solo contengan letras y espacios
-        },
-        message: "Cada componente solo puede contener letras y espacios",
-      },
+      required: true
     },
     recipe: {
       type: [String],
       minLength: 3,
       maxLength: 100,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return value.every((item) => /^[a-zA-Z\s]+$/.test(item)); // Validar que todos las recetas solo contengan letras y espacios
-        },
-        message: "Cada receta solo puede contener letras y espacios",
-      },
+      required: true
     },
     availability: {
-      type: Boolean,
+      type: String,
       required: true,
-      enum: [true, false], // El campo solo puede ser verdadero o falso
     },
     useForm: {
       type: [String],
       minLength: 3,
       maxLength: 100,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return value.every((item) => /^[a-zA-Z\s]+$/.test(item)); // Validar que todos las formas de uso solo contengan letras y espacios
-        },
-        message: "Cada forma de uso solo puede contener letras y espacios",
-      },
+      required: true
     },
     currentPrice: {
       type: Number,

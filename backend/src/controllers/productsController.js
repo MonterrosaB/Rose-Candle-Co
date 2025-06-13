@@ -1,5 +1,15 @@
 import productsModel from "../models/Products.js";
 
+import { config } from "../config.js";
+
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: config.CLOUDINARY.cloudinary_name,
+  api_key: config.CLOUDINARY.cloudinary_api_key,
+  api_secret: config.CLOUDINARY.cloudinary_api_secret,
+});
+
 const productsController = {};
 
 // GET
@@ -15,11 +25,12 @@ productsController.getproducts = async (req, res) => {
 
 // POST
 productsController.createProduct = async (req, res) => {
+  console.log(req.body); // Verifica qué contiene req.body
+
   // Obtener datos
   const {
     name,
     description,
-    images,
     components,
     recipe,
     availability,
@@ -28,12 +39,24 @@ productsController.createProduct = async (req, res) => {
     idProductCategory,
   } = req.body;
 
+  let imagesURL = [];
+
+  if (req.files && req.files.length > 0) {
+    for (const file of req.files) {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "public",
+        allowed_formats: ["png", "jpg", "jpeg"],
+      });
+      imagesURL.push(result.secure_url);
+    }
+  }
+
   try {
     // Validaciones
     if (
       !name ||
       !description ||
-      !images ||
+      !imagesURL ||
       !components ||
       !recipe ||
       !availability ||
@@ -58,25 +81,27 @@ productsController.createProduct = async (req, res) => {
       return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
     }
 
-    if (images.minItems > 1) {
+    if (imagesURL.minItems > 1) {
       return res.status(400).json({ message: "Agrega al menos una imagen" }); // Error del cliente, longitud del texto muy larga
     }
 
-    if (images.maxItems > 4) {
+    if (imagesURL.maxItems > 4) {
       return res
-        .status(400).json({ message: "No puedes poner mas de cuatro imagenes" }); // Error del cliente, longitud del texto muy larga
+        .status(400)
+        .json({ message: "No puedes poner mas de cuatro imagenes" }); // Error del cliente, longitud del texto muy larga
     }
 
-    if (availability.enum != true || availability.enum != false) {
-        return res
-          .status(400).json({ message: "La disponibilidad debe ser true or false" }); // Error del cliente, longitud del texto muy larga
-      }
+    if (availability !== true && availability !== false) {
+      return res
+        .status(400)
+        .json({ message: "La disponibilidad debe ser true o false" }); // Error de validación
+    }
 
     // Guardar datos
     const newProduct = new productsModel({
       name,
       description,
-      images,
+      images: imagesURL,
       components,
       recipe,
       availability,
@@ -136,16 +161,13 @@ productsController.updateProduct = async (req, res) => {
       return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
     }
 
-    if (images.minItems > 1) {
-      return res.status(400).json({ message: "Agrega al menos una imagen" }); // Error del cliente, longitud del texto muy larga
+    if (imagesURL.length < 1) {
+      return res.status(400).json({ message: "Agrega al menos una imagen" });
     }
 
-    if (images.maxItems > 4) {
-      return res
-        .status(400)
-        .json({ message: "No puedes poner mas de cuatro imagenes" }); // Error del cliente, longitud del texto muy larga
+    if (imagesURL.length > 4) {
+      return res.status(400).json({ message: "No puedes poner más de cuatro imágenes" });
     }
-
     // Guardar datos
     const productUpdated = await productsModel.findByIdAndUpdate(
       req.params.id,
