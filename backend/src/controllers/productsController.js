@@ -77,7 +77,7 @@ productsController.createProduct = async (req, res) => {
       return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
     }
 
-    if (description.length < 15) {
+    if (description.length < 5) {
       return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
     }
 
@@ -91,11 +91,11 @@ productsController.createProduct = async (req, res) => {
         .json({ message: "No puedes poner mas de cuatro imagenes" }); // Error del cliente, longitud del texto muy larga
     }
 
-    if (availability !== true && availability !== false) {
-      return res
-        .status(400)
-        .json({ message: "La disponibilidad debe ser true o false" }); // Error de validación
-    }
+    //if (availability !== true && availability !== false) {
+    //  return res
+    //  .status(400)
+    //.json({ message: "La disponibilidad debe ser true o false" }); // Error de validación
+    //}
 
     // Guardar datos
     const newProduct = new productsModel({
@@ -147,6 +147,18 @@ productsController.updateProduct = async (req, res) => {
     idProductCategory,
   } = req.body;
 
+  let imagesURL = [];
+
+  if (req.files && req.files.length > 0) {
+    for (const file of req.files) {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "public",
+        allowed_formats: ["png", "jpg", "jpeg"],
+      });
+      imagesURL.push(result.secure_url);
+    }
+  }
+
   try {
     // Validaciones
     if (name.length < 3) {
@@ -157,7 +169,7 @@ productsController.updateProduct = async (req, res) => {
       return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
     }
 
-    if (description.length < 15) {
+    if (description.length < 5) {
       return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
     }
 
@@ -166,7 +178,9 @@ productsController.updateProduct = async (req, res) => {
     }
 
     if (imagesURL.length > 4) {
-      return res.status(400).json({ message: "No puedes poner más de cuatro imágenes" });
+      return res
+        .status(400)
+        .json({ message: "No puedes poner más de cuatro imágenes" });
     }
     // Guardar datos
     const productUpdated = await productsModel.findByIdAndUpdate(
@@ -174,7 +188,7 @@ productsController.updateProduct = async (req, res) => {
       {
         name,
         description,
-        images,
+        images: imagesURL,
         components,
         recipe,
         availability,
