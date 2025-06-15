@@ -11,6 +11,10 @@ import shoppingCartRoutes from "./src/routes/shoppingcart.js"
 import salesOrderRoutes from "./src/routes/salesOrder.js"
 import productCategoriesRoutes from "./src/routes/productCategories.js"
 import productsRoutes from "./src/routes/products.js"
+import suppliers from "./src/routes/suppliers.js";
+import rawMaterialCategories from "./src/routes/rawMaterialCategories.js";
+import rawMaterials from "./src/routes/rawMaterial.js";
+import materialBalance from "./src/routes/materialBalance.js"
 
 // Constante para la libreria de express
 const app = express();
@@ -21,6 +25,10 @@ app.use(express.json());
 // Rutas de las funciones
 app.use("/api/customers", customersRoutes)
 app.use("/api/employees", employeesRoutes)
+app.use("/api/suppliers", suppliers)
+app.use("/api/rawMaterialCategories", rawMaterialCategories)
+app.use("/api/rawMaterials", rawMaterials)
+app.use("/api/materialBalance", materialBalance)
 //app.use("/api/historyRawMaterials", historyRawMaterialsRoutes)
 //app.use("/api/productPriceHistory",productPriceHistoryRoutes)
 //app.use("/api/shoppingCart", shoppingCartRoutes)
