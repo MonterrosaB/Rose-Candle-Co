@@ -42,8 +42,12 @@ const productsSchema = new Schema(
     images: {
       type: [String],
       required: true,
-      minItems: 1, // Al menos una imagen
-      maxItems: 4, // No más de 4 imágenes
+      validate: {
+    validator: function (arr) {
+      return arr.length >= 1 && arr.length <= 4;
+    },
+    message: "Debes subir entre 1 y 4 imágenes",
+  },
     },
     components: {
       type: [String],

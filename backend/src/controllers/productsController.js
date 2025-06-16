@@ -56,9 +56,9 @@ productsController.createProduct = async (req, res) => {
     if (
       !name ||
       !description ||
-      !imagesURL ||
-      !components ||
-      !recipe ||
+      !imagesURL || imagesURL.length < 1 ||
+      !components || components.length < 1 ||
+      !recipe || recipe.length < 1 ||
       !availability ||
       !useForm ||
       !currentPrice ||
@@ -81,14 +81,14 @@ productsController.createProduct = async (req, res) => {
       return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
     }
 
-    if (imagesURL.minItems > 1) {
-      return res.status(400).json({ message: "Agrega al menos una imagen" }); // Error del cliente, longitud del texto muy larga
+    if (imagesURL.length < 1) {
+      return res.status(400).json({ message: "Agrega al menos una imagen" });
     }
 
-    if (imagesURL.maxItems > 4) {
+    if (imagesURL.length > 4) {
       return res
         .status(400)
-        .json({ message: "No puedes poner mas de cuatro imagenes" }); // Error del cliente, longitud del texto muy larga
+        .json({ message: "No puedes subir más de cuatro imágenes" });
     }
 
     //if (availability !== true && availability !== false) {

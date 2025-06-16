@@ -11,6 +11,7 @@ import shoppingCartRoutes from "./src/routes/shoppingcart.js"
 import salesOrderRoutes from "./src/routes/salesOrder.js"
 import productCategoriesRoutes from "./src/routes/productCategories.js"
 import productsRoutes from "./src/routes/products.js"
+import productionCostHistoryRoutes from "./src/routes/productionCostHistory.js"
 
 // Constante para la libreria de express
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/employees", employeesRoutes)
 //app.use("/api/salesOrder", salesOrderRoutes)
 app.use("/api/productCategories", productCategoriesRoutes)
 app.use("/api/products", productsRoutes)
+app.use("/api/productionCostHistory", productionCostHistoryRoutes)
 
 
 
