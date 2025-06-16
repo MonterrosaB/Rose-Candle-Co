@@ -24,8 +24,11 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
 };
 
 // POST
-productionCostHistoryController.createProductionCostHistory = async (req,res) => {
-  const { products, date, total, earning, idSalesOrder } = req.body;
+productionCostHistoryController.createProductionCostHistory = async (
+  req,
+  res
+) => {
+  const { idSalesOrder, products, date, total, earning } = req.body;
 
   try {
     // Validaciones básicas
@@ -53,11 +56,11 @@ productionCostHistoryController.createProductionCostHistory = async (req,res) =>
 
     // Crear y guardar
     const newHistorial = new productionCostHistoryModel({
+      idSalesOrder,
       products,
       date,
       total,
       earning,
-      idSalesOrder,
     });
     await newHistorial.save();
 
@@ -69,7 +72,10 @@ productionCostHistoryController.createProductionCostHistory = async (req,res) =>
 };
 
 // DELETE
-productionCostHistoryController.deleteProductionCostHistory = async (req, res) => {
+productionCostHistoryController.deleteProductionCostHistory = async (
+  req,
+  res
+) => {
   try {
     const deleted = await productionCostHistoryModel.findByIdAndDelete(
       req.params.id
@@ -91,7 +97,7 @@ productionCostHistoryController.updateproductionCostHistory = async (
   req,
   res
 ) => {
-  const { products, date, total, earning, idSalesOrder } = req.body;
+  const { idSalesOrder, products, date, total, earning } = req.body;
 
   try {
     // Validaciones básicas
@@ -119,8 +125,8 @@ productionCostHistoryController.updateproductionCostHistory = async (
 
     const updated = await productionCostHistoryModel.findByIdAndUpdate(
       req.params.id,
-      { products, date, total, earning, idSalesOrder },
-      { new: true}
+      { idSalesOrder, products, date, total, earning },
+      { new: true }
     );
 
     if (!updated) {

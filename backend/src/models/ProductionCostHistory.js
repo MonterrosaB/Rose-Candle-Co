@@ -2,11 +2,11 @@
     fields fro products
     
     Campos:
-        products
-        date
-        total
-        earning
-        idOrder
+        products, 
+        date, 
+        total, 
+        earning, 
+        idSalesOrder
 */
 
 import { Schema, model } from "mongoose";
@@ -19,7 +19,7 @@ const rawMaterialUsedSchema = new Schema(
       ref: "RawMaterial", // Nombre del modelo de materia prima
       required: true,
     },
-    quantity: {
+    amount: {
       type: Number,
       required: true,
       min: [0.01, "La cantidad debe ser mayor que cero"],
@@ -37,8 +37,8 @@ const rawMaterialUsedSchema = new Schema(
       required: true,
       min: [0, "El precio unitario no puede ser negativo"],
       validate: {
-        validator: (value) => /^\d+(\.\d{1,2})?$/.test(value),
-        message: "El precio unitario debe tener como máximo dos decimales",
+        validator: (value) => /^\d+(\.\d{1,4})?$/.test(value),
+        message: "El precio unitario debe tener como máximo cuatro decimales",
       },
     },
     subtotal: {
@@ -62,7 +62,7 @@ const productsSchema = new Schema(
       ref: "Products",
       required: true,
     },
-    quantity: {
+    amount: {
       type: Number,
       required: true,
       min: [0.01, "La cantidad debe ser mayor que cero"],
@@ -103,6 +103,11 @@ const productsSchema = new Schema(
 
 const productionCostHistorySchema = new Schema(
   {
+    idSalesOrder: {
+      type: Schema.Types.ObjectId,
+      ref: "SalesOrder",
+      require: true,
+    },
     products: {
       type: [productsSchema],
       required: true,
@@ -135,11 +140,6 @@ const productionCostHistorySchema = new Schema(
       ],
       required: true,
     },
-    idSalesOrder: {
-          type: Schema.Types.ObjectId,
-          ref: "SalesOrder",
-          require: true,
-        },
   },
   {
     timestamps: true,
