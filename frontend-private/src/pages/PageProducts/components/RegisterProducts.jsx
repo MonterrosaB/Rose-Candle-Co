@@ -43,7 +43,7 @@ const RegisterProducts = ({ onClose }) => {
     const onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            setProductPrincipal(file); // 👈 este es el que se usa para subir
+            setProductPrincipal(file); // este es el que se usa para subir
 
 
             // Opcional: mostrar vista previa

@@ -1,3 +1,5 @@
+// Card personalizada para mostrar la información del producto
+
 const CardProduct = ({
     image,
     name,
@@ -6,7 +8,7 @@ const CardProduct = ({
     size,
     category,
     lastUpdated,
-    activo // <- campo booleano
+    activo // campo booleano
 }) => {
     return (
         <div className="bg-[#F0ECE6] shadow-md rounded-2xl p-4 w-full max-w-sm text-[#333] space-y-3">

@@ -1,6 +1,7 @@
 import { useState } from "react";
+import React, { useEffect } from "react";
 
-import PrincipalDiv from "../../global/components/PrincipalDiv"
+import PrincipalDiv from "../../global/components/PrincipalDiv";
 import CardProduct from "./components/CardProduct";
 
 import Dialog from "../../global/components/Dialog";
@@ -9,24 +10,26 @@ import Button from "../../global/components/Button";
 
 import Calmness from "../../assets/calmness.jpg";
 
-
 const PageProducts = () => {
+  // Cambiar el título de la pestaña al montar el componente
+  useEffect(() => {
+    document.title = "Productos | Rosé Candle Co.";
+  }, []);
+  const [openDialogProduct, setOpenDialogProduct] = useState(false);
 
-    const [openDialogProduct, setOpenDialogProduct] = useState(false)
-
-    return (
-        <>
-            <PrincipalDiv>
-                <div className="flex justify-end gap-4 px-4">
-                    <Button
-                        buttonText={"Agregar Producto"}
-                        showIcon={true}
-                        type={"button"}
-                        onClick={() => setOpenDialogProduct(true)}
-                    />
-                </div>
-                <div className="flex items-center justify-center gap-4">
-                    <CardProduct
+  return (
+    <>
+      <PrincipalDiv>
+        <div className="flex justify-end gap-4 px-4">
+          <Button
+            buttonText={"Agregar Producto"}
+            showIcon={true}
+            type={"button"}
+            onClick={() => setOpenDialogProduct(true)}
+          />
+        </div>
+        <div className="flex items-center justify-center gap-4">
+          {/*<CardProduct
                         image={Calmness}
                         name="Calmness"
                         price="$8.00 - $15.00"
@@ -34,7 +37,7 @@ const PageProducts = () => {
                         size="4oz - 8oz"
                         category="Vela | Classic"
                         lastUpdated="03/05/25"
-                        activo={true} // 👉 verde
+                        activo={true} // verde
                     />
 
                     <CardProduct
@@ -45,21 +48,20 @@ const PageProducts = () => {
                         size="2oz - 6oz"
                         category="Vela | Minimal"
                         lastUpdated="01/04/25"
-                        activo={false} // 👉 gris
-                    />
-                </div>
+                        activo={false} // gris
+                    />*/}
+        </div>
 
-                {openDialogProduct && (<Dialog
-                    open={openDialogProduct}
-                    onClose={() => setOpenDialogProduct(false)}
-
-                >
-                    <RegisterProducts
-                        onClose={() => setOpenDialogProduct(false)}
-                    />
-                </Dialog>)}
-            </PrincipalDiv>
-        </>
-    )
-}
+        {openDialogProduct && (
+          <Dialog
+            open={openDialogProduct}
+            onClose={() => setOpenDialogProduct(false)}
+          >
+            <RegisterProducts onClose={() => setOpenDialogProduct(false)} />
+          </Dialog>
+        )}
+      </PrincipalDiv>
+    </>
+  );
+};
 export default PageProducts;
