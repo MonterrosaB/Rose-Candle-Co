@@ -28,7 +28,7 @@ const componentSchema = new Schema(
     unit: {
       type: String,
       required: true,
-      enum: ["ml", "g", "kg", "l", "unidad", "cucharada", "cucharadita"],
+      enum: ["ml", "g", "kg", "l", "unidad", "cucharada", "cucharadita","mg"],
       trim: true,
     },
   },
