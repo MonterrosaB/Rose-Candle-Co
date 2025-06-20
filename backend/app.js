@@ -17,11 +17,16 @@ import rawMaterials from "./src/routes/rawMaterial.js";
 import materialBalance from "./src/routes/materialBalance.js"
 import productionCostHistoryRoutes from "./src/routes/productionCostHistory.js"
 
+import cors from "cors";
 // Constante para la libreria de express
 const app = express();
 
 // Que acepte datos json
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:5173"
+}));
 
 // Rutas de las funciones
 app.use("/api/customers", customersRoutes)
