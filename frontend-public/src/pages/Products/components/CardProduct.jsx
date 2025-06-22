@@ -1,48 +1,60 @@
+import { Link } from "react-router-dom";
+
 const CardProduct = ({
+  _id,
   name,
   description,
   images,
   currentPrice,
   components,
+  // idProductCategory
 }) => {
-  const imageUrl = images?.[0] || "https://via.placeholder.com/150";
+  const imageUrl = images?.[0];
 
   return (
-    <div className="bg-[#F0ECE6] shadow-md rounded-2xl p-4 w-full max-w-sm text-[#333] space-y-3">
-      <div className="flex gap-4 items-center">
-        <div className="w-1/2">
+    <Link
+      to={`/product/${_id}`}
+      className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) block w-full max-w-xs mx-auto transition duration-300 ease-in-out transform hover:shadow-md hover:-translate-y-1 rounded-2xl"
+    >
+      <div className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) rounded-2xl p-4 w-full text-[#333] transition duration-300 ease-in-out">
+        <div>
           <img
             src={imageUrl}
             alt={`Imagen de ${name}`}
-            className="w-full h-32 object-cover rounded-sm"
+            className="w-full h-full object-cover rounded-sm"
           />
         </div>
-        <div className="w-1/2 space-y-1">
+
+        <div className="space-y-1 mt-2">
           <h2 className="font-serif text-xl font-semibold">{name}</h2>
           <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
-          <p className="text-sm text-gray-600">
-            Precio: ${parseFloat(currentPrice || 0).toFixed(2)}
-          </p>
         </div>
-      </div>
 
-      {components?.length > 0 && (
-        <div className="pt-2">
-          <p className="text-sm text-gray-700 font-medium mb-1">Componentes:</p>
-          <div className="flex flex-wrap gap-2">
-            {components.map((comp, idx) => (
-              <span
-                key={idx}
-                className="bg-white border border-gray-300 text-sm text-gray-700 px-3 py-1 rounded-full"
-              >
-                {comp.amount} {comp.unit}
-              </span>
-            ))}
+        {components?.length > 0 && (
+          <div className="pt-2">
+            <div className="flex flex-wrap gap-2">
+              {components.map((comp, id) => (
+                <span
+                  key={id}
+                  className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) border border-black text-xs text-black px-2 py-0.5 rounded-full"
+                >
+                  {comp.amount} {comp.unit}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        <h2 className="font-serif text-xl font-semibold mt-3">
+          Precio: ${parseFloat(currentPrice || 0).toFixed(2)}
+        </h2>
+      </div>
+    </Link>
   );
 };
+
+{
+  /* <p className="font-serif text-xs font-semibold">Categoría: {idProductCategory}</p> */
+}
 
 export default CardProduct;

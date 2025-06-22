@@ -5,6 +5,7 @@ import Nav from "./global/components/Nav.jsx"; // Menu
 import Footer from "./global/components/Footer.jsx"; // Footer
 import Faqs from "../src/pages/Faqs/Faqs.jsx"; // Pagina de preguntas frecuentes
 import Products from "../src/pages/Products/Products.jsx";
+import ProductDetail from "../src/pages/Products/ProductDetail.jsx";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
       <Footer />
     </Router>

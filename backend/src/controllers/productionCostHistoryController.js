@@ -134,7 +134,7 @@ productionCostHistoryController.updateproductionCostHistory = async (
     }
 
     res.status(200).json({ message: "Updated Successfully" });
-  } catch (error) {
+  } catch (error) { 
     console.log("error " + error);
     res.status(500).json("Internal server error");
   }
