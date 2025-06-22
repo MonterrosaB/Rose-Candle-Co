@@ -38,7 +38,7 @@ app.use("/api/rawMaterials", rawMaterials);
 app.use("/api/materialBalance", materialBalance);
 app.use("/api/historyRawMaterials", historyRawMaterialsRoutes);
 app.use("/api/productPriceHistory",productPriceHistoryRoutes);
-app.use("/api/shoppingCart", shoppingCartRoutes);
+app.use("/api/cart", shoppingCartRoutes);
 app.use("/api/collections", collectionsRoutes);
 app.use("/api/salesOrder", salesOrderRoutes);
 app.use("/api/productCategories", productCategoriesRoutes);

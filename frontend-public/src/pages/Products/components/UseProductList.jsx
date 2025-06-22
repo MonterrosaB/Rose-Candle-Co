@@ -1,4 +1,4 @@
-import useFetchProduct from "./UseFetchProducts";
+import useFetchProduct from "./useFetchProducts";
 import CardProduct from "./CardProduct";
 
 const ProductList = () => {

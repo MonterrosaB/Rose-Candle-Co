@@ -14,6 +14,7 @@ router.route("/")
 
 // Rutas para métodos PUT y DELETE 
 router.route("/:id")
+.get(shoppingCartController.getCartById)
   .put(shoppingCartController.updateCart)
   .delete(shoppingCartController.deleteCart);
 

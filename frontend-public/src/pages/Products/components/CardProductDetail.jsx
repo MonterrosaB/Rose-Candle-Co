@@ -1,5 +1,6 @@
 // src/components/CardProductDetail.jsx
 import { useState } from "react";
+import AddToCartButton from "./ButtonAddToCard.jsx"
 
 const CardProductDetail = ({ product }) => {
   const imageUrl = product.images?.[0];
@@ -84,12 +85,7 @@ const CardProductDetail = ({ product }) => {
           </div>
 
           {/* Botón centrado con el mismo ancho */}
-          <button
-            className="bg-black text-white px-6 py-2 rounded w-full hover:bg-gray-700 "
-            disabled
-          >
-            Add to cart
-          </button>
+      <AddToCartButton product={product} />
         </div>
       </div>
     </div>
