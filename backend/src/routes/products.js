@@ -16,6 +16,7 @@ router.route("/")
 .post(upload.array("images"), productsController.createProduct) 
 
 router.route("/:id")
+.get(productsController.getProductById)
 .put(upload.array("images"), productsController.updateProduct)
 .delete(productsController.deleteProduct)
 
