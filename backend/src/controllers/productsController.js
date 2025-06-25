@@ -136,10 +136,9 @@ productsController.deleteProduct = async (req, res) => {
 // PUT
 productsController.updateProduct = async (req, res) => {
   // Obtener datos
-  const {
+  let {
     name,
     description,
-    images,
     components,
     recipe,
     availability,
@@ -161,21 +160,23 @@ productsController.updateProduct = async (req, res) => {
   }
 
   try {
+    // 🧠 Parsear campos que puedan venir como string
+    if (typeof components === "string") components = JSON.parse(components);
+    if (typeof recipe === "string") recipe = JSON.parse(recipe);
+    if (typeof useForm === "string") useForm = JSON.parse(useForm);
+    if (typeof currentPrice === "string") currentPrice = parseFloat(currentPrice);
+
     // Validaciones
     if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" });
     }
 
-    if (name.length > 70) {
-      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+    if (name.length > 1000) {
+      return res.status(400).json({ message: "Too long" });
     }
 
     if (description.length < 5) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
-    }
-
-    if (imagesURL.length < 1) {
-      return res.status(400).json({ message: "Agrega al menos una imagen" });
+      return res.status(400).json({ message: "Too short" });
     }
 
     if (imagesURL.length > 4) {
@@ -183,6 +184,17 @@ productsController.updateProduct = async (req, res) => {
         .status(400)
         .json({ message: "No puedes poner más de cuatro imágenes" });
     }
+
+    // Si no se actualizan nuevas imágenes, usar las anteriores
+    const productOriginal = await productsModel.findById(req.params.id);
+    if (!productOriginal) {
+      return res.status(400).json({ message: "Product not found" });
+    }
+
+    if (imagesURL.length === 0) {
+      imagesURL = productOriginal.images;
+    }
+
     // Guardar datos
     const productUpdated = await productsModel.findByIdAndUpdate(
       req.params.id,
@@ -200,15 +212,12 @@ productsController.updateProduct = async (req, res) => {
       { new: true }
     );
 
-    if (!productUpdated) {
-      return res.status(400).json({ message: "Product not found" }); // Error del cliente, categoria no encontrado
-    }
-
-    res.status(200).json({ message: "Updated Successfull" }); // Todo bien
+    res.status(200).json({ message: "Updated Successfully", product: productUpdated });
   } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    console.log("Error:", error);
+    res.status(500).json("Internal server error");
   }
 };
+
 
 export default productsController;

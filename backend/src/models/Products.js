@@ -81,11 +81,11 @@ const productsSchema = new Schema(
       type: String,
       required: true,
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.,;]+$/,
         "La descripción solo puede contener letras y espacios",
       ],
       minLength: 3,
-      maxLength: 100,
+      maxLength: 1000,
       trim: true,
     },
     images: {
@@ -93,9 +93,9 @@ const productsSchema = new Schema(
       required: true,
       validate: {
         validator: function (arr) {
-          return arr.length >= 1 && arr.length <= 4;
+          return arr.length >= 1 && arr.length <= 8;
         },
-        message: "Debes subir entre 1 y 4 imágenes",
+        message: "Debes subir entre 1 y 8 imágenes",
       },
     },
     components: {

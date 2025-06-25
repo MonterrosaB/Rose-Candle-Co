@@ -1,6 +1,7 @@
 // src/components/CardProductDetail.jsx
 import { useState } from "react";
 import AddToCartButton from "./ButtonAddToCard.jsx"
+import GalleryImages from "./GalleryImages.jsx";
 
 const CardProductDetail = ({ product }) => {
   const imageUrl = product.images?.[0];
@@ -8,35 +9,9 @@ const CardProductDetail = ({ product }) => {
 
   return (
     <div className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) max-w-6xl w-full rounded-2xl p-8 flex gap-30 flex-col md:flex-row">
-      {/* Galería de imágenes */}
-      <div className="w-100 md:w-1/2 space-y-4">
-        {/* Imagen principal */}
-        <div className="mx-auto overflow-hidden rounded-xl">
-          <img
-            src={product.images?.[0]}
-            alt="Imagen principal"
-            className="w-full h-full object-cover rounded-xl"
-          />
-        </div>
+     
+     <GalleryImages product={product} />
 
-        {/* Miniaturas (si hay más de una imagen) */}
-        {product.images?.length > 1 && (
-          <div className="flex gap-4 overflow-x-auto">
-            {product.images.slice(1).map((imgUrl, index) => (
-              <div
-                key={index}
-                className="aspect-square overflow-hidden rounded-lg"
-              >
-                <img
-                  src={imgUrl}
-                  alt={`Imagen secundaria ${index + 1}`}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* Detalle del producto */}
       <div className="flex-1 space-y-4">
