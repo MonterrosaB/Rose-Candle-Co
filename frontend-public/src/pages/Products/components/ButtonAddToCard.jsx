@@ -1,8 +1,10 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { ShoppingCart } from "lucide-react";
 
 const AddToCartButton = ({ product }) => {
-  const cartId = "68588b74f122918fbd7edda5"; // Reemplazar con un ID real o dinámico
-  const userId = "665d3836f3c56f70bdc308c5"; // ID de usuario válido (debe existir en tu BD)
+  const cartId = "68588b74f122918fbd7edda5";
+  const userId = "665d3836f3c56f70bdc308c5";
 
   const handleAddToCart = async () => {
     if (
@@ -21,12 +23,10 @@ const AddToCartButton = ({ product }) => {
     const productPrice = Number(product.currentPrice);
 
     try {
-      // Intentar obtener el carrito
       let cart;
       const res = await fetch(`http://localhost:4000/api/cart/${cartId}`);
 
       if (res.status === 404) {
-        // Carrito no existe, lo creamos
         const createRes = await fetch("http://localhost:4000/api/cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -38,20 +38,15 @@ const AddToCartButton = ({ product }) => {
           }),
         });
 
-        if (!createRes.ok) {
-          const text = await createRes.text();
-          throw new Error(`Error al crear carrito: ${text}`);
-        }
+        if (!createRes.ok) throw new Error(await createRes.text());
 
         cart = await createRes.json();
       } else if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Error ${res.status}: ${text}`);
+        throw new Error(await res.text());
       } else {
         cart = await res.json();
       }
 
-      // Actualizar carrito con nuevo producto
       const updatedProducts = [...cart.products, productId];
       const updatedTotal = Number(cart.total || 0) + productPrice;
 
@@ -68,10 +63,7 @@ const AddToCartButton = ({ product }) => {
         }),
       });
 
-      if (!updateResponse.ok) {
-        const text = await updateResponse.text();
-        throw new Error(`Error ${updateResponse.status}: ${text}`);
-      }
+      if (!updateResponse.ok) throw new Error(await updateResponse.text());
 
       alert("Producto agregado al carrito correctamente");
     } catch (err) {
@@ -80,7 +72,22 @@ const AddToCartButton = ({ product }) => {
     }
   };
 
-  return <button onClick={handleAddToCart}>Add to Cart</button>;
+  return (
+    <motion.button
+      onClick={handleAddToCart}
+      whileTap={{ scale: 0.97 }}
+      whileHover={{
+        scale: 1.01,
+        boxShadow: "0 0 15px rgba(255, 255, 255, 0.5)",
+        backgroundColor: "#222",
+      }}
+      transition={{ type: "spring", stiffness: 250 }}
+      className="w-full max-w-sm flex items-center justify-center gap-2 bg-black hover:bg-[#222222] text-white px-4 py-4 rounded-2xl font-medium text-sm transition-all duration-200"
+    >
+      <ShoppingCart size={18} />
+      Add to Cart
+    </motion.button>
+  );
 };
 
 export default AddToCartButton;
