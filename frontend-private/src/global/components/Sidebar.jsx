@@ -1,55 +1,102 @@
 import React, { useState } from "react";
 import Isotipo from "../../assets/Isotipo.svg";
 import Menu from "./Menu";
-import { Link } from "react-router";
+import { Link } from "react-router-dom"; // Corregido: react-router-dom
 import { ChevronDown, LogOut } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Sidebar = () => {
   const [openDropdown, setOpenDropDown] = useState(false);
 
   return (
-    <>
-      <aside className="fixed top-0 left-0 w-64 h-screen flex flex-col justify-between transition-transform -translate-x-full sm:translate-x-0 shadow-md">
-        <div>
-          {/* Isotipo de la marca */}
-          <div className="isotipo flex items-center justify-center p-4">
-            <img src={Isotipo} alt="Isotipo Rosé Candle Co." />
-          </div>
-          {/* Links del menú */}
-          <div className="links py-4 text-3xl text-[#333]">
-            <ul className="space-y-0.5">
-              <li className="flex items-center justify-center p-4 group hover:bg-[#A3A380]">
-                <Link to={"/"}>Home</Link>
-              </li>
-              <li
-                className="flex items-center justify-end flex-col py-2 group cursor-pointer"
-                onClick={() => setOpenDropDown(!openDropdown)}
+    <aside className="fixed top-0 left-0 w-60 h-screen bg-white shadow-xl z-50 transition-transform -translate-x-full sm:translate-x-0 flex flex-col justify-between">
+      <div>
+        {/* Logo */}
+        <div className="flex items-center justify-center py-6">
+          <motion.img
+            src={Isotipo}
+            alt="Isotipo Rosé Candle Co."
+            className="w-16 h-16"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.4 }}
+          />
+        </div>
+
+        {/* Navegación */}
+        <nav className="text-base text-[#333] font-medium">
+          <ul className="space-y-2 px-4">
+            <li>
+              <Link
+                to="/"
+                className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
               >
-                <div className="flex flex-row items-center gap-2 justify-center">
-                  Stock <ChevronDown color="#333" size={20} />
-                </div>
-                {openDropdown && <Menu />}
-              </li>
-              <li className="flex items-center justify-center p-4 group hover:bg-[#A3A380]">
-                <Link to={"/reports"}>Reports</Link>
-              </li>
-              <li className="flex items-center justify-center p-4 group hover:bg-[#A3A380]">
-                <Link to={"/employees"}>Employees</Link>
-              </li>
-              <li className="flex items-center justify-center p-4 group hover:bg-[#A3A380]">
-                <Link to={"/order"}>Order</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-        {/* Log Out */}
-        <div className="text-3xl text-[#333] flex justify-center items-center hover:bg-[#A3A380] cursor-pointer">
-          <span className="flex flex-row items-center gap-2 justify-center p-2 group">
-            Log Out <LogOut color="#333" size={20} />
-          </span>
-        </div>
-      </aside>
-    </>
+                Home
+              </Link>
+            </li>
+
+            <li className="relative">
+              <button
+                onClick={() => setOpenDropDown(!openDropdown)}
+                className="w-full flex items-center justify-between py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+              >
+                <span>Stock</span>
+                <ChevronDown size={18} />
+              </button>
+
+              <AnimatePresence>
+                {openDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Menu />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </li>
+
+            <li>
+              <Link
+                to="/reports"
+                className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+              >
+                Reports
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/employees"
+                className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+              >
+                Employees
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/order"
+                className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+              >
+                Order
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {/* Logout */}
+      <div className="text-base text-[#333] px-4 py-4">
+        <button className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300">
+          <LogOut size={18} />
+          Log Out
+        </button>
+      </div>
+    </aside>
   );
 };
+
 export default Sidebar;

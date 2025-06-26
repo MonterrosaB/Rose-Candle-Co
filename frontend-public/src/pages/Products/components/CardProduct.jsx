@@ -7,54 +7,48 @@ const CardProduct = ({
   images,
   currentPrice,
   components,
-  // idProductCategory
 }) => {
   const imageUrl = images?.[0];
 
   return (
     <Link
       to={`/product/${_id}`}
-      className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) block w-full max-w-xs mx-auto transition duration-300 ease-in-out transform hover:shadow-md hover:-translate-y-1 rounded-2xl"
+      className="block w-full max-w-xs mx-auto transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1"
     >
-      <div className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) rounded-2xl p-4 w-full text-[#333] transition duration-300 ease-in-out">
-        <div>
-          <img
-            src={imageUrl}
-            alt={`Imagen de ${name}`}
-            className="w-full h-full object-cover rounded-sm"
-          />
-        </div>
+      <div className="aspect-[4/5] bg-gray-50 rounded-xl overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={`Imagen de ${name}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-        <div className="space-y-1 mt-2">
-          <h2 className="font-serif text-xl font-semibold">{name}</h2>
-          <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
-        </div>
+      <div className="space-y-3 mt-4 text-gray-900">
+        <h3 className="font-bold text-lg">{name}</h3>
+        <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
 
-        {components?.length > 0 && (
-          <div className="pt-2">
-            <div className="flex flex-wrap gap-2">
+        {/* Simple separación visual */}
+        <div className="mt-6 space-y-2">
+          {components?.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
               {components.map((comp, id) => (
                 <span
                   key={id}
-                  className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) border border-black text-xs text-black px-2 py-0.5 rounded-full"
+                  className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700"
                 >
                   {comp.amount} {comp.unit}
                 </span>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        <h2 className="font-serif text-xl font-semibold mt-3">
-          Precio: ${parseFloat(currentPrice || 0).toFixed(2)}
-        </h2>
+          <p className="font-bold text-xl">
+            ${parseFloat(currentPrice || 0).toFixed(2)}
+          </p>
+        </div>
       </div>
     </Link>
   );
 };
-
-{
-  /* <p className="font-serif text-xs font-semibold">Categoría: {idProductCategory}</p> */
-}
 
 export default CardProduct;

@@ -19,8 +19,8 @@ function App() {
 
   return (
     <>
-      <Login/>
-      {/*<Router>
+       {/*<Login/>*/}
+     <Router>
         <Sidebar />
         <main className='ml-64'>
           <Routes>
@@ -38,7 +38,7 @@ function App() {
           </Routes>
         </main>
 
-      </Router>*/}
+      </Router>
     </>
   )
 }

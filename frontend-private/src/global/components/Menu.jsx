@@ -1,16 +1,42 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
+const Menu = () => {
+  return (
+    <ul className="text-sm mt-1 ml-3 space-y-1">
+      <li>
+        <Link
+          to="/materials"
+          className="block py-1 px-2 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+        >
+          Materials
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/record"
+          className="block py-1 px-2 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+        >
+          Record
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/products"
+          className="block py-1 px-2 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+        >
+          Products
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/others"
+          className="block py-1 px-2 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+        >
+          Others
+        </Link>
+      </li>
+    </ul>
+  );
+};
 
-const DropDown = () => {
-    return (
-        <>
-            <ul className="py-2 text-xl w-full">
-                <li className="flex items-center justify-center py-2 group hover:bg-[#A3A380]"><Link to={"/materials"}	>Materials</Link></li>
-                <li className="flex items-center justify-center py-2 group hover:bg-[#A3A380]"><Link to={"/record"}	>Record</Link></li>
-                <li className="flex items-center justify-center py-2 group hover:bg-[#A3A380]"><Link to={"/products"}	>Products</Link></li>
-                <li className="flex items-center justify-center py-2 group hover:bg-[#A3A380]"><Link to={"/others"}	>Others</Link></li>
-            </ul>
-        </>
-    )
-}
-export default DropDown;
+export default Menu;
