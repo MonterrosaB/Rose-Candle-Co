@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-const useProducts = () => {
+const useProducts = (methods) => {
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = methods;
+
+
   // Api de productos
   const ApiProducts = "http://localhost:4000/api/products";
 
@@ -35,7 +45,7 @@ const useProducts = () => {
   };
 
   // Guardar datos
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -234,6 +244,12 @@ const useProducts = () => {
     deleteProduct,
     updateProduct,
     handleUpdate,
+    //RHF
+    register,
+    handleSubmit,
+    reset,
+    errors,
+    control
   };
 };
 

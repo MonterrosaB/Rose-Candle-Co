@@ -11,10 +11,7 @@ import Button from "../../global/components/Button";
 import Calmness from "../../assets/calmness.jpg";
 
 const PageProducts = () => {
-  // Cambiar el título de la pestaña al montar el componente
-  useEffect(() => {
-    document.title = "Productos | Rosé Candle Co.";
-  }, []);
+
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
 
   return (

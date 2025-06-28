@@ -101,6 +101,7 @@ const RegisterProducts = ({ onClose }) => {
                             id="principal-image-product"
                             className="hidden"
                             onChange={onImageChange}
+                            {...register("file")}
                         />
                     </label>
                     <label htmlFor="secondary-images-product" className="cursor-pointer">
@@ -133,6 +134,7 @@ const RegisterProducts = ({ onClose }) => {
                             id="secondary-images-product"
                             className="hidden"
                             onChange={uploadMultipleFiles}
+                            {...register("file")}
                             multiple
                         />
                     </label>
