@@ -54,8 +54,17 @@ El objetivo es optimizar el emprendimiento y mejorar tanto la experiencia del cl
 
 - Uso de archivo `.env` para variables sensibles:
   ```env
-  MONGO_URI=your_mongodb_connection_string
-  JWT_SECRET=your_jwt_secret
+  DB_URI=""
+  PORT=""
+  JWT_SECRET=""
+  JWT_EXPIRES=""
+  ADMIN_EMAIL=""
+  ADMIN_PASSWORD=""
+  USER_EMAIL=""
+  USER_PASS=""
+  CLOUDINARY_NAME=""
+  CLOUDINARY_API_KEY=""
+  CLOUDINARY_API_SECRET=""
 
 ## 📬 Contacto
 
