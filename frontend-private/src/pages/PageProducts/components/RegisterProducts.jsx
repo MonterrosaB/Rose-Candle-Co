@@ -10,8 +10,10 @@ import Dropdown from "../../../global/components/Dropdown"
 import Textarea from "../../../global/components/TextArea";
 import TextAreaArray from "../../../global/components/TextAreaArray";
 import DoubleInput from "../../../global/components/DoubleInput";
+import DoubleInputDropDown from "../../../global/components/DobleInputDropdown";
 
 import AddComponent from "../logic/addComponents";
+import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form"
 import useProducts from "../hooks/useProducts";
 
@@ -19,58 +21,46 @@ import useProducts from "../hooks/useProducts";
 const RegisterProducts = ({ onClose }) => {
 
     const methods = useForm();
-    const { register, handleSubmit, errors, reset, control } = useProducts(methods);
+    const { register, handleSubmit, errors, reset, control, createProduct } = useProducts(methods);
 
-    const [productImage, setProductImage] = useState(null);
-    const [productImageFile, setProductPrincipal] = useState(null);
+    const { productImage, productImageFile, multipleFile, multipleFileFiles, uploadMultipleFiles, removeImage, onImageChange } = changeImages()
 
-    const [multipleFile, setMultipleFile] = useState([]); // URLs para mostrar
-    const [multipleFileFiles, setMultipleFileFiles] = useState([]); // Archivos reales
-
-    const uploadMultipleFiles = (e) => {
-        const files = Array.from(e.target.files);
-        const urls = files.map(file => URL.createObjectURL(file));
-
-        setMultipleFile(prev => [...prev, ...urls]);
-        setMultipleFileFiles(prev => [...prev, ...files]);
-    };
-
-    const removeImage = (index) => {
-        setMultipleFile(prev => prev.filter((_, i) => i !== index));
-        setMultipleFileFiles(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const onImageChange = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            const file = event.target.files[0];
-            setProductPrincipal(file); // este es el que se usa para subir
-
-
-            // Opcional: mostrar vista previa
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setProductImage(e.target.result);
-                console.log(file);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     const opcionesMateria = [
-        { _id: 'M', label: 'Cera' },
-        { _id: 'F', label: 'Mechas' }
+        { _id: '684f440be2f5a8a7ddac215d', label: 'Cera' },
+        { _id: '684f440be2f5a8a7ddac215d', label: 'Mechas' }
+    ];
+
+    const estado = [
+        { _id: true, label: 'Activo' },
+        { _id: false, label: 'Inactivo' }
     ];
 
     const { agregarInput, inputs } = AddComponent();
 
-    const onSubmit = (data) => {
-        console.log(data);
-        alert("Verificar datos en la consola")
-    };
+    const onSubmit = async (data) => {
+        const allImages = [productImageFile, ...multipleFileFiles];
 
-    const uploadFiles = () => {
-        console.log(productImageFile); // Imagen principal (File)
-        console.log(multipleFileFiles); // Array de archivos (Files) secundarios
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("description", data.description);
+        formData.append("availability", data.estado);
+        formData.append("useForm", JSON.stringify(data.instrucctions)); // Si es string o id. Si es array, usa JSON.stringify()
+        formData.append("currentPrice", 12.5);
+        formData.append("idProductCategory", "684c50e8aba6ea57507d5363");
+
+        // Archivos
+        allImages.forEach((file) => {
+            formData.append("images", file);
+        });
+
+        // Objetos: convierte a string JSON
+        formData.append("components", JSON.stringify(data.componentes));
+        formData.append("recipe", JSON.stringify(data.receta));
+
+        await createProduct(formData)
+        console.log(data);
+
     };
 
     return (
@@ -100,8 +90,7 @@ const RegisterProducts = ({ onClose }) => {
                             type="file"
                             id="principal-image-product"
                             className="hidden"
-                            onChange={onImageChange}
-                            {...register("file")}
+                            {...register("filee", { onChange: onImageChange })}
                         />
                     </label>
                     <label htmlFor="secondary-images-product" className="cursor-pointer">
@@ -133,8 +122,9 @@ const RegisterProducts = ({ onClose }) => {
                             type="file"
                             id="secondary-images-product"
                             className="hidden"
-                            onChange={uploadMultipleFiles}
-                            {...register("file")}
+                            {...register("file", {
+                                onChange: uploadMultipleFiles
+                            })}
                             multiple
                         />
                     </label>
@@ -148,14 +138,14 @@ const RegisterProducts = ({ onClose }) => {
                 />
                 <div className="flex justify-center items-center gap-4 w-full">
                     <Dropdown
-                        name={"categoria"}
+                        name={"category"}
                         options={opcionesMateria}
                         label={"Categoría"}
                         register={register}
                         errors={errors}
                         hideIcon={true} />
                     <Dropdown
-                        name={"materiaPrima"}
+                        name={"colecction"}
                         options={opcionesMateria}
                         label={"Colección"}
                         register={register}
@@ -163,7 +153,7 @@ const RegisterProducts = ({ onClose }) => {
                         hideIcon={true} />
                     <Dropdown
                         name={"estado"}
-                        options={opcionesMateria}
+                        options={estado}
                         label={"Estado"}
                         register={register}
                         errors={errors}
@@ -172,43 +162,52 @@ const RegisterProducts = ({ onClose }) => {
                 <div className="flex justify-center items-center gap-4 w-full">
                     <TextAreaArray
                         control={control}
-                        name="Pasos"
+                        name="instrucctions"
                         label="Pasos"
                         placeholder="Escribe y presiona coma o enter"
-                        error={errors.tags} />
+                        error={errors.tags}
+                        valueKey="instruction"
+                    />
                     <TextAreaArray
                         control={control}
-                        name="Recetas"
+                        name="receta"
                         label="Recetas"
                         placeholder="Escribe y presiona coma o enter"
-                        error={errors.tags} />
+                        error={errors.tags}
+                        valueKey="step" />
                 </div>
                 <div className="flex justify-center items-center gap-4 w-full">
                     <div className="flex flex-col items-center w-1/2 gap-4">
-                        <Button buttonText={"Agregar Variante"} showIcon={true} style={"gray"} onClick={() => agregarInput("variantes")} type={"button"} />
+                        <div>
+                            <Button buttonText={"Agregar Variante"} showIcon={true} style={"gray"} onClick={() => agregarInput("variantes")} type={"button"} />
+
+                        </div>
                         {inputs.variantes.map((input, index) => (
                             <DoubleInput
                                 key={input.id}
                                 placeholder1="Nombre Variante"
                                 placeholder2="Precio Variante"
-                                name1={`variantes.${index}.variante`}
-                                name2={`variantes.${index}.precio`}
+                                name1={`variantes.${index}.variants`}
+                                name2={`variantes.${index}.price`}
                                 register={register}
-                                errors={errors}
+                                error1={errors?.variantes?.[index]?.variants?.message}
+                                error2={errors?.variantes?.[index]?.price?.message}
                             />
                         ))}
                     </div>
-                    <div className="flex flex-col  items-center w-1/2 gap-4">
+                    <div className="flex flex-col items-center w-1/2 gap-4">
                         <Button buttonText={"Agregar Componente"} showIcon={true} style={"gray"} onClick={() => agregarInput("componentes")} type={"button"} />
                         {inputs.componentes.map((input, index) => (
-                            <DoubleInput
+                            <DoubleInputDropDown
                                 key={input.id}
                                 placeholder1="Componente"
                                 placeholder2="Cantidad"
-                                name1={`componentes.${index}.componente`}
-                                name2={`componentes.${index}.cantidad`}
+                                name1={`componentes.${index}.idComponent`}
+                                name2={`componentes.${index}.amount`}
                                 register={register}
-                                errors={errors}
+                                error1={errors?.componentes?.[index]?.idComponent?.message}
+                                error2={errors?.componentes?.[index]?.amount?.message}
+                                options={opcionesMateria}
                             />
                         ))}
                     </div>

@@ -15,6 +15,54 @@
 
 import { Schema, model } from "mongoose";
 
+// Subesquema: Componentes
+const componentSchema = new Schema(
+  {
+    idComponent: {
+      type: Schema.Types.ObjectId,
+      ref: "RawMaterial",
+      required: true,
+    },
+    amount: {
+      type: String,
+      required: true,
+      minLength: 1,
+      maxLength: 100,
+      trim: true,
+    },
+  },
+  { _id: false }
+);
+
+// Subesquema: Receta
+const recipeSchema = new Schema(
+  {
+    step: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 200,
+      trim: true,
+    },
+  },
+  { _id: false }
+);
+
+// Subesquema: Uso
+const useFormSchema = new Schema(
+  {
+    instruction: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 200,
+      trim: true,
+    },
+  },
+  { _id: false }
+);
+
+// Esquema principal: Productos
 const productsSchema = new Schema(
   {
     name: {
@@ -32,59 +80,65 @@ const productsSchema = new Schema(
       type: String,
       required: true,
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "La descripcion solo puede contener letras y espacios",
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.,;]+$/,
+        "La descripción solo puede contener letras y espacios",
       ],
       minLength: 3,
-      maxLength: 100,
+      maxLength: 1000,
       trim: true,
     },
     images: {
       type: [String],
       required: true,
       validate: {
-    validator: function (arr) {
-      return arr.length >= 1 && arr.length <= 4;
-    },
-    message: "Debes subir entre 1 y 4 imágenes",
-  },
+        validator: function (arr) {
+          return arr.length >= 1 && arr.length <= 8;
+        },
+        message: "Debes subir entre 1 y 8 imágenes",
+      },
     },
     components: {
-      type: [String],
-      minLength: 3,
-      maxLength: 100,
-      required: true
+      type: [componentSchema],
+      required: true,
+      validate: {
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
+        message: "Debes proporcionar entre 1 y 100 componentes",
+      },
     },
     recipe: {
-      type: [String],
-      minLength: 3,
-      maxLength: 100,
-      required: true
+      type: [recipeSchema],
+      required: true,
+      validate: {
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
+        message: "Debes proporcionar entre 1 y 100 pasos de receta",
+      },
     },
     availability: {
-      type: String,
+      type: Boolean,
       required: true,
     },
     useForm: {
-      type: [String],
-      minLength: 3,
-      maxLength: 100,
-      required: true
+      type: [useFormSchema],
+      required: true,
+      validate: {
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
+        message: "Debes proporcionar entre 1 y 100 instrucciones de uso",
+      },
     },
     currentPrice: {
       type: Number,
+      required: true,
       min: 0.1,
       max: 1000,
       match: [
         /^\d+(\.\d{1,2})?$/,
         "El precio actual debe ser un número válido, con hasta dos decimales",
       ],
-      required: true,
     },
     idProductCategory: {
       type: Schema.Types.ObjectId,
       ref: "productCategories",
-      require: true,
+      required: true,
     },
   },
   {

@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-const DropDown = ({ name, options, label, error, hideIcon, register }) => {
+const DropDown = ({ name, options, label, error, hideIcon, register, placeHolder = "Selecciona una opción" }) => {
     return (
         <div className="flex justify-center items-baseline gap-4 mb-4 w-full">
             <div className="relative w-full">
@@ -12,7 +12,7 @@ const DropDown = ({ name, options, label, error, hideIcon, register }) => {
                     defaultValue=""
                 >
                     <option value="" disabled hidden>
-                        Selecciona una opción
+                        {placeHolder}
                     </option>
                     {options.map((opt) => (
                         <option

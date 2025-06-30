@@ -23,12 +23,22 @@ productsController.getproducts = async (req, res) => {
   }
 };
 
+productsController.getProductById = async (req, res) => {
+  try {
+    const product = await productsModel.findById(req.params.id); // o tu método según cómo lo traes
+    if (!product) return res.status(404).json({ error: "Producto not found" });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Error, couldnt found the product" });
+  }
+};
+
 // POST
 productsController.createProduct = async (req, res) => {
   console.log(req.body); // Verifica qué contiene req.body
 
   // Obtener datos
-  const {
+  let {
     name,
     description,
     components,
@@ -41,6 +51,7 @@ productsController.createProduct = async (req, res) => {
 
   let imagesURL = [];
 
+  // Subir imágenes con Cloudinary
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
@@ -52,52 +63,40 @@ productsController.createProduct = async (req, res) => {
   }
 
   try {
+    // Si los campos vienen como string JSON (form-data), los parseamos
+    if (typeof components === "string") components = JSON.parse(components);
+    if (typeof recipe === "string") recipe = JSON.parse(recipe);
+    if (typeof useForm === "string") useForm = JSON.parse(useForm);
+    if (typeof currentPrice === "string") currentPrice = parseFloat(currentPrice);
+
     // Validaciones
     if (
       !name ||
       !description ||
-      !imagesURL || imagesURL.length < 1 ||
+      imagesURL.length < 1 ||
       !components || components.length < 1 ||
       !recipe || recipe.length < 1 ||
-      !availability ||
-      !useForm ||
+      availability === undefined ||
+      !useForm || useForm.length < 1 ||
       !currentPrice ||
       !idProductCategory
     ) {
-      return res
-        .status(400)
-        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacios
+      return res.status(400).json({ message: "Please complete all the fields" });
     }
 
-    if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
-    }
-
-    if (name.length > 70) {
-      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+    if (name.length < 3 || name.length > 70) {
+      return res.status(400).json({ message: "Invalid name length" });
     }
 
     if (description.length < 5) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
-    }
-
-    if (imagesURL.length < 1) {
-      return res.status(400).json({ message: "Agrega al menos una imagen" });
+      return res.status(400).json({ message: "Description too short" });
     }
 
     if (imagesURL.length > 4) {
-      return res
-        .status(400)
-        .json({ message: "No puedes subir más de cuatro imágenes" });
+      return res.status(400).json({ message: "Max 4 images allowed" });
     }
 
-    //if (availability !== true && availability !== false) {
-    //  return res
-    //  .status(400)
-    //.json({ message: "La disponibilidad debe ser true o false" }); // Error de validación
-    //}
-
-    // Guardar datos
+    // Crear nuevo producto
     const newProduct = new productsModel({
       name,
       description,
@@ -109,13 +108,15 @@ productsController.createProduct = async (req, res) => {
       currentPrice,
       idProductCategory,
     });
+
     await newProduct.save();
-    res.status(200).json({ message: "Saved Successfull" }); // Todo bien
+    res.status(200).json({ message: "Saved successfully" });
   } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    console.log("Error:", error);
+    res.status(500).json("Internal server error");
   }
 };
+
 
 // DELETE
 productsController.deleteProduct = async (req, res) => {
@@ -135,10 +136,9 @@ productsController.deleteProduct = async (req, res) => {
 // PUT
 productsController.updateProduct = async (req, res) => {
   // Obtener datos
-  const {
+  let {
     name,
     description,
-    images,
     components,
     recipe,
     availability,
@@ -160,21 +160,23 @@ productsController.updateProduct = async (req, res) => {
   }
 
   try {
+    // 🧠 Parsear campos que puedan venir como string
+    if (typeof components === "string") components = JSON.parse(components);
+    if (typeof recipe === "string") recipe = JSON.parse(recipe);
+    if (typeof useForm === "string") useForm = JSON.parse(useForm);
+    if (typeof currentPrice === "string") currentPrice = parseFloat(currentPrice);
+
     // Validaciones
     if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" });
     }
 
-    if (name.length > 70) {
-      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+    if (name.length > 1000) {
+      return res.status(400).json({ message: "Too long" });
     }
 
     if (description.length < 5) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
-    }
-
-    if (imagesURL.length < 1) {
-      return res.status(400).json({ message: "Agrega al menos una imagen" });
+      return res.status(400).json({ message: "Too short" });
     }
 
     if (imagesURL.length > 4) {
@@ -182,6 +184,17 @@ productsController.updateProduct = async (req, res) => {
         .status(400)
         .json({ message: "No puedes poner más de cuatro imágenes" });
     }
+
+    // Si no se actualizan nuevas imágenes, usar las anteriores
+    const productOriginal = await productsModel.findById(req.params.id);
+    if (!productOriginal) {
+      return res.status(400).json({ message: "Product not found" });
+    }
+
+    if (imagesURL.length === 0) {
+      imagesURL = productOriginal.images;
+    }
+
     // Guardar datos
     const productUpdated = await productsModel.findByIdAndUpdate(
       req.params.id,
@@ -199,15 +212,12 @@ productsController.updateProduct = async (req, res) => {
       { new: true }
     );
 
-    if (!productUpdated) {
-      return res.status(400).json({ message: "Product not found" }); // Error del cliente, categoria no encontrado
-    }
-
-    res.status(200).json({ message: "Updated Successfull" }); // Todo bien
+    res.status(200).json({ message: "Updated Successfully", product: productUpdated });
   } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    console.log("Error:", error);
+    res.status(500).json("Internal server error");
   }
 };
+
 
 export default productsController;

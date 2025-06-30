@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 
-const TextAreaArray = ({ control, name, label, error, placeholder = "" }) => {
+const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey = null }) => {
     const [inputValue, setInputValue] = useState("");
     const [editingIndex, setEditingIndex] = useState(null);
 
@@ -9,10 +9,11 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "" }) => {
         <div className="mb-3 w-full">
             <div className="relative w-full">
                 <label className="absolute text-sm text-neutral-800 font-medium duration-300 transform 
-            -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[#F7F5EE] px-2 
-            peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 
-            peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-75
-            peer-focus:-translate-y-4 start-1 capitalize">
+                    -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[#F7F5EE] px-2 
+                    peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 
+                    peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-75
+                    peer-focus:-translate-y-4 start-1 capitalize"
+                >
                     {label}
                 </label>
 
@@ -26,9 +27,19 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "" }) => {
 
                         const addTag = () => {
                             const trimmed = inputValue.trim();
-                            if (trimmed && !tags.includes(trimmed)) {
-                                onChange([...tags, trimmed]);
+                            if (!trimmed) return;
+
+                            const exists = valueKey
+                                ? tags.some((t) => t[valueKey] === trimmed)
+                                : tags.includes(trimmed);
+
+                            if (!exists) {
+                                onChange([
+                                    ...tags,
+                                    valueKey ? { [valueKey]: trimmed } : trimmed,
+                                ]);
                             }
+
                             setInputValue("");
                         };
 
@@ -46,53 +57,57 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "" }) => {
 
                         const updateTag = (index, newValue) => {
                             const newTags = [...tags];
-                            newTags[index] = newValue;
+                            newTags[index] = valueKey ? { [valueKey]: newValue } : newValue;
                             onChange(newTags);
                         };
 
                         return (
                             <div
                                 className={`flex flex-wrap gap-2 p-2 rounded-lg border min-h-[60px] mt-6
-                ${error ? "border-red-500" : "border-gray-300 focus-within:border-black"} 
-                bg-[#F7F5EE] transition-colors duration-200`}
+                                    ${error ? "border-red-500" : "border-gray-300 focus-within:border-black"} 
+                                    bg-[#F7F5EE] transition-colors duration-200`}
                             >
-                                {tags.map((tag, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center gap-1 bg-[#333] text-white p-1 rounded-full text-sm"
-                                    >
-                                        {editingIndex === index ? (
-                                            <input
-                                                autoFocus
-                                                type="text"
-                                                value={tag}
-                                                onChange={(e) => updateTag(index, e.target.value)}
-                                                onBlur={() => setEditingIndex(null)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter" || e.key === "Escape") {
-                                                        e.preventDefault();
-                                                        setEditingIndex(null);
-                                                    }
-                                                }}
-                                                className="bg-transparent text-white outline-none border-b border-white text-xs"
-                                            />
-                                        ) : (
-                                            <span
-                                                onClick={() => setEditingIndex(index)}
-                                                className="cursor-pointer"
-                                            >
-                                                {tag}
-                                            </span>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={() => removeTag(index)}
-                                            className="text-xs text-white hover:text-red-300"
+                                {tags.map((tag, index) => {
+                                    const displayText = valueKey ? tag[valueKey] : tag;
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="flex items-center gap-1 bg-[#333] text-white p-1 rounded-full text-sm"
                                         >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
+                                            {editingIndex === index ? (
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    value={displayText}
+                                                    onChange={(e) => updateTag(index, e.target.value)}
+                                                    onBlur={() => setEditingIndex(null)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter" || e.key === "Escape") {
+                                                            e.preventDefault();
+                                                            setEditingIndex(null);
+                                                        }
+                                                    }}
+                                                    className="bg-transparent text-white outline-none border-b border-white text-xs"
+                                                />
+                                            ) : (
+                                                <span
+                                                    onClick={() => setEditingIndex(index)}
+                                                    className="cursor-pointer"
+                                                >
+                                                    {displayText}
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTag(index)}
+                                                className="text-xs text-white hover:text-red-300"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    );
+                                })}
 
                                 <input
                                     type="text"

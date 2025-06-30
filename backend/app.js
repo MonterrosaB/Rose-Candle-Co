@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 
 // Routes
+import loginRoutes from "./src/routes/login.js";
 import customersRoutes from "./src/routes/customers.js";
 import employeesRoutes from "./src/routes/employees.js";
 import historyRawMaterialsRoutes from "./src/routes/historyRawMaterials.js";
@@ -21,16 +22,14 @@ import productionCostHistoryRoutes from "./src/routes/productionCostHistory.js";
 // Constante para la libreria de express
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    // Permitir envío de cookies y credenciales
-    credentials: true,
-  })
-);
-
 // Que acepte datos json
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+  })
+);
 
 // Rutas de las funciones
 app.use("/api/customers", customersRoutes);
@@ -39,14 +38,15 @@ app.use("/api/suppliers", suppliers);
 app.use("/api/rawMaterialCategories", rawMaterialCategories);
 app.use("/api/rawMaterials", rawMaterials);
 app.use("/api/materialBalance", materialBalance);
-//app.use("/api/historyRawMaterials", historyRawMaterialsRoutes)
-//app.use("/api/productPriceHistory",productPriceHistoryRoutes)
-//app.use("/api/shoppingCart", shoppingCartRoutes)
-//app.use("/api/collections", collectionsRoutes)
-//app.use("/api/salesOrder", salesOrderRoutes)
+app.use("/api/historyRawMaterials", historyRawMaterialsRoutes);
+app.use("/api/productPriceHistory", productPriceHistoryRoutes);
+app.use("/api/cart", shoppingCartRoutes);
+app.use("/api/collections", collectionsRoutes);
+app.use("/api/salesOrder", salesOrderRoutes);
 app.use("/api/productCategories", productCategoriesRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/productionCostHistory", productionCostHistoryRoutes);
+app.use("/api/login", loginRoutes);
 
 // Exportar
 export default app;

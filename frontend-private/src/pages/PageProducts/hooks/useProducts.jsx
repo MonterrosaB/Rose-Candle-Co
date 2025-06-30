@@ -45,67 +45,37 @@ const useProducts = (methods) => {
   };
 
   // Guardar datos
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !name ||
-      !description ||
-      !images.length ||
-      !components.length ||
-      !recipe.length ||
-      !availability ||
-      !useForm.length ||
-      !currentPrice ||
-      !idProductCategory
-    ) {
-      setError("Todos los campos son obligatorios");
-      toast.error("Todos los campos son obligatorios");
-      return;
-    }
-
+  const createProduct = async (formData) => {
     try {
-      const newProduct = {
-        name,
-        description,
-        images,
-        components,
-        recipe,
-        availability,
-        useForm,
-        currentPrice,
-        idProductCategory,
-      };
+      setLoading(true);
 
-      console.log(newProduct, "datos nuevo producto");
 
       const response = await fetch(ApiProducts, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProduct),
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Hubo un error al registrar el producto");
+        const errorText = await response.text();
+        throw new Error(`Error del servidor: ${errorText}`);
       }
 
       const data = await response.json();
-      toast.success("Producto registrado");
-      setProducts(data);
+
+      toast.success("Producto registrado correctamente");
       setSuccess("Producto registrado correctamente");
+      setProducts(data);
       cleanData();
       fetchData();
     } catch (error) {
-      setError(error.message);
       console.error("Error:", error);
-      alert("Error", "Ocurrió un error al registrar el producto");
+      setError(error.message);
       toast.error("Ocurrió un error al registrar el producto");
     } finally {
       setLoading(false);
     }
   };
+
 
   // Obtener datos
   const fetchData = async () => {
@@ -249,7 +219,7 @@ const useProducts = (methods) => {
     handleSubmit,
     reset,
     errors,
-    control
+    control, createProduct
   };
 };
 

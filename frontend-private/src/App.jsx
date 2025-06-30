@@ -1,6 +1,6 @@
 import './App.css'
 
-import Login from "./pages/Login/PageLogin";
+import Login from "./pages/Login/logic/PageLogin";
 import Sidebar from './global/components/Sidebar'
 import Home from "./pages/PageHome/Home"
 import Products from './pages/PageProducts/PageProducts';
@@ -19,7 +19,8 @@ function App() {
 
   return (
     <>
-      <Router>
+       {/*<Login/>*/}
+     <Router>
         <Sidebar />
         <main className='ml-64'>
           <Routes>
