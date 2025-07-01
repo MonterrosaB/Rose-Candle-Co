@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import Isotipo from "../../assets/Isotipo.svg";
 import Menu from "./Menu";
-import { Link } from "react-router-dom"; // Corregido: react-router-dom
+import { Link } from "react-router-dom";
 import { ChevronDown, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useAuth } from "../../global/hooks/useAuth.js"; // para cerrar sesión
+
 const Sidebar = () => {
   const [openDropdown, setOpenDropDown] = useState(false);
+  const { logout } = useAuth(); // funcion del logout
 
   return (
     <aside className="fixed top-0 left-0 w-60 h-screen bg-white shadow-xl z-50 transition-transform -translate-x-full sm:translate-x-0 flex flex-col justify-between">
@@ -90,7 +93,10 @@ const Sidebar = () => {
 
       {/* Logout */}
       <div className="text-base text-[#333] px-4 py-4">
-        <button className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300">
+        <button
+          onClick={logout}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300 cursor-pointer"
+        >
           <LogOut size={18} />
           Log Out
         </button>

@@ -7,7 +7,7 @@ const FormButton = ({ title, onClick, disabled }) => {
       <button
         onClick={onClick}
         disabled={disabled}
-        type="button"
+        type="submit"
         className="w-32 py-2 px-4 mt-5 border border-[#C2A878] rounded-lg text-[#C2A878] font-medium cursor-pointer transition duration-200 hover:bg-[#C2A878] hover:text-[#F7F5EE]"
       >
         {title}

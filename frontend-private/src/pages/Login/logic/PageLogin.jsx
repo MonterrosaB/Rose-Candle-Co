@@ -1,24 +1,50 @@
-// Se importan librerias
-import React, { useEffect, useState } from "react";
+// Lógica para la página del Login
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import Star from "../../../assets/star.svg?react"; // circulos del fondo
-import AnimatedLine from "../../../global/components/AnimatedLine.jsx"; // linea animada
-//import AnimatedStar from '../../global/components/AnimatedStar.jsx'; // estrella/circulo animada
-import { FaUserCircle } from "react-icons/fa"; // icono de usuario (Libreria react-icons)
-import FormInput from "../components/FormInput.jsx"; // componente del input para el formulario
-import Button from "../components/Button.jsx"; // Botón
+import Star from "../../../assets/star.svg?react";
+import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
+import { FaUserCircle } from "react-icons/fa";
+import FormInput from "../components/FormInput.jsx";
+import Button from "../components/Button.jsx";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const { login } = useAuth(); // login del authContext
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  // Función para manejar el login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // Validaciones
+    if (email.trim() === "" || password.trim() === "") {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+    // Ejecutar login desde el contexto
+    const success = await login(email, password);
+
+    if (success) {
+      toast.success("Inicio de sesión exitoso");
+      navigate("/home"); // Navegar al home después del login
+    }
+  };
+
   return (
     <div className="relative overflow-hidden flex items-center justify-center h-screen bg-[#F0ECE6]">
-      {/* Elementos del fondo*/}
-      {/* Degradado superior*/}
+      {/* Fondo */}
       <div
         style={{
           width: "130%",
           height: "120%",
           borderRadius: "50%",
-          background: "radial-gradient(circle,rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%)",
+          background:
+            "radial-gradient(circle,rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%)",
           position: "fixed",
           top: "-50%",
           left: "50%",
@@ -28,7 +54,6 @@ const Login = () => {
         }}
       ></div>
 
-      {/* Linea animada */}
       <AnimatedLine />
 
       {/* Círculo superior derecho */}
@@ -41,9 +66,11 @@ const Login = () => {
         <Star />
       </div>
 
-      {/* Formulario para ingresar */}
-      <div className="z-10 p-8 rounded-xl shadow-md w-full max-w-lg bg-[#F7F5EE]">
-
+      {/* Formulario */}
+      <form
+        onSubmit={handleLogin}
+        className="z-10 p-8 rounded-xl shadow-md w-full max-w-lg bg-[#F7F5EE]"
+      >
         {/* Icono de usuario */}
         <div className="flex justify-center">
           <FaUserCircle color="#7D7954" size={120} />
@@ -51,22 +78,29 @@ const Login = () => {
 
         <br />
 
+        {/* Campo de usuario */}
         <FormInput
           id="username"
           label="Usuario"
           placeholder="Nombre de usuario"
           type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
+        {/* Campo de contraseña */}
         <FormInput
           id="password"
           label="Contraseña"
           placeholder="********"
           type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <Button title="Continuar" />
-      </div>
+        {/* Botón para continuar */}
+        <Button title="Continuar" type="submit" />
+      </form>
     </div>
   );
 };
