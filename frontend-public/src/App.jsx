@@ -6,9 +6,10 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import Nav from "./global/components/Nav.jsx"; // Menú de navegación
-import Footer from "./global/components/Footer.jsx"; // Footer
-import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; // Banner superior
+// Componentes
+import Nav from "./global/components/Nav.jsx"; 
+import Footer from "./global/components/Footer.jsx"; 
+import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; 
 
 // Páginas
 import Home from "../src/pages/Home.jsx";
@@ -20,7 +21,6 @@ import Profile from "../src/pages/Profile/Profile.jsx";
 import Cart from "../src/pages/shoppingCard/ShoppingCard.jsx";
 import LoginCustomer from "../src/pages/LoginCustomer/LoginCustomer.jsx";
 
-import { AuthProvider } from "./global/context/AuthContext.jsx";
 // Layout con lógica para el banner y la navegación
 function Layout() {
   const location = useLocation();
@@ -29,10 +29,10 @@ function Layout() {
   );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {showMarquee && <MarqueeBanner />}
       <Nav topClass={showMarquee ? "top-10" : "top-0"} />
-      <div className="pt-20">
+      <div className="pt-20"> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/loginCustomer" element={<LoginCustomer />} />
@@ -44,12 +44,12 @@ function Layout() {
           <Route path="/cart" element={<Cart />} />
         </Routes>
       </div>
+
       <Footer />
-    </>
+    </div>
   );
 }
 
-// Envolvemos el Layout en el Router
 function App() {
   return (
     <Router>
