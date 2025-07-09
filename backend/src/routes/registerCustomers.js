@@ -3,7 +3,7 @@ import registerCustomersController from "../controllers/registerCustomersControl
 
 const router = express.Router()
 
-router.route("/").post(registerCustomersController.registerClients)
+router.route("/").post(registerCustomersController.registerCustomers)
 //router.route("/verifyEmailCode").post(registerCustomersController.verifyEmailCode)
 
 export default router
