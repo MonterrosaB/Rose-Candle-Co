@@ -11,7 +11,7 @@ const Question = ({ Icon, question, answer }) => {
       >
         {/* Icono de pregunta */}
         <div className="flex items-center justify-center w-10 h-10 rounded-lg border-2 border-black text-black">
-          {Icon && <Icon size={30} />}
+          {Icon && <Icon size={25} />}
         </div>
 
         {/* Pregunta */}

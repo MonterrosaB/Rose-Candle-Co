@@ -1,9 +1,10 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
-import Nav from "./global/components/Nav.jsx"; // Menú de navegación
-import Footer from "./global/components/Footer.jsx"; // Footer
-import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; // Banner superior
+// Componentes
+import Nav from "./global/components/Nav.jsx"; 
+import Footer from "./global/components/Footer.jsx"; 
+import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; 
 
 // Páginas
 import Home from "../src/pages/Home.jsx";
@@ -14,16 +15,17 @@ import ProductDetail from "../src/pages/Products/ProductDetail.jsx";
 import Profile from "../src/pages/Profile/Profile.jsx";
 import Cart from "../src/pages/shoppingCard/ShoppingCard.jsx";
 
-// Layout con lógica para el banner y la navegación
+// Layout
 function Layout() {
   const location = useLocation();
   const showMarquee = ["/", "/aboutUs", "/faqs", "/products"].includes(location.pathname);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {showMarquee && <MarqueeBanner />}
       <Nav topClass={showMarquee ? "top-10" : "top-0"} />
-      <div className="pt-20"> 
+
+      <div className="flex-grow pt-20">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/aboutUs" element={<AboutUs />} />
@@ -34,12 +36,12 @@ function Layout() {
           <Route path="/cart" element={<Cart />} />
         </Routes>
       </div>
+
       <Footer />
-    </>
+    </div>
   );
 }
 
-// Envolvemos el Layout en el Router
 function App() {
   return (
     <Router>
