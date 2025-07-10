@@ -11,7 +11,7 @@ const ProductList = () => {
       {products.map((product) => (
         <CardProduct
           key={product._id}
-          _id={product._id} // <--- ESTA LÍNEA FALTABA
+          _id={product._id} 
           name={product.name}
           description={product.description}
           images={product.images}
