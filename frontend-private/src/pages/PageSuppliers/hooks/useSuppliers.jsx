@@ -11,11 +11,12 @@ const useSuppliers = () => {
       const res = await fetch(ApiSuppliers);
       if (!res.ok) throw new Error("Error al obtener proveedores");
       const data = await res.json();
-      // Formateamos para dropdown
-      const formatted = data.map(s => ({
-        _id: s._id,
-        label: s.name,
-      }));
+     
+     const formatted = data.map(s => ({
+     _id: s._id,
+     name: s.name,
+     label: s.name,
+    }));
       setSuppliers(formatted);
     } catch (error) {
       console.error(error);

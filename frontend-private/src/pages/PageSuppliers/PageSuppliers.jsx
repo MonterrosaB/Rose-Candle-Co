@@ -10,20 +10,19 @@ const PageSuppliers = () => {
   const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
+  // ✅ Solo se crea UNA VEZ
   const methods = useForm({
-    defaultValues: selectedSupplier || {},
+    defaultValues: { name: "", contact: "" },
   });
+
+  const { reset } = methods;
 
   const {
     suppliers,
-    register,
-    handleSubmit,
-    errors,
-    reset,
     createSupplier,
     updateSupplier,
     deleteSupplier,
-  } = useSuppliers(methods);
+  } = useSuppliers();
 
   useEffect(() => {
     if (selectedSupplier) {
@@ -34,12 +33,12 @@ const PageSuppliers = () => {
   }, [selectedSupplier, reset]);
 
   const handleAdd = () => {
-    setSelectedSupplier(null); // Form vacío
+    setSelectedSupplier(null);
     setOpenDialogSuppliers(true);
   };
 
   const handleEdit = (supplier) => {
-    setSelectedSupplier(supplier); // Form con datos
+    setSelectedSupplier(supplier);
     setOpenDialogSuppliers(true);
   };
 
@@ -84,6 +83,7 @@ const PageSuppliers = () => {
         >
           <RegisterSuppliers
             defaultValues={selectedSupplier}
+            methods={methods} // ✅ pasa el form completo
             onClose={() => setOpenDialogSuppliers(false)}
             onSubmit={onSubmit}
           />

@@ -1,4 +1,4 @@
-// RegisterSuppliers.jsx
+// ✅ RegisterSuppliers.jsx
 import { useEffect } from "react";
 import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
@@ -7,14 +7,14 @@ import InputsInline from "../../../global/components/InputsInline";
 
 import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
-import { useForm } from "react-hook-form";
 
-const RegisterSuppliers = ({ onClose, defaultValues, onSubmit }) => {
-  const methods = useForm({
-    defaultValues: defaultValues || {},
-  });
-
-  const { register, handleSubmit, formState: { errors }, reset } = methods;
+const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = methods;
 
   useEffect(() => {
     if (defaultValues) {

@@ -18,10 +18,13 @@ const useCategories = (methods) => {
       const res = await fetch(ApiCategories);
       if (!res.ok) throw new Error("Error al obtener categorías");
       const data = await res.json();
-      const formatted = data.map(s => ({
-        _id: s._id,
-        label: s.name,
-      }));
+
+         const formatted = data.map(s => ({
+     _id: s._id,
+     name: s.name,
+     label: s.name,
+    }));
+
       setCategories(formatted);
     } catch (error) {
       console.error(error);
