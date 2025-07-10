@@ -138,10 +138,13 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [API_URL]);
 
+  const isAuthenticated = !!authCokie;
+
   // Valor global del contexto
   const contextValue = {
     user,
     authCokie,
+    isAuthenticated,  // ← ¡Esta línea es clave!
     loading,
     login,
     logout,
