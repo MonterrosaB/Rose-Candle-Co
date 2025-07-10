@@ -62,6 +62,9 @@ loginController.login = async (req, res) => {
         res.status(200).json({ message: "Login succesful" }); // todo bien
       }
     );
+
+    
+    
   } catch (error) {
     console.log("error " + error);
   }

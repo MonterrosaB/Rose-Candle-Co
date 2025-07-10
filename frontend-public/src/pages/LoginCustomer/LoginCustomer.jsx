@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Star from "../../../assets/star.svg?react";
-import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
+import Star from "../../assets/star.svg?react";
+import AnimatedLine from "../../global/components/AnimatedLine.jsx";
 import { FaUserCircle } from "react-icons/fa";
-import FormInput from "../components/FormInput.jsx";
-import Button from "../components/Button.jsx";
-import { useAuth } from "../../../global/hooks/useAuth.js";
+import FormInput from "./components/FormInput.jsx";
+import Button from "./components/Button.jsx";
+import { useAuth } from "../../global/hooks/useAuth.js";
 import toast from "react-hot-toast";
 
 const Login = () => {
@@ -31,7 +31,7 @@ const Login = () => {
 
     if (success) {
       toast.success("Inicio de sesión exitoso");
-      navigate("/home"); // Navegar al home después del login
+      navigate("/"); // Navegar al home después del login
     }
   };
 

@@ -1,9 +1,15 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
-import Nav from "./global/components/Nav.jsx"; // Menú de navegación
-import Footer from "./global/components/Footer.jsx"; // Footer
-import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; // Banner superior
+// Componentes
+import Nav from "./global/components/Nav.jsx"; 
+import Footer from "./global/components/Footer.jsx"; 
+import MarqueeBanner from "./global/components/MarqueeBanner.jsx"; 
 
 // Páginas
 import Home from "../src/pages/Home.jsx";
@@ -13,19 +19,23 @@ import Products from "../src/pages/Products/Products.jsx";
 import ProductDetail from "../src/pages/Products/ProductDetail.jsx";
 import Profile from "../src/pages/Profile/Profile.jsx";
 import Cart from "../src/pages/shoppingCard/ShoppingCard.jsx";
+import LoginCustomer from "../src/pages/LoginCustomer/LoginCustomer.jsx";
 
 // Layout con lógica para el banner y la navegación
 function Layout() {
   const location = useLocation();
-  const showMarquee = ["/", "/aboutUs", "/faqs", "/products"].includes(location.pathname);
+  const showMarquee = ["/", "/aboutUs", "/faqs", "/products"].includes(
+    location.pathname
+  );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {showMarquee && <MarqueeBanner />}
       <Nav topClass={showMarquee ? "top-10" : "top-0"} />
       <div className="pt-20"> 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/loginCustomer" element={<LoginCustomer />} />
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/faqs" element={<Faqs />} />
           <Route path="/products" element={<Products />} />
@@ -34,16 +44,18 @@ function Layout() {
           <Route path="/cart" element={<Cart />} />
         </Routes>
       </div>
+
       <Footer />
-    </>
+    </div>
   );
 }
 
-// Envolvemos el Layout en el Router
 function App() {
   return (
     <Router>
-      <Layout />
+      <AuthProvider>
+        <Layout />
+      </AuthProvider>
     </Router>
   );
 }

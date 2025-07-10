@@ -1,6 +1,7 @@
 // Libreria de express
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 // Routes
 import loginRoutes from "./src/routes/login.js";
@@ -19,15 +20,20 @@ import rawMaterials from "./src/routes/rawMaterial.js";
 import materialBalance from "./src/routes/materialBalance.js";
 import productionCostHistoryRoutes from "./src/routes/productionCostHistory.js";
 
+import registerCustomersRoutes from "./src/routes/registerCustomers.js";
+
 // Constante para la libreria de express
 const app = express();
 
 // Que acepte datos json
 app.use(express.json());
 
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://localhost:5174"], // frontend
+    credentials: true // permitir cookies
   })
 );
 
@@ -48,5 +54,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/productionCostHistory", productionCostHistoryRoutes);
 app.use("/api/login", loginRoutes);
 
+
+app.use("/api/registerCustomer", registerCustomersRoutes);
 // Exportar
 export default app;

@@ -15,4 +15,4 @@ const rawMaterialCategoriesSchema = new Schema({
 });
 
 // Exporto
-export default model("rawMaterialCategories", rawMaterialCategoriesSchema)  
+export default model("RawMaterialCategories", rawMaterialCategoriesSchema)  

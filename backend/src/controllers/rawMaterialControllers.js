@@ -5,8 +5,8 @@ const rawMaterialsControllers = {};
 rawMaterialsControllers.getrawMaterial = async (req, res) => {
   try {
     const rawMaterial = await rawMaterialModel.find()
-      .populate("idRawMaterialCategory")
-      .populate("idSupplier");
+      .populate("idRawMaterialCategory", 'name')
+      .populate("idSupplier", 'name');
     res.status(200).json(rawMaterial);
   } catch (error) {
     console.error("error", error);

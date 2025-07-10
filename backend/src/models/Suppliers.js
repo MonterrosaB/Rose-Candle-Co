@@ -21,4 +21,4 @@ const suppliersSchema = new Schema({
 });
 
 // Exporto
-export default model("suppliers", suppliersSchema)
+export default model("Suppliers", suppliersSchema)

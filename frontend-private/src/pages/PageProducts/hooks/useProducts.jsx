@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const useProducts = (methods) => {
-
   const {
     register,
     handleSubmit,
@@ -10,7 +9,6 @@ const useProducts = (methods) => {
     control,
     formState: { errors },
   } = methods;
-
 
   // Api de productos
   const ApiProducts = "http://localhost:4000/api/products";
@@ -49,7 +47,6 @@ const useProducts = (methods) => {
     try {
       setLoading(true);
 
-
       const response = await fetch(ApiProducts, {
         method: "POST",
         body: formData,
@@ -76,10 +73,10 @@ const useProducts = (methods) => {
     }
   };
 
-
   // Obtener datos
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await fetch(ApiProducts);
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -102,7 +99,6 @@ const useProducts = (methods) => {
     try {
       const response = await fetch(`${ApiProducts}/${id}`, {
         method: "DELETE",
-        body: JSON.stringify(deleteProduct),
       });
 
       if (!response.ok) {
@@ -115,10 +111,11 @@ const useProducts = (methods) => {
       fetchData();
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast.error("Error al eliminar el producto");
     }
   };
 
-  const updateProduct = async (dataProduct) => {
+  const updateProduct = (dataProduct) => {
     setId(dataProduct._id);
     setName(dataProduct.name);
     setDescription(dataProduct.description);
@@ -138,6 +135,8 @@ const useProducts = (methods) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const updatedProduct = {
         name,
         description,
@@ -171,7 +170,7 @@ const useProducts = (methods) => {
     } catch (error) {
       setError(error.message);
       alert("Error al actualizar el producto");
-      console.error("Error:", errorProduct);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -213,12 +212,12 @@ const useProducts = (methods) => {
     deleteProduct,
     updateProduct,
     handleUpdate,
-    //RHF
+    // RHF
     register,
-    handleSubmit,
     reset,
     errors,
-    control, createProduct
+    control,
+    createProduct,
   };
 };
 

@@ -1,63 +1,96 @@
-import { useState } from "react";
-import PrincipalDiv from "../../global/components/PrincipalDiv"
+import { useState, useEffect } from "react";
+import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import Dialog from "../../global/components/Dialog";
-import RegisterSuppliers from "./components/RegisterSuppliers"
-const PageSupplies = () => {
+import RegisterSuppliers from "./components/RegisterSuppliers";
+import { useForm } from "react-hook-form";
+import useSuppliers from "./hooks/useSuppliers";
 
-    const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false)
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
+const PageSuppliers = () => {
+  const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
 
+  // ✅ Solo se crea UNA VEZ
+  const methods = useForm({
+    defaultValues: { name: "", contact: "" },
+  });
 
-    const handleAdd = () => {
-        setSelectedSupplier(null); // Form vacío
-        setOpenDialogSuppliers(true);
-    };
+  const { reset } = methods;
 
-    const handleUpdate = (employee) => {
-        setSelectedSupplier(employee); // Cargar datos del empleado
-        setOpenDialogSuppliers(true);
-    };
+  const {
+    suppliers,
+    createSupplier,
+    updateSupplier,
+    deleteSupplier,
+  } = useSuppliers();
 
-    const columns = {
-        Nombre: "contact",
-        Contacto: "contact",
-    };
+  useEffect(() => {
+    if (selectedSupplier) {
+      reset(selectedSupplier);
+    } else {
+      reset({ name: "", contact: "" });
+    }
+  }, [selectedSupplier, reset]);
 
-    const rows = [
-        {
-            _id: "122",
-            name: "González",
-            contact: "75950101",
-        },
-        {
-            _id: "123",
-            name: "González",
-            contact: "7789652",
-        },
-    ];
+  const handleAdd = () => {
+    setSelectedSupplier(null);
+    setOpenDialogSuppliers(true);
+  };
 
-    return (
-        <PrincipalDiv>
-            <DataGrid
-                title={"Proveedores"}
-                columns={columns}
-                rows={rows}
-                primaryBtnText={"Agregar Proveedores"}
-                onClickPrimaryBtn={handleAdd}
-                updateRow={handleUpdate} // <-- Lo importante: pasar handleEdit
-            />
-            {openDialogSuppliers && (<Dialog
-                open={openDialogSuppliers}
-                onClose={() => setOpenDialogSuppliers(false)}
+  const handleEdit = (supplier) => {
+    setSelectedSupplier(supplier);
+    setOpenDialogSuppliers(true);
+  };
 
-            >
-                <RegisterSuppliers
-                    defaultValues={selectedSupplier} // Aquí enviamos los datos al form
-                    onClose={() => setOpenDialogSuppliers(false)}
-                />
-            </Dialog>)}
-        </PrincipalDiv>
-    )
-}
-export default PageSupplies;
+  const handleDelete = async (supplier) => {
+    if (confirm(`¿Eliminar proveedor "${supplier.name}"?`)) {
+      await deleteSupplier(supplier._id);
+    }
+  };
+
+  const onSubmit = async (data) => {
+    if (selectedSupplier) {
+      await updateSupplier(selectedSupplier._id, data);
+    } else {
+      await createSupplier(data);
+    }
+    setOpenDialogSuppliers(false);
+  };
+
+  const columns = {
+    Nombre: "name",
+    Contacto: "contact",
+  };
+
+  const rows = suppliers;
+
+  return (
+    <PrincipalDiv>
+      <DataGrid
+        title={"Proveedores"}
+        columns={columns}
+        rows={rows}
+        primaryBtnText={"Agregar Proveedor"}
+        onClickPrimaryBtn={handleAdd}
+        updateRow={handleEdit}
+        deleteRow={handleDelete}
+      />
+
+      {openDialogSuppliers && (
+        <Dialog
+          open={openDialogSuppliers}
+          onClose={() => setOpenDialogSuppliers(false)}
+        >
+          <RegisterSuppliers
+            defaultValues={selectedSupplier}
+            methods={methods} // ✅ pasa el form completo
+            onClose={() => setOpenDialogSuppliers(false)}
+            onSubmit={onSubmit}
+          />
+        </Dialog>
+      )}
+    </PrincipalDiv>
+  );
+};
+
+export default PageSuppliers;

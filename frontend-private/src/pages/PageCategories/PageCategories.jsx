@@ -8,86 +8,91 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 const PageCategories = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-    const [openDialogCategories, setOpenDialogCategories] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState(null);
+  const methods = useForm({
+    defaultValues: selectedCategory || {},
+  });
 
-    const methods = useForm({
-        defaultValues: selectedCategories || {},
-    });
+  const {
+    register,
+    handleSubmit,
+    errors,
+    reset,
+    categories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+  } = useCategories(methods);
 
-    const { register, handleSubmit, errors, reset } = useCategories(methods);
+  useEffect(() => {
+    if (selectedCategory) {
+      reset(selectedCategory);
+    } else {
+      reset({ name: "" });
+    }
+  }, [selectedCategory, reset]);
 
-    useEffect(() => {
-        if (selectedCategories) {
-            reset(selectedCategories);
-        } else {
-            reset({ name: "" }); // limpiar al agregar
-        }
-    }, [selectedCategories, reset]);
+  const columns = {
+    Nombre: "name",
+  };
 
-    const columns = {
-        Categorías: "name",
-    };
+  const rows = categories;
 
-    const rows = [
-        {
-            _id: '684c50e8aba6ea57507d5363',
-            name: 'Vela',
-            createdAt: '2025-06-13T16:25:12.561+00:00',
-            updatedAt: '2025-06-13T16:25:12.561+00:00',
-            __v: 0
-        },
-        {
-            _id: '684c50e8aba6ea57507d5364',
-            name: 'Incienso',
-            createdAt: '2025-06-13T16:30:00.000+00:00',
-            updatedAt: '2025-06-13T16:30:00.000+00:00',
-            __v: 0
-        }
-    ];
+  const handleAdd = () => {
+    setSelectedCategory(null);
+    setOpenDialog(true);
+  };
 
-    const handleAdd = () => {
-        setSelectedCategories(null); // Form vacío (agregar)
-        setOpenDialogCategories(true);
-    };
+  const handleEdit = (category) => {
+    setSelectedCategory(category);
+    setOpenDialog(true);
+  };
 
-    const handleEdit = (categorie) => {
-        setSelectedCategories(categorie); // Form con datos (editar)
-        setOpenDialogCategories(true);
-    };
+  const handleDelete = async (category) => {
+    if (confirm(`¿Eliminar la categoría "${category.name}"?`)) {
+      await deleteCategory(category._id);
+    }
+  };
 
-    const onSubmit = (data) => {
-        console.log("Categoría enviada:", data);
-        setOpenDialogCategories(false);
-    };
+  const onSubmit = async (data) => {
+    if (selectedCategory) {
+      await updateCategory(selectedCategory._id, data);
+    } else {
+      await createCategory(data);
+    }
+    setOpenDialog(false);
+  };
 
-    return (
-        <PrincipalDiv>
-            <DataGrid
-                title={"Categorías"}
-                columns={columns}
-                rows={rows}
-                primaryBtnText={"Agregar Categoría"}
-                onClickPrimaryBtn={handleAdd}
-                updateRow={handleEdit}
-            />
-            {openDialogCategories && (
-                <Dialog open={openDialogCategories} onClose={() => setOpenDialogCategories(false)}>
-                    <FormOneInput
-                        headerLabel={selectedCategories ? "Editar Categoría" : "Agregar Categoría"}
-                        onSubmit={handleSubmit(onSubmit)}
-                        onClose={() => setOpenDialogCategories(false)}
-                        name={"name"}
-                        label={"Categoría"}
-                        register={register}
-                        error={errors.name?.message}
-                        btnTxt={selectedCategories ? "Guardar Cambios" : "Agregar Categoría"}
-                    />
-                </Dialog>
-            )}
-        </PrincipalDiv>
-    );
+  return (
+    <PrincipalDiv>
+      <DataGrid
+        title={"Categorías"}
+        columns={columns}
+        rows={rows}
+        primaryBtnText={"Agregar Categoría"}
+        onClickPrimaryBtn={handleAdd}
+        updateRow={handleEdit}
+        deleteRow={handleDelete} // Si tu DataGrid soporta borrar
+      />
+
+      {openDialog && (
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <FormOneInput
+            headerLabel={selectedCategory ? "Editar Categoría" : "Agregar Categoría"}
+            onSubmit={handleSubmit(onSubmit)}
+            name={"name"}
+            label={"Nombre de Categoría"}
+            register={register}
+            onClose={() => setOpenDialog(false)}
+            error={errors.name?.message}
+            btnTxt={selectedCategory ? "Guardar Cambios" : "Agregar Categoría"}
+          />
+        </Dialog>
+      )}
+    </PrincipalDiv>
+  );
 };
 
 export default PageCategories;
