@@ -35,9 +35,8 @@ productsController.getProductById = async (req, res) => {
 
 // POST
 productsController.createProduct = async (req, res) => {
-  console.log(req.body); // Verifica qué contiene req.body
+  console.log(req.body);
 
-  // Obtener datos
   let {
     name,
     description,
@@ -45,7 +44,7 @@ productsController.createProduct = async (req, res) => {
     recipe,
     availability,
     useForm,
-    currentPrice,
+    variant,
     idProductCategory,
   } = req.body;
 
@@ -63,11 +62,12 @@ productsController.createProduct = async (req, res) => {
   }
 
   try {
-    // Si los campos vienen como string JSON (form-data), los parseamos
+    // Parsear campos
     if (typeof components === "string") components = JSON.parse(components);
     if (typeof recipe === "string") recipe = JSON.parse(recipe);
     if (typeof useForm === "string") useForm = JSON.parse(useForm);
-    if (typeof currentPrice === "string") currentPrice = parseFloat(currentPrice);
+    if (typeof variant === "string") variant = JSON.parse(variant);
+    availability = availability === "true";
 
     // Validaciones
     if (
@@ -78,25 +78,17 @@ productsController.createProduct = async (req, res) => {
       !recipe || recipe.length < 1 ||
       availability === undefined ||
       !useForm || useForm.length < 1 ||
-      !currentPrice ||
+      !variant || variant.length < 1 ||
       !idProductCategory
     ) {
       return res.status(400).json({ message: "Please complete all the fields" });
     }
 
-    if (name.length < 3 || name.length > 70) {
-      return res.status(400).json({ message: "Invalid name length" });
+    if (imagesURL.length > 8) {
+      return res.status(400).json({ message: "Max 8 images allowed" });
     }
 
-    if (description.length < 5) {
-      return res.status(400).json({ message: "Description too short" });
-    }
-
-    if (imagesURL.length > 4) {
-      return res.status(400).json({ message: "Max 4 images allowed" });
-    }
-
-    // Crear nuevo producto
+    // Crear producto
     const newProduct = new productsModel({
       name,
       description,
@@ -105,17 +97,19 @@ productsController.createProduct = async (req, res) => {
       recipe,
       availability,
       useForm,
-      currentPrice,
+      variant,
       idProductCategory,
     });
 
     await newProduct.save();
     res.status(200).json({ message: "Saved successfully" });
+
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json("Internal server error");
   }
 };
+
 
 
 // DELETE

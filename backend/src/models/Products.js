@@ -48,6 +48,26 @@ const recipeSchema = new Schema(
   { _id: false }
 );
 
+const variantSchema = new Schema(
+  {
+    variant: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 200,
+      
+    },
+    variantPrice: {
+    type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 200,
+    },
+  },
+  { _id: false }
+);
+
+
 // Subesquema: Uso
 const useFormSchema = new Schema(
   {
@@ -113,6 +133,14 @@ const productsSchema = new Schema(
         message: "Debes proporcionar entre 1 y 100 pasos de receta",
       },
     },
+    variant: {
+      type: [variantSchema],
+      required: true,
+      validate: {
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
+        message: "Debes proporcionar entre 1 y 10 variantes del producto",
+      },
+    },
     availability: {
       type: Boolean,
       required: true,
@@ -124,16 +152,6 @@ const productsSchema = new Schema(
         validator: (arr) => arr.length >= 1 && arr.length <= 100,
         message: "Debes proporcionar entre 1 y 100 instrucciones de uso",
       },
-    },
-    currentPrice: {
-      type: Number,
-      required: true,
-      min: 0.1,
-      max: 1000,
-      match: [
-        /^\d+(\.\d{1,2})?$/,
-        "El precio actual debe ser un número válido, con hasta dos decimales",
-      ],
     },
     idProductCategory: {
       type: Schema.Types.ObjectId,

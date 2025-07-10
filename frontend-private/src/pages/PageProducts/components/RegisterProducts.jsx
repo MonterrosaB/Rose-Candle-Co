@@ -100,9 +100,9 @@ const RegisterProducts = ({ onClose }) => {
     formData.append("description", data.description);
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
-    formData.append("currentPrice", 12.5);
-    formData.append("idProductCategory", data.category);
-    formData.append("idCollection", data.collection);
+    formData.append("variant", JSON.stringify(data.variantes));
+    formData.append("idProductCategory", data.idProductCategory);
+    //formData.append("idCollection", data.collection);
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -197,7 +197,7 @@ const RegisterProducts = ({ onClose }) => {
 
         <div className="flex justify-center items-center gap-4 w-full">
           <Dropdown
-            name={"category"}
+            name={"idProductCategory"}
             options={opcionesCategorias}
             label={"Categoría"}
             register={register}
@@ -255,8 +255,8 @@ const RegisterProducts = ({ onClose }) => {
                 key={input.id}
                 placeholder1="Nombre Variante"
                 placeholder2="Precio Variante"
-                name1={`variantes.${index}.variants`}
-                name2={`variantes.${index}.price`}
+                name1={`variantes.${index}.variant`}
+                name2={`variantes.${index}.variantPrice`}
                 register={register}
                 error1={errors?.variantes?.[index]?.variants?.message}
                 error2={errors?.variantes?.[index]?.price?.message}
