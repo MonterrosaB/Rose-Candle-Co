@@ -209,7 +209,6 @@ const useProducts = (methods) => {
     products,
     setProducts,
     cleanData,
-    handleSubmit,
     fetchData,
     deleteProduct,
     updateProduct,

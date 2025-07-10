@@ -4,7 +4,17 @@ import Button from "./Button";
 
 
 
-const DataGrid = ({ title, columns, rows, deleteRow, updateRow, loading, primaryBtnText, secondaryBtnText, onClickPrimaryBtn, onClickSecondaryBtn }) => {
+const DataGrid = ({ title,
+    columns,
+    rows,
+    deleteRow,
+    updateRow,
+    loading,
+    primaryBtnText,
+    secondaryBtnText,
+    onClickPrimaryBtn,
+    onClickSecondaryBtn,
+    editable = true }) => {
     //Obtenes los valores anidados
     //ejemplo: product.idCategory.name
     const getNestedValue = (obj, path) => {
@@ -38,12 +48,15 @@ const DataGrid = ({ title, columns, rows, deleteRow, updateRow, loading, primary
                             onClick={onClickSecondaryBtn}
                         />
                     )}
-                    <Button
-                        buttonText={primaryBtnText}
-                        showIcon={true}
-                        type={"button"}
-                        onClick={onClickPrimaryBtn}
-                    />
+                    {primaryBtnText && (
+                        <Button
+                            buttonText={primaryBtnText}
+                            showIcon={true}
+                            type={"button"}
+                            onClick={onClickPrimaryBtn}
+                        />
+                    )}
+
 
 
                 </div>
@@ -57,14 +70,14 @@ const DataGrid = ({ title, columns, rows, deleteRow, updateRow, loading, primary
                         {Object.keys(columns).map((columnName) => (
                             <th key={columnName} className="px-4 py-2">{columnName}</th>
                         ))}
-                        <th className="px-6 py-3">Acciones</th>
+                        {editable && <th className="px-6 py-3">Acciones</th>}
                     </tr>
                 </thead>
 
                 <tbody>
                     {loading ? (
                         <tr>
-                            <td colSpan={Object.keys(columns).length + 1} className="text-center py-4">
+                            <td colSpan={Object.keys(columns).length + (editable ? 1 : 0)} className="text-center py-4">
                                 Cargando...
                             </td>
                         </tr>
@@ -76,18 +89,14 @@ const DataGrid = ({ title, columns, rows, deleteRow, updateRow, loading, primary
                                         {getNestedValue(row, columnKey)}
                                     </td>
                                 ))}
-                                <td className="px-6 py-4">
-                                    <div className="flex justify-center items-center gap-4">
-                                        <Trash
-                                            onClick={() => deleteRow(row._id)}
-                                            className="cursor-pointer"
-                                        />
-                                        <Pencil
-                                            onClick={() => updateRow(row)}
-                                            className="cursor-pointer"
-                                        />
-                                    </div>
-                                </td>
+                                {editable && (
+                                    <td className="px-6 py-4">
+                                        <div className="flex justify-center items-center gap-4">
+                                            <Trash onClick={() => deleteRow(row._id)} className="cursor-pointer" />
+                                            <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))
                     )}

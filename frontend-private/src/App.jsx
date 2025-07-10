@@ -12,6 +12,7 @@ import Collections from './pages/PageCollections/PageCollections';
 import Categories from './pages/PageCategories/PageCategories';
 import Suppliers from './pages/PageSuppliers/PageSuppliers';
 import CategoriesMateria from './pages/PageCategoriesMateria/PageCategoriesMateria';
+import Reports from './pages/PagerReports/PageRepots';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
@@ -19,8 +20,8 @@ function App() {
 
   return (
     <>
-       {/*<Login/>*/}
-     <Router>
+      {/*<Login/>*/}
+      <Router>
         <Sidebar />
         <main className='ml-64'>
           <Routes>
@@ -29,6 +30,7 @@ function App() {
             <Route path='/products' element={<Products />} />
             <Route path='/order' element={<Orders />} />
             <Route path='/employees' element={<Employees />} />
+            <Route path='/reports' element={<Reports />} />
 
             <Route path='/others' element={<Others />} />
             <Route path='/others/colections' element={<Collections />} />

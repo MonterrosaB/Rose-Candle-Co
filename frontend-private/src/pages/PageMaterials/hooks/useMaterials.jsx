@@ -1,4 +1,4 @@
-const useOrders = (methods) => {
+const useMaterials = (methods) => {
 
     const {
         register,
@@ -8,7 +8,7 @@ const useOrders = (methods) => {
     } = methods;
 
     return {
-        register, handleSubmit, errors
+        register, handleSubmit, errors, reset
     }
 }
-export default useOrders;
+export default useMaterials;
