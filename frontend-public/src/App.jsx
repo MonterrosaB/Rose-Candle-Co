@@ -21,6 +21,10 @@ import Profile from "../src/pages/Profile/Profile.jsx";
 import Cart from "../src/pages/shoppingCard/ShoppingCard.jsx";
 import LoginCustomer from "../src/pages/LoginCustomer/LoginCustomer.jsx";
 
+// Auth
+import { AuthProvider } from "./global/context/AuthContext.jsx";
+import ProtectedRoutes from "../src/pages/LoginCustomer/ProtectedRoute.jsx";
+
 // Layout con lógica para el banner y la navegación
 function Layout() {
   const location = useLocation();
@@ -41,7 +45,14 @@ function Layout() {
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoutes>
+                <Cart />
+              </ProtectedRoutes>
+            }
+          />
         </Routes>
       </div>
 
@@ -59,5 +70,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

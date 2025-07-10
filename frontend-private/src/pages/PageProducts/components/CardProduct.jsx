@@ -1,45 +1,69 @@
 // Card personalizada para mostrar la información del producto
 
+//const CardProduct = ({
+ //   image,
+   // name,
+    //price,
+ //   cost,
+ //   size,
+   // category,
+    //lastUpdated,
+    //activo 
+
+import { Link } from "react-router-dom";
+
 const CardProduct = ({
-    image,
+    _id,
+    images,
     name,
     price,
     cost,
     size,
     category,
     lastUpdated,
-    activo // campo booleano
-}) => {
+    activo, // booleano
+  }) => {
     return (
-        <div className="bg-[#F0ECE6] shadow-md rounded-2xl p-4 w-full max-w-sm text-[#333] space-y-3">
-            <div className="flex gap-4 items-center">
-                <div className="w-1/2">
-                    <img
-                        src={image}
-                        alt={`Imagen de ${name}`}
-                        className="w-full h-32 object-cover rounded-sm"
-                    />
-                    <div
-                        className={`text-white text-xs text-center px-2 py-1 rounded mt-2
-                            ${activo ? "bg-green-900" : "bg-gray-400"}
-                        `}
-                    >
-                        {size}
-                    </div>
-                </div>
-                <div className="w-1/2 space-y-1">
-                    <h2 className="font-serif text-xl font-semibold">{name}</h2>
-                    <p className="text-lg font-medium">{price}</p>
-                    <p className="text-sm text-gray-600">Costo: {cost}</p>
-                </div>
-            </div>
-
-            <div className="flex justify-around text-sm text-gray-700 px-1">
-                <span>{category}</span>
-                <span>Últ: {lastUpdated}</span>
-            </div>
+        <Link
+        to={`/product/${_id}`}
+        className="block w-full max-w-xs mx-auto transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1"
+      >
+      <div className="block w-full max-w-xs mx-auto transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1">
+        <div className="aspect-[4/5] bg-gray-50 rounded-xl overflow-hidden">
+          <img
+            src={images}
+            alt={`Imagen de ${name}`}
+            className="w-full h-full object-cover"
+          />
         </div>
+  
+        <div className="space-y-3 mt-4 text-gray-900">
+          <h3 className="font-bold text-lg">{name}</h3>
+  
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">
+              {size}
+            </span>
+            <span
+              className={`border rounded-full px-3 py-1 text-xs text-white ${
+                activo ? "bg-green-700" : "bg-gray-400"
+              }`}
+            >
+              {activo ? "Activo" : "Inactivo"}
+            </span>
+          </div>
+  
+          <div className="space-y-1 mt-4">
+            <p className="font-bold text-xl">{price}</p>
+            <p className="text-sm text-gray-600">Costo: {cost}</p>
+            <p className="text-sm text-gray-500">Categoría: {category}</p>
+            <p className="text-sm text-gray-500">Últ. actualización: {lastUpdated}</p>
+          </div>
+        </div>
+      </div>
+      </Link>
     );
-};
-
-export default CardProduct;
+  };
+  
+  export default CardProduct;
+  
