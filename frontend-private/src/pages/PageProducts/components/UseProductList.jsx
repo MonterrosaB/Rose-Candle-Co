@@ -12,12 +12,12 @@ const ProductList = () => {
           _id={product._id} 
           images={product.images[0]}
           name={product.name}
-          price={product.currentPrice}
-          cost={product.cost}
+          currentPrice={product.currentPrice}
+          cost={product.currentPrice}
           size={product.size}
           category={product.category}
-          lastUpdated={product.lastUpdated}
-          activo={product.activo}
+          timestamps={product.timestamps}
+          availability={product.availability}
         />
       ))}
     </div>

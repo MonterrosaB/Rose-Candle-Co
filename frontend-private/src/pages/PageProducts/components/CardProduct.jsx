@@ -1,69 +1,54 @@
-// Card personalizada para mostrar la información del producto
-
-//const CardProduct = ({
- //   image,
-   // name,
-    //price,
- //   cost,
- //   size,
-   // category,
-    //lastUpdated,
-    //activo 
-
 import { Link } from "react-router-dom";
 
 const CardProduct = ({
-    _id,
-    images,
-    name,
-    price,
-    cost,
-    size,
-    category,
-    lastUpdated,
-    activo, // booleano
-  }) => {
-    return (
-        <Link
-        to={`/product/${_id}`}
-        className="block w-full max-w-xs mx-auto transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1"
-      >
-      <div className="block w-full max-w-xs mx-auto transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1">
-        <div className="aspect-[4/5] bg-gray-50 rounded-xl overflow-hidden">
-          <img
-            src={images}
-            alt={`Imagen de ${name}`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-  
-        <div className="space-y-3 mt-4 text-gray-900">
-          <h3 className="font-bold text-lg">{name}</h3>
-  
-          <div className="mt-2 flex flex-wrap gap-2">
-            <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">
-              {size}
-            </span>
-            <span
-              className={`border rounded-full px-3 py-1 text-xs text-white ${
-                activo ? "bg-green-700" : "bg-gray-400"
-              }`}
-            >
-              {activo ? "Activo" : "Inactivo"}
-            </span>
-          </div>
-  
-          <div className="space-y-1 mt-4">
-            <p className="font-bold text-xl">{price}</p>
-            <p className="text-sm text-gray-600">Costo: {cost}</p>
-            <p className="text-sm text-gray-500">Categoría: {category}</p>
-            <p className="text-sm text-gray-500">Últ. actualización: {lastUpdated}</p>
-          </div>
-        </div>
+  _id,
+  images,
+  name,
+  currentPrice,
+  cost,
+  size,
+  category,
+  timestamps,
+  availability,
+}) => {
+  return (
+    <Link
+      to={`/product/${_id}`}
+      className="flex w-full max-w-sm border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-transform duration-200 hover:-translate-y-1 bg-gray-100 mx-auto" // ← más angosto
+    >
+      {/* Imagen (mitad izquierda) */}
+      <div className="w-1/2 flex flex-col items-center justify-center p-4"> {/* ← más margen */}
+        <img
+          src={images}
+          alt={`Imagen de ${name}`}
+          className="w-full h-36 object-cover rounded mb-2" // ← imagen un poco más chica y con margen abajo
+        />
+        <p className="text-sm text-gray-500 text-center">Categoría: {category}</p>
       </div>
-      </Link>
-    );
-  };
-  
-  export default CardProduct;
-  
+
+      {/* Información (mitad derecha) */}
+      <div className="w-1/2 p-4 space-y-2 text-gray-800">
+        <h3 className="text-lg font-bold text-gray-900">{name}</h3>
+        <p className="text-sm">
+          <span className="font-semibold">Precio:</span> ${currentPrice}
+        </p>
+        <p className="text-sm">
+          <span className="font-semibold">Costo:</span> ${cost}
+        </p>
+        <div className="text-xs bg-green-700 text-white px-3 py-1 rounded-full inline-block">
+          {size}
+        </div>
+        <p className="text-sm text-gray-500">Últ: {timestamps}</p>
+        <span
+          className={`text-xs px-2 py-1 rounded-full ${
+            availability ? "bg-green-600 text-white" : "bg-gray-400 text-white"
+          }`}
+        >
+          {availability ? "Activo" : "Inactivo"}
+        </span>
+      </div>
+    </Link>
+  );
+};
+
+export default CardProduct;
