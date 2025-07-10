@@ -4,12 +4,13 @@ import { useAuth } from "../hooks/useAuth.js";
 import { PrivateRoute } from "./PrivateRoute.jsx";
 
 import Login from "../../pages/Login/logic/PageLogin.jsx";
+import FirstUser from "../../pages/Login/logic/FirstUser.jsx";
 import Sidebar from "./Sidebar.jsx";
 import Home from "../../pages/PageHome/Home.jsx";
 import Products from "../../pages/PageProducts/PageProducts.jsx";
 import Materials from "../../pages/PageMaterials/PageMaterials.jsx";
 import Orders from "../../pages/PageOrders/PageOrders.jsx";
-import Employees from "../../pages/PageEmployees/PageEmployees.jsx";
+import Employees from "../../pages/PageEmployees/logic/PageEmployees.jsx";
 import Others from "../../pages/PageOthers/PageOthers.jsx";
 import Collections from "../../pages/PageCollections/PageCollections.jsx";
 import Categories from "../../pages/PageCategories/PageCategories.jsx";
@@ -26,6 +27,12 @@ function Navigation() {
 
       <main className={authCokie ? "ml-64" : ""}>
         <Routes>
+          {/* Ruta para el primer usuario */}
+          <Route
+            path="/start"
+            element={authCokie ? <Navigate to="/home" replace /> : <FirstUser />}
+          />
+
           {/* Ruta pública: solo visible si NO hay sesión */}
           <Route
             path="/login"

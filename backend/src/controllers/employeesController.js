@@ -34,7 +34,7 @@ employeesController.deleteEmployees = async (req, res) => {
 // PUT
 employeesController.updateEmployees = async (req, res) => {
     // Obtener datos
-    const { name, surnames, email, phone, dui, password, user, isActive } = req.body;
+    const { name, surnames, email, phone, dui, password, user, role, isActive } = req.body;
 
     try {
         // Validaciones
@@ -49,7 +49,7 @@ employeesController.updateEmployees = async (req, res) => {
         // Guardar datos
         employeeUpdated = await employeesModel.findByIdAndUpdate(
             req.params.id, 
-            { name, surnames, email, phone, dui, password, user, isActive},
+            { name, surnames, email, phone, dui, password, user, role, isActive},
             {new: true}
         );
 

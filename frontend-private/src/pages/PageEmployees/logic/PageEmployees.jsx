@@ -1,9 +1,9 @@
 import { useState } from "react"
 
-import RegisterEmployee from "./components/RegisterEmployee"
-import Dialog from "../../global/components/Dialog"
-import PrincipalDiv from "../../global/components/PrincipalDiv"
-import DataGrid from "../../global/components/DataGrid"
+import RegisterEmployee from "../components/RegisterEmployee"
+import Dialog from "../../../global/components/Dialog"
+import PrincipalDiv from "../../../global/components/PrincipalDiv"
+import DataGrid from "../../../global/components/DataGrid"
 
 
 const PageEmplooyes = () => {
