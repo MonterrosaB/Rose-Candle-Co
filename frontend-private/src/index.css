@@ -5,7 +5,6 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #faf7f2;
   color: #333;
 }
 @layer base {

@@ -51,6 +51,9 @@ function Navigation() {
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/Stock" element={<Stock />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/supplies" element={<Suppliers />} />
+            <Route path="/colections" element={<Collections />} />
             <Route path="/materials" element={<Materials />} />
             <Route path="/products" element={<Products />} />
             <Route path="/order" element={<Orders />} />
