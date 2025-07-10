@@ -32,6 +32,20 @@ registerCustomersController.registerCustomers = async (req, res) => {
       return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
     }
 
+    // Validar formato de teléfono
+    const phoneRegex = /^\d{4}-\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: "Formato de teléfono inválido (####-####)" });
+    }
+    
+     // Validar contraseña
+     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+     if (!passwordRegex.test(password)) {
+       return res.status(400).json({
+         message: "La contraseña debe incluir mayúscula, minúscula, número y símbolo"
+       });
+     }
+
     // Verificar si el cliente ya existe
     const existCustomer = await customersModel.findOne({ email });
     if (existCustomer) {

@@ -9,7 +9,7 @@ const registerEmployeesController = {};
 // POST
 registerEmployeesController.registerEmployees = async (req, res) => {
   // Obtener datos
-  const { name, surnames, email, phone, dui, password, user, isActive } =
+  const { name, surnames, email, phone, dui, password, user, role, isActive } =
     req.body;
 
   try {
@@ -61,6 +61,7 @@ registerEmployeesController.registerEmployees = async (req, res) => {
       dui,
       password: passwordHash,
       user,
+      role,
       isActive,
     });
 

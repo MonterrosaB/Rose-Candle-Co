@@ -9,6 +9,8 @@
         email
         password
         user
+        role
+        isActive
 */
 
 import { Schema, model } from "mongoose"
@@ -73,6 +75,13 @@ const employeeSchema = new Schema({
         required: true,
         unique: true,
         match: [/^[a-zA-Z0-9_]+$/, 'El usuario solo puede contener letras, números y guiones bajos'],
+        trim: true
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ["admin", "employee"], // valores permitidos
+        default: "employee",
         trim: true
     },
     isActive: {
