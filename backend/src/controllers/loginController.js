@@ -16,8 +16,6 @@ loginController.login = async (req, res) => {
     // Posibles niveles:
     // 1. Administrador
     // 2. Empleado
-    // 3. Cliente
-
     let userFound; // Guardar el usuario encontrado
     let userType; // Guardar el tipo de usuario encontrado
 
@@ -27,16 +25,11 @@ loginController.login = async (req, res) => {
       password === config.ADMIN.passwordAdmin
     ) {
       userType = "admin";
-      userFound = { _id: "admin" };
+      userFound = { _id: "admin" }; // Puedes agregar más datos si necesitas
     } else {
       // 2. Empleado
       userFound = await employeesModel.findOne({ email });
       userType = "employee";
-      if (!userFound) {
-        // 3. Cliente
-        userFound = await customersModel.findOne({ email });
-        userType = "client";
-      }
     }
 
     if (!userFound) {
