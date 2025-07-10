@@ -217,6 +217,7 @@ const useProducts = (methods) => {
     reset,
     errors,
     control,
+    handleSubmit,
     createProduct,
   };
 };
