@@ -65,7 +65,7 @@ const RegisterProducts = ({ onClose }) => {
 
         // 🟣 Componentes (Materia Prima)
         const resMaterials = await fetch(
-          "http://localhost:4000/api/materials"
+          "http://localhost:4000/api/rawMaterials"
         );
         if (!resMaterials.ok) throw new Error("Error al traer materiales");
         const materials = await resMaterials.json();

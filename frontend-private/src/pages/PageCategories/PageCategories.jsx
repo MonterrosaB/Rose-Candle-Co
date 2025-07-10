@@ -46,12 +46,21 @@ const PageCategories = () => {
   };
 
   const handleEdit = (category) => {
+    if (!category || !category._id) {
+      console.error("Categoría inválida para editar", category);
+      return;
+    }
     setSelectedCategory(category);
     setOpenDialog(true);
   };
 
   const handleDelete = async (category) => {
-    if (confirm(`¿Eliminar la categoría "${category.name}"?`)) {
+    if (!category || !category._id) {
+      console.error("Categoría inválida para eliminar", category);
+      return;
+    }
+    const confirmDelete = confirm(`¿Eliminar la categoría "${category.name}"?`);
+    if (confirmDelete) {
       await deleteCategory(category._id);
     }
   };
@@ -74,7 +83,7 @@ const PageCategories = () => {
         primaryBtnText={"Agregar Categoría"}
         onClickPrimaryBtn={handleAdd}
         updateRow={handleEdit}
-        deleteRow={handleDelete} // Si tu DataGrid soporta borrar
+        deleteRow={handleDelete } 
       />
 
       {openDialog && (

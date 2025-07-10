@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiCategories = "http://localhost:4000/api/productcategories"; // Cambia la URL si es distinta
+const ApiCategories = "http://localhost:4000/api/productcategories"; // Cambia la URL si aplica
 
 const useCategories = (methods) => {
   const {
@@ -19,11 +19,11 @@ const useCategories = (methods) => {
       if (!res.ok) throw new Error("Error al obtener categorías");
       const data = await res.json();
 
-         const formatted = data.map(s => ({
-     _id: s._id,
-     name: s.name,
-     label: s.name,
-    }));
+      const formatted = data.map((s) => ({
+        _id: s._id,
+        name: s.name,
+        label: s.name,
+      }));
 
       setCategories(formatted);
     } catch (error) {
@@ -68,12 +68,19 @@ const useCategories = (methods) => {
     try {
       const res = await fetch(`${ApiCategories}/${id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
-      if (!res.ok) throw new Error("Error al eliminar categoría");
-      toast.success("Categoría eliminada");
-      getCategories();
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error al eliminar: ${errorText}`);
+      }
+
+      toast.success("Categoría eliminada correctamente");
+      // ✅ Filtra local para evitar flicker
+      setCategories((prev) => prev.filter((cat) => cat._id !== id));
     } catch (error) {
-      console.error(error);
+      console.error("Error eliminando:", error);
       toast.error("No se pudo eliminar categoría");
     }
   };
