@@ -11,12 +11,14 @@ import Products from "../../pages/PageProducts/PageProducts.jsx";
 import Materials from "../../pages/PageMaterials/PageMaterials.jsx";
 import Orders from "../../pages/PageOrders/PageOrders.jsx";
 import Employees from "../../pages/PageEmployees/logic/PageEmployees.jsx";
-import Others from "../../pages/PageOthers/PageOthers.jsx";
+
 import Collections from "../../pages/PageCollections/PageCollections.jsx";
 import Categories from "../../pages/PageCategories/PageCategories.jsx";
 import Suppliers from "../../pages/PageSuppliers/PageSuppliers.jsx";
 import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesMateria.jsx";
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
+import Stock from "../../pages/PageStock/Stock.jsx"
+
 
 function Navigation() {
   const { authCokie } = useAuth();
@@ -48,15 +50,12 @@ function Navigation() {
           {/* Rutas protegidas */}
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
+            <Route path="/Stock" element={<Stock />} />
             <Route path="/materials" element={<Materials />} />
             <Route path="/products" element={<Products />} />
             <Route path="/order" element={<Orders />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/others" element={<Others />} />
-            <Route path="/others/colections" element={<Collections />} />
-            <Route path="/others/categories" element={<Categories />} />
-            <Route path="/others/supplies" element={<Suppliers />} />
             <Route
               path="/others/categories-materia"
               element={<CategoriesMateria />}

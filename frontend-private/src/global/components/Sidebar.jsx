@@ -38,27 +38,15 @@ const Sidebar = () => {
               </Link>
             </li>
 
-            <li className="relative">
-              <button
-                onClick={() => setOpenDropDown(!openDropdown)}
-                className="w-full flex items-center justify-between py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
-              >
-                <span>Stock</span>
-                <ChevronDown size={18} />
-              </button>
+           
 
-              <AnimatePresence>
-                {openDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Menu />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+             <li>
+              <Link
+                to="/stock"
+                className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+              >
+                Stock
+              </Link>
             </li>
 
             <li>
