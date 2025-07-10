@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 
 import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
@@ -17,53 +17,77 @@ import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 
-
 const RegisterProducts = ({ onClose }) => {
   const methods = useForm();
-  const { register, handleSubmit, errors, reset, control, createProduct } = useProducts(methods);
+  const { register, handleSubmit, errors, reset, control, createProduct } =
+    useProducts(methods);
 
-  const { productImage, productImageFile, multipleFile, multipleFileFiles, uploadMultipleFiles, removeImage, onImageChange } = changeImages();
+  const {
+    productImage,
+    productImageFile,
+    multipleFile,
+    multipleFileFiles,
+    uploadMultipleFiles,
+    removeImage,
+    onImageChange,
+  } = changeImages();
 
   const [opcionesCategorias, setOpcionesCategorias] = useState([]);
-const [opcionesColecciones, setOpcionesColecciones] = useState([]);
+  const [opcionesColecciones, setOpcionesColecciones] = useState([]);
+  const [opcionesMateria, setOpcionesMateria] = useState([]);
 
-useEffect(() => {
-  const fetchOptions = async () => {
-    try {
-      // 🔵 Categorías de producto
-      const resCategories = await fetch("http://localhost:4000/api/productcategories");
-      const categories = await resCategories.json();
-      console.log("Categorías:", categories);
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        // 🔵 Categorías
+        const resCategories = await fetch(
+          "http://localhost:4000/api/productcategories"
+        );
+        if (!resCategories.ok) throw new Error("Error al traer categorías");
+        const categories = await resCategories.json();
+        const mappedCategories = categories.map((item) => ({
+          _id: item._id,
+          label: item.name,
+        }));
+        setOpcionesCategorias(mappedCategories);
 
-      const mappedCategories = categories.map(item => ({
-        _id: item._id,
-        label: item.name, // Ajusta si tu campo se llama diferente
-      }));
-      setOpcionesCategorias(mappedCategories);
+        // 🟢 Colecciones
+        const resCollections = await fetch(
+          "http://localhost:4000/api/collections"
+        );
+        if (!resCollections.ok) throw new Error("Error al traer colecciones");
+        const collections = await resCollections.json();
+        const mappedCollections = collections.map((item) => ({
+          _id: item._id,
+          label: item.name || item.collection,
+        }));
+        setOpcionesColecciones(mappedCollections);
 
-      // 🟢 Colecciones
-      const resCollections = await fetch("http://localhost:4000/api/collections");
-      const collections = await resCollections.json();
-      console.log("Colecciones:", collections);
+        // 🟣 Componentes (Materia Prima)
+        const resMaterials = await fetch(
+          "http://localhost:4000/api/materials"
+        );
+        if (!resMaterials.ok) throw new Error("Error al traer materiales");
+        const materials = await resMaterials.json();
+        const mappedMaterials = materials.map((item) => ({
+          _id: item._id,
+          label: item.name,
+        }));
+        setOpcionesMateria(mappedMaterials);
+      } catch (error) {
+        console.error("Error fetching:", error);
+      }
+    };
 
-      const mappedCollections = collections.map(item => ({
-        _id: item._id,
-        label: item.name, // Ajusta si tu campo se llama diferente
-      }));
-      setOpcionesColecciones(mappedCollections);
+    fetchOptions();
+  }, []);
 
-    } catch (error) {
-      console.error("Error fetching:", error);
-    }
-  };
-
-  fetchOptions();
-}, []);
-
+  console.log("Opciones Colecciones:", opcionesColecciones);
+  console.log("Opciones Materia Prima:", opcionesMateria);
 
   const estado = [
-    { _id: true, label: 'Activo' },
-    { _id: false, label: 'Inactivo' }
+    { _id: true, label: "Activo" },
+    { _id: false, label: "Inactivo" },
   ];
 
   const { agregarInput, inputs } = AddComponent();
@@ -77,7 +101,8 @@ useEffect(() => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("currentPrice", 12.5);
-    formData.append("idProductCategory", "684c50e8aba6ea57507d5363");
+    formData.append("idProductCategory", data.category);
+    formData.append("idCollection", data.collection);
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -91,7 +116,11 @@ useEffect(() => {
   };
 
   return (
-    <Form headerLabel={"Agregar Nuevo Producto"} onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
+    <Form
+      headerLabel={"Agregar Nuevo Producto"}
+      onSubmit={handleSubmit(onSubmit)}
+      onClose={onClose}
+    >
       <FormInputs>
         <Input
           label={"Nombre"}
@@ -107,7 +136,11 @@ useEffect(() => {
             className="w-fit p-2.5 rounded-lg font-medium cursor-pointer flex items-center justify-center"
           >
             {productImage ? (
-              <img src={productImage} alt="Vista previa" className="w-48 h-48 object-contain" />
+              <img
+                src={productImage}
+                alt="Vista previa"
+                className="w-48 h-48 object-contain"
+              />
             ) : (
               <div className="bg-[#D9D9D9] w-48 h-48 flex items-center text-center">
                 Selecciona aquí la imagen principal
@@ -161,6 +194,7 @@ useEffect(() => {
           register={register}
           errors={errors}
         />
+
         <div className="flex justify-center items-center gap-4 w-full">
           <Dropdown
             name={"category"}
@@ -168,22 +202,26 @@ useEffect(() => {
             label={"Categoría"}
             register={register}
             errors={errors}
-            hideIcon={true} />
+            hideIcon={true}
+          />
           <Dropdown
-            name={"colecction"}
+            name={"collection"}
             options={opcionesColecciones}
             label={"Colección"}
             register={register}
             errors={errors}
-            hideIcon={true} />
+            hideIcon={true}
+          />
           <Dropdown
             name={"estado"}
             options={estado}
             label={"Estado"}
             register={register}
             errors={errors}
-            hideIcon={true} />
+            hideIcon={true}
+          />
         </div>
+
         <div className="flex justify-center items-center gap-4 w-full">
           <TextAreaArray
             control={control}
@@ -199,11 +237,19 @@ useEffect(() => {
             label="Recetas"
             placeholder="Escribe y presiona coma o enter"
             error={errors.tags}
-            valueKey="step" />
+            valueKey="step"
+          />
         </div>
+
         <div className="flex justify-center items-center gap-4 w-full">
           <div className="flex flex-col items-center w-1/2 gap-4">
-            <Button buttonText={"Agregar Variante"} showIcon={true} style={"gray"} onClick={() => agregarInput("variantes")} type={"button"} />
+            <Button
+              buttonText={"Agregar Variante"}
+              showIcon={true}
+              style={"gray"}
+              onClick={() => agregarInput("variantes")}
+              type={"button"}
+            />
             {inputs.variantes.map((input, index) => (
               <DoubleInput
                 key={input.id}
@@ -218,7 +264,13 @@ useEffect(() => {
             ))}
           </div>
           <div className="flex flex-col items-center w-1/2 gap-4">
-            <Button buttonText={"Agregar Componente"} showIcon={true} style={"gray"} onClick={() => agregarInput("componentes")} type={"button"} />
+            <Button
+              buttonText={"Agregar Componente"}
+              showIcon={true}
+              style={"gray"}
+              onClick={() => agregarInput("componentes")}
+              type={"button"}
+            />
             {inputs.componentes.map((input, index) => (
               <DoubleInputDropDown
                 key={input.id}
