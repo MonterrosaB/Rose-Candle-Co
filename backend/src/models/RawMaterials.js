@@ -34,7 +34,7 @@ const RawMaterial = new Schema({
   },
   idSupplier: {
     type: Schema.Types.ObjectId,
-    ref: "Suppliers", 
+    ref: "Suppliers",
     required: [true, "Supplier reference is required"],
   },
 }, {

@@ -1,86 +1,100 @@
+import { useState, useEffect } from "react";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
-
-import useCollections from "./hooks/useCollections";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import useCollections from "./hooks/useCollections";
 
-const PageCollection = () => {
-    const [openDialogCollections, setOpenDialogCollections] = useState(false);
-    const [selectedCollection, setSelectedCollection] = useState(null);
+const PageCollections = () => {
+  const [openDialogCollections, setOpenDialogCollections] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
-    const methods = useForm({
-        defaultValues: selectedCollection || {},
-    });
+  const methods = useForm({
+    defaultValues: selectedCollection || {},
+  });
 
-    const { register, handleSubmit, errors, reset } = useCollections(methods);
+  const {
+    register,
+    handleSubmit,
+    errors,
+    reset,
+    collections,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+  } = useCollections(methods);
 
-    useEffect(() => {
-        if (selectedCollection) {
-            reset(selectedCollection);
-        } else {
-            reset({ collection: "" }); // limpiar al agregar
-        }
-    }, [selectedCollection, reset]);
+  useEffect(() => {
+    if (selectedCollection) {
+      reset(selectedCollection);
+    } else {
+      reset({ name: "" });
+    }
+  }, [selectedCollection, reset]);
 
-    const columns = {
-        Colección: "collection",
-    };
+  const handleAdd = () => {
+    setSelectedCollection(null);
+    setOpenDialogCollections(true);
+  };
 
-    const rows = [
-        {
-            _id: "122",
-            collection: "González",
-        },
-        {
-            _id: "111",
-            collection: "Carlos",
-        },
-    ];
+  const handleEdit = (collection) => {
+    setSelectedCollection(collection);
+    setOpenDialogCollections(true);
+  };
 
-    const handleAdd = () => {
-        setSelectedCollection(null); // Form vacío (agregar)
-        setOpenDialogCollections(true);
-    };
+  const handleDelete = async (collection) => {
+    if (confirm(`¿Eliminar la colección "${collection.name}"?`)) {
+      await deleteCollection(collection._id);
+    }
+  };
 
-    const handleEdit = (collection) => {
-        setSelectedCollection(collection); // Form con datos (editar)
-        setOpenDialogCollections(true);
-    };
+  const onSubmit = async (data) => {
+    if (selectedCollection) {
+      await updateCollection(selectedCollection._id, data);
+    } else {
+      await createCollection(data);
+    }
+    setOpenDialogCollections(false);
+  };
 
-    const onSubmit = (data) => {
-        console.log("Colección enviada:", data);
-        setOpenDialogCollections(false);
-    };
+  const columns = {
+    Nombre: "collection",
+  };
 
-    return (
-        <PrincipalDiv>
-            <DataGrid
-                title={"Colecciones"}
-                columns={columns}
-                rows={rows}
-                primaryBtnText={"Agregar Colección"}
-                onClickPrimaryBtn={handleAdd}
-                updateRow={handleEdit} // <-- Lo importante: pasar handleEdit
-            />
-            {openDialogCollections && (
-                <Dialog open={openDialogCollections} onClose={() => setOpenDialogCollections(false)}>
-                    <FormOneInput
-                        headerLabel={selectedCollection ? "Editar Colección" : "Agregar Colección"}
-                        onSubmit={handleSubmit(onSubmit)}
-                        name={"collection"}
-                        label={"Colección"}
-                        register={register}
-                        onClose={() => setOpenDialogCollections(false)}
-                        error={errors.collection?.message}
-                        btnTxt={selectedCollection ? "Guardar Cambios" : "Agregar Colección"}
-                    />
-                </Dialog>
-            )}
-        </PrincipalDiv>
-    );
+  const rows = collections;
+
+  return (
+    <PrincipalDiv>
+      <DataGrid
+        title={"Colecciones"}
+        columns={columns}
+        rows={rows}
+        primaryBtnText={"Agregar Colección"}
+        onClickPrimaryBtn={handleAdd}
+        updateRow={handleEdit}
+        deleteRow={handleDelete}
+      />
+
+      {openDialogCollections && (
+        <Dialog
+          open={openDialogCollections}
+          onClose={() => setOpenDialogCollections(false)}
+        >
+          <FormOneInput
+            headerLabel={selectedCollection ? "Editar Colección" : "Agregar Colección"}
+            onSubmit={handleSubmit(onSubmit)}
+            collection={"collection"}
+            label={"Colección"}
+            register={register}
+            onClose={() => setOpenDialogCollections(false)}
+            error={errors.name?.message}
+            btnTxt={selectedCollection ? "Guardar Cambios" : "Agregar Colección"}
+          />
+        </Dialog>
+      )}
+    </PrincipalDiv>
+  );
 };
 
-export default PageCollection;
+export default PageCollections;
