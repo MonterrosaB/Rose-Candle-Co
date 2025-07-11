@@ -2,6 +2,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { PrivateRoute } from "./PrivateRoute.jsx";
+import { StartRoute } from "./StartRoute";
 
 import Login from "../../pages/Login/logic/PageLogin.jsx";
 import FirstUser from "../../pages/Login/logic/FirstUser.jsx";
@@ -17,12 +18,16 @@ import Categories from "../../pages/PageCategories/PageCategories.jsx";
 import Suppliers from "../../pages/PageSuppliers/PageSuppliers.jsx";
 import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesMateria.jsx";
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
-import Stock from "../../pages/PageStock/Stock.jsx"
-
+import Stock from "../../pages/PageStock/Stock.jsx";
+import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 function Navigation() {
   const { authCokie } = useAuth();
 
+  const { hasEmployees } = useHasEmployees();
+  // Redirección desde raíz si no hay empleados
+  const redirectPath = hasEmployees ? "/login" : "/start";
+  
   return (
     <>
       {authCokie && <Sidebar />}
@@ -32,19 +37,33 @@ function Navigation() {
           {/* Ruta para el primer usuario */}
           <Route
             path="/start"
-            element={authCokie ? <Navigate to="/home" replace /> : <FirstUser />}
+            element={
+              <StartRoute>
+                <FirstUser />
+              </StartRoute>
+            }
           />
 
-          {/* Ruta pública: solo visible si NO hay sesión */}
+          {/* Ruta pública: login o start según si hay empleados */}
           <Route
             path="/login"
-            element={authCokie ? <Navigate to="/home" replace /> : <Login />}
+            element={
+              authCokie ? (
+                <Navigate to="/home" replace />
+              ) : hasEmployees ? (
+                <Login />
+              ) : (
+                <Navigate to="/start" replace />
+              )
+            }
           />
 
-          {/* Ruta raíz: redirige según sesión */}
+          {/* Ruta raíz */}
           <Route
             path="/"
-            element={<Navigate to={authCokie ? "/home" : "/login"} replace />}
+            element={
+              <Navigate to={authCokie ? "/home" : redirectPath} replace />
+            }
           />
 
           {/* Rutas protegidas */}

@@ -64,10 +64,6 @@ const employeeSchema = new Schema({
         type: String,
         required: true,
         minlength: 8,
-        match: [
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-            'La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo'
-        ],
         trim: true
     },
     user: {

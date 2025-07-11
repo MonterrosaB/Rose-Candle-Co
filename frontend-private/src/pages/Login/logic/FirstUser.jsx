@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import { useHasEmployees } from "../hooks/useHasEmployees";
 import Star from "../../../assets/star.svg?react";
 import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
 import FormInput from "../components/FormInput.jsx";
@@ -26,27 +26,88 @@ const FirstUser = () => {
     setPassword,
     user,
     setUser,
+    errors,
     handleSubmit,
   } = useEmployees();
 
-  const [confirmPassword, setConfirmPassword] = useState(""); // Confirmar la contraseña
+  const [confirmPassword, setConfirmPassword] = useState(""); // Confirmar contraseña
   const navigate = useNavigate();
 
-  // Campos ya establecidos por ser el primer usuario
-  const isActive = true; // por defecto true
-  const role = "admin"; // por defecto "admin"
+  const { refetchHasEmployees } = useHasEmployees();
 
   // Validación para asegurar que la contraseña y la confirmación sean iguales
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    // se detiene si la contraseña no coincide
     if (password !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
       return;
     }
 
-    handleSubmit(e, { isActive, role }); // Si las contraseñas coinciden, llamamos al handleSubmit del hook (se envian los valores por defecto)
-    navigate("/login"); // Navegar al login para autenticación
+    const success = await handleSubmit(e, { isActive: true, role: "admin" });
+
+    if (success) {
+      await refetchHasEmployees(); // vuelve a contar los empleados
+      setTimeout(() => {
+        window.location.reload(); // recarga la página después del toast
+      }, 2000);
+    }
+  };
+
+  // Que el input solo acepte letras
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/; // Solo letras y espacios
+    if (regex.test(value)) {
+      setName(value);
+    }
+  };
+
+  const handleSurnamesChange = (e) => {
+    const value = e.target.value;
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+    if (regex.test(value)) setSurnames(value);
+  };
+
+  // Validacion teléfono
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+    // Quitar todo menos números
+    value = value.replace(/\D/g, "");
+
+    // Limitar longitud a 8 dígitos
+    if (value.length > 8) value = value.slice(0, 8);
+
+    // Formatear: insertar guion después del cuarto dígito
+    if (value.length > 4) {
+      value = value.slice(0, 4) + "-" + value.slice(4);
+    }
+
+    setPhone(value);
+  };
+
+  // Validación dui
+  const handleDuiChange = (e) => {
+    let value = e.target.value;
+    // Quitar todo menos números
+    value = value.replace(/\D/g, "");
+
+    // Limitar longitud a 9 dígitos (8+1)
+    if (value.length > 9) value = value.slice(0, 9);
+
+    // Formatear: insertar guion después del octavo dígito
+    if (value.length > 8) {
+      value = value.slice(0, 8) + "-" + value.slice(8);
+    }
+
+    setDui(value);
+  };
+
+  // Validación usuario
+  const handleUserChange = (e) => {
+    const value = e.target.value;
+    const regex = /^[a-zA-Z0-9_]*$/;
+    if (regex.test(value)) setUser(value);
   };
 
   return (
@@ -118,7 +179,8 @@ const FirstUser = () => {
             placeholder="Nombre"
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
+            error={errors.name}
           />
 
           {/* Campo de apellidos */}
@@ -128,7 +190,8 @@ const FirstUser = () => {
             placeholder="Apellido"
             type="text"
             value={surnames}
-            onChange={(e) => setSurnames(e.target.value)}
+            onChange={handleSurnamesChange}
+            error={errors.surnames}
           />
         </div>
 
@@ -141,7 +204,8 @@ const FirstUser = () => {
             placeholder="1234-5678"
             type="text"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
+            error={errors.phone}
           />
 
           {/* Campo de DUI */}
@@ -151,7 +215,8 @@ const FirstUser = () => {
             placeholder="12345678-9"
             type="text"
             value={dui}
-            onChange={(e) => setDui(e.target.value)}
+            onChange={handleDuiChange}
+            error={errors.dui}
           />
         </div>
 
@@ -165,6 +230,7 @@ const FirstUser = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
           />
 
           {/* Campo de usuario */}
@@ -174,7 +240,8 @@ const FirstUser = () => {
             placeholder="Nombre de usuario"
             type="text"
             value={user}
-            onChange={(e) => setUser(e.target.value)}
+            onChange={handleUserChange}
+            error={errors.user}
           />
         </div>
 
@@ -188,6 +255,7 @@ const FirstUser = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
           />
 
           {/* Campo de confirmación de contraseña */}
@@ -198,6 +266,11 @@ const FirstUser = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            error={
+              password !== confirmPassword
+                ? "Las contraseñas no coinciden"
+                : null
+            }
           />
         </div>
 

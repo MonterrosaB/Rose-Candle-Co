@@ -20,6 +20,7 @@ const useEmployees = () => {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const cleanData = () => {
     setName("");
@@ -35,40 +36,49 @@ const useEmployees = () => {
   };
 
   // Función para guardar los datos del empleado
-  const handleSubmit = async (e, { isActive, role }) => {
+  const handleSubmit = async (e, overrides = {}) => {
     e.preventDefault();
-  
-    if (
-      !name ||
-      !surnames ||
-      !email ||
-      !password ||
-      !phone ||
-      !dui ||
-      !role ||
-      !isActive ||
-      !user
-    ) {
-      setError("Todos los campos son obligatorios");
-      toast.error("Todos los campos son obligatorios");
-      return;
-    }
-  
-    try {
-      const newEmployee = {
-        name,
-        surnames,
-        email,
-        password,
-        phone,
-        dui,
-        role, 
-        isActive,
-        user
+    setError(null); // Limpiar error general
+    setSuccess(null);
+    setErrors({}); // Limpiar errores por campo
+    setLoading(true);
+
+    // Valores por defecto (first user)
+    const finalRole = overrides.role || role;
+    const finalIsActive = overrides.isActive ?? isActive;
+
+    // Validación de campos vacíos
+    if (!name || !surnames || !email || !password || !phone || !dui || !user) {
+      const newErrors = {
+        name: !name && "Campo requerido",
+        surnames: !surnames && "Campo requerido",
+        email: !email && "Campo requerido",
+        password: !password && "Campo requerido",
+        phone: !phone && "Campo requerido",
+        dui: !dui && "Campo requerido",
+        user: !user && "Campo requerido",
       };
-  
-      console.log(newEmployee, "Nuevo empleado");
-  
+
+      setErrors(newErrors);
+      //toast.error("Todos los campos son obligatorios");
+      setLoading(false);
+      return false;
+    }
+
+    // Empleado
+    const newEmployee = {
+      name,
+      surnames,
+      email,
+      password,
+      phone,
+      dui,
+      role: finalRole,
+      isActive: finalIsActive,
+      user,
+    };
+
+    try {
       const response = await fetch(ApiRegister, {
         method: "POST",
         headers: {
@@ -76,26 +86,68 @@ const useEmployees = () => {
         },
         body: JSON.stringify(newEmployee),
       });
-  
-      if (!response.ok) {
-        throw new Error("Hubo un error al registrar el empleado");
-      }
-  
+
       const data = await response.json();
-      toast.success("Empleado registrado");
+
+      // Errores por validaciones del backend
+      if (!response.ok) {
+        const msg = data?.message || "Error desconocido";
+        const backendErrors = {};
+
+        // Si viene un objeto de errores (ValidationError)
+        if (data.errors) {
+          Object.entries(data.errors).forEach(([field, info]) => {
+            backendErrors[field] = info.message;
+          });
+        } else {
+          // Casos personalizados por string
+          if (msg.includes("Employee already exists")) {
+            backendErrors.email = "Este correo ya está registrado";
+          }
+
+          if (msg.includes("Too short")) {
+            if (name.length < 3) backendErrors.name = "Nombre muy corto";
+            if (surnames.length < 3)
+              backendErrors.surnames = "Apellido muy corto";
+            if (password.length < 8)
+              backendErrors.password = "Contraseña muy corta";
+            if (phone.length < 9) backendErrors.phone = "Teléfono muy corto";
+            if (dui.length < 10) backendErrors.dui = "DUI muy corto";
+          }
+
+          if (msg.includes("Too large")) {
+            if (name.length > 100)
+              backendErrors.name = "Nombre muy largo";
+            if (surnames.length > 100)
+              backendErrors.surnames = "Apellido muy largo";
+          }
+
+          if (msg.includes("Please complete all the fields")) {
+            toast.error("Todos los campos son obligatorios");
+          }
+        }
+
+        setErrors(backendErrors);
+        toast.error(msg);
+        return false;
+      }
+
+      // Todo bien
+      toast.success("¡Cuenta creada con éxito!");
+      setSuccess("¡Cuenta creada con éxito!");
       setEmployees(data);
-      setSuccess("Empleado registrado correctamente");
       cleanData();
       fetchData();
+      return true;
     } catch (error) {
-      setError(error.message); // error
       console.error("Error:", error);
-      alert("Error", "Ocurrió un error al registrar el empleado");
+      setError("Ocurrió un error al registrar el empleado");
       toast.error("Ocurrió un error al registrar el empleado");
+      return false;
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   // Función para obtener los datos de los empleados
   const fetchData = async () => {
@@ -168,7 +220,7 @@ const useEmployees = () => {
         dui,
         role,
         isActive,
-        user
+        user,
       };
 
       const response = await fetch(`${ApiEmployees}/${id}`, {
@@ -186,15 +238,13 @@ const useEmployees = () => {
       toast.success("Empleado actualizado");
       setSuccess("Empleado actualizado correctamente");
       cleanData();
-      setId(""); 
+      setId("");
       setActiveTab("list");
-      fetchData(); 
-
+      fetchData();
     } catch (error) {
       setError(error.message);
       alert("Error al actualizar el empleado");
       console.error("Error:", errorEmpleado);
-
     } finally {
       setLoading(false);
     }
@@ -237,6 +287,8 @@ const useEmployees = () => {
     deleteEmployee,
     updateEmployee,
     handleUpdate,
+    errors,
+    setErrors,
   };
 };
 
