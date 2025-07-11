@@ -5,14 +5,24 @@ const collectionsController = {};
 
 // GET
 collectionsController.getCollections = async (req, res) => {
-    try {
-        const collections = await collectionModel.find();
-        res.status(200).json(collections); // Todo bien
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
-    }
+  try {
+    const collections = await collectionModel.find();
+
+    const normalized = collections.map(c => ({
+      _id: c._id,
+      name: c.name || c.collection || "", 
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }));
+
+    res.status(200).json(normalized);
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error");
+  }
 };
+
+
 
 // POST
 collectionsController.createCollection = async (req, res) => {
@@ -46,37 +56,34 @@ collectionsController.createCollection = async (req, res) => {
 
 // PUT
 collectionsController.updateCollection = async (req, res) => {
-  // Obtener datos
   const { name } = req.body;
 
   try {
-    // Validaciones
-    if ( name.length < 3){
-        return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
+    if (!name || typeof name !== 'string' || name.length < 3) {
+      return res.status(400).json({ message: "Nombre inválido o muy corto" });
     }
 
-    if ( name.length > 100){
-        return res.status(400).json({message: "Too large"}) // Error del cliente, longitud del texto muy larga
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Nombre muy largo" });
     }
 
-    // Guardar datos
-    updatedCollection = await collectionModel.findByIdAndUpdate(
+    const updatedCollection = await collectionModel.findByIdAndUpdate(
       req.params.id,
       { name },
       { new: true }
     );
 
-    if(!updatedCollection){
-        return res.status(400).json({message: "Collection not found"}) // Error del cliente, coleccion no encontrada
+    if (!updatedCollection) {
+      return res.status(400).json({ message: "Colección no encontrada" });
     }
 
-    res.status(200).json({ message: "Collection updated" }); // Todo bien
-
+    res.status(200).json({ message: "Colección actualizada" });
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error);
+    return res.status(500).json("Internal server error");
   }
 };
+
 
 // DELETE
 collectionsController.deleteCollection = async (req, res) => {

@@ -4,7 +4,7 @@ const suppliersSchema = new Schema({
     
     name: {
         type: String,
-        require: true,
+        required: true,
         minLength: 3,
         trim: true
     },
