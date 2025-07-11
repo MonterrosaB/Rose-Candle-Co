@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../global/components/Header.jsx";
-import OrbitedCircle from "../TermsAndConditions/Components/OrbitalCircleConditions.jsx";
+import OrbitedCircle from "../../global/components/OrbitedCircle.jsx";
 
 const AccordionItem = ({ title, content, isOpen, onToggle }) => {
   return (
@@ -36,16 +36,21 @@ const TermsAndCondition = () => {
 
   return (
     <div>
-           {/* Información Legal */}
+      {/* El círculo orbital al fondo */}
+      <div className="absolute bottom-0 left-[-32px] scale-[2.5] z-[-1]">
+        <OrbitedCircle size="large" />
+      </div>
+
+      {/* Información Legal */}
       <Header
         title={
-          <>
+          <div className="max-w-screen-lg mx-auto">
             <span className="font-normal">Información </span>
             <span className="font-bold">Legal</span>
-          </>
+          </div>
         }
         subtitle={
-          <>
+          <div className="max-w-screen-lg mx-auto">
             <span className="font-normal">En </span>
             <span className="font-bold">Rosé Candle Co., </span>
             <span className="font-normal">
@@ -56,22 +61,21 @@ const TermsAndCondition = () => {
               vez que nos visitas o realizas una compra. <br />
               Si tienes alguna duda adicional, no dudes en contactarnos.
             </span>
-          </>
+          </div>
         }
       />
 
-      <OrbitedCircle />
-
-      <div className="p-6 max-w-4xl mx-auto text-gray-800 space-y-10">
-
-     
+      <div className="p-6 max-w-screen-lg mx-auto text-gray-800 space-y-10">
+        {/* Aviso Legal */}
         <section>
-          
-
-          <h2 className="text-2xl font-semibold mb-4">Aviso Legal</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-center">Aviso Legal</h2>
           <p className="mb-4">
             Este sitio web,{" "}
-            <a href="https://www.rosecandleco.com" className="text-blue-500 underline" target="_blank">
+            <a
+              href="https://www.rosecandleco.com"
+              className="text-blue-500 underline"
+              target="_blank"
+            >
               www.rosecandleco.com
             </a>
             , es propiedad de Rosé Candle Co., empresa dedicada a la venta de velas artesanales y productos de bienestar.
@@ -93,22 +97,22 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mb-4">
-            <h3 className="font-semibold">Responsabilidad del contenido:</h3>
+            <h3 className="font-semibold ">Responsabilidad del contenido:</h3>
             <p>Rosé Candle Co. no se responsabiliza por errores técnicos o tipográficos en el contenido del sitio.</p>
           </div>
 
           <div className="mb-4">
-            <h3 className="font-semibold">Propiedad intelectual:</h3>
+            <h3 className="font-semibold ">Propiedad intelectual:</h3>
             <p>Todos los contenidos están protegidos por derechos de autor. Se prohíbe su reproducción sin permiso.</p>
           </div>
 
           <div className="mb-4">
-            <h3 className="font-semibold">Enlaces a terceros:</h3>
+            <h3 className="font-semibold ">Enlaces a terceros:</h3>
             <p>No nos hacemos responsables del contenido externo enlazado.</p>
           </div>
 
           <div className="mb-4">
-            <h3 className="font-semibold">Modificaciones:</h3>
+            <h3 className="font-semibold ">Modificaciones:</h3>
             <p>Podemos modificar este aviso en cualquier momento por razones legales o funcionales.</p>
           </div>
         </section>
@@ -148,7 +152,11 @@ const TermsAndCondition = () => {
           <h2 className="text-2xl font-semibold mb-6 text-center">Términos y Condiciones de Uso</h2>
           <p className="mb-6">
             El uso del sitio{" "}
-            <a href="https://www.rosecandleco.com" className="text-blue-500 underline" target="_blank">
+            <a
+              href="https://www.rosecandleco.com"
+              className="text-blue-500 underline"
+              target="_blank"
+            >
               www.rosecandleco.com
             </a>{" "}
             implica la aceptación de los siguientes términos y condiciones.
