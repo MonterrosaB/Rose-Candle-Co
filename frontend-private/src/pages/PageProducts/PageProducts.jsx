@@ -2,13 +2,11 @@ import { useState } from "react";
 import React, { useEffect } from "react";
 
 import PrincipalDiv from "../../global/components/PrincipalDiv";
-import CardProduct from "./components/CardProduct";
 
 import Dialog from "../../global/components/Dialog";
 import RegisterProducts from "./components/RegisterProducts";
 import Button from "../../global/components/Button";
 import UseProductsList from "./components/UseProductList";
-import Calmness from "../../assets/calmness.jpg";
 
 const PageProducts = () => {
 
@@ -26,7 +24,7 @@ const PageProducts = () => {
           />
         </div>
         <div className="flex items-center justify-center gap-4">
-        <UseProductsList />
+          <UseProductsList />
 
         </div>
 

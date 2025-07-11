@@ -53,20 +53,18 @@ const variantSchema = new Schema(
     variant: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 1,
       maxLength: 200,
-      
     },
     variantPrice: {
-    type: String,
+      type: String,
       required: true,
-      minLength: 3,
-      maxLength: 200,
+      min: 1,
+      max: 1000000,
     },
   },
   { _id: false }
 );
-
 
 // Subesquema: Uso
 const useFormSchema = new Schema(
