@@ -1,86 +1,77 @@
-import { useState } from "react"
+// Página para gestionar empleados
+import { useState, useEffect } from "react";
 
-import RegisterEmployee from "../components/RegisterEmployee"
-import Dialog from "../../../global/components/Dialog"
-import PrincipalDiv from "../../../global/components/PrincipalDiv"
-import DataGrid from "../../../global/components/DataGrid"
+import RegisterEmployee from "../components/RegisterEmployee"; // Formulario para registrar al empleado
+import Dialog from "../../../global/components/Dialog";
+import PrincipalDiv from "../../../global/components/PrincipalDiv";
+import DataGrid from "../../../global/components/DataGrid";
 
+import useEmployees from "../hooks/useEmployees";
 
-const PageEmplooyes = () => {
+const PageEmployees = () => {
+  /* Cambiar título de la página */
+  useEffect(() => {
+    document.title = "Empleados | Rosé Candle Co.";
+  }, []);
 
-    const [openDialogEmployees, setOpenDialogEmployees] = useState(false)
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const { employees, fetchData, updateEmployee, cleanData, setActiveTab } =
+    useEmployees();
 
-    const handleAdd = () => {
-        setSelectedEmployee(null); // Form vacío
-        setOpenDialogEmployees(true);
-    };
+  const [openDialogEmployees, setOpenDialogEmployees] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    const handleUpdate = (employee) => {
-        setSelectedEmployee(employee); // Cargar datos del empleado
-        setOpenDialogEmployees(true);
-    };
+  // Funcion para agregar
+  const handleAdd = () => {
+    cleanData();
+    setSelectedEmployee(null);
+    setActiveTab("form");
+    setOpenDialogEmployees(true);
+  };
 
+  // Funcion para actualizar
+  const handleUpdate = (employee) => {
+    updateEmployee(employee);
+    setSelectedEmployee(employee);
+    setOpenDialogEmployees(true);
+  };
 
-    const columns = {
-        "DUI": "dui",
-        "Nombre": "name",
-        "Apellido": "surnames",
-        "Correo": "email",
-        "Teléfono": "phone",
-        "Usuario": "user",
-        "Estado": "isActive"
-    };
+  // Columnas de la tabla
+  const columns = {
+    Nombres: "name",
+    Apellidos: "surnames",
+    Correo: "email",
+    Teléfono: "phone",
+    DUI: "dui",
+    Usuario: "user",
+  };
 
-    //Registros de las tablas
-    //En este caso seria la variable materials o como se nombre.
-    //Descomenntar loading
-    const rows = [
-        {
-            name: "María",
-            surnames: "González",
-            phone: "2233-4455",
-            dui: "12345678-9",
-            email: "maria.g@example.com",
-            password: "S3cur3Emp1oy3e*",
-            user: "mariag",
-            isActive: true
-        },
-        {
-            name: "Carlos",
-            surnames: "Ramírez",
-            phone: "7654-3210",
-            dui: "98765432-1",
-            email: "carlos.ram@example.com",
-            password: "P@sswordC4rl0s!",
-            user: "carlosr",
-            isActive: false
-        }
-    ];
+  return (
+    <PrincipalDiv>
+      <DataGrid
+        title={"Empleados"}
+        columns={columns}
+        rows={employees}
+        primaryBtnText={"Agregar Empleado"}
+        onClickPrimaryBtn={handleAdd}
+        updateRow={handleUpdate}
+      />
 
-    return (
-        <PrincipalDiv>
-            <DataGrid
-                title={"Empleados"}
-                columns={columns}
-                rows={rows}
-                primaryBtnText={"Agregar Empleado"}
-                onClickPrimaryBtn={handleAdd}
-                updateRow={handleUpdate}
-            />
+      {openDialogEmployees && (
+        <Dialog
+          open={openDialogEmployees}
+          onClose={() => setOpenDialogEmployees(false)}
+        >
+          <RegisterEmployee
+            defaultValues={selectedEmployee}
+            onClose={() => {
+              setOpenDialogEmployees(false);
+              fetchData();
+            }}
+          />
+        </Dialog>
+      )}
+    </PrincipalDiv>
+  );
+};
 
-            {openDialogEmployees && (<Dialog
-                open={openDialogEmployees}
-                onClose={() => setOpenDialogEmployees(false)}
-
-            >
-                <RegisterEmployee
-                    defaultValues={selectedEmployee} // Aquí enviamos los datos al form
-                    onClose={() => setOpenDialogEmployees(false)}
-                />
-            </Dialog>)}
-        </PrincipalDiv>
-
-    )
-}
-export default PageEmplooyes
+export default PageEmployees;
