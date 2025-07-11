@@ -9,6 +9,7 @@ const ProductList = ({ onEdit }) => {
         <div
           className="flex w-full max-w-sm border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-transform duration-200 hover:-translate-y-1 bg-gray-100 mx-auto"
           onDoubleClick={onEdit}
+          key={product._id}
         >
           {/* Imagen (mitad izquierda) */}
           <div className="w-1/2 flex flex-col items-center justify-center p-4"> {/* ← más margen */}
@@ -25,8 +26,9 @@ const ProductList = ({ onEdit }) => {
                 {product.variant?.length > 0
                   ? product.variant.map((v, i) => v.variant).join(" | ")
                   : "Sin variantes"}
-              </div>            </span>
-            <p className="text-sm text-gray-500 text-center">{product.idProductCategory?.name} | {product.idCollection}</p>
+              </div>
+            </span>
+            <p className="text-sm text-gray-500 text-center">{product.idProductCategory?.name} | {product.idCollection?.name}</p>
           </div>
 
           {/* Información (mitad derecha) */}
