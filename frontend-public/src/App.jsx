@@ -20,6 +20,7 @@ import ProductDetail from "../src/pages/Products/ProductDetail.jsx";
 import Profile from "../src/pages/Profile/Profile.jsx";
 import Cart from "../src/pages/shoppingCard/ShoppingCard.jsx";
 import LoginCustomer from "../src/pages/LoginCustomer/LoginCustomer.jsx";
+import TermsAndConditions from "../src/pages/TermsAndConditions/TermsAndConditions.jsx"
 
 // Auth
 import { AuthProvider } from "./global/context/AuthContext.jsx";
@@ -42,6 +43,7 @@ function Layout() {
           <Route path="/loginCustomer" element={<LoginCustomer />} />
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/faqs" element={<Faqs />} />
+         <Route path="/TermsAndConditions" element={<TermsAndConditions />} />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/profile" element={<Profile />} />
