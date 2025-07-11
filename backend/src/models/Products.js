@@ -156,6 +156,11 @@ const productsSchema = new Schema(
       ref: "productCategories",
       required: true,
     },
+    idCollection: {
+      type: Schema.Types.ObjectId,
+      ref: "Collections",
+      required: true,
+    },
   },
   {
     timestamps: true,
