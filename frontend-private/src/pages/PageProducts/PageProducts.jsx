@@ -11,6 +11,7 @@ import UseProductsList from "./components/UseProductList";
 const PageProducts = () => {
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   return (
     <>
@@ -24,7 +25,12 @@ const PageProducts = () => {
           />
         </div>
         <div className="flex items-center justify-center gap-4">
-          <UseProductsList />
+          <UseProductsList
+            onEdit={(product) => {
+              setSelectedProduct(product);       // 🟢 Setea producto para editar
+              setOpenDialogProduct(true);        // 🟢 Abre el modal
+            }}
+          />
 
         </div>
 
@@ -33,7 +39,9 @@ const PageProducts = () => {
             open={openDialogProduct}
             onClose={() => setOpenDialogProduct(false)}
           >
-            <RegisterProducts onClose={() => setOpenDialogProduct(false)} />
+            <RegisterProducts
+              onClose={() => setOpenDialogProduct(false)}
+              selectedProduct={selectedProduct} />
           </Dialog>
         )}
       </PrincipalDiv>
