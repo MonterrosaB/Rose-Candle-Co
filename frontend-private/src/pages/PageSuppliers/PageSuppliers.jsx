@@ -10,7 +10,6 @@ const PageSuppliers = () => {
   const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
-  // ✅ Solo se crea UNA VEZ
   const methods = useForm({
     defaultValues: { name: "", contact: "" },
   });
@@ -67,13 +66,13 @@ const PageSuppliers = () => {
   return (
     <PrincipalDiv>
       <DataGrid
-        title={"Proveedores"}
+        title="Proveedores"
         columns={columns}
         rows={rows}
-        primaryBtnText={"Agregar Proveedor"}
+        primaryBtnText="Agregar Proveedor"
         onClickPrimaryBtn={handleAdd}
         updateRow={handleEdit}
-        deleteRow={handleDelete}
+        deleteRow={handleDelete} // 👈 Pasa el OBJETO, no solo el ID
       />
 
       {openDialogSuppliers && (
@@ -83,7 +82,7 @@ const PageSuppliers = () => {
         >
           <RegisterSuppliers
             defaultValues={selectedSupplier}
-            methods={methods} // ✅ pasa el form completo
+            methods={methods}
             onClose={() => setOpenDialogSuppliers(false)}
             onSubmit={onSubmit}
           />

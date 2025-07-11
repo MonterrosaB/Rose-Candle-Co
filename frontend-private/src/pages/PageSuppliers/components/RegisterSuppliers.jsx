@@ -1,10 +1,8 @@
-// ✅ RegisterSuppliers.jsx
 import { useEffect } from "react";
 import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
 import FormButton from "../../../global/components/FormButton";
 import InputsInline from "../../../global/components/InputsInline";
-
 import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 
@@ -35,17 +33,25 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
       <FormInputs>
         <InputsInline>
           <Input
-            name={"name"}
-            label={"Proveedor"}
+            name="name"
+            label="Proveedor"
             type="text"
             register={register}
+            options={{ required: "El nombre es requerido" }}
             error={errors.name?.message}
           />
           <Input
-            name={"contact"}
-            label={"Contacto"}
+            name="contact"
+            label="Contacto"
             type="text"
             register={register}
+            options={{
+              required: "El contacto es requerido",
+              pattern: {
+                value: /^\d{4}-\d{4}$/,
+                message: "Solo se permiten números",
+              },
+            }}
             error={errors.contact?.message}
           />
         </InputsInline>
@@ -54,7 +60,7 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
       <FormButton>
         <Button
           buttonText={isEditMode ? "Guardar Cambios" : "Agregar Proveedor"}
-          type={"submit"}
+          type="submit"
         />
       </FormButton>
     </Form>

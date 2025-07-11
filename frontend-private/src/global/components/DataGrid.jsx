@@ -92,7 +92,7 @@ const DataGrid = ({ title,
                                 {editable && (
                                     <td className="px-6 py-4">
                                         <div className="flex justify-center items-center gap-4">
-                                            <Trash onClick={() => deleteRow(row._id)} className="cursor-pointer" />
+                                            <Trash onClick={() => deleteRow(row)} className="cursor-pointer" />
                                             <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
                                         </div>
                                     </td>
