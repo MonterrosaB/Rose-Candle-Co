@@ -1,12 +1,11 @@
-// Página para gestionar empleados
 import { useState, useEffect } from "react";
-
 import RegisterEmployee from "../components/RegisterEmployee"; // Formulario para registrar al empleado
 import Dialog from "../../../global/components/Dialog";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
 import DataGrid from "../../../global/components/DataGrid";
-
-import useEmployees from "../hooks/useEmployees";
+import useEmployeeAction from "../hooks/useEmployeeAction";
+import useDataEmployee from "../hooks/useEmployees"; 
+import useFetchEmployees from "../hooks/useFetchEmployees";
 
 const PageEmployees = () => {
   /* Cambiar título de la página */
@@ -14,21 +13,21 @@ const PageEmployees = () => {
     document.title = "Empleados | Rosé Candle Co.";
   }, []);
 
-  const { employees, fetchData, updateEmployee, cleanData, setActiveTab } =
-    useEmployees();
+  const { employees, getEmployees } = useFetchEmployees()
+  const { deleteEmployee, handleUpdateEmployee } = useEmployeeAction(getUsers)
 
   const [openDialogEmployees, setOpenDialogEmployees] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // Funcion para agregar
+  // Función para agregar
   const handleAdd = () => {
-    cleanData();
+    cleanData(); // Limpiar datos del formulario
     setSelectedEmployee(null);
     setActiveTab("form");
     setOpenDialogEmployees(true);
   };
 
-  // Funcion para actualizar
+  // Función para actualizar
   const handleUpdate = (employee) => {
     updateEmployee(employee);
     setSelectedEmployee(employee);
@@ -65,7 +64,7 @@ const PageEmployees = () => {
             defaultValues={selectedEmployee}
             onClose={() => {
               setOpenDialogEmployees(false);
-              fetchData();
+              getEmployees(); // Actualiza los empleados después de cerrar el formulario
             }}
           />
         </Dialog>
