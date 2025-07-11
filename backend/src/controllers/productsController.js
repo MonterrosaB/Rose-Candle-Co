@@ -35,7 +35,7 @@ productsController.getProductById = async (req, res) => {
 
 // POST
 productsController.createProduct = async (req, res) => {
-  console.log(req.body);
+  console.log("Body", req.body);
 
   let {
     name,
@@ -74,14 +74,20 @@ productsController.createProduct = async (req, res) => {
       !name ||
       !description ||
       imagesURL.length < 1 ||
-      !components || components.length < 1 ||
-      !recipe || recipe.length < 1 ||
+      !components ||
+      components.length < 1 ||
+      !recipe ||
+      recipe.length < 1 ||
       availability === undefined ||
-      !useForm || useForm.length < 1 ||
-      !variant || variant.length < 1 ||
+      !useForm ||
+      useForm.length < 1 ||
+      !variant ||
+      variant.length < 1 ||
       !idProductCategory
     ) {
-      return res.status(400).json({ message: "Please complete all the fields" });
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
     }
 
     if (imagesURL.length > 8) {
@@ -103,14 +109,11 @@ productsController.createProduct = async (req, res) => {
 
     await newProduct.save();
     res.status(200).json({ message: "Saved successfully" });
-
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json("Internal server error");
   }
 };
-
-
 
 // DELETE
 productsController.deleteProduct = async (req, res) => {
@@ -158,7 +161,8 @@ productsController.updateProduct = async (req, res) => {
     if (typeof components === "string") components = JSON.parse(components);
     if (typeof recipe === "string") recipe = JSON.parse(recipe);
     if (typeof useForm === "string") useForm = JSON.parse(useForm);
-    if (typeof currentPrice === "string") currentPrice = parseFloat(currentPrice);
+    if (typeof currentPrice === "string")
+      currentPrice = parseFloat(currentPrice);
 
     // Validaciones
     if (name.length < 3) {
@@ -206,12 +210,13 @@ productsController.updateProduct = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({ message: "Updated Successfully", product: productUpdated });
+    res
+      .status(200)
+      .json({ message: "Updated Successfully", product: productUpdated });
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json("Internal server error");
   }
 };
-
 
 export default productsController;
