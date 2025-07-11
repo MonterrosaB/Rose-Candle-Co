@@ -13,6 +13,16 @@ const PageProducts = () => {
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const handleAdd = () => {
+    setSelectedProduct(null);
+    setOpenDialogProduct(true);
+  };
+
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setOpenDialogProduct(true);
+  };
+
   return (
     <>
       <PrincipalDiv>
@@ -21,17 +31,13 @@ const PageProducts = () => {
             buttonText={"Agregar Producto"}
             showIcon={true}
             type={"button"}
-            onClick={() => setOpenDialogProduct(true)}
+            onClick={handleAdd}
           />
         </div>
         <div className="flex items-center justify-center gap-4">
           <UseProductsList
-            onEdit={(product) => {
-              setSelectedProduct(product);       // 🟢 Setea producto para editar
-              setOpenDialogProduct(true);        // 🟢 Abre el modal
-            }}
+            onEdit={handleEdit}
           />
-
         </div>
 
         {openDialogProduct && (

@@ -43,8 +43,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   }, [selectedProduct]);
 
 
-  const { register, handleSubmit, errors, reset, control, createProduct } = useProducts(methods);
-
+  const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
   const {
     productImage,
@@ -61,6 +60,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   const [opcionesMateria, setOpcionesMateria] = useState([]);
 
   const onSubmit = async (data) => {
+
     const allImages = [productImageFile, ...multipleFileFiles];
 
     const formData = new FormData();
@@ -69,8 +69,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory);
-    formData.append("idCollection", data.collection); // si lo necesitas
+    formData.append("idProductCategory", data.idProductCategory._id);
+    formData.append("idCollection", data.collection._id); // si lo necesitas
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -81,7 +81,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     if (selectedProduct) {
       // 🔁 ACTUALIZAR producto existente
-      await updateProduct(selectedProduct._id, formData);
+      await handleUpdate(selectedProduct._id, formData);
+
     } else {
       // 🆕 CREAR nuevo producto
       await createProduct(formData);
@@ -148,7 +149,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   return (
     <Form
-      headerLabel={"Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -319,7 +320,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={"Agregar Producto"} type={"submit"} />
+        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} />
       </FormButton>
     </Form>
   );

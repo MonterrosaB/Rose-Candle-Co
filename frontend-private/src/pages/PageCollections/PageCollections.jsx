@@ -55,7 +55,6 @@ const PageCollections = () => {
     } else {
       await createCollection(data);
     }
-    setOpenDialogCollections(false);
   };
 
   const columns = {
