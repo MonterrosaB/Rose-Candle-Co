@@ -87,7 +87,7 @@ const PageStock = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col min-h-screen w-full pt-8 px-4 sm:px-6 md:px-8 lg:px-10">
+     <div className="relative z-10 flex flex-col min-h-screen w-full pt-19 px-4 sm:px-6 md:px-8 lg:px-10">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
           <div
