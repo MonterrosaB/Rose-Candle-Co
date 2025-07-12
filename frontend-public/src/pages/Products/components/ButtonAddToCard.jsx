@@ -3,10 +3,7 @@ import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import Swal from "sweetalert2";
 
-const AddToCartButton = ({ product}) => {
-  const cartId = "68588b74f122918fbd7edda5";
-  const userId = "665d3836f3c56f70bdc308c5";
-
+const AddToCartButton = ({ product }) => {
   const handleAddToCart = async () => {
     if (!product || !product._id) {
       console.error("Producto incompleto:", product);
@@ -19,55 +16,35 @@ const AddToCartButton = ({ product}) => {
     }
 
     try {
-      const res = await fetch(`http://localhost:4000/api/cart/${cartId}`);
-
-      if (res.status === 404) {
-        const createRes = await fetch("http://localhost:4000/api/cart", {
+      const addProductRes = await fetch(
+        `http://localhost:4000/api/cart/add`,
+        {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           body: JSON.stringify({
-            idUser: userId,
-            creationDate: new Date(),
-            products: [],
-            total: 0,
+            productId: product._id, // Solo mandas el ID
           }),
-        });
+        }
+      );
 
-        if (!createRes.ok) throw new Error(await createRes.text());
-
-        cart = await createRes.json();
-      } else if (!res.ok) {
-        throw new Error(await res.text());
-      } else {
-        cart = await res.json();
+      if (!addProductRes.ok) {
+        throw new Error(await addProductRes.text());
       }
 
-      const updatedProducts = [...cart.products, productId];
-      const updatedTotal = Number(cart.total || 0) + productPrice;
-
-      const updateResponse = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          productId: product._id,
-        }),
+      Swal.fire({
+        icon: "success",
+        title: "Producto agregado",
+        text: "El producto se agregó al carrito correctamente.",
       });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text);
-      }
-
-      alert("Producto agregado al carrito correctamente");
     } catch (err) {
       console.error("Error al agregar al carrito:", err);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo agregar el producto al carrito",
+        text: "No se pudo agregar el producto al carrito.",
       });
     }
   };

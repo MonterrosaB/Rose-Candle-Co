@@ -7,6 +7,7 @@ const Cart = () => {
 const [cartId, setCartId] = useState(null); 
 const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+    const [showCheckout, setShowCheckout] = useState(false);
 
   const fetchCart = async () => {
     try {
@@ -62,11 +63,21 @@ const handleClear = async () => {
 
     if (!res.ok) throw new Error("Error al vaciar el carrito");
 
-    setCartItems([]); // Vaciar estado local
-    alert("Carrito vaciado correctamente");
+    setCartItems([]); // Vacía el estado local
+
+    await Swal.fire({
+      icon: "success",
+      title: "Carrito vaciado",
+      text: "El carrito se vació correctamente.",
+    });
   } catch (error) {
     console.error("Error al vaciar carrito:", error);
-    alert("No se pudo vaciar el carrito");
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo vaciar el carrito.",
+    });
   }
 };
 

@@ -5,9 +5,7 @@ const ClearButton = ({ cartId, onClear }) => {
     try {
       const response = await fetch(`http://localhost:4000/api/cart/empty/${cartId}`, {
         method: "PUT",
-        headers: { 
-          Authorization: `Bearer ${localStorage.getItem("token")}`, 
-          },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
       });
 
       if (!response.ok) {
