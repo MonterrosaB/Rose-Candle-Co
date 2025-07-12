@@ -91,13 +91,13 @@ const Footer = () => {
           >
             Aviso Legal
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#PolíticadeCookies" className="hover:text-[#B7B5B3] transition duration-300">
             Aviso y Política de Cookies
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#TerminosCondiciones" className="hover:text-[#B7B5B3] transition duration-300">
             Términos y Condiciones de uso
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#PoliticadePrivacidad" className="hover:text-[#B7B5B3] transition duration-300">
             Política de privacidad
           </a>
         </div>
