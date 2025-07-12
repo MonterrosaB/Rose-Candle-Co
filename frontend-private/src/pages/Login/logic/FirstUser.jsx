@@ -8,8 +8,13 @@ import FormInput from "../components/FormInput.jsx";
 import Button from "../components/Button.jsx";
 import Logo from "../../../assets/Isotipo.svg?react";
 import useEmployees from "../../../pages/PageEmployees/hooks/useEmployees.jsx"; // Importamos el hook
+import { useForm } from "react-hook-form";
 
 const FirstUser = () => {
+
+  const methods = useForm();
+
+
   // useEmployees (hook de empleados)
   const {
     name,
@@ -28,7 +33,7 @@ const FirstUser = () => {
     setUser,
     errors,
     handleSubmit,
-  } = useEmployees();
+  } = useEmployees(methods);
 
   const [confirmPassword, setConfirmPassword] = useState(""); // Confirmar contraseña
   const navigate = useNavigate();

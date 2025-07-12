@@ -7,7 +7,14 @@ import Button from "../../../global/components/Button";
 import Dropdown from "../../../global/components/Dropdown";
 import useDataEmployee from "../hooks/useEmployees";
 
+import { useForm } from "react-hook-form";
+
 const RegisterEmployee = ({ onClose, defaultValues }) => {
+
+  const methods = useForm({
+    defaultValues: defaultValues || {}, // Prellenar si hay datos
+  });
+
   const {
     register,
     handleSubmit,
@@ -15,7 +22,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     loading,
     setValue,
     isEditMode, // Determina si es modo edición
-  } = useDataEmployee();
+  } = useDataEmployee(methods);
 
   const opcionesEstado = [
     { _id: "true", label: "Activo" },
@@ -24,7 +31,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
 
   return (
     <Form
-      headerLabel={isEditMode ? "Editar Empleado" : "Agregar Empleado"}
+      headerLabel={defaultValues ? "Editar Empleado" : "Agregar Empleado"}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
@@ -122,7 +129,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
             }}
           />
 
-          {!isEditMode && (
+          {!defaultValues && (
             <>
               <Input
                 name="password"
@@ -154,7 +161,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
             </>
           )}
 
-          {isEditMode && (
+          {!defaultValues && (
             <Dropdown
               name="isActive"
               label="Estado"

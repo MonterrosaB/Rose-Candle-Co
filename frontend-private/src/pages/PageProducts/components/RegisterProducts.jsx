@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
+
   const methods = useForm({
     defaultValues: {
       ...selectedProduct,
@@ -26,8 +27,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       variantes: selectedProduct?.variant || [],
       componentes: selectedProduct?.components || [],
       estado: selectedProduct?.availability, // para el dropdown
-      idProductCategory: selectedProduct?.idProductCategory,
-      collection: selectedProduct?.idCollection
+      idProductCategory: selectedProduct?.idProductCategory._id,
+      collection: selectedProduct?.idCollection._id
     },
   });
 

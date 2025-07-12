@@ -4,7 +4,7 @@ import Dialog from "../../../global/components/Dialog";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
 import DataGrid from "../../../global/components/DataGrid";
 import useEmployeeAction from "../hooks/useEmployeeAction";
-import useDataEmployee from "../hooks/useEmployees"; 
+import useDataEmployee from "../hooks/useEmployees";
 import useFetchEmployees from "../hooks/useFetchEmployees";
 
 const PageEmployees = () => {
@@ -14,22 +14,19 @@ const PageEmployees = () => {
   }, []);
 
   const { employees, getEmployees } = useFetchEmployees()
-  const { deleteEmployee, handleUpdateEmployee } = useEmployeeAction(getUsers)
+  const { deleteEmployee, handleUpdateEmployee } = useEmployeeAction(getEmployees)
 
   const [openDialogEmployees, setOpenDialogEmployees] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   // Función para agregar
   const handleAdd = () => {
-    cleanData(); // Limpiar datos del formulario
     setSelectedEmployee(null);
-    setActiveTab("form");
     setOpenDialogEmployees(true);
   };
 
   // Función para actualizar
   const handleUpdate = (employee) => {
-    updateEmployee(employee);
     setSelectedEmployee(employee);
     setOpenDialogEmployees(true);
   };
