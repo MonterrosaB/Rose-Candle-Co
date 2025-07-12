@@ -1,6 +1,6 @@
 // Lógica para la página del Login
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import Star from "../../../assets/star.svg?react";
 import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
@@ -97,6 +97,16 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {/* Recuperar contraseña */}
+        <div className="text-end -mt-2  mb-0">
+          <Link
+            to="/recoveryPassword"
+            className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-16"
+          >
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
 
         {/* Botón para continuar */}
         <Button title="Continuar" type="submit" />

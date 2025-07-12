@@ -19,6 +19,7 @@ import Suppliers from "../../pages/PageSuppliers/PageSuppliers.jsx";
 import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesMateria.jsx";
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
+import PasswordRecovery from "../../pages/RecoveryPassword/logic/RecoveryPassword.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 function Navigation() {
@@ -44,9 +45,24 @@ function Navigation() {
             }
           />
 
-          {/* Ruta pública: login o start según si hay empleados */}
+          {/* Ruta para el primer usuario */}
+          <Route
+            path="/recoveryPassword"
+            element={
+                <PasswordRecovery />
+            }
+          />
+
           <Route
             path="/login"
+            element={
+                <Login />
+            }
+          />
+
+          {/* Ruta pública: login o start según si hay empleados */}
+          <Route
+            path="/laogin"
             element={
               authCokie ? (
                 <Navigate to="/home" replace />

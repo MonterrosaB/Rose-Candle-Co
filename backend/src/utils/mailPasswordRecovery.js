@@ -1,54 +1,58 @@
-import nodemailer from "nodemailer"
-import { config } from "../config.js"
+// Correo electrónico que se envía con el código de verificación
+import nodemailer from "nodemailer";
+import { config } from "../config.js";
 
+// transportador
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth:{
-        user: config.email.user,
-        pass: config.email.pass
-    }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: config.email.user,
+    pass: config.email.pass,
+  },
 });
 
-
+// Función para enviar el correo
 const sendEmail = async (to, subject, body, html) => {
-    try {
-        const info = await transporter.sendMail({
-            from: "danielgranados008@gmail.com",
-            to, 
-            subject,
-            body,
-            html,
-        });
+  try {
+    const info = await transporter.sendMail({
+      from: "danielgranados008@gmail.com", // correo provisional
+      to,
+      subject,
+      body,
+      html,
+    });
 
-        return info;
-    } catch (error) {
-        console.log("error" + error);
-    }
-}
+    return info;
+  } catch (error) {
+    console.log("error" + error);
+  }
+};
 
+// Correo personalizado
 const HTMLRecoveryEmail = (code) => {
-    return `<div style="font-family: Poppins, sans-serif; text-align: center; background-color: #f4f4f9; padding: 40px 20px; border: 1px solid #ddd; border-radius: 15px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-  <div style="background-color: #fff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 20px; font-weight: 600;">Recuperación de Contraseña</h1>
-    <p style="font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 20px;">
-      Hello, we received a request to reset your password. Use the verification code below to proceed:
-    </p>
-    <div style="display: inline-block; padding: 12px 24px; margin: 20px 0; font-size: 20px; font-weight: bold; color: #fff; background-color: #ff7f50; border-radius: 8px; border: 1px solid #e67e22; letter-spacing: 2px;">
-      ${code}
+  return `
+  <div style="font-family: 'Poppins', sans-serif; background-color: #F9F7F3; padding: 40px 20px; max-width: 600px; margin: 0 auto; border-radius: 15px; border: 1px solid #DFCCAC; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    <div style="background-color: #FFFFFF; border-radius: 15px; padding: 30px; text-align: center; border: 1px solid #EDE8DE;">
+      <h1 style="color: #A78A5E; font-size: 26px; font-weight: 600; margin-bottom: 10px;">Recuperación de contraseña</h1>
+      <p style="color: #7D7954; font-size: 16px; margin-bottom: 20px;">
+        ¡Hola! Hemos recibido una solicitud para restablecer tu contraseña. Usa el siguiente código de verificación:
+      </p>
+      <div style="display: inline-block; padding: 15px 30px; margin: 20px 0; font-size: 22px; font-weight: bold; color: #FFFFFF; background-color: #A78A5E; border-radius: 10px; letter-spacing: 3px;">
+        ${code}
+      </div>
+      <p style="color: #86918C; font-size: 14px; margin-top: 20px;">
+        Este código es válido por <strong>20 minutos</strong>. Si no solicitaste este correo, puedes ignorarlo de forma segura.
+      </p>
+      <hr style="border: none; border-top: 1px solid #D3CCBE; margin: 30px 0;">
+      <footer style="font-size: 13px; color: #AAB9B2;">
+        Si necesitas ayuda adicional, por favor contacta a nuestro equipo de soporte en
+        <a href="mailto:soporte@rosecandleco.com" style="color: #A78A5E; text-decoration: none;">soporte@rosecandleco.com</a>.
+      </footer>
     </div>
-    <p style="font-size: 14px; color: #777; line-height: 1.6; margin-bottom: 30px;">
-      This code is valid for the next <strong>20 minutes</strong>. If you didn’t request this email, you can safely ignore it.
-    </p>
-    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-    <footer style="font-size: 14px; color: #aaa;">
-      If you need further assistance, please contact our support team at
-      <a href="mailto:support@example.com" style="color: #3498db; text-decoration: none;">support@example.com</a>.
-    </footer>
   </div>
-</div>
-`;
+  `;
 };
 
 export { sendEmail, HTMLRecoveryEmail };
