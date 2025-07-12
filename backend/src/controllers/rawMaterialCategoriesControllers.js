@@ -14,6 +14,25 @@ rawMaterialCategoriesControllers.getCategories = async (req, res) => {
   }
 };{}
 
+// GET - Obtener categoría por ID
+rawMaterialCategoriesControllers.getCategoryById = async (req, res) => {
+  try {
+    const category = await rawMaterialCategoriesModel.findById(req.params.id);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" }); // error
+    }
+
+    res.status(200).json({ // todo bien
+      message: "Success",
+      data: category,
+    });
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json({ message: "Internal server error" }); // error
+  }
+};
+
 // POST - Crear categoría
 rawMaterialCategoriesControllers.createCategory = async (req, res) => {
   const { name } = req.body;

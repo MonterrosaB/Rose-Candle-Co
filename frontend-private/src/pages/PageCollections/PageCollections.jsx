@@ -10,6 +10,7 @@ const PageCollections = () => {
   const [openDialogCollections, setOpenDialogCollections] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
 
+  // Inicializa react-hook-form con valores por defecto
   const methods = useForm({
     defaultValues: selectedCollection || {},
   });
@@ -25,6 +26,7 @@ const PageCollections = () => {
     deleteCollection,
   } = useCollections(methods);
 
+  // Sincroniza formulario con la colección seleccionada para edición
   useEffect(() => {
     if (selectedCollection) {
       reset(selectedCollection);
@@ -33,22 +35,26 @@ const PageCollections = () => {
     }
   }, [selectedCollection, reset]);
 
+  // Abrir diálogo para agregar nueva colección
   const handleAdd = () => {
     setSelectedCollection(null);
     setOpenDialogCollections(true);
   };
 
+  // Abrir diálogo para editar colección existente
   const handleEdit = (collection) => {
     setSelectedCollection(collection);
     setOpenDialogCollections(true);
   };
 
+  // Confirmar y eliminar colección seleccionada
   const handleDelete = async (collection) => {
     if (confirm(`¿Eliminar la colección "${collection.name}"?`)) {
       await deleteCollection(collection._id);
     }
   };
 
+  // Enviar formulario para crear o actualizar colección
   const onSubmit = async (data) => {
     if (selectedCollection) {
       await updateCollection(selectedCollection._id, data);
@@ -59,9 +65,7 @@ const PageCollections = () => {
 
   const columns = {
     Nombre: "name",
-
   };
-
 
   const rows = collections;
 

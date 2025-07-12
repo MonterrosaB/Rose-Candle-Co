@@ -14,6 +14,22 @@ suppliersControllers.getSuppliers = async (req, res) => {
   }
 };
 
+// GET - Obtener proveedor por ID
+suppliersControllers.getSupplierById = async (req, res) => {
+  try {
+    const supplier = await suppliersModel.findById(req.params.id);
+
+    if (!supplier) {
+      return res.status(404).json({ message: "Supplier not found" });
+    }
+
+    res.status(200).json(supplier);
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error");
+  }
+};
+
 // POST - Crear proveedor
 suppliersControllers.createSuppliers = async (req, res) => {
   const { name, contact } = req.body;

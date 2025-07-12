@@ -11,6 +11,7 @@ const PageCategories = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // Inicializar react-hook-form con valores por defecto según categoría seleccionada
   const methods = useForm({
     defaultValues: selectedCategory || {},
   });
@@ -26,7 +27,7 @@ const PageCategories = () => {
     deleteCategory,
   } = useCategories(methods);
 
-  // 👉 Sincroniza selectedCategory con reset para editar correctamente
+  // Sincronizar formulario cuando cambia la categoría seleccionada (editar/agregar)
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -41,11 +42,13 @@ const PageCategories = () => {
 
   const rows = categories;
 
+  // Abrir diálogo para agregar categoría nueva
   const handleAdd = () => {
     setSelectedCategory(null);
     setOpenDialog(true);
   };
 
+  // Abrir diálogo para editar categoría seleccionada
   const handleEdit = (category) => {
     if (!category?._id) {
       console.error("Categoría inválida para editar:", category);
@@ -55,6 +58,7 @@ const PageCategories = () => {
     setOpenDialog(true);
   };
 
+  // Confirmar y eliminar categoría seleccionada
   const handleDelete = async (category) => {
     if (!category?._id) {
       console.error("Categoría inválida para eliminar:", category);
@@ -68,6 +72,7 @@ const PageCategories = () => {
     }
   };
 
+  // Enviar formulario para crear o actualizar categoría
   const onSubmit = async (data) => {
     if (selectedCategory) {
       await updateCategory(selectedCategory._id, data);
@@ -87,7 +92,6 @@ const PageCategories = () => {
         onClickPrimaryBtn={handleAdd}
         updateRow={handleEdit}
         deleteRow={handleDelete}
-        
       />
 
       {openDialog && (

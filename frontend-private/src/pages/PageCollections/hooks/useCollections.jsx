@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiCollections = "http://localhost:4000/api/collections"; // Ajusta tu endpoint
+const ApiCollections = "http://localhost:4000/api/collections"; // Ajustar endpoint
 
 const useCollections = (methods) => {
   const {
@@ -13,6 +13,7 @@ const useCollections = (methods) => {
 
   const [collections, setCollections] = useState([]);
 
+  // Obtener todas las colecciones desde la API
   const getCollections = async () => {
     try {
       const res = await fetch(ApiCollections);
@@ -25,6 +26,7 @@ const useCollections = (methods) => {
     }
   };
 
+  // Crear una nueva colección
   const createCollection = async (newCollection) => {
     try {
       const res = await fetch(ApiCollections, {
@@ -34,13 +36,14 @@ const useCollections = (methods) => {
       });
       if (!res.ok) throw new Error("Error al crear colección");
       toast.success("Colección agregada");
-      getCollections();
+      getCollections(); // Actualizar lista tras creación
     } catch (error) {
       console.error(error);
       toast.error("No se pudo agregar colección");
     }
   };
 
+  // Actualizar colección existente por ID
   const updateCollection = async (id, updatedCollection) => {
     try {
       const res = await fetch(`${ApiCollections}/${id}`, {
@@ -50,13 +53,14 @@ const useCollections = (methods) => {
       });
       if (!res.ok) throw new Error("Error al actualizar colección");
       toast.success("Colección actualizada");
-      getCollections();
+      getCollections(); // Actualizar lista tras actualización
     } catch (error) {
       console.error(error);
       toast.error("No se pudo actualizar colección");
     }
   };
 
+  // Eliminar colección por ID
   const deleteCollection = async (id) => {
     try {
       const res = await fetch(`${ApiCollections}/${id}`, {
@@ -64,13 +68,14 @@ const useCollections = (methods) => {
       });
       if (!res.ok) throw new Error("Error al eliminar colección");
       toast.success("Colección eliminada");
-      getCollections();
+      getCollections(); // Actualizar lista tras eliminación
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar colección");
     }
   };
 
+  // Cargar colecciones al montar el hook
   useEffect(() => {
     getCollections();
   }, []);

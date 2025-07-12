@@ -12,8 +12,9 @@ router.route("/")
   .get(collectionsController.getCollections)
   .post(collectionsController.createCollection);
 
-// Rutas PUT y DELETE (requieren ID)
+// Rutas que usan el id
 router.route("/:id")
+  .get(collectionsController.getCollectionById)
   .put(collectionsController.updateCollection)
   .delete(collectionsController.deleteCollection);
 

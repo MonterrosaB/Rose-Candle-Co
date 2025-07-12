@@ -11,6 +11,7 @@ const PageCategoriesMateria = () => {
   const [openDialogCategories, setOpenDialogCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // Inicializar formulario con valores por defecto o vacíos
   const methods = useForm({
     defaultValues: selectedCategory || {},
   });
@@ -26,6 +27,7 @@ const PageCategoriesMateria = () => {
     deleteCategory,
   } = useCategoriesMateria(methods);
 
+  // Sincroniza el formulario con la categoría seleccionada para editar o limpiar para nueva
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -34,22 +36,26 @@ const PageCategoriesMateria = () => {
     }
   }, [selectedCategory, reset]);
 
+  // Abrir diálogo para agregar categoría nueva
   const handleAdd = () => {
     setSelectedCategory(null);
     setOpenDialogCategories(true);
   };
 
+  // Abrir diálogo para editar categoría existente
   const handleEdit = (category) => {
     setSelectedCategory(category);
     setOpenDialogCategories(true);
   };
 
+  // Confirmar y eliminar categoría seleccionada
   const handleDelete = async (category) => {
     if (confirm(`¿Eliminar categoría "${category.name}"?`)) {
       await deleteCategory(category._id);
     }
   };
 
+  // Enviar formulario para crear o actualizar categoría
   const onSubmit = async (data) => {
     if (selectedCategory) {
       await updateCategory(selectedCategory._id, data);

@@ -12,6 +12,7 @@ router.route("/")
 .post(rawMaterialCategoriesControllers.createCategory) 
 
 router.route("/:id")
+.get(rawMaterialCategoriesControllers.getCategoryById)
 .put(rawMaterialCategoriesControllers.updateCategory)
 .delete(rawMaterialCategoriesControllers.deleteCategory)
 
