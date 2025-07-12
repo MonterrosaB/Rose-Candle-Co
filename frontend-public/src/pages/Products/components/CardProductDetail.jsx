@@ -1,19 +1,15 @@
 // src/components/CardProductDetail.jsx
 import { useState } from "react";
-import AddToCartButton from "./ButtonAddToCard.jsx"
+import AddToCartButton from "./ButtonAddToCard.jsx";
 import GalleryImages from "./GalleryImages.jsx";
 
 const CardProductDetail = ({ product }) => {
-  const imageUrl = product.images?.[0];
   const [quantity, setQuantity] = useState(1);
 
   return (
     <div className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) max-w-6xl w-full rounded-2xl p-8 flex gap-30 flex-col md:flex-row">
-     
-     <GalleryImages product={product} />
+      <GalleryImages product={product} />
 
-
-      {/* Detalle del producto */}
       <div className="flex-1 space-y-4">
         <h3 className="text-xs italic text-gray-400">ROSE CANDLE CO</h3>
         <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
@@ -23,7 +19,7 @@ const CardProductDetail = ({ product }) => {
           <div className="flex flex-col gap-2">
             <h3 className="text-gray-400 ">Recomendaciones:</h3>
             {product.useForm.map((comp, i) => (
-              <p key={i} className="text-sm  text-black px-3 py-1">
+              <p key={i} className="text-sm text-black px-3 py-1">
                 {comp.instruction}
               </p>
             ))}
@@ -36,13 +32,9 @@ const CardProductDetail = ({ product }) => {
           ${parseFloat(product.currentPrice).toFixed(2)} USD
         </p>
 
-        {/* Cantidad con funcionalidad, botón solo visual */}
         <div className="flex flex-col items-center gap-4 pt-4 w-full max-w-sm">
-          <span className="text-sm text-gray-600 self-start pl-2">
-            Quantity
-          </span>
+          <span className="text-sm text-gray-600 self-start pl-2">Quantity</span>
 
-          {/* Incrementador con ancho igual al botón */}
           <div className="flex items-center justify-center gap-2 border rounded-2xl p-2 w-full">
             <button
               onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
@@ -59,8 +51,7 @@ const CardProductDetail = ({ product }) => {
             </button>
           </div>
 
-          {/* Botón centrado con el mismo ancho */}
-      <AddToCartButton product={product} />
+          <AddToCartButton product={product} quantity={quantity} />
         </div>
       </div>
     </div>
