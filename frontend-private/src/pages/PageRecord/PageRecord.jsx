@@ -10,6 +10,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend,
 } from "recharts";
 
 const PageRecord = () => {
@@ -22,22 +25,30 @@ const PageRecord = () => {
     { name: "May", value: 350 },
   ];
 
+  // 🔴 Datos Stock vs Mínimo (Demo)
+  const stockMinData = [
+    { name: "Calmness", stock: 150, minimo: 100 },
+    { name: "Vela Aromática", stock: 80, minimo: 50 },
+    { name: "Difusor", stock: 50, minimo: 40 },
+    { name: "Gorra", stock: 20, minimo: 10 },
+  ];
+
   const tableData = [
     {
       producto: "Calmness",
       materia: "Cera de Soja",
-      unidad: "g",
-      cantidad: 100,
-      costoUnitario: "$2.00",
-      costoTotal: "$20",
+      unidad: "kg",
+      cantidad: 300,
+      costoUnitario: "$2.50",
+      costoTotal: "$750",
     },
     {
       producto: "Calmness",
       materia: "Cera de Soja",
-      unidad: "g",
-      cantidad: 100,
-      costoUnitario: "$2.00",
-      costoTotal: "$20",
+      unidad: "kg",
+      cantidad: 150,
+      costoUnitario: "$5.00",
+      costoTotal: "$750",
     },
   ];
 
@@ -52,7 +63,7 @@ const PageRecord = () => {
 
   const productTableData = [
     { producto: "Calmness", unidades: 250, ingresos: "$5000" },
-    { producto: "Pantalón", unidades: 100, ingresos: "$3000" },
+    { producto: "Calmness", unidades: 100, ingresos: "$3000" },
   ];
 
   const productTableColumns = {
@@ -63,11 +74,8 @@ const PageRecord = () => {
 
   return (
     <PrincipalDiv>
-      {/* 📌 Título General */}
-      <h1 className="text-center text-2xl font-bold mb-8">Registro General</h1>
-
       {/* 📦 Materia Prima */}
-      <h2 className="text-xl font-semibold mb-4">Materia Prima</h2>
+      <h2 className="text-center text-3xl font-bold mb-4">Materia Prima</h2>
       <DataGrid columns={tableColumns} rows={tableData} editable={false} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -104,8 +112,8 @@ const PageRecord = () => {
         </div>
       </div>
 
-      {/* 🏷️ Productos */}
-      <h2 className="text-xl font-semibold mt-10 mb-4">Productos</h2>
+      {/* Productos */}
+      <h2 className="text-center text-3xl font-bold mt-10 mb-4">Productos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-md font-semibold mb-2">Precio de Producto</h3>
@@ -148,11 +156,68 @@ const PageRecord = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <DataGrid
-          columns={productTableColumns}
-          rows={productTableData}
-          editable={false}
-        />
+      </div>
+
+      {/* Stock vs Mínimo */}
+      <div className="w-full bg-white rounded-2xl shadow-md p-6 h-80 overflow-x-auto mb-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Stock vs Mínimo
+        </h3>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={stockMinData} barCategoryGap={20} barSize={30}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis dataKey="name" stroke="#6b7280" />
+            <YAxis stroke="#6b7280" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                borderColor: "#e5e7eb",
+              }}
+              labelStyle={{ color: "#374151" }}
+            />
+            <Legend
+              wrapperStyle={{ top: 0, right: 0, fontSize: "14px", color: "#374151" }}
+            />
+            <Bar dataKey="stock" fill="#C2A878" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="minimo" fill="#9E9E9E" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/*  Más y menos vendidos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        {/* Tabla Más Vendidos */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h3 className="text-lg font-semibold mb-4 text-center">
+            Productos más vendidos
+          </h3>
+          <DataGrid
+            columns={productTableColumns}
+            rows={[
+              { producto: "Calmness", unidades: 250, ingresos: "$5000" },
+              { producto: "Vela Aromática", unidades: 200, ingresos: "$4000" },
+              { producto: "Difusor", unidades: 150, ingresos: "$3000" },
+            ]}
+            editable={false}
+          />
+        </div>
+
+        {/* Tabla Menos Vendidos */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h3 className="text-lg font-semibold mb-4 text-center">
+            Productos menos vendidos
+          </h3>
+          <DataGrid
+            columns={productTableColumns}
+            rows={[
+              { producto: "Gorra", unidades: 50, ingresos: "$500" },
+              { producto: "Bufanda", unidades: 30, ingresos: "$300" },
+              { producto: "Guantes", unidades: 20, ingresos: "$200" },
+            ]}
+            editable={false}
+          />
+        </div>
       </div>
     </PrincipalDiv>
   );

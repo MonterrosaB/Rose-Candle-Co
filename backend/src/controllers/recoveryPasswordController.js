@@ -25,7 +25,7 @@ passwordRecoveryController.requestCode = async (req, res) => {
       }
     }
     if (!userFound) {
-      res.json({ message: "User not found" });
+      return res.status(400).json({ message: "User not found" }); // error
     }
 
     const code = Math.floor(10000 + Math.random() * 90000).toString();
@@ -45,9 +45,8 @@ passwordRecoveryController.requestCode = async (req, res) => {
     );
 
     res.status(200).json({ message: "Code sent successfully" }); // todo bien
-
   } catch (error) {
-    res.status(500).json({message: "Internal Server Error"}) // error
+    res.status(500).json({ message: "Internal Server Error" }); // error
     console.log("error" + error);
   }
 };
@@ -82,7 +81,7 @@ passwordRecoveryController.verifyCode = async (req, res) => {
 
     res.status(200).json({ message: "Code verified successfully" }); // todo bien
   } catch (error) {
-    res.status(500).json({message: "Internal Server Error"}) // error
+    res.status(500).json({ message: "Internal Server Error" }); // error
     console.log("error" + error);
   }
 };
@@ -122,9 +121,8 @@ passwordRecoveryController.newPassword = async (req, res) => {
     res.clearCookie("tokenRecoveryCode");
 
     res.status(200).json({ message: "Password updated" }); // todo bien
-
   } catch (error) {
-    res.status(500).json({message: "Internal Server Error"}) // error
+    res.status(500).json({ message: "Internal Server Error" }); // error
     console.log("error" + error);
   }
 };

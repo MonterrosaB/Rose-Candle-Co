@@ -10,9 +10,8 @@ import useDataEmployee from "../hooks/useEmployees";
 import { useForm } from "react-hook-form";
 
 const RegisterEmployee = ({ onClose, defaultValues }) => {
-
   const methods = useForm({
-    defaultValues: defaultValues || {}, // Prellenar si hay datos
+    defaultValues: defaultValues || {},
   });
 
   const {
@@ -21,7 +20,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     errors,
     loading,
     setValue,
-    isEditMode, // Determina si es modo edición
+    isEditMode,
   } = useDataEmployee(methods);
 
   const opcionesEstado = [
@@ -36,7 +35,8 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
       onClose={onClose}
     >
       <FormInputs>
-        <InputsInline>
+        {/* Nombres y Apellidos */}
+        <InputsInline className="flex flex-col gap-4 sm:flex-row">
           <Input
             name="name"
             label="Nombres"
@@ -67,6 +67,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           />
         </InputsInline>
 
+        {/* Correo */}
         <Input
           name="email"
           label="Correo"
@@ -82,7 +83,8 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           }}
         />
 
-        <InputsInline>
+        {/* Teléfono y DUI */}
+        <InputsInline className="flex flex-col gap-4 sm:flex-row">
           <Input
             name="phone"
             label="Número de teléfono"
@@ -113,7 +115,8 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           />
         </InputsInline>
 
-        <InputsInline>
+        {/* Usuario */}
+        <InputsInline className="flex flex-col gap-4 sm:flex-row">
           <Input
             name="user"
             label="Usuario"
@@ -128,40 +131,37 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               },
             }}
           />
+        </InputsInline>
 
-          {!defaultValues && (
-            <>
-              <Input
-                name="password"
-                label="Contraseña"
-                type="password"
-                register={register}
-                error={errors.password?.message}
-                options={{
-                  required: "La contraseña es requerida",
-                  minLength: {
-                    value: 8,
-                    message: "La contraseña debe tener al menos 8 caracteres",
-                  },
-                }}
-              />
-
-              <Input
-                name="confirmPassword"
-                label="Confirmar Contraseña"
-                type="password"
-                register={register}
-                error={errors.confirmPassword?.message}
-                options={{
-                  validate: (value) =>
-                    value === methods.getValues("password") ||
-                    "Las contraseñas no coinciden",
-                }}
-              />
-            </>
-          )}
-
-          {!defaultValues && (
+        {/* Contraseña y Estado */}
+        {!defaultValues && (
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Input
+              name="password"
+              label="Contraseña"
+              type="password"
+              register={register}
+              error={errors.password?.message}
+              options={{
+                required: "La contraseña es requerida",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+              }}
+            />
+            <Input
+              name="confirmPassword"
+              label="Confirmar Contraseña"
+              type="password"
+              register={register}
+              error={errors.confirmPassword?.message}
+              options={{
+                validate: (value) =>
+                  value === methods.getValues("password") ||
+                  "Las contraseñas no coinciden",
+              }}
+            />
             <Dropdown
               name="isActive"
               label="Estado"
@@ -171,11 +171,11 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               options={opcionesEstado}
               setValue={setValue}
             />
-          )}
-        </InputsInline>
+          </div>
+        )}
       </FormInputs>
 
-      <FormButton>
+      <FormButton className="w-full flex justify-center mt-4">
         <Button
           buttonText={isEditMode ? "Guardar Cambios" : "Agregar Empleado"}
           type="submit"
