@@ -1,4 +1,4 @@
-import RegisterOrder from "./components/RegisterOrder"
+import RegisterOrder from "./components/RegisterOrder";
 import CardProduct from "./components/CardProductOrder";
 import CardMaterials from "./components/CardMaterials";
 import { useState } from "react";
@@ -91,31 +91,44 @@ const PageOrders = () => {
         Estado: "shippingState[last].state"
     };
 
-    return (
-        <>
-            <PrincipalDiv>
-                <DataGrid
-                    title={"Ordenes"}
-                    columns={columns}
-                    rows={salesOrdersMock}
-                    primaryBtnText={"Add Order"}
-                    onClickPrimaryBtn={() => setOpenDialogOrders(true)}
-                />
+  return (
+    <>
+      {/* Tabla solo md+ */}
+      <div className="hidden md:block">
+        <DataGrid title={"Ordenes"} columns={columns} rows={salesOrdersMock} />
+      </div>
 
-                {openDialogOrders && (
-                    <Dialog
-                        open={openDialogOrders}
-                        onClose={() => setOpenDialogOrders(false)}
-                    >
-                        <RegisterOrder
-                            onClose={() => setOpenDialogOrders(false)}
-                        />
-                    </Dialog>
-                )}
-            </PrincipalDiv>
+      {/* Cards para móvil */}
+      <div className="md:hidden pt-17 space-y-4 px-4 py-4">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
+        {salesOrdersMock.map((order) => (
+          <div
+            key={order.idShoppingCart}
+            className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+          >
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>ID Orden:</strong> {order.idShoppingCart}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Fecha:</strong> {formatDate(order.createdAt)}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Monto:</strong> ${order.total.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Método de pago:</strong> {order.paymentMethod}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Estado:</strong> {getLastShippingState(order)}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Dirección:</strong> {order.address}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 
-
-        </>
-    )
-}
 export default PageOrders;

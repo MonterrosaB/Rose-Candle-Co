@@ -1,5 +1,4 @@
-import PrincipalDiv from "../../global/components/PrincipalDiv"
-
+import PrincipalDiv from "../../global/components/PrincipalDiv";
 import { Link } from "react-router";
 
 import {
@@ -11,20 +10,16 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
-} from "recharts";
-
-import {
     LineChart,
     Line
 } from "recharts";
 
-
 import Widget from "../../global/components/Widget";
 import OrdersByCategory from "./components/OrdersByCategory";
 import AverageSellByOrders from "./components/AverageSellByOrders";
-import DataGrid from "../../global/components/DataGrid"
-const PageReports = () => {
+import DataGrid from "../../global/components/DataGrid";
 
+const PageReports = () => {
     const data = [
         { name: "Ene", ingresos: 4000, ganancias: 2400 },
         { name: "Feb", ingresos: 3000, ganancias: 1398 },
@@ -46,80 +41,59 @@ const PageReports = () => {
     ];
 
     const columns = {
-        "Producto": "product",
+        Producto: "product",
         "Precio de venta": "salePrice",
         "Consto de producción": "productionCost",
         "%": "%",
     };
 
     const rows = [
-        {
-            productionCost: 3,
-            salePrice: 9,
-            "%": "66.66%",
-            product: "Calmnes",
-        },
-        {
-            productionCost: 3,
-            salePrice: 9,
-            "%": "66.66%",
-            product: "Calmnes 2"
-        },
-        {
-            productionCost: 3,
-            salePrice: 9,
-            "%": "66.66%",
-            product: "Calmnes",
-        },
-        {
-            productionCost: 3,
-            salePrice: 9,
-            "%": "66.66%",
-            product: "Calmnes 2"
-        }
+        { productionCost: 3, salePrice: 9, "%": "66.66%", product: "Calmnes" },
+        { productionCost: 3, salePrice: 9, "%": "66.66%", product: "Calmnes 2" },
+        { productionCost: 3, salePrice: 9, "%": "66.66%", product: "Calmnes" },
+        { productionCost: 3, salePrice: 9, "%": "66.66%", product: "Calmnes 2" },
     ];
 
     return (
-        <>
-            <PrincipalDiv>
-                <div className="flex">
-                    <div className="flex w-1/2 justify-center items-center">
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                            <Widget
-                                bgColor={"#F7F5EE"}
-                                textColor={"#333"}
-                                tittle={"Pedidos del mes"}
-                                value={"100"}
-                                variant="compact"
-                            />
-                            <Widget
-                                bgColor={"#F7F5EE"}
-                                textColor={"#333"}
-                                tittle={"Tasa de carritos abandonados"}
-                                value={"5.4%"}
-                                variant="compact"
-                            />
-                            <Widget
-                                bgColor={"#F7F5EE"}
-                                textColor={"#333"}
-                                tittle={"Ingresos del mes"}
-                                value={"$150"}
-                                variant="compact"
-                            />
-                            <Widget
-                                bgColor={"#F7F5EE"}
-                                textColor={"#333"}
-                                tittle={"Ganancias del mes"}
-                                value={"$60"}
-                                variant="compact"
-                            />
-                        </div>
+        <PrincipalDiv>
+            <div className="pt-15">
+                {/* Widgets superiores */}
+                <div className="flex flex-col lg:flex-row gap-6 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-2/3">
+                        <Widget
+                            tittle="Pedidos del mes"
+                            value="100"
+                            bgColor="#F7F5EE"
+                            textColor="#333"
+                            variant="compact"
+                        />
+                        <Widget
+                            tittle="Tasa de carritos abandonados"
+                            value="5.4%"
+                            bgColor="#F7F5EE"
+                            textColor="#333"
+                            variant="compact"
+                        />
+                        <Widget
+                            tittle="Ingresos del mes"
+                            value="$150"
+                            bgColor="#F7F5EE"
+                            textColor="#333"
+                            variant="compact"
+                        />
+                        <Widget
+                            tittle="Ganancias del mes"
+                            value="$60"
+                            bgColor="#F7F5EE"
+                            textColor="#333"
+                            variant="compact"
+                        />
                     </div>
-                    <div className="flex items-center justify-center w-1/2">
-                        <div className="bg-[#C2A878] h-full w-80 rounded-2xl p-6 flex flex-col justify-between text-white shadow-lg">
+
+                    <div className="w-full lg:w-1/3">
+                        <div className="bg-[#C2A878] h-full rounded-2xl p-6 flex flex-col justify-between text-white shadow-lg">
                             <h2 className="text-2xl font-semibold mb-2">Ganancia del día</h2>
                             <p className="text-6xl font-bold text-center">$80</p>
-
                             <div className="flex justify-center">
                                 <Link
                                     to="/ventas"
@@ -129,130 +103,124 @@ const PageReports = () => {
                                 </Link>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <div className="flex gap-8">
-                    <OrdersByCategory />
-                    <div className="h-64 w-full bg-white rounded-2xl shadow-md p-6">
+                {/* Gráficos superiores */}
+                <div className="flex flex-col xl:flex-row gap-6 mb-6">
+                    <div className="w-full xl:w-1/2 mb-4 xl:mb-0">
+                        <OrdersByCategory />
+                    </div>
+
+                    <div className="w-full xl:w-1/2 bg-white rounded-2xl shadow-md p-6 h-80 overflow-x-auto">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">
                             Ingresos vs Ganancias
                         </h2>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={data}
-                                barCategoryGap={20}
-                                barSize={30}
-                            >
+                            <BarChart data={data} barCategoryGap={20} barSize={30}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                 <XAxis dataKey="name" stroke="#6b7280" />
                                 <YAxis stroke="#6b7280" />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: "#fff", borderRadius: "8px", borderColor: "#e5e7eb" }}
+                                    contentStyle={{
+                                        backgroundColor: "#fff",
+                                        borderRadius: "8px",
+                                        borderColor: "#e5e7eb",
+                                    }}
                                     labelStyle={{ color: "#374151" }}
                                 />
                                 <Legend
-                                    wrapperStyle={{
-                                        top: 0,
-                                        right: 0,
-                                        fontSize: "14px",
-                                        color: "#374151",
-                                    }}
+                                    wrapperStyle={{ top: 0, right: 0, fontSize: "14px", color: "#374151" }}
                                 />
                                 <Bar dataKey="ingresos" fill="#C2A878" radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="ganancias" fill="#9E9E9E" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <AverageSellByOrders
-                        bgColor={"#F7F5EE"}
-                        textColor={"#333"}
-                        tittle={"Tamaño promedio de compras"}
-                        value={"$75"}
-                        variant="compact"
-                    />
+
+                    <div className="w-full xl:w-1/4 mt-4 xl:mt-0">
+                        <AverageSellByOrders
+                            tittle="Tamaño promedio de compras"
+                            value="$75"
+                            bgColor="#F7F5EE"
+                            textColor="#333"
+                            variant="compact"
+                        />
+                    </div>
                 </div>
-                <div className="flex gap-4">
-                    <div className="w-1/2">
+
+                {/* Tabla y línea */}
+                <div className="flex flex-col lg:flex-row gap-6 mb-6">
+                    <div className="w-full lg:w-1/2 overflow-x-auto">
                         <DataGrid
-                            title={"Ganancias por producto"}
+                            title="Ganancias por producto"
                             columns={columns}
                             rows={rows}
                             editable={false}
                         />
                     </div>
-                    <div className="w-1/2">
-                        <div className="w-full h-full p-4 bg-white rounded-xl shadow-md">
-                            <h2 className="text-md font-semibold mb-2">Balance semanal</h2>
-                            <ResponsiveContainer width="100%" height="80%">
-                                <LineChart
-                                    width={500}
-                                    height={300}
-                                    data={dataT}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5,
+
+                    <div className="w-full lg:w-1/2 bg-white rounded-xl shadow-md p-4 overflow-x-auto">
+                        <h2 className="text-md font-semibold mb-2">Balance semanal</h2>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <LineChart data={dataT}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#fff",
+                                        borderRadius: "8px",
+                                        borderColor: "#e5e7eb",
                                     }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: "#fff", borderRadius: "8px", borderColor: "#e5e7eb" }}
-                                        labelStyle={{ color: "#374151" }}
-                                    />
-
-                                    <Line
-                                        type="monotone"
-                                        dataKey="balance"
-                                        stroke="#C2A878"
-                                        strokeWidth={2}
-                                        dot={{ r: 2 }}
-                                        activeDot={{ r: 4 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                                    labelStyle={{ color: "#374151" }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="balance"
+                                    stroke="#C2A878"
+                                    strokeWidth={2}
+                                    dot={{ r: 2 }}
+                                    activeDot={{ r: 4 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
-                <div className="flex justify-around">
-                    <Widget
-                        bgColor={"#F7F5EE"}
-                        textColor={"#333"}
-                        tittle={"Ingresos Totales"}
-                        value={"$5000"}
-                        variant="compact"
-                    />
-                    <Widget
-                        bgColor={"#F7F5EE"}
-                        textColor={"#333"}
-                        tittle={"Ingresos del mes"}
-                        value={"$150"}
 
-                    />
+                {/* Widgets finales */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Widget
-                        bgColor={"#F7F5EE"}
-                        textColor={"#333"}
-                        tittle={"Costo promedio por unidad"}
-                        value={"$6.20"}
+                        tittle="Ingresos Totales"
+                        value="$5000"
+                        bgColor="#F7F5EE"
+                        textColor="#333"
                         variant="compact"
                     />
                     <Widget
-                        bgColor={"#F7F5EE"}
-                        textColor={"#333"}
-                        tittle={"Costos totales"}
-                        value={"$3000"}
+                        tittle="Ingresos del mes"
+                        value="$150"
+                        bgColor="#F7F5EE"
+                        textColor="#333"
+                    />
+                    <Widget
+                        tittle="Costo promedio por unidad"
+                        value="$6.20"
+                        bgColor="#F7F5EE"
+                        textColor="#333"
+                        variant="compact"
+                    />
+                    <Widget
+                        tittle="Costos totales"
+                        value="$3000"
+                        bgColor="#F7F5EE"
+                        textColor="#333"
                         variant="compact"
                     />
                 </div>
+            </div>
+        </PrincipalDiv>
+    );
+};
 
-
-            </PrincipalDiv>
-
-        </>
-    )
-}
 export default PageReports;
+

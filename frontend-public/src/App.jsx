@@ -63,15 +63,10 @@ function Layout() {
   );
 }
 
-function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <Layout />
-      </AuthProvider>
-    </Router>
-  );
-}
+import Public from "./router/Public/Public.jsx";
 
+function App() {
+  return <Public />;
+}
 
 export default App;

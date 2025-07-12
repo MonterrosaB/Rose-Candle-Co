@@ -12,6 +12,7 @@ router.route("/")
 .post(productCategories.createProductCategory) 
 
 router.route("/:id")
+.get(productCategories.getProductCategoryById) 
 .put(productCategories.updateProductCategory)
 .delete(productCategories.deleteProductCategory)
 

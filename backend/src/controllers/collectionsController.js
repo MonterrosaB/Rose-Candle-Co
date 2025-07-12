@@ -22,7 +22,28 @@ collectionsController.getCollections = async (req, res) => {
   }
 };
 
+// GET por ID
+collectionsController.getCollectionById = async (req, res) => {
+  try {
+    const collection = await collectionModel.findById(req.params.id);
 
+    if (!collection) {
+      return res.status(404).json({ message: "Collection not found" });
+    }
+
+    const normalized = {
+      _id: collection._id,
+      name: collection.name || collection.collection || "",
+      createdAt: collection.createdAt,
+      updatedAt: collection.updatedAt,
+    };
+
+    res.status(200).json(normalized); // todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // error
+  }
+};
 
 // POST
 collectionsController.createCollection = async (req, res) => {
