@@ -11,7 +11,6 @@ const PageCategories = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Inicializar react-hook-form con valores por defecto según categoría seleccionada
   const methods = useForm({
     defaultValues: selectedCategory || {},
   });
@@ -27,7 +26,6 @@ const PageCategories = () => {
     deleteCategory,
   } = useCategories(methods);
 
-  // 👉 Sincroniza selectedCategory con reset para editar correctamente
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -42,28 +40,19 @@ const PageCategories = () => {
 
   const rows = categories;
 
-  // Abrir diálogo para agregar categoría nueva
   const handleAdd = () => {
     setSelectedCategory(null);
     setOpenDialog(true);
   };
 
-  // Abrir diálogo para editar categoría seleccionada
   const handleEdit = (category) => {
-    if (!category?._id) {
-      console.error("Categoría inválida para editar:", category);
-      return;
-    }
+    if (!category?._id) return;
     setSelectedCategory(category);
     setOpenDialog(true);
   };
 
-  // Confirmar y eliminar categoría seleccionada
   const handleDelete = async (category) => {
-    if (!category?._id) {
-      console.error("Categoría inválida para eliminar:", category);
-      return;
-    }
+    if (!category?._id) return;
     const confirmDelete = window.confirm(
       `¿Eliminar la categoría "${category.name}"?`
     );
@@ -72,7 +61,6 @@ const PageCategories = () => {
     }
   };
 
-  // Enviar formulario para crear o actualizar categoría
   const onSubmit = async (data) => {
     if (selectedCategory) {
       await updateCategory(selectedCategory._id, data);
@@ -84,16 +72,18 @@ const PageCategories = () => {
 
   return (
     <PrincipalDiv>
-      <DataGrid
-        title="Categorías"
-        columns={columns}
-        rows={rows}
-        primaryBtnText="Agregar Categoría"
-        onClickPrimaryBtn={handleAdd}
-        updateRow={handleEdit}
-        deleteRow={handleDelete}
-        
-      />
+      {/* Tabla solo visible en pantallas md en adelante */}
+      <div className="hidden md:block">
+        <DataGrid
+          title="Categorías"
+          columns={columns}
+          rows={rows}
+          primaryBtnText="Agregar Categoría"
+          onClickPrimaryBtn={handleAdd}
+          updateRow={handleEdit}
+          deleteRow={handleDelete}
+        />
+      </div>
 
       {/* Vista tipo cards para móviles */}
       <div className="md:hidden pt-13 space-y-4 px-4">
