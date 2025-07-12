@@ -26,44 +26,31 @@ function Navigation() {
   const { authCokie } = useAuth();
   const { hasEmployees } = useHasEmployees();
 
-  // Redirección desde raíz si no hay empleados
-  const redirectPath = hasEmployees ? "/login" : "/start";
-
   return (
     <>
       {authCokie && <Sidebar />}
 
-      {/* ✅ Corrección aplicada aquí con md:ml-64 */}
       <main className={authCokie ? "md:ml-64" : ""}>
         <Routes>
-          {/* Ruta para el primer usuario */}
+          {/* Ruta para el primer usuario, solo si NO hay empleados */}
           <Route
             path="/start"
             element={
-              <StartRoute>
-                <FirstUser />
-              </StartRoute>
+              hasEmployees ? (
+                <Navigate to="/login" replace />
+              ) : (
+                <StartRoute>
+                  <FirstUser />
+                </StartRoute>
+              )
             }
           />
 
-          {/* Ruta para el primer usuario */}
-          <Route
-            path="/recoveryPassword"
-            element={
-                <PasswordRecovery />
-            }
-          />
+          <Route path="/recoveryPassword" element={<PasswordRecovery />} />
 
+          {/* Login: si no hay empleados redirige a /start */}
           <Route
             path="/login"
-            element={
-                <Login />
-            }
-          />
-
-          {/* Ruta pública: login o start según si hay empleados */}
-          <Route
-            path="/laogin"
             element={
               authCokie ? (
                 <Navigate to="/home" replace />
@@ -79,7 +66,13 @@ function Navigation() {
           <Route
             path="/"
             element={
-              <Navigate to={authCokie ? "/home" : redirectPath} replace />
+              authCokie ? (
+                <Navigate to="/home" replace />
+              ) : hasEmployees ? (
+                <Navigate to="/login" replace />
+              ) : (
+                <Navigate to="/start" replace />
+              )
             }
           />
 
@@ -102,10 +95,12 @@ function Navigation() {
             />
           </Route>
 
-          {/* Ruta comodín: para rutas no válidas */}
+          {/* Ruta comodín */}
           <Route
             path="*"
-            element={<Navigate to={authCokie ? "/home" : "/login"} replace />}
+            element={
+              authCokie ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
+            }
           />
         </Routes>
       </main>
@@ -114,3 +109,4 @@ function Navigation() {
 }
 
 export default Navigation;
+
