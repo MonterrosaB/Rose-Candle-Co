@@ -1,17 +1,18 @@
 import materialBalanceModel from "../models/materialBalance.js"; // Modelo de colecciones
+import RawMaterials from "../models/RawMaterials.js"; // Modelo de balance
 
 // Array de métodos (CRUD)
 const materialBalanceControllers = {};
 
 // GET
 materialBalanceControllers.getMaterialBalance = async (req, res) => {
-    try {
-        const MaterialBalance = await materialBalanceModel.find();
-        res.status(200).json(MaterialBalance); // Todo bien
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
-    }
+  try {
+    const MaterialBalance = await materialBalanceModel.find();
+    res.status(200).json(MaterialBalance); // Todo bien
+  } catch (error) {
+    console.log("error " + error)
+    res.status(500).json("Internal server error") // Error del servidor
+  }
 };
 
 // POST
@@ -20,27 +21,30 @@ materialBalanceControllers.createMaterialBalance = async (req, res) => {
   const { name } = req.body;
 
   try {
-      // Validaciones
-      if( !name){
-        return res.status(400).json({message: "Please complete all the fields"}) // Error del cliente, campos vacios
-      }
+    // Validaciones
+    if (!name) {
+      return res.status(400).json({ message: "Please complete all the fields" }) // Error del cliente, campos vacios
+    }
 
-      if ( name.length < 3){
-          return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
-      }
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }) // Error del cliente, longitud del texto muy corta
+    }
 
-      if ( name.length > 100){
-          return res.status(400).json({message: "Too large"}) // Error del cliente, longitud del texto muy larga
-      }
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Too large" }) // Error del cliente, longitud del texto muy larga
+    }
 
-      // Guardar datos
-      const newMaterialBalance = new materialBalanceModel({ name });
-      await newMaterialBalance.save();
-      res.status(200).json({ message: "MaterialBalance saved" }); // Todo bien
+    // Guardar datos
+    const newMaterialBalance = new materialBalanceModel({ name });
+    await newMaterialBalance.save();
+
+
+
+    res.status(200).json({ message: "MaterialBalance saved" }); // Todo bien
 
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error)
+    return res.status(500).json("Internal server error") // Error del servidor
   }
 };
 
@@ -51,12 +55,12 @@ materialBalanceControllers.updateMaterialBalance = async (req, res) => {
 
   try {
     // Validaciones
-    if ( name.length < 3){
-        return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }) // Error del cliente, longitud del texto muy corta
     }
 
-    if ( name.length > 100){
-        return res.status(400).json({message: "Too large"}) // Error del cliente, longitud del texto muy larga
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Too large" }) // Error del cliente, longitud del texto muy larga
     }
 
     // Guardar datos
@@ -66,15 +70,15 @@ materialBalanceControllers.updateMaterialBalance = async (req, res) => {
       { new: true }
     );
 
-    if(!updatedMaterialBalance){
-        return res.status(400).json({message: "MaterialBalance not found"}) // Error del cliente, coleccion no encontrada
+    if (!updatedMaterialBalance) {
+      return res.status(400).json({ message: "MaterialBalance not found" }) // Error del cliente, coleccion no encontrada
     }
 
     res.status(200).json({ message: "MaterialBalance updated" }); // Todo bien
 
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error)
+    return res.status(500).json("Internal server error") // Error del servidor
   }
 };
 
@@ -83,15 +87,15 @@ materialBalanceControllers.deleteMaterialBalance = async (req, res) => {
   try {
     const deletedMaterialBalance = await materialBalanceModel.findByIdAndDelete(req.params.id);
 
-    if(!deletedMaterialBalance){
-        return res.status(400).json({message: "MaterialBalance not found"}) // Error del cliente, coleccion no encontrada
+    if (!deletedMaterialBalance) {
+      return res.status(400).json({ message: "MaterialBalance not found" }) // Error del cliente, coleccion no encontrada
     }
 
     res.status(200).json({ message: "MaterialBalance deleted" }); // Todo bien
 
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error)
+    return res.status(500).json("Internal server error") // Error del servidor
   }
 };
 

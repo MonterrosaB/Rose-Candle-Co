@@ -16,11 +16,39 @@ import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
+import useProductOptions from "../hooks/useProductOptions";
 
-const RegisterProducts = ({ onClose }) => {
-  const methods = useForm();
-  const { register, handleSubmit, errors, reset, control, createProduct } =
-    useProducts(methods);
+
+const RegisterProducts = ({ onClose, selectedProduct }) => {
+
+  const methods = useForm({
+    defaultValues: {
+      ...selectedProduct,
+      instrucctions: selectedProduct?.useForm || [],
+      receta: selectedProduct?.recipe || [],
+      variantes: selectedProduct?.variant || [],
+      componentes: selectedProduct?.components || [],
+      estado: selectedProduct?.availability, // para el dropdown
+      idProductCategory: selectedProduct?.idProductCategory._id,
+      collection: selectedProduct?.idCollection._id
+    },
+  });
+
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
+
+  const { agregarInput, inputs, resetInputs } = AddComponent();
+
+
+  useEffect(() => {
+    if (selectedProduct) {
+      resetInputs(); // opcional: limpia antes de volver a cargar
+      agregarInput("variantes", selectedProduct.variant || []);
+      agregarInput("componentes", selectedProduct.components || []);
+    }
+  }, [selectedProduct]);
+
+
+  const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
   const {
     productImage,
@@ -32,55 +60,38 @@ const RegisterProducts = ({ onClose }) => {
     onImageChange,
   } = changeImages();
 
-  const [opcionesCategorias, setOpcionesCategorias] = useState([]);
-  const [opcionesColecciones, setOpcionesColecciones] = useState([]);
-  const [opcionesMateria, setOpcionesMateria] = useState([]);
 
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        // 🔵 Categorías
-        const resCategories = await fetch(
-          "http://localhost:4000/api/productcategories"
-        );
-        if (!resCategories.ok) throw new Error("Error al traer categorías");
-        const categories = await resCategories.json();
-        const mappedCategories = categories.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesCategorias(mappedCategories);
+  const onSubmit = async (data) => {
 
-        // 🟢 Colecciones
-        const resCollections = await fetch(
-          "http://localhost:4000/api/collections"
-        );
-        if (!resCollections.ok) throw new Error("Error al traer colecciones");
-        const collections = await resCollections.json();
-        const mappedCollections = collections.map((item) => ({
-          _id: item._id,
-          label: item.name || item.collection,
-        }));
-        setOpcionesColecciones(mappedCollections);
+    const allImages = [productImageFile, ...multipleFileFiles];
 
-        // 🟣 Componentes (Materia Prima)
-        const resMaterials = await fetch(
-          "http://localhost:4000/api/rawMaterials"
-        );
-        if (!resMaterials.ok) throw new Error("Error al traer materiales");
-        const materials = await resMaterials.json();
-        const mappedMaterials = materials.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesMateria(mappedMaterials);
-      } catch (error) {
-        console.error("Error fetching:", error);
-      }
-    };
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("availability", data.estado);
+    formData.append("useForm", JSON.stringify(data.instrucctions));
+    formData.append("variant", JSON.stringify(data.variantes));
+    formData.append("idProductCategory", data.idProductCategory._id);
+    formData.append("idCollection", data.collection._id); // si lo necesitas
 
-    fetchOptions();
-  }, []);
+    allImages.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    formData.append("components", JSON.stringify(data.componentes));
+    formData.append("recipe", JSON.stringify(data.receta));
+
+    if (selectedProduct) {
+      // 🔁 ACTUALIZAR producto existente
+      await handleUpdate(selectedProduct._id, formData);
+
+    } else {
+      // 🆕 CREAR nuevo producto
+      await createProduct(formData);
+    }
+
+    onClose(); // cerrar modal después de guardar
+  };
 
   console.log("Opciones Colecciones:", opcionesColecciones);
   console.log("Opciones Materia Prima:", opcionesMateria);
@@ -90,34 +101,10 @@ const RegisterProducts = ({ onClose }) => {
     { _id: false, label: "Inactivo" },
   ];
 
-  const { agregarInput, inputs } = AddComponent();
-
-  const onSubmit = async (data) => {
-    const allImages = [productImageFile, ...multipleFileFiles];
-
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("availability", data.estado);
-    formData.append("useForm", JSON.stringify(data.instrucctions));
-    formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory);
-    //formData.append("idCollection", data.collection);
-
-    allImages.forEach((file) => {
-      formData.append("images", file);
-    });
-
-    formData.append("components", JSON.stringify(data.componentes));
-    formData.append("recipe", JSON.stringify(data.receta));
-
-    await createProduct(formData);
-    console.log(data);
-  };
 
   return (
     <Form
-      headerLabel={"Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -288,7 +275,7 @@ const RegisterProducts = ({ onClose }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={"Agregar Producto"} type={"submit"} />
+        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} />
       </FormButton>
     </Form>
   );

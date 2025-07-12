@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiCategories = "http://localhost:4000/api/productcategories"; // Cambia la URL si aplica
+const ApiCategories = "http://localhost:4000/api/productcategories";
 
 const useCategories = (methods) => {
   const {
@@ -41,7 +41,7 @@ const useCategories = (methods) => {
       });
       if (!res.ok) throw new Error("Error al crear categoría");
       toast.success("Categoría creada");
-      getCategories();
+      await getCategories();
     } catch (error) {
       console.error(error);
       toast.error("No se pudo crear categoría");
@@ -57,7 +57,7 @@ const useCategories = (methods) => {
       });
       if (!res.ok) throw new Error("Error al actualizar categoría");
       toast.success("Categoría actualizada");
-      getCategories();
+      await getCategories();
     } catch (error) {
       console.error(error);
       toast.error("No se pudo actualizar categoría");
@@ -68,7 +68,6 @@ const useCategories = (methods) => {
     try {
       const res = await fetch(`${ApiCategories}/${id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
       });
 
       if (!res.ok) {
@@ -77,7 +76,7 @@ const useCategories = (methods) => {
       }
 
       toast.success("Categoría eliminada correctamente");
-      // ✅ Filtra local para evitar flicker
+      // 🔑 Actualiza el estado local filtrando la eliminada
       setCategories((prev) => prev.filter((cat) => cat._id !== id));
     } catch (error) {
       console.error("Error eliminando:", error);

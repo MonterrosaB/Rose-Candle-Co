@@ -19,11 +19,12 @@ import rawMaterialCategories from "./src/routes/rawMaterialCategories.js";
 import rawMaterials from "./src/routes/rawMaterial.js";
 import materialBalance from "./src/routes/materialBalance.js";
 import productionCostHistoryRoutes from "./src/routes/productionCostHistory.js";
-
+import registerEmployeesRoutes from "./src/routes/registerEmployees.js";
 import registerCustomersRoutes from "./src/routes/registerCustomers.js";
-import loginCustomerRoutes from "./src/routes/loginCustomer.js"
-import logoutCustomerRoutes from "./src/routes/logoutCustomer.js"
-import logoutRoutes from "./src/routes/logout.js"
+import loginCustomerRoutes from "./src/routes/loginCustomer.js";
+import logoutCustomerRoutes from "./src/routes/logoutCustomer.js";
+import logoutRoutes from "./src/routes/logout.js";
+import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 
 // Constante para la libreria de express
 const app = express();
@@ -36,7 +37,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"], // frontend
-    credentials: true // permitir cookies
+    credentials: true, // permitir cookies
   })
 );
 
@@ -59,8 +60,9 @@ app.use("/api/login", loginRoutes);
 app.use("/api/loginCustomer", loginCustomerRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/logoutCustomer", logoutCustomerRoutes);
-
-
 app.use("/api/registerCustomer", registerCustomersRoutes);
+app.use("/api/registerEmployees", registerEmployeesRoutes)
+app.use("/api/recoveryPassword", recoveryPasswordRoutes)
+
 // Exportar
 export default app;

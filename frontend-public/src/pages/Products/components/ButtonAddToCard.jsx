@@ -1,21 +1,52 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
+import Swal from "sweetalert2";
 
-const AddToCartButton = ({ product }) => {
+const AddToCartButton = ({ product}) => {
   const cartId = "68588b74f122918fbd7edda5";
   const userId = "665d3836f3c56f70bdc308c5";
 
   const handleAddToCart = async () => {
     if (!product || !product._id) {
       console.error("Producto incompleto:", product);
-      alert("El producto no tiene todos los datos necesarios.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "El producto no tiene todos los datos necesarios.",
+      });
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/cart/add", {
-        method: "POST",
+      const res = await fetch(`http://localhost:4000/api/cart/${cartId}`);
+
+      if (res.status === 404) {
+        const createRes = await fetch("http://localhost:4000/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idUser: userId,
+            creationDate: new Date(),
+            products: [],
+            total: 0,
+          }),
+        });
+
+        if (!createRes.ok) throw new Error(await createRes.text());
+
+        cart = await createRes.json();
+      } else if (!res.ok) {
+        throw new Error(await res.text());
+      } else {
+        cart = await res.json();
+      }
+
+      const updatedProducts = [...cart.products, productId];
+      const updatedTotal = Number(cart.total || 0) + productPrice;
+
+      const updateResponse = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -30,12 +61,14 @@ const AddToCartButton = ({ product }) => {
         throw new Error(text);
       }
 
-      const data = await res.json();
-      console.log("Carrito actualizado:", data.cart);
       alert("Producto agregado al carrito correctamente");
     } catch (err) {
       console.error("Error al agregar al carrito:", err);
-      alert("No se pudo agregar el producto al carrito");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo agregar el producto al carrito",
+      });
     }
   };
 

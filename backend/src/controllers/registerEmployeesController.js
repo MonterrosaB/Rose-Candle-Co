@@ -12,6 +12,8 @@ registerEmployeesController.registerEmployees = async (req, res) => {
   const { name, surnames, email, phone, dui, password, user, role, isActive } =
     req.body;
 
+  console.log(req.body);
+
   try {
     // Validaciones
     if (

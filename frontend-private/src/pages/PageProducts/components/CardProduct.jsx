@@ -10,11 +10,12 @@ const CardProduct = ({
   category,
   timestamps,
   availability,
+  onClick
 }) => {
   return (
-    <Link
-      to={`/product/${_id}`}
-      className="flex w-full max-w-sm border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-transform duration-200 hover:-translate-y-1 bg-gray-100 mx-auto" // ← más angosto
+    <div
+      className="flex w-full max-w-sm border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-transform duration-200 hover:-translate-y-1 bg-gray-100 mx-auto"
+      onClick={onClick}
     >
       {/* Imagen (mitad izquierda) */}
       <div className="w-1/2 flex flex-col items-center justify-center p-4"> {/* ← más margen */}
@@ -40,14 +41,13 @@ const CardProduct = ({
         </div>
         <p className="text-sm text-gray-500">Últ: {timestamps}</p>
         <span
-          className={`text-xs px-2 py-1 rounded-full ${
-            availability ? "bg-green-600 text-white" : "bg-gray-400 text-white"
-          }`}
+          className={`text-xs px-2 py-1 rounded-full ${availability ? "bg-green-600 text-white" : "bg-gray-400 text-white"
+            }`}
         >
           {availability ? "Activo" : "Inactivo"}
         </span>
       </div>
-    </Link>
+    </div>
   );
 };
 

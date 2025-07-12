@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ClearButton from "./components/CleanCart.jsx";
+import CheckoutFlow from "./components/CheckoutFlow.jsx";
 
 const Cart = () => {
-  const [cartId, setCartId] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
+const [cartId, setCartId] = useState(null); 
+const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  
 
   const fetchCart = async () => {
     try {
@@ -34,10 +33,6 @@ const Cart = () => {
     fetchCart();
   }, []);
 
-
-  
-
-  // Actualizar carrito en backend cuando cambian los items localmente
   const updateCartBackend = async (newProducts) => {
     try {
       const res = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
@@ -53,12 +48,6 @@ const Cart = () => {
       console.error(error);
     }
   };
-
-
-  const getTotal = () =>
-    cartItems
-      .reduce((acc, item) => acc + Number(item.currentPrice || 0), 0)
-      .toFixed(2);
 
 const handleClear = async () => {
   if (!cartId) return;
@@ -81,8 +70,25 @@ const handleClear = async () => {
   }
 };
 
+const getTotal = () =>
+    cartItems
+      .reduce((acc, item) => acc + Number(item.currentPrice || 0), 0)
+      .toFixed(2);
 
-const handleRemoveItem = async (indexToRemove) => {
+  if (isLoading) return <p className="p-4">Cargando carrito…</p>;
+
+  if (showCheckout)
+    return (
+      <CheckoutFlow
+        cartItems={cartItems}
+        total={getTotal()}
+        onBack={() => setShowCheckout(false)}
+        onClearCart={handleClear}
+      />
+    );
+
+
+  const handleRemoveItem = async (indexToRemove) => {
   const productToRemove = cartItems[indexToRemove];
   if (!productToRemove || !productToRemove._id) return;
 
@@ -108,11 +114,6 @@ const handleRemoveItem = async (indexToRemove) => {
     alert("No se pudo eliminar el producto");
   }
 };
-
-
-
-
-  if (isLoading) return <p className="p-4">Cargando carrito...</p>;
 
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-8">
@@ -234,3 +235,4 @@ const handleRemoveItem = async (indexToRemove) => {
 };
 
 export default Cart;
+

@@ -86,18 +86,18 @@ const Footer = () => {
         <div className="flex flex-col items-start gap-7 w-full sm:w-auto">
           <p className="text-lg text-[#B7B5B3]">Información Legal</p>
           <a
-            href="/"
+            href="/TermsAndConditions"
             className="hover:text-[#B7B5B3] mt-5 transition duration-300"
           >
             Aviso Legal
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#PolíticadeCookies" className="hover:text-[#B7B5B3] transition duration-300">
             Aviso y Política de Cookies
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#TerminosCondiciones" className="hover:text-[#B7B5B3] transition duration-300">
             Términos y Condiciones de uso
           </a>
-          <a href="/" className="hover:text-[#B7B5B3] transition duration-300">
+          <a href="/TermsAndConditions#PoliticadePrivacidad" className="hover:text-[#B7B5B3] transition duration-300">
             Política de privacidad
           </a>
         </div>

@@ -26,6 +26,7 @@ const PageCategories = () => {
     deleteCategory,
   } = useCategories(methods);
 
+  // 👉 Sincroniza selectedCategory con reset para editar correctamente
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -46,8 +47,8 @@ const PageCategories = () => {
   };
 
   const handleEdit = (category) => {
-    if (!category || !category._id) {
-      console.error("Categoría inválida para editar", category);
+    if (!category?._id) {
+      console.error("Categoría inválida para editar:", category);
       return;
     }
     setSelectedCategory(category);
@@ -55,11 +56,13 @@ const PageCategories = () => {
   };
 
   const handleDelete = async (category) => {
-    if (!category || !category._id) {
-      console.error("Categoría inválida para eliminar", category);
+    if (!category?._id) {
+      console.error("Categoría inválida para eliminar:", category);
       return;
     }
-    const confirmDelete = confirm(`¿Eliminar la categoría "${category.name}"?`);
+    const confirmDelete = window.confirm(
+      `¿Eliminar la categoría "${category.name}"?`
+    );
     if (confirmDelete) {
       await deleteCategory(category._id);
     }
@@ -77,22 +80,25 @@ const PageCategories = () => {
   return (
     <PrincipalDiv>
       <DataGrid
-        title={"Categorías"}
+        title="Categorías"
         columns={columns}
         rows={rows}
-        primaryBtnText={"Agregar Categoría"}
+        primaryBtnText="Agregar Categoría"
         onClickPrimaryBtn={handleAdd}
         updateRow={handleEdit}
-        deleteRow={handleDelete } 
+        deleteRow={handleDelete}
+        
       />
 
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
           <FormOneInput
-            headerLabel={selectedCategory ? "Editar Categoría" : "Agregar Categoría"}
+            headerLabel={
+              selectedCategory ? "Editar Categoría" : "Agregar Categoría"
+            }
             onSubmit={handleSubmit(onSubmit)}
-            name={"name"}
-            label={"Nombre de Categoría"}
+            name="name"
+            label="Nombre de Categoría"
             register={register}
             onClose={() => setOpenDialog(false)}
             error={errors.name?.message}

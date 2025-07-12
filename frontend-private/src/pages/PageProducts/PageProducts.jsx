@@ -11,6 +11,17 @@ import UseProductsList from "./components/UseProductList";
 const PageProducts = () => {
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleAdd = () => {
+    setSelectedProduct(null);
+    setOpenDialogProduct(true);
+  };
+
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setOpenDialogProduct(true);
+  };
 
   return (
     <>
@@ -20,12 +31,13 @@ const PageProducts = () => {
             buttonText={"Agregar Producto"}
             showIcon={true}
             type={"button"}
-            onClick={() => setOpenDialogProduct(true)}
+            onClick={handleAdd}
           />
         </div>
         <div className="flex items-center justify-center gap-4">
-          <UseProductsList />
-
+          <UseProductsList
+            onEdit={handleEdit}
+          />
         </div>
 
         {openDialogProduct && (
@@ -33,7 +45,9 @@ const PageProducts = () => {
             open={openDialogProduct}
             onClose={() => setOpenDialogProduct(false)}
           >
-            <RegisterProducts onClose={() => setOpenDialogProduct(false)} />
+            <RegisterProducts
+              onClose={() => setOpenDialogProduct(false)}
+              selectedProduct={selectedProduct} />
           </Dialog>
         )}
       </PrincipalDiv>

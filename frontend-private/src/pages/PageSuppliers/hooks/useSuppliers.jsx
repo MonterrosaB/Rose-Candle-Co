@@ -11,34 +11,41 @@ const useSuppliers = () => {
       const res = await fetch(ApiSuppliers);
       if (!res.ok) throw new Error("Error al obtener proveedores");
       const data = await res.json();
-     
-     const formatted = data.map(s => ({
-     _id: s._id,
-     name: s.name,
-     label: s.name,
-    }));
+
+      const formatted = data.map((s) => ({
+        _id: s._id,
+        name: s.name,
+        contact: s.contact,
+        label: s.name,
+      }));
+
       setSuppliers(formatted);
     } catch (error) {
       console.error(error);
       toast.error("No se pudo cargar proveedores");
     }
   };
+const createSupplier = async (newSupplier) => {
+  try {
+    const res = await fetch(ApiSuppliers, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newSupplier),
+    });
 
-  const createSupplier = async (newSupplier) => {
-    try {
-      const res = await fetch(ApiSuppliers, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newSupplier),
-      });
-      if (!res.ok) throw new Error("Error al crear proveedor");
-      toast.success("Proveedor agregado");
-      getSuppliers();
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo agregar proveedor");
-    }
-  };
+    const data = await res.json();
+    console.log("Respuesta backend:", data);
+
+    if (!res.ok) throw new Error(data.message || "Error al crear proveedor");
+
+    toast.success("Proveedor agregado");
+    getSuppliers();
+  } catch (error) {
+    console.error("Error en createSupplier:", error.message);
+    toast.error(error.message || "No se pudo agregar proveedor");
+  }
+};
+
 
   const updateSupplier = async (id, updatedSupplier) => {
     try {
