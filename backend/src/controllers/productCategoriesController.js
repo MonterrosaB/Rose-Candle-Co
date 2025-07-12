@@ -4,95 +4,111 @@ const productCategoriesController = {};
 
 // GET
 productCategoriesController.getproductCategories = async (req, res) => {
-    try {
-        const productCategory = await productCategories.find()
-        res.status(200).json(productCategory) // Todo bien
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
-    }
+  try {
+    const productCategory = await productCategories.find();
+    res.status(200).json(productCategory); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
 };
 
+// GET por ID
+productCategoriesController.getProductCategoryById = async (req, res) => {
+  try {
+    const category = await productCategories.findById(req.params.id);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json(category); // todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // error
+  }
+};
 
 // POST
 productCategoriesController.createProductCategory = async (req, res) => {
-    // Obtener datos
-    const { name } = req.body;
+  // Obtener datos
+  const { name } = req.body;
 
-    try {
-        // Validaciones
-        if( !name){
-            return res.status(400).json({message: "Please complete all the fields"}) // Error del cliente, campos vacios
-        }
-
-        if ( name.length < 3){
-            return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
-        }
-
-        if ( name.length > 50){
-            return res.status(400).json({message: "Too long"}) // Error del cliente, longitud del texto muy larga
-        }
-
-        // Guardar datos
-        const newProductCategory = new productCategories({name});
-        await newProductCategory.save()
-        res.status(200).json({ message: "Saved Successfull"}) // Todo bien
-
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
+  try {
+    // Validaciones
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacios
     }
+
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+    }
+
+    if (name.length > 50) {
+      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+    }
+
+    // Guardar datos
+    const newProductCategory = new productCategories({ name });
+    await newProductCategory.save();
+    res.status(200).json({ message: "Saved Successfull" }); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
 };
 
 // DELETE
 productCategoriesController.deleteProductCategory = async (req, res) => {
-    try {
-        const deleteProductCategory = await productCategories.findByIdAndDelete(req.params.id)
-        
-        if(!deleteProductCategory){
-            return res.status(400).json({message: "Category not found"}) // Error del cliente, categoria no encontrado
-        }
+  try {
+    const deleteProductCategory = await productCategories.findByIdAndDelete(
+      req.params.id
+    );
 
-        res.status(200).json({ message: "Deleted Successfull"}) //Todo bien
-
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
+    if (!deleteProductCategory) {
+      return res.status(400).json({ message: "Category not found" }); // Error del cliente, categoria no encontrado
     }
+
+    res.status(200).json({ message: "Deleted Successfull" }); //Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
 };
 
 // PUT
 productCategoriesController.updateProductCategory = async (req, res) => {
-    // Obtener datos
-    const { name } = req.body;
+  // Obtener datos
+  const { name } = req.body;
 
-    try {
-        // Validaciones
-        if ( name.length < 3){
-            return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
-        }
+  try {
+    // Validaciones
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+    }
 
-        if ( name.length > 50){
-            return res.status(400).json({message: "Too long"}) // Error del cliente, longitud del texto muy larga
-        }
+    if (name.length > 50) {
+      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+    }
 
-        // Guardar datos
-        const categoryUpdated = await productCategories.findByIdAndUpdate(
-            req.params.id, 
-            {name}, 
-            {new: true}
-        );
+    // Guardar datos
+    const categoryUpdated = await productCategories.findByIdAndUpdate(
+      req.params.id,
+      { name },
+      { new: true }
+    );
 
-        if(!categoryUpdated){
-            return res.status(400).json({message: "Category not found"}) // Error del cliente, categoria no encontrado
-        }
+    if (!categoryUpdated) {
+      return res.status(400).json({ message: "Category not found" }); // Error del cliente, categoria no encontrado
+    }
 
-        res.status(200).json({ message: "Updated Successfull"}) // Todo bien
-
-    } catch (error) {
-        console.log("error "+error)
-        res.status(500).json("Internal server error") // Error del servidor
-    } 
+    res.status(200).json({ message: "Updated Successfull" }); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
 };
 
 export default productCategoriesController;
