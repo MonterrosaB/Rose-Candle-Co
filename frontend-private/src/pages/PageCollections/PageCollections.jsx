@@ -61,9 +61,7 @@ const PageCollections = () => {
     } else {
       await createCollection(data);
     }
-    // ✅ Cierra el modal después de guardar
     setOpenDialogCollections(false);
-    // ✅ Limpia selección
     setSelectedCollection(null);
   };
 

@@ -1,66 +1,100 @@
-import materialBalanceModel from "../models/materialBalance.js";
-import RawMaterials from "../models/RawMaterials.js";
+import materialBalanceModel from "../models/materialBalance.js"; // Modelo de colecciones
 
+// Array de métodos (CRUD)
 const materialBalanceControllers = {};
 
-// POST - Crear movimiento de materia prima
-materialBalanceControllers.createMaterialBalance = async (req, res) => {
-  const { idMaterial, movement, amount, unitPrice, reference, date } = req.body;
-
+// GET
+materialBalanceControllers.getMaterialBalance = async (req, res) => {
   try {
-    // Validaciones básicas
-    if (!idMaterial || !movement || !amount || !unitPrice || !date) {
-      return res
-        .status(400)
-        .json({ message: "Todos los campos son requeridos" });
-    }
-
-    // Crear movimiento
-    const newMovement = new materialBalanceModel({
-      idMaterial,
-      movement,
-      amount,
-      unitPrice,
-      reference,
-      date,
-    });
-
-    await newMovement.save();
-
-    // Si el movimiento es una entrada, actualizar el stock y precio promedio
-    if (movement === "entrada") {
-      const rawMaterial = await RawMaterials.findById(idMaterial);
-
-      if (!rawMaterial) {
-        return res.status(404).json({ message: "Materia prima no encontrada" });
-      }
-
-      // Calcular nuevo stock
-      const currentStock = rawMaterial.stock || 0;
-      const newStock = currentStock + amount;
-
-      // Calcular nuevo precio promedio ponderado
-      const currentTotalValue = rawMaterial.stock * rawMaterial.unitPrice;
-      const newValue = amount * unitPrice;
-      const totalAmount = currentStock + amount;
-
-      const averagePrice =
-        totalAmount === 0 ? 0 : (currentTotalValue + newValue) / totalAmount;
-
-      // Actualizar materia prima
-      rawMaterial.stock = newStock;
-      rawMaterial.unitPrice = averagePrice;
-
-      await rawMaterial.save();
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Movimiento guardado y materia prima actualizada" });
+    const MaterialBalance = await materialBalanceModel.find();
+    res.status(200).json(MaterialBalance); // Todo bien
   } catch (error) {
-    console.log("Error al crear movimiento: ", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
+// POST
+materialBalanceControllers.createMaterialBalance = async (req, res) => {
+  // Obtener datos
+  const { name } = req.body;
+
+  try {
+    // Validaciones
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacios
+    }
+
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+    }
+
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
+    }
+
+    // Guardar datos
+    const newMaterialBalance = new materialBalanceModel({ name });
+    await newMaterialBalance.save();
+    res.status(200).json({ message: "MaterialBalance saved" }); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// PUT
+materialBalanceControllers.updateMaterialBalance = async (req, res) => {
+  // Obtener datos
+  const { name } = req.body;
+
+  try {
+    // Validaciones
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+    }
+
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
+    }
+
+    // Guardar datos
+    updatedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
+      req.params.id,
+      { name },
+      { new: true }
+    );
+
+    if (!updatedMaterialBalance) {
+      return res.status(400).json({ message: "MaterialBalance not found" }); // Error del cliente, coleccion no encontrada
+    }
+
+    res.status(200).json({ message: "MaterialBalance updated" }); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// DELETE
+materialBalanceControllers.deleteMaterialBalance = async (req, res) => {
+  try {
+    const deletedMaterialBalance = await materialBalanceModel.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!deletedMaterialBalance) {
+      return res.status(400).json({ message: "MaterialBalance not found" }); // Error del cliente, coleccion no encontrada
+    }
+
+    res.status(200).json({ message: "MaterialBalance deleted" }); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// Exportar
 export default materialBalanceControllers;

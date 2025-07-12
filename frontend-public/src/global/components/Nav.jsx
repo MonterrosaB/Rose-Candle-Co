@@ -4,7 +4,7 @@ import { FaRegUser } from "react-icons/fa"; // Icono de cuenta
 import { MdOutlineShoppingCart } from "react-icons/md"; // Icono de carrito
 import Logo from "../../assets/Logotipo.svg"; // Logo
 
-const Nav = ({ topClass = "top-0" }) => {
+const Nav = ({ topClass = "top-10" }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

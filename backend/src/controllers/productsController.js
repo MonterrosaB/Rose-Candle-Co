@@ -17,6 +17,10 @@ productsController.getproducts = async (req, res) => {
   try {
     const product = await productsModel
       .find()
+      .populate({
+        path: "components.idComponent",
+        select: "name", // traer solo el campo nombre del componente
+      })
       .populate("idProductCategory")
       .populate("idCollection");
     res.status(200).json(product); // Todo bien

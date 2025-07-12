@@ -58,7 +58,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     uploadMultipleFiles,
     removeImage,
     onImageChange,
-  } = changeImages();
+  } = changeImages(selectedProduct);
+
 
 
   const onSubmit = async (data) => {

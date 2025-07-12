@@ -4,9 +4,10 @@ const rawMaterialsControllers = {};
 // GET - Obtener todos los rRawMaterial
 rawMaterialsControllers.getrawMaterial = async (req, res) => {
   try {
-    const rawMaterial = await rawMaterialModel.find()
-      .populate("idRawMaterialCategory", 'name')
-      .populate("idSupplier", 'name');
+    const rawMaterial = await rawMaterialModel
+      .find()
+      .populate("idRawMaterialCategory", "name")
+      .populate("idSupplier", "name");
     res.status(200).json(rawMaterial);
   } catch (error) {
     console.error("error", error);
@@ -35,7 +36,9 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
       !name ||
       !unit
     ) {
-      return res.status(400).json({ message: "Please complete all the fields" });
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
     }
 
     if (typeof currentStock !== "number" || currentStock < 0) {
@@ -47,11 +50,15 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
     }
 
     if (name.length < 3 || name.length > 100) {
-      return res.status(400).json({ message: "Name must be 3-100 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Name must be 3-100 characters long" });
     }
 
     if (unit.length < 1 || unit.length > 20) {
-      return res.status(400).json({ message: "Unit must be 1-20 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Unit must be 1-20 characters long" });
     }
 
     // Guardar RawMaterial
@@ -106,7 +113,9 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
       !name ||
       !unit
     ) {
-      return res.status(400).json({ message: "Please complete all the fields" });
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
     }
 
     if (typeof currentStock !== "number" || currentStock < 0) {
@@ -118,11 +127,15 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
     }
 
     if (name.length < 3 || name.length > 100) {
-      return res.status(400).json({ message: "Name must be 3-100 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Name must be 3-100 characters long" });
     }
 
     if (unit.length < 1 || unit.length > 20) {
-      return res.status(400).json({ message: "Unit must be 1-20 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Unit must be 1-20 characters long" });
     }
 
     const updated = await rawMaterialModel.findByIdAndUpdate(
