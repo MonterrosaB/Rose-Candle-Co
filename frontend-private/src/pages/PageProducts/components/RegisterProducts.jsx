@@ -19,7 +19,8 @@ import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
 
 const RegisterProducts = ({ onClose }) => {
-  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();  const methods = useForm();
+  const {opcionesCategorias, opcionesColecciones, opcionesMateria} = useProductOptions;
+  const methods = useForm();
   const { register, handleSubmit, errors, reset, control, createProduct } =
     useProducts(methods);
 
@@ -43,30 +44,6 @@ const RegisterProducts = ({ onClose }) => {
     { _id: false, label: "Inactivo" },
   ];
 
-  const { agregarInput, inputs } = AddComponent();
-
-  const onSubmit = async (data) => {
-    const allImages = [productImageFile, ...multipleFileFiles];
-
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("availability", data.estado);
-    formData.append("useForm", JSON.stringify(data.instrucctions));
-    formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory);
-    //formData.append("idCollection", data.collection);
-
-    allImages.forEach((file) => {
-      formData.append("images", file);
-    });
-
-    formData.append("components", JSON.stringify(data.componentes));
-    formData.append("recipe", JSON.stringify(data.receta));
-
-    await createProduct(formData);
-    console.log(data);
-  };
 
   return (
     <Form

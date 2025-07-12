@@ -6,17 +6,27 @@ const useInputGroups = () => {
         componentes: [],
     });
 
-    const agregarInput = (grupo) => {
+    // Permite agregar inputs vacíos o con datos iniciales
+    const agregarInput = (grupo, valoresIniciales = []) => {
+        const nuevosInputs = valoresIniciales.length
+            ? valoresIniciales.map((item) => ({
+                id: Date.now() + Math.random(),
+                ...item,
+            }))
+            : [{ id: Date.now() + Math.random() }];
+
         setInputs((prev) => ({
             ...prev,
-            [grupo]: [
-                ...prev[grupo],
-                { id: Date.now() + Math.random() }, // solo necesitas el id para el key
-            ],
+            [grupo]: [...prev[grupo], ...nuevosInputs],
         }));
     };
 
-    return { agregarInput, inputs };
+    // Para resetear completamente (por ejemplo, cuando cambias de producto)
+    const resetInputs = () => {
+        setInputs({ variantes: [], componentes: [] });
+    };
+
+    return { agregarInput, inputs, resetInputs };
 };
 
 export default useInputGroups;

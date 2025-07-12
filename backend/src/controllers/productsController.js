@@ -15,7 +15,10 @@ const productsController = {};
 // GET
 productsController.getproducts = async (req, res) => {
   try {
-    const product = await productsModel.find().populate("idProductCategory");
+    const product = await productsModel
+      .find()
+      .populate("idProductCategory")
+      .populate("idCollection");
     res.status(200).json(product); // Todo bien
   } catch (error) {
     console.log("error " + error);
@@ -46,6 +49,7 @@ productsController.createProduct = async (req, res) => {
     useForm,
     variant,
     idProductCategory,
+    idCollection,
   } = req.body;
 
   let imagesURL = [];
@@ -105,6 +109,7 @@ productsController.createProduct = async (req, res) => {
       useForm,
       variant,
       idProductCategory,
+      idCollection,
     });
 
     await newProduct.save();

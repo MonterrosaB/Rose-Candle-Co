@@ -2,7 +2,6 @@
 import bcryptjs from "bcryptjs";
 import JsonWebToken from "jsonwebtoken";
 import { config } from "../config.js";
-import customersModel from "../models/Customers.js";
 import employeesModel from "../models/Employees.js";
 
 const loginController = {};
