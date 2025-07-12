@@ -16,8 +16,11 @@ import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
+import useProductOptions from "../hooks/useProductOptions";
+
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
+
   const methods = useForm({
     defaultValues: {
       ...selectedProduct,
@@ -26,10 +29,12 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       variantes: selectedProduct?.variant || [],
       componentes: selectedProduct?.components || [],
       estado: selectedProduct?.availability, // para el dropdown
-      idProductCategory: selectedProduct?.idProductCategory,
-      collection: selectedProduct?.idCollection
+      idProductCategory: selectedProduct?.idProductCategory._id,
+      collection: selectedProduct?.idCollection._id
     },
   });
+
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
 
   const { agregarInput, inputs, resetInputs } = AddComponent();
 
@@ -43,8 +48,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   }, [selectedProduct]);
 
 
-  const { register, handleSubmit, errors, reset, control, createProduct } = useProducts(methods);
-
+  const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
   const {
     productImage,
@@ -56,11 +60,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     onImageChange,
   } = changeImages();
 
-  const [opcionesCategorias, setOpcionesCategorias] = useState([]);
-  const [opcionesColecciones, setOpcionesColecciones] = useState([]);
-  const [opcionesMateria, setOpcionesMateria] = useState([]);
 
   const onSubmit = async (data) => {
+
     const allImages = [productImageFile, ...multipleFileFiles];
 
     const formData = new FormData();
@@ -69,8 +71,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory);
-    formData.append("idCollection", data.collection); // si lo necesitas
+    formData.append("idProductCategory", data.idProductCategory._id);
+    formData.append("idCollection", data.collection._id); // si lo necesitas
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -81,7 +83,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     if (selectedProduct) {
       // 🔁 ACTUALIZAR producto existente
-      await updateProduct(selectedProduct._id, formData);
+      await handleUpdate(selectedProduct._id, formData);
+
     } else {
       // 🆕 CREAR nuevo producto
       await createProduct(formData);
@@ -89,53 +92,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     onClose(); // cerrar modal después de guardar
   };
-
-
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        // 🔵 Categorías
-        const resCategories = await fetch(
-          "http://localhost:4000/api/productcategories"
-        );
-        if (!resCategories.ok) throw new Error("Error al traer categorías");
-        const categories = await resCategories.json();
-        const mappedCategories = categories.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesCategorias(mappedCategories);
-
-        // 🟢 Colecciones
-        const resCollections = await fetch(
-          "http://localhost:4000/api/collections"
-        );
-        if (!resCollections.ok) throw new Error("Error al traer colecciones");
-        const collections = await resCollections.json();
-        const mappedCollections = collections.map((item) => ({
-          _id: item._id,
-          label: item.name || item.collection,
-        }));
-        setOpcionesColecciones(mappedCollections);
-
-        // 🟣 Componentes (Materia Prima)
-        const resMaterials = await fetch(
-          "http://localhost:4000/api/rawMaterials"
-        );
-        if (!resMaterials.ok) throw new Error("Error al traer materiales");
-        const materials = await resMaterials.json();
-        const mappedMaterials = materials.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesMateria(mappedMaterials);
-      } catch (error) {
-        console.error("Error fetching:", error);
-      }
-    };
-
-    fetchOptions();
-  }, []);
 
   console.log("Opciones Colecciones:", opcionesColecciones);
   console.log("Opciones Materia Prima:", opcionesMateria);
@@ -148,7 +104,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   return (
     <Form
-      headerLabel={"Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -319,7 +275,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={"Agregar Producto"} type={"submit"} />
+        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} />
       </FormButton>
     </Form>
   );

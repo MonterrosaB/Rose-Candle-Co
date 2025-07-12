@@ -115,46 +115,14 @@ const useProducts = (methods) => {
     }
   };
 
-  const updateProduct = (dataProduct) => {
-    setId(dataProduct._id);
-    setName(dataProduct.name);
-    setDescription(dataProduct.description);
-    setImages(dataProduct.images || []);
-    setComponents(dataProduct.components || []);
-    setRecipe(dataProduct.recipe || []);
-    setAvailability(dataProduct.availability || "");
-    setUseForm(dataProduct.useForm || []);
-    setCurrentPrice(dataProduct.currentPrice || "");
-    setIdProductCategory(dataProduct.idProductCategory || "");
-    setError(null);
-    setSuccess(null);
-    setActiveTab("form");
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async (idProduct, formData) => {
 
     try {
       setLoading(true);
 
-      const updatedProduct = {
-        name,
-        description,
-        images,
-        components,
-        recipe,
-        availability,
-        useForm,
-        currentPrice,
-        idProductCategory,
-      };
-
-      const response = await fetch(`${ApiProducts}/${id}`, {
+      const response = await fetch(`${ApiProducts}/${idProduct}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProduct),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -163,9 +131,7 @@ const useProducts = (methods) => {
 
       toast.success("Producto actualizado");
       setSuccess("Producto actualizado correctamente");
-      cleanData();
-      setId("");
-      setActiveTab("list");
+      reset();
       fetchData();
     } catch (error) {
       setError(error.message);
@@ -210,7 +176,6 @@ const useProducts = (methods) => {
     cleanData,
     fetchData,
     deleteProduct,
-    updateProduct,
     handleUpdate,
     // RHF
     register,

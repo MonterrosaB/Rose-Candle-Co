@@ -28,7 +28,7 @@ function Navigation() {
   const { hasEmployees } = useHasEmployees();
   // Redirección desde raíz si no hay empleados
   const redirectPath = hasEmployees ? "/login" : "/start";
-  
+
   return (
     <>
       {authCokie && <Sidebar />}

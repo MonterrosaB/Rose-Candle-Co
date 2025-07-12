@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
+import Swal from "sweetalert2";
 
-const AddToCartButton = ({ product }) => {
+const AddToCartButton = ({ product, quantity = 1 }) => {
   const cartId = "68588b74f122918fbd7edda5";
   const userId = "665d3836f3c56f70bdc308c5";
 
@@ -15,7 +16,11 @@ const AddToCartButton = ({ product }) => {
       !product.currentPrice
     ) {
       console.error("Producto incompleto:", product);
-      alert("El producto no tiene todos los datos necesarios.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "El producto no tiene todos los datos necesarios.",
+      });
       return;
     }
 
@@ -47,8 +52,8 @@ const AddToCartButton = ({ product }) => {
         cart = await res.json();
       }
 
-      const updatedProducts = [...cart.products, productId];
-      const updatedTotal = Number(cart.total || 0) + productPrice;
+      const updatedProducts = [...cart.products, ...Array(quantity).fill(productId)];
+      const updatedTotal = Number(cart.total || 0) + productPrice * quantity;
 
       const updateResponse = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
         method: "PUT",
@@ -65,10 +70,34 @@ const AddToCartButton = ({ product }) => {
 
       if (!updateResponse.ok) throw new Error(await updateResponse.text());
 
-      alert("Producto agregado al carrito correctamente");
+      Swal.fire({
+        toast: true,
+        position: "top-right",
+        icon: "success",
+        title: "Producto agregado al carrito",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        customClass: {
+          popup:
+            "bg-green-50 border border-green-200 rounded-lg shadow-lg px-4 py-2 text-green-800",
+          title: "font-semibold text-green-800 text-sm",
+          icon: "text-green-500",
+        },
+        didOpen: (toast) => {
+          const icon = toast.querySelector(".swal2-icon");
+          if (icon) {
+            icon.classList.add("text-green-500");
+          }
+        },
+      });
     } catch (err) {
       console.error("Error al agregar al carrito:", err);
-      alert("No se pudo agregar el producto al carrito");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo agregar el producto al carrito",
+      });
     }
   };
 
