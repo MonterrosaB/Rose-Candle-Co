@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+ import { useState, useEffect } from "react";
 import RegisterEmployee from "../components/RegisterEmployee";
 import Dialog from "../../../global/components/Dialog";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
