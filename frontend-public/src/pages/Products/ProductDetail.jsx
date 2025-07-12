@@ -11,7 +11,7 @@ const ProductDetail = () => {
     <section className="min-h-screen px-6 md:px-12 py-28">
       <div className="max-w-6xl mx-auto">
         {/* Aquí se renderiza el producto */}
-      <CardProductDetail product={product} />
+        <CardProductDetail product={product} />
       </div>
     </section>
   );

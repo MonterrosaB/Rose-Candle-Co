@@ -12,8 +12,8 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <div className="relative bg-[#F9F7F3] ">
-      
+    <div className="relative bg-[#F9F7F3] mt-15">
+
       <Hero />
       <Historia />
       <Productos />

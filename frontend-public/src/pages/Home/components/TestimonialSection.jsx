@@ -1,5 +1,5 @@
-import comillas from "../../assets/Comillas.svg";
-import Testimonial from "../../assets/Testimonial.svg";
+import comillas from "../../../assets/Comillas.svg";
+import Testimonial from "../../../assets/Testimonial.svg";
 
 import { useState, useEffect } from "react";
 
@@ -113,7 +113,7 @@ const TestimonialSection = () => {
               {current.conclusion}
             </p>
 
-         
+
             <div className="flex items-center justify-between pt-6 mt-8">
               <h3 className="text-[#2c2c2c] text-lg font-bold underline decoration-2 underline-offset-4">
                 {current.author}

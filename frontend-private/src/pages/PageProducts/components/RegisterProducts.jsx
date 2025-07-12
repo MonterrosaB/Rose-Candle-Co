@@ -34,19 +34,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     },
   });
 
-  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria, opcionesEstado } = useProductOptions();
 
   const { agregarInput, inputs, resetInputs } = AddComponent();
-
-
-  useEffect(() => {
-    if (selectedProduct) {
-      resetInputs(); // opcional: limpia antes de volver a cargar
-      agregarInput("variantes", selectedProduct.variant || []);
-      agregarInput("componentes", selectedProduct.components || []);
-    }
-  }, [selectedProduct]);
-
 
   const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
@@ -58,7 +48,16 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     uploadMultipleFiles,
     removeImage,
     onImageChange,
-  } = changeImages();
+  } = changeImages(selectedProduct);
+
+
+  useEffect(() => {
+    if (selectedProduct) {
+      resetInputs(); // opcional: limpia antes de volver a cargar
+      agregarInput("variantes", selectedProduct.variant || []);
+      agregarInput("componentes", selectedProduct.components || []);
+    }
+  }, [selectedProduct]);
 
 
   const onSubmit = async (data) => {
@@ -71,8 +70,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory._id);
-    formData.append("idCollection", data.collection._id); // si lo necesitas
+    formData.append("idProductCategory", data.idProductCategory);
+    formData.append("idCollection", data.collection); // si lo necesitas
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -81,26 +80,22 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("components", JSON.stringify(data.componentes));
     formData.append("recipe", JSON.stringify(data.receta));
 
-    if (selectedProduct) {
-      // 🔁 ACTUALIZAR producto existente
-      await handleUpdate(selectedProduct._id, formData);
+    try {
+      if (selectedProduct) {
+        // ACTUALIZAR producto existente si recibe datos
+        await handleUpdate(selectedProduct._id, formData);
 
-    } else {
-      // 🆕 CREAR nuevo producto
-      await createProduct(formData);
+      } else {
+        // CREAR nuevo producto sino recibe datos
+        await createProduct(formData);
+      }
+
+      onClose(); // cerrar y limpiar solo si todo sale bien
+    } catch (error) {
+      console.error("Error al guardar el empleado:", error);
+      // Aquí podrías usar toast.error o similar
     }
-
-    onClose(); // cerrar modal después de guardar
   };
-
-  console.log("Opciones Colecciones:", opcionesColecciones);
-  console.log("Opciones Materia Prima:", opcionesMateria);
-
-  const estado = [
-    { _id: true, label: "Activo" },
-    { _id: false, label: "Inactivo" },
-  ];
-
 
   return (
     <Form
@@ -201,7 +196,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           />
           <Dropdown
             name={"estado"}
-            options={estado}
+            options={opcionesEstado}
             label={"Estado"}
             register={register}
             errors={errors}
@@ -213,7 +208,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <TextAreaArray
             control={control}
             name="instrucctions"
-            label="Pasos"
+            label="Recomendaciones"
             placeholder="Escribe y presiona coma o enter"
             error={errors.tags}
             valueKey="instruction"
@@ -245,8 +240,18 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                 name1={`variantes.${index}.variant`}
                 name2={`variantes.${index}.variantPrice`}
                 register={register}
-                error1={errors?.variantes?.[index]?.variants?.message}
-                error2={errors?.variantes?.[index]?.price?.message}
+                error1={errors?.variantes?.[index]?.variant?.message}
+                error2={errors?.variantes?.[index]?.variantPrice?.message}
+                options1={{
+                  required: "El nombre de la variante es requerido"
+                }}
+                options2={{
+                  required: "El precio de la variante es requerido",
+                  pattern: {
+                    value: /^\d+(\.\d{1,2})?$/,
+                    message: "El precio debe ser un número válido",
+                  },
+                }}
               />
             ))}
           </div>
@@ -260,16 +265,23 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
             />
             {inputs.componentes.map((input, index) => (
               <DoubleInputDropDown
-                key={input.id}
-                placeholder1="Componente"
-                placeholder2="Cantidad"
                 name1={`componentes.${index}.idComponent`}
                 name2={`componentes.${index}.amount`}
+                placeholder1="Componente"
+                placeholder2="Cantidad"
                 register={register}
                 error1={errors?.componentes?.[index]?.idComponent?.message}
                 error2={errors?.componentes?.[index]?.amount?.message}
-                options={opcionesMateria}
+                options={opcionesMateria} // por ejemplo: [{ _id: 'cpu', label: 'CPU' }]
+                options2={{
+                  required: "La cantidad es requerida",
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: "Debe ser un número válido",
+                  },
+                }}
               />
+
             ))}
           </div>
         </div>

@@ -1,10 +1,10 @@
-import bannerbackground2 from "../../assets/bannerbackground2.png";
+import bannerbackground2 from "../../../assets/bannerbackground2.png";
 
 const BannerTwo = () => {
   return (
     <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full"
         style={{
           backgroundImage: `url('${bannerbackground2}')`

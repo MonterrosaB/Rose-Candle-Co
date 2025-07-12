@@ -99,12 +99,22 @@ const Login = () => {
         />
 
         {/* Recuperar contraseña */}
-        <div className="text-end -mt-2  mb-0">
+        <div className="text-end -mt-2 mb-0">
           <Link
             to="/recoveryPassword"
             className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-16"
           >
             ¿Olvidaste tu contraseña?
+          </Link>
+
+        </div>
+
+        <div className="text-end -mt-0 mb-0">
+          <Link
+            to="/register"
+            className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-16"
+          >
+            ¿Aún no tienes cuenta? ¡Regístrate!
           </Link>
         </div>
 

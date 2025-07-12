@@ -11,8 +11,8 @@ function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    toast.error("Debes iniciar sesión para agregar productos al carrito");
-    return <Navigate to="/loginCustomer" replace />;
+    toast.error("Por favor, inicia sesión para continuar.");
+    return <Navigate to="/loginCustomer" replace />;x
   }
 
   return children;

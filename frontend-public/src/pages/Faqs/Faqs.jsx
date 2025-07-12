@@ -13,7 +13,7 @@ const Faqs = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#F9F7F3] mx-4 sm:mx-8 mt-24">
+    <div className="relative min-h-screen bg-[#F9F7F3] mx-4 sm:mx-8 mt-30">
       <Header
         title={
           <div className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
@@ -38,11 +38,10 @@ const Faqs = () => {
         ].map((tab) => (
           <button
             key={tab.id}
-            className={`px-2 py-2 focus:outline-none transition-all duration-300 ${
-              activeTab === tab.id
+            className={`px-2 py-2 focus:outline-none transition-all duration-300 ${activeTab === tab.id
                 ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
                 : "text-gray-600 hover:text-[#1c1c1c]"
-            }`}
+              }`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}

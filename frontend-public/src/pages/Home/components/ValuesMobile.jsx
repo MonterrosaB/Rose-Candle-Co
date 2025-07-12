@@ -1,4 +1,4 @@
-import OrbitedCircle from "../../global/components/OrbitedCircle.jsx";
+import OrbitedCircle from "../../../global/components/OrbitedCircle.jsx";
 
 const valores = [
   "Bienestar y conexión",
@@ -17,7 +17,7 @@ const ValuesMobile = () => {
       </div>
 
       <div className="relative min-h-[480px] flex flex-col gap-6 overflow-visible">
-        
+
         <div
           className="absolute top-0 left-0 pointer-events-none"
           style={{

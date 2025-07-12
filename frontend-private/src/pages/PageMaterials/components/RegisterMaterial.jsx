@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-
 import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
 import FormButton from "../../../global/components/FormButton";
@@ -12,9 +11,20 @@ import useSuppliers from "../../PageSuppliers/hooks/useSuppliers";
 import useCategories from "../../PageCategories/hooks/useCategories";
 import useMaterials from "../hooks/useMaterials";
 
-const RegisterMaterial = ({ onClose, defaultValues, onSubmitMaterial }) => {
-  const methods = useForm();
-  const { register, handleSubmit, errors, reset } = useMaterials(methods);
+const RegisterMaterial = ({ onClose, defaultValues }) => {
+
+  const methods = useForm({
+    defaultValues: {
+      ...defaultValues,
+      idRawMaterialCategory:
+        defaultValues?.idRawMaterialCategory?._id || defaultValues?.idRawMaterialCategory,
+      idSupplier:
+        defaultValues?.idSupplier?._id || defaultValues?.idSupplier,
+      unit: defaultValues?.unit,
+    },
+  });
+
+  const { register, handleSubmit, errors, reset, createMaterial, updateMaterial } = useMaterials(methods);
   const { suppliers } = useSuppliers(methods);
   const { categories } = useCategories(methods);
 
@@ -26,18 +36,26 @@ const RegisterMaterial = ({ onClose, defaultValues, onSubmitMaterial }) => {
     { _id: "piece", label: "Pieza" },
   ];
 
+  // ✅ Al montar o al cambiar defaultValues
   useEffect(() => {
-    if (defaultValues) reset(defaultValues);
-    else reset({});
+    if (defaultValues) {
+      reset(defaultValues);
+    } else {
+      reset({});
+    }
   }, [defaultValues, reset]);
 
   const onSubmit = (data) => {
-    onSubmitMaterial(data);
+    if (defaultValues?._id) {
+      updateMaterial(defaultValues._id, data);
+    } else {
+      createMaterial(data);
+    }
     onClose();
   };
 
   return (
-    <Form headerLabel="Agregar Materia Prima" onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
+    <Form headerLabel={defaultValues ? "Editar Materia Prima" : "Agregar Materia Prima"} onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
       <FormInputs>
         <Input label="Nombre" name="name" register={register} errors={errors} />
         <div className="flex gap-4 w-full">
@@ -69,7 +87,7 @@ const RegisterMaterial = ({ onClose, defaultValues, onSubmitMaterial }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText="Guardar" type="submit" showIcon />
+        <Button buttonText={defaultValues ? "Actualizar" : "Guardar"} type="submit" showIcon />
       </FormButton>
     </Form>
   );

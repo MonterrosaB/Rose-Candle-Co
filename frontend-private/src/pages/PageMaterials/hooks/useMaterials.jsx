@@ -31,11 +31,19 @@ const useMaterials = (methods) => {
 
   const createMaterial = async (data) => {
     try {
+      // Convertimos a número antes de enviar
+      const parsedData = {
+        ...data,
+        currentStock: Number(data.currentStock),
+        currentPrice: Number(data.currentPrice),
+      };
+
       const res = await fetch(ApiURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(parsedData),
       });
+
       if (!res.ok) throw new Error("Error al guardar");
       toast.success("Materia Prima Guardada");
       getMaterials();
@@ -44,12 +52,53 @@ const useMaterials = (methods) => {
     }
   };
 
+  const updateMaterial = async (id, data) => {
+    try {
+      const parsedData = {
+        ...data,
+        currentStock: Number(data.currentStock),
+        currentPrice: Number(data.currentPrice),
+      };
+
+      const res = await fetch(`${ApiURL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsedData),
+      });
+
+      if (!res.ok) throw new Error("Error al actualizar la materia prima");
+
+      toast.success("Materia Prima actualizada");
+      getMaterials();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const deleteMaterial = async (id) => {
+    try {
+      const res = await fetch(`${ApiURL}/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar la materia prima");
+
+      toast.success("Materia Prima eliminada");
+      getMaterials();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+
+
+
   useEffect(() => {
     getMaterials();
   }, []);
 
   return {
-    materials, loading, createMaterial, register, handleSubmit, errors, reset
+    materials, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
   };
 };
 

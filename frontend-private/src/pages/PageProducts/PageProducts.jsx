@@ -8,10 +8,15 @@ import RegisterProducts from "./components/RegisterProducts";
 import Button from "../../global/components/Button";
 import UseProductsList from "./components/UseProductList";
 
+import useFetchProduct from "./components/UseFetchProduct";
+
 const PageProducts = () => {
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const { products, getProducts } = useFetchProduct();
+
 
   const handleAdd = () => {
     setSelectedProduct(null);
@@ -22,6 +27,14 @@ const PageProducts = () => {
     setSelectedProduct(product);
     setOpenDialogProduct(true);
   };
+
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null); // esto limpia defaultValues
+    setOpenDialogProduct(false);
+    getProducts()   // o cerrar modal, si usas uno
+  };
+
 
   return (
     <>
@@ -37,16 +50,17 @@ const PageProducts = () => {
         <div className="flex items-center justify-center gap-4">
           <UseProductsList
             onEdit={handleEdit}
+            products={products}
           />
         </div>
 
         {openDialogProduct && (
           <Dialog
             open={openDialogProduct}
-            onClose={() => setOpenDialogProduct(false)}
+            onClose={handleCloseModal}
           >
             <RegisterProducts
-              onClose={() => setOpenDialogProduct(false)}
+              onClose={handleCloseModal}
               selectedProduct={selectedProduct} />
           </Dialog>
         )}

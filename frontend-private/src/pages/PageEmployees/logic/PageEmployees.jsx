@@ -13,7 +13,7 @@ const PageEmployees = () => {
   }, []);
 
   const { employees, getEmployees } = useFetchEmployees();
-  const { deleteEmployee, handleUpdateEmployee } = useEmployeeAction(getEmployees);
+  const { deleteEmployee } = useEmployeeAction(getEmployees);
 
   const [openDialogEmployees, setOpenDialogEmployees] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -34,7 +34,14 @@ const PageEmployees = () => {
     Correo: "email",
     Teléfono: "phone",
     DUI: "dui",
-    Usuario: "user",
+    Rol: "role",
+  };
+
+
+  const handleCloseModal = () => {
+    setSelectedEmployee(null);
+    setOpenDialogEmployees(false);
+    getEmployees()
   };
 
   return (
@@ -52,57 +59,54 @@ const PageEmployees = () => {
           />
         </div>
 
-       
-        {/* Vista tipo tarjeta para pantallas pequeñas */}
-<div className="md:hidden space-y-4">
-  <div className="flex justify-between items-center mb-4">
-    <h2 className="text-xl font-semibold text-gray-800">Empleados</h2>
-    <button
-      onClick={handleAdd}
-      className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
-    >
-      Agregar
-    </button>
-  </div>
 
-  {employees.map((emp) => (
-    <div
-      key={emp.id || emp.dui}
-      className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
-    >
-      <h3 className="text-lg font-semibold text-gray-800">{emp.name} {emp.surnames}</h3>
-      <p className="text-sm text-gray-600"><strong>Correo:</strong> {emp.email}</p>
-      <p className="text-sm text-gray-600"><strong>Teléfono:</strong> {emp.phone}</p>
-      <p className="text-sm text-gray-600"><strong>DUI:</strong> {emp.dui}</p>
-      <p className="text-sm text-gray-600"><strong>Usuario:</strong> {emp.user}</p>
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          onClick={() => handleUpdate(emp)}
-          className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
-        >
-          Editar
-        </button>
-        <button
-          onClick={() => deleteEmployee(emp.id)}
-          className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
-        >
-          Eliminar
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+        {/* Vista tipo tarjeta para pantallas pequeñas */}
+        <div className="md:hidden space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Empleados</h2>
+            <button
+              onClick={handleAdd}
+              className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
+            >
+              Agregar
+            </button>
+          </div>
+
+          {employees.map((emp) => (
+            <div
+              key={emp.id || emp.dui}
+              className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+            >
+              <h3 className="text-lg font-semibold text-gray-800">{emp.name} {emp.surnames}</h3>
+              <p className="text-sm text-gray-600"><strong>Correo:</strong> {emp.email}</p>
+              <p className="text-sm text-gray-600"><strong>Teléfono:</strong> {emp.phone}</p>
+              <p className="text-sm text-gray-600"><strong>DUI:</strong> {emp.dui}</p>
+              <p className="text-sm text-gray-600"><strong>Usuario:</strong> {emp.user}</p>
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  onClick={() => handleUpdate(emp)}
+                  className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => deleteEmployee(emp.id)}
+                  className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
 
         {/* Modal de registro / edición */}
         {openDialogEmployees && (
-          <Dialog open={openDialogEmployees} onClose={() => setOpenDialogEmployees(false)}>
+          <Dialog open={openDialogEmployees} onClose={handleCloseModal}>
             <RegisterEmployee
               defaultValues={selectedEmployee}
-              onClose={() => {
-                setOpenDialogEmployees(false);
-                getEmployees();
-              }}
+              onClose={handleCloseModal}
             />
           </Dialog>
         )}

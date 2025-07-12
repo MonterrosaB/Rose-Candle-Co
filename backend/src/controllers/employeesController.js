@@ -1,85 +1,90 @@
-import employeesModel from "../models/Employees.js"; // Modelo de empleados
+import employeesModel from "../models/Employees.js";
 
-// Array de métodos (CRUD)
+// CRUD controller para empleados
 const employeesController = {};
 
-// GET
+// GET - obtener todos los empleados
 employeesController.getEmployees = async (req, res) => {
   try {
     const employees = await employeesModel.find();
-    res.status(200).json(employees); // Todo bien
+    res.status(200).json(employees);
   } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    console.error("Error al obtener empleados:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// DELETE
+// DELETE - eliminar un empleado por ID
 employeesController.deleteEmployees = async (req, res) => {
   try {
-    const deletedEmployee = await employeesModel.findOneAndDelete(
-      req.params.id
-    );
+    const deletedEmployee = await employeesModel.findOneAndDelete({
+      _id: req.params.id,
+    });
 
     if (!deletedEmployee) {
-      return res.status(400).json({ message: "Employee not found" }); // Error del cliente, empleado no encontrado
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    res.status(200).json({ message: "Employee deleted" }); // Todo bien
+    res.status(200).json({ message: "Employee deleted" });
   } catch (error) {
-    console.log("error " + error);
-    return res.status(500).json("Internal server error"); // Error del servidor
+    console.error("Error al eliminar empleado:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// PUT
+// PUT - actualizar un empleado por ID
 employeesController.updateEmployees = async (req, res) => {
-  // Obtener datos
   const { name, surnames, email, phone, dui, user, role } = req.body;
 
+  console.log(req.body);
+
   try {
-    // Validaciones
+    // Validaciones básicas
     if (
+      !name ||
       name.length < 2 ||
+      !surnames ||
       surnames.length < 2 ||
+      !phone ||
       phone.length < 9 ||
-      dui.length < 10 ||
-      password.length < 8
+      !dui ||
+      dui.length < 10
     ) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Campos inválidos o muy cortos" });
     }
 
     if (name.length > 100 || surnames.length > 100) {
-      return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
+      return res.status(400).json({ message: "Campos demasiado largos" });
     }
 
-    // Guardar datos
-    employeeUpdated = await employeesModel.findByIdAndUpdate(
+    const employeeUpdated = await employeesModel.findByIdAndUpdate(
       req.params.id,
       { name, surnames, email, phone, dui, user, role },
       { new: true }
     );
 
     if (!employeeUpdated) {
-      return res.status(400).json({ message: "Employee not found" }); // Error del cliente, empleado no encontrado
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    res.status(200).json({ message: "Employee updated" }); // Todo bien
+    res
+      .status(200)
+      .json({ message: "Employee updated", employee: employeeUpdated });
   } catch (error) {
-    console.log("error " + error);
-    return res.status(500).json("Internal server error"); // Error del servidor
+    console.error("Error al actualizar empleado:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Contador de empleados
+// GET - contar número total de empleados
 employeesController.countEmployees = async (req, res) => {
   try {
     const count = await employeesModel.countDocuments();
-    res.status(200).json({ count }); // todo bien
-  } catch (err) {
-    res.status(500).json({ message: "Error al contar empleados" }); // error del servidor
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error("Error al contar empleados:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Exportar controlador
 export default employeesController;

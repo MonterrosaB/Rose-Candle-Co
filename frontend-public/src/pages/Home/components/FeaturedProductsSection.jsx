@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import FeaturedProductsSectionBackground from "../../assets/FeaturedProductsSectionBackground.png";
-import Star from "../../assets/Star.png";
+import FeaturedProductsSectionBackground from "../../../assets/FeaturedProductsSectionBackground.png";
+import Star from "../../../assets/Star.png";
 
-import ProductHome1 from "../../assets/ProductHome1.png"
-import ProductHome2 from "../../assets/ProductHome2.png"
-import ProductHome3 from "../../assets/ProductHome3.png"
-import ProductHome4 from "../../assets/ProductHome4.png"
+import ProductHome1 from "../../../assets/ProductHome1.png"
+import ProductHome2 from "../../../assets/ProductHome2.png"
+import ProductHome3 from "../../../assets/ProductHome3.png"
+import ProductHome4 from "../../../assets/ProductHome4.png"
 
 const FeaturedProductsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

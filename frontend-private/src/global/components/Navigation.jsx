@@ -1,4 +1,3 @@
-// Navegación del sitio (rutas privadas)
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { PrivateRoute } from "./PrivateRoute.jsx";
@@ -28,12 +27,15 @@ function Navigation() {
   // Redirección desde raíz si no hay empleados
   const redirectPath = hasEmployees ? "/login" : "/start";
 
+  const noNavFooterRoutes = ["/login", "/start", "/recoveryPassword"];
+  const hideNavFooter = noNavFooterRoutes.includes(location.pathname);
+
   return (
     <>
-      {authCokie && <Sidebar />}
+      {!hideNavFooter && <Sidebar />}
 
-      {/* ✅ Corrección aplicada aquí con md:ml-64 */}
-      <main className={authCokie ? "md:ml-64" : ""}>
+
+      <main className={!hideNavFooter ? "md:ml-64" : ""}>
         <Routes>
           {/* Ruta para el primer usuario */}
           <Route
@@ -49,14 +51,14 @@ function Navigation() {
           <Route
             path="/recoveryPassword"
             element={
-                <PasswordRecovery />
+              <PasswordRecovery />
             }
           />
 
           <Route
             path="/login"
             element={
-                <Login />
+              <Login />
             }
           />
 

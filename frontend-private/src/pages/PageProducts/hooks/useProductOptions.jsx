@@ -5,8 +5,8 @@ const useProductOptions = () => {
   const [opcionesCategorias, setOpcionesCategorias] = useState([]);
   const [opcionesColecciones, setOpcionesColecciones] = useState([]);
   const [opcionesMateria, setOpcionesMateria] = useState([]);
-  
-   useEffect(() => {
+
+  useEffect(() => {
     const fetchOptions = async () => {
       try {
         // Categorías
@@ -51,10 +51,18 @@ const useProductOptions = () => {
 
     fetchOptions();
   }, []);
-    return {
+
+
+  const opcionesEstado = [
+    { _id: true, label: "Activo" },
+    { _id: false, label: "Inactivo" },
+  ];
+  return {
     opcionesCategorias,
     opcionesColecciones,
     opcionesMateria,
+    opcionesEstado
+
   };
 };
 

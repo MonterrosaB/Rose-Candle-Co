@@ -1,10 +1,10 @@
-import bannerbackground3 from "../../assets/bannerbackground3.png"
+import bannerbackground3 from "../../../assets/bannerbackground3.png"
 
 
 const BannerThree = () => {
-    
 
-     return (
+
+  return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Background image */}
       <div

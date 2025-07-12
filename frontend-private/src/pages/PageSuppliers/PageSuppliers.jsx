@@ -65,21 +65,59 @@ const PageSuppliers = () => {
 
   return (
     <PrincipalDiv>
-      <DataGrid
-        title="Proveedores"
-        columns={columns}
-        rows={rows}
-        primaryBtnText="Agregar Proveedor"
-        onClickPrimaryBtn={handleAdd}
-        updateRow={handleEdit}
-        deleteRow={handleDelete} // 👈 Pasa el OBJETO, no solo el ID
-      />
+      {/* Tabla para md+ */}
+      <div className="hidden md:block overflow-x-auto">
+        <DataGrid
+          title="Proveedores"
+          columns={columns}
+          rows={rows}
+          primaryBtnText="Agregar Proveedor"
+          onClickPrimaryBtn={handleAdd}
+          updateRow={handleEdit}
+          deleteRow={handleDelete}
+        />
+      </div>
 
+      {/* Vista cards para móvil */}
+      <div className="md:hidden pt-13 space-y-4 px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Proveedores</h2>
+          <button
+            onClick={handleAdd}
+            className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
+          >
+            Agregar
+          </button>
+        </div>
+
+        {suppliers.map((supplier) => (
+          <div
+            key={supplier._id}
+            className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+          >
+            <h3 className="text-lg font-semibold text-gray-800">{supplier.name}</h3>
+            <p className="text-sm text-gray-600"><strong>Contacto:</strong> {supplier.contact}</p>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => handleEdit(supplier)}
+                className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(supplier)}
+                className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
       {openDialogSuppliers && (
-        <Dialog
-          open={openDialogSuppliers}
-          onClose={() => setOpenDialogSuppliers(false)}
-        >
+        <Dialog open={openDialogSuppliers} onClose={() => setOpenDialogSuppliers(false)}>
           <RegisterSuppliers
             defaultValues={selectedSupplier}
             methods={methods}

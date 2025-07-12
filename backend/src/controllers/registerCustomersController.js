@@ -3,6 +3,8 @@ import bcryptjs from "bcryptjs"; // Encriptar
 import jsonwebtoken from "jsonwebtoken"; // Token
 import { config } from "../config.js";
 
+import { sendEmail, HTMLWelcomeMail } from "../utils/mailWelcome.js";
+
 // Array de métodos (CRUD)
 const registerCustomersController = {};
 
@@ -95,6 +97,13 @@ registerCustomersController.registerCustomers = async (req, res) => {
     });
 
     await newCustomer.save();
+
+    await sendEmail(
+      email,
+      "Bienvenida a Rosé Candle Co | Rosé Candle Co.",
+      "Un gusto tenerte aquí!",
+      HTMLWelcomeMail(name)
+    );
 
     // Token
     jsonwebtoken.sign(

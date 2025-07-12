@@ -1,40 +1,42 @@
-import { useState } from "react";
+// changeImages.js
+import { useState, useEffect } from "react";
 
-
-const changeImages = () => {
-
+const changeImages = (selectedProduct) => {
     const [productImage, setProductImage] = useState(null);
-    const [productImageFile, setProductPrincipal] = useState(null);
+    const [productImageFile, setProductImageFile] = useState(null);
+    const [multipleFile, setMultipleFile] = useState([]);
+    const [multipleFileFiles, setMultipleFileFiles] = useState([]);
 
-    const [multipleFile, setMultipleFile] = useState([]); // URLs para mostrar
-    const [multipleFileFiles, setMultipleFileFiles] = useState([]); // Archivos reales
+    //  Detectar si ya hay imágenes en producto seleccionado
+    useEffect(() => {
+        if (selectedProduct) {
+            if (selectedProduct.images && selectedProduct.images.length > 0) {
+                setProductImage(selectedProduct.images[0]); // principal
+                setMultipleFile(selectedProduct.images.slice(1)); // secundarias
+            }
+        }
+    }, [selectedProduct]);
+
+    const onImageChange = (e) => {
+        const file = e.target.files[0];
+        setProductImage(URL.createObjectURL(file));
+        setProductImageFile(file);
+    };
 
     const uploadMultipleFiles = (e) => {
         const files = Array.from(e.target.files);
-        const urls = files.map(file => URL.createObjectURL(file));
-
-        setMultipleFile(prev => [...prev, ...urls]);
-        setMultipleFileFiles(prev => [...prev, ...files]);
+        const fileURLs = files.map((file) => URL.createObjectURL(file));
+        setMultipleFile(fileURLs);
+        setMultipleFileFiles(files);
     };
 
     const removeImage = (index) => {
-        setMultipleFile(prev => prev.filter((_, i) => i !== index));
-        setMultipleFileFiles(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const onImageChange = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            const file = event.target.files[0];
-            setProductPrincipal(file); // este es el que se usa para subir
-
-            // Opcional: mostrar vista previa
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setProductImage(e.target.result);
-                console.log(file);
-            };
-            reader.readAsDataURL(file);
-        }
+        const newFileList = [...multipleFileFiles];
+        const newURLList = [...multipleFile];
+        newFileList.splice(index, 1);
+        newURLList.splice(index, 1);
+        setMultipleFileFiles(newFileList);
+        setMultipleFile(newURLList);
     };
 
     return {
@@ -42,9 +44,10 @@ const changeImages = () => {
         productImageFile,
         multipleFile,
         multipleFileFiles,
+        onImageChange,
         uploadMultipleFiles,
         removeImage,
-        onImageChange,
-    }
-}
+    };
+};
+
 export default changeImages;

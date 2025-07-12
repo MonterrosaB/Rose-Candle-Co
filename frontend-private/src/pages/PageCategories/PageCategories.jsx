@@ -11,7 +11,6 @@ const PageCategories = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Inicializar react-hook-form con valores por defecto según categoría seleccionada
   const methods = useForm({
     defaultValues: selectedCategory || {},
   });
@@ -27,7 +26,6 @@ const PageCategories = () => {
     deleteCategory,
   } = useCategories(methods);
 
-  // Sincronizar formulario cuando cambia la categoría seleccionada (editar/agregar)
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -42,28 +40,19 @@ const PageCategories = () => {
 
   const rows = categories;
 
-  // Abrir diálogo para agregar categoría nueva
   const handleAdd = () => {
     setSelectedCategory(null);
     setOpenDialog(true);
   };
 
-  // Abrir diálogo para editar categoría seleccionada
   const handleEdit = (category) => {
-    if (!category?._id) {
-      console.error("Categoría inválida para editar:", category);
-      return;
-    }
+    if (!category?._id) return;
     setSelectedCategory(category);
     setOpenDialog(true);
   };
 
-  // Confirmar y eliminar categoría seleccionada
   const handleDelete = async (category) => {
-    if (!category?._id) {
-      console.error("Categoría inválida para eliminar:", category);
-      return;
-    }
+    if (!category?._id) return;
     const confirmDelete = window.confirm(
       `¿Eliminar la categoría "${category.name}"?`
     );
@@ -72,7 +61,6 @@ const PageCategories = () => {
     }
   };
 
-  // Enviar formulario para crear o actualizar categoría
   const onSubmit = async (data) => {
     if (selectedCategory) {
       await updateCategory(selectedCategory._id, data);
@@ -84,16 +72,56 @@ const PageCategories = () => {
 
   return (
     <PrincipalDiv>
-      <DataGrid
-        title="Categorías"
-        columns={columns}
-        rows={rows}
-        primaryBtnText="Agregar Categoría"
-        onClickPrimaryBtn={handleAdd}
-        updateRow={handleEdit}
-        deleteRow={handleDelete}
-      />
+      {/* Tabla solo visible en pantallas md en adelante */}
+      <div className="hidden md:block">
+        <DataGrid
+          title="Categorías"
+          columns={columns}
+          rows={rows}
+          primaryBtnText="Agregar Categoría"
+          onClickPrimaryBtn={handleAdd}
+          updateRow={handleEdit}
+          deleteRow={handleDelete}
+        />
+      </div>
 
+      {/* Vista tipo cards para móviles */}
+      <div className="md:hidden pt-13 space-y-4 px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Categorías</h2>
+          <button
+            onClick={handleAdd}
+            className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
+          >
+            Agregar
+          </button>
+        </div>
+
+        {categories.map((cat) => (
+          <div
+            key={cat._id}
+            className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+          >
+            <h3 className="text-lg font-semibold text-gray-800">{cat.name}</h3>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => handleEdit(cat)}
+                className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(cat)}
+                className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
           <FormOneInput

@@ -1,19 +1,24 @@
 import { X } from "lucide-react";
+
 const FormDiv = ({ children, headerLabel, onClose, onSubmit }) => {
+  return (
+    <div className="w-full max-w-3xl mx-auto shadow-2xl rounded-xl bg-white">
+      {/* Encabezado */}
+      <div className="flex justify-between items-center bg-[#C2A878] text-white text-xl p-4 font-bold rounded-t-xl">
+        <span>{headerLabel}</span>
+        <X
+          className="cursor-pointer hover:scale-110 transition"
+          onClick={onClose}
+          strokeWidth={3}
+        />
+      </div>
 
-    return (
-        <div className="shadow-2xl rounded-b-xl w-3xl">
-            <div className="flex justify-between item bg-[#C2A878] text-2xl p-4 font-bold rounded-t-xl">
-                {headerLabel}
-                {<X className="cursor-pointer"
-                    onClick={onClose}
-                    strokeWidth={3} />}
-            </div>
-            <form onSubmit={onSubmit} className="p-6">
-                {children}
-            </form>
-        </div>
+      {/* Contenido del formulario */}
+      <form onSubmit={onSubmit} className="p-6 space-y-4">
+        {children}
+      </form>
+    </div>
+  );
+};
 
-    )
-}
 export default FormDiv;

@@ -24,6 +24,24 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
 
   const isEditMode = !!defaultValues;
 
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 8) value = value.slice(0, 8);
+    if (value.length > 4) {
+      value = value.slice(0, 4) + "-" + value.slice(4);
+    }
+    setPhone(value);
+  };
+
+  const handleDuiChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 9) value = value.slice(0, 9);
+    if (value.length > 8) {
+      value = value.slice(0, 8) + "-" + value.slice(8);
+    }
+    setDui(value);
+  };
+
   return (
     <Form
       headerLabel={isEditMode ? "Editar Proveedor" : "Agregar Proveedor"}
@@ -49,7 +67,7 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
               required: "El contacto es requerido",
               pattern: {
                 value: /^\d{4}-\d{4}$/,
-                message: "Solo se permiten números",
+                message: "El formato debe ser 0000-0000",
               },
             }}
             error={errors.contact?.message}

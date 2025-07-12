@@ -7,13 +7,10 @@ import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
 import FormInput from "../components/FormInput.jsx";
 import Button from "../components/Button.jsx";
 import Logo from "../../../assets/Isotipo.svg?react";
-import useEmployees from "../../../pages/PageEmployees/hooks/useEmployees.jsx"; // Importamos el hook
+import useEmployees from "../hooks/useEmployee"; // Importamos el hook
 import { useForm } from "react-hook-form";
 
 const FirstUser = () => {
-
-  const methods = useForm();
-
 
   // useEmployees (hook de empleados)
   const {
@@ -33,7 +30,7 @@ const FirstUser = () => {
     setUser,
     errors,
     handleSubmit,
-  } = useEmployees(methods);
+  } = useEmployees();
 
   const [confirmPassword, setConfirmPassword] = useState(""); // Confirmar contraseña
   const navigate = useNavigate();
@@ -44,10 +41,12 @@ const FirstUser = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // se detiene si la contraseña no coincide
-    if (password !== confirmPassword) {
+    // se detiene si la contraseña no coincide (trim para evitar espacios)
+    if ((password ?? "").trim() !== (confirmPassword ?? "").trim()) {
+      toast.error("Las contraseñas no coinciden");
       return;
     }
+
 
     const success = await handleSubmit(e, { isActive: true, role: "admin" });
 
@@ -77,34 +76,22 @@ const FirstUser = () => {
   // Validacion teléfono
   const handlePhoneChange = (e) => {
     let value = e.target.value;
-    // Quitar todo menos números
     value = value.replace(/\D/g, "");
-
-    // Limitar longitud a 8 dígitos
     if (value.length > 8) value = value.slice(0, 8);
-
-    // Formatear: insertar guion después del cuarto dígito
     if (value.length > 4) {
       value = value.slice(0, 4) + "-" + value.slice(4);
     }
-
     setPhone(value);
   };
 
   // Validación dui
   const handleDuiChange = (e) => {
     let value = e.target.value;
-    // Quitar todo menos números
     value = value.replace(/\D/g, "");
-
-    // Limitar longitud a 9 dígitos (8+1)
     if (value.length > 9) value = value.slice(0, 9);
-
-    // Formatear: insertar guion después del octavo dígito
     if (value.length > 8) {
       value = value.slice(0, 8) + "-" + value.slice(8);
     }
-
     setDui(value);
   };
 
@@ -153,10 +140,7 @@ const FirstUser = () => {
       >
         {/* Icono de usuario */}
         <div className="flex items-center justify-center mb-6">
-          {/* Icono de Rosé */}
           <Logo color="#7D7954" size={120} />
-
-          {/* Texto al lado del icono */}
           <div className="ml-4">
             <h1
               className="text-3xl font-serif font-bold text-gray-800"
@@ -175,9 +159,7 @@ const FirstUser = () => {
 
         <br />
 
-        {/* Fila de nombre y apellidos */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Campo de nombre */}
           <FormInput
             id="name"
             label="Nombre"
@@ -187,8 +169,6 @@ const FirstUser = () => {
             onChange={handleNameChange}
             error={errors.name}
           />
-
-          {/* Campo de apellidos */}
           <FormInput
             id="surnames"
             label="Apellido"
@@ -200,9 +180,7 @@ const FirstUser = () => {
           />
         </div>
 
-        {/* Fila de teléfono y DUI */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Campo de teléfono */}
           <FormInput
             id="phone"
             label="Teléfono"
@@ -212,8 +190,6 @@ const FirstUser = () => {
             onChange={handlePhoneChange}
             error={errors.phone}
           />
-
-          {/* Campo de DUI */}
           <FormInput
             id="dui"
             label="DUI"
@@ -225,9 +201,7 @@ const FirstUser = () => {
           />
         </div>
 
-        {/* Fila de correo y usuario */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Campo de correo electrónico */}
           <FormInput
             id="email"
             label="Correo Electrónico"
@@ -237,8 +211,6 @@ const FirstUser = () => {
             onChange={(e) => setEmail(e.target.value)}
             error={errors.email}
           />
-
-          {/* Campo de usuario */}
           <FormInput
             id="user"
             label="Usuario"
@@ -250,9 +222,7 @@ const FirstUser = () => {
           />
         </div>
 
-        {/* Fila de contraseña y confirmación */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Campo de contraseña */}
           <FormInput
             id="password"
             label="Contraseña"
@@ -262,8 +232,6 @@ const FirstUser = () => {
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
           />
-
-          {/* Campo de confirmación de contraseña */}
           <FormInput
             id="confirmPassword"
             label="Confirmar Contraseña"
@@ -272,14 +240,13 @@ const FirstUser = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             error={
-              password !== confirmPassword
+              (password ?? "").trim() !== (confirmPassword ?? "").trim()
                 ? "Las contraseñas no coinciden"
                 : null
             }
           />
         </div>
 
-        {/* Botón para continuar */}
         <Button title="Iniciar" type="submit" />
       </form>
     </div>

@@ -6,12 +6,14 @@ import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 import Dropdown from "../../../global/components/Dropdown";
 import useDataEmployee from "../hooks/useEmployees";
+import useDropDown from "../hooks/useDropDowns";
 
 import { useForm } from "react-hook-form";
 
 const RegisterEmployee = ({ onClose, defaultValues }) => {
+
   const methods = useForm({
-    defaultValues: defaultValues || {},
+    defaultValues: defaultValues || {}, // Prellenar si hay datos
   });
 
   const {
@@ -19,24 +21,39 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     handleSubmit,
     errors,
     loading,
-    setValue,
-    isEditMode,
+    saveEmployeeForm,
+    editEmployee
   } = useDataEmployee(methods);
 
-  const opcionesEstado = [
-    { _id: "true", label: "Activo" },
-    { _id: "false", label: "Inactivo" },
-  ];
+  const {
+    opcionesEstado, opcionesRol
+  } = useDropDown(methods);
+
+
+  const onSubmit = async (data) => {
+    try {
+      if (defaultValues) {
+        await editEmployee(defaultValues._id, data);
+      } else {
+        await saveEmployeeForm(data);
+      }
+
+      onClose(); // cerrar y limpiar solo si todo sale bien
+    } catch (error) {
+      console.error("Error al guardar el empleado:", error);
+      // Aquí podrías usar toast.error o similar
+    }
+  };
+
 
   return (
     <Form
       headerLabel={defaultValues ? "Editar Empleado" : "Agregar Empleado"}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
       <FormInputs>
-        {/* Nombres y Apellidos */}
-        <InputsInline className="flex flex-col gap-4 sm:flex-row">
+        <InputsInline>
           <Input
             name="name"
             label="Nombres"
@@ -67,7 +84,6 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           />
         </InputsInline>
 
-        {/* Correo */}
         <Input
           name="email"
           label="Correo"
@@ -83,8 +99,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           }}
         />
 
-        {/* Teléfono y DUI */}
-        <InputsInline className="flex flex-col gap-4 sm:flex-row">
+        <InputsInline>
           <Input
             name="phone"
             label="Número de teléfono"
@@ -113,10 +128,20 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               },
             }}
           />
+
+          {!defaultValues && (
+            <Dropdown
+              name="isActive"
+              label="Estado"
+              register={register}
+              error={errors.isActive?.message}
+              hideIcon={true}
+              options={opcionesEstado}
+            />
+          )}
         </InputsInline>
 
-        {/* Usuario */}
-        <InputsInline className="flex flex-col gap-4 sm:flex-row">
+        <InputsInline>
           <Input
             name="user"
             label="Usuario"
@@ -131,11 +156,20 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               },
             }}
           />
+
+          <Dropdown
+            name={"role"}
+            label={"Rol"}
+            register={register}
+            errors={errors}
+            hideIcon={true}
+            options={opcionesRol}
+          />
         </InputsInline>
 
-        {/* Contraseña y Estado */}
+
         {!defaultValues && (
-          <div className="flex flex-col gap-4 sm:flex-row">
+          <>
             <Input
               name="password"
               label="Contraseña"
@@ -150,6 +184,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
                 },
               }}
             />
+
             <Input
               name="confirmPassword"
               label="Confirmar Contraseña"
@@ -162,22 +197,17 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
                   "Las contraseñas no coinciden",
               }}
             />
-            <Dropdown
-              name="isActive"
-              label="Estado"
-              register={register}
-              error={errors.isActive?.message}
-              hideIcon={true}
-              options={opcionesEstado}
-              setValue={setValue}
-            />
-          </div>
+          </>
         )}
+
+
+
+
       </FormInputs>
 
-      <FormButton className="w-full flex justify-center mt-4">
+      <FormButton>
         <Button
-          buttonText={isEditMode ? "Guardar Cambios" : "Agregar Empleado"}
+          buttonText={defaultValues ? "Guardar Cambios" : "Agregar Empleado"}
           type="submit"
           disabled={loading}
         />

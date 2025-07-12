@@ -3,131 +3,20 @@ import { motion } from "framer-motion";
 import ClearButton from "./components/CleanCart.jsx";
 import CheckoutFlow from "./components/CheckoutFlow.jsx";
 
+import useShoppingCart from "./hooks/useShoppingCart.jsx";
+
 const Cart = () => {
-const [cartId, setCartId] = useState(null); 
-const [cartItems, setCartItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-    const [showCheckout, setShowCheckout] = useState(false);
 
-  const fetchCart = async () => {
-    try {
-      const res = await fetch(`http://localhost:4000/api/cart`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
-
-      if (data._id) {
-        setCartId(data._id); // Guarda el ID real del carrito
-      }
-
-      if (Array.isArray(data.products)) {
-        setCartItems(data.products);
-      }
-    } catch (error) {
-      console.error("Error cargando carrito:", error);
-    } finally {
-      setIsLoading(false); // ¡Aquí pones isLoading a false siempre!
-    }
-  };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  const updateCartBackend = async (newProducts) => {
-    try {
-      const res = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ products: newProducts }),
-      });
-      if (!res.ok) throw new Error("Error actualizando carrito");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-const handleClear = async () => {
-  if (!cartId) return;
-
-  try {
-    const res = await fetch(`http://localhost:4000/api/cart/empty/${cartId}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    if (!res.ok) throw new Error("Error al vaciar el carrito");
-
-    setCartItems([]); // Vacía el estado local
-
-    await Swal.fire({
-      icon: "success",
-      title: "Carrito vaciado",
-      text: "El carrito se vació correctamente.",
-    });
-  } catch (error) {
-    console.error("Error al vaciar carrito:", error);
-
-    await Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se pudo vaciar el carrito.",
-    });
-  }
-};
-
-const getTotal = () =>
-    cartItems
-      .reduce((acc, item) => acc + Number(item.currentPrice || 0), 0)
-      .toFixed(2);
-
-  if (isLoading) return <p className="p-4">Cargando carrito…</p>;
-
-  if (showCheckout)
-    return (
-      <CheckoutFlow
-        cartItems={cartItems}
-        total={getTotal()}
-        onBack={() => setShowCheckout(false)}
-        onClearCart={handleClear}
-      />
-    );
-
-
-  const handleRemoveItem = async (indexToRemove) => {
-  const productToRemove = cartItems[indexToRemove];
-  if (!productToRemove || !productToRemove._id) return;
-
-  try {
-    const res = await fetch(
-      `http://localhost:4000/api/cart/removeProduct/${productToRemove._id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    if (!res.ok) throw new Error("Error al eliminar el producto");
-
-    // Actualizamos el estado local solo si backend responde OK
-    setCartItems((prevItems) =>
-      prevItems.filter((_, idx) => idx !== indexToRemove)
-    );
-  } catch (error) {
-    console.error("Error al eliminar producto del carrito:", error);
-    alert("No se pudo eliminar el producto");
-  }
-};
+  const {
+    cartId,
+    cartItems,
+    handleClear,
+    handleRemoveItem,
+    getTotal,
+  } = useShoppingCart();
 
   return (
-    <div className="flex flex-col lg:flex-row p-6 gap-8">
+    <div className="flex flex-col lg:flex-row p-6 gap-8 mt-40">
       {/* Sección de productos */}
       <div className="w-full lg:w-2/3 space-y-6">
         <motion.h2
@@ -158,7 +47,7 @@ const getTotal = () =>
                   {item.name}
                 </h3>
                 <p className="text-[#666] mt-1 text-sm">
-                  ${parseFloat(item.currentPrice || 0).toFixed(2)}
+                  ${parseFloat(item.variant?.[0]?.variantPrice || 0).toFixed(2)}
                 </p>
                 <div className="text-xs text-gray-500 mt-1">
                   <p>* Caja de regalo</p>
@@ -207,7 +96,7 @@ const getTotal = () =>
             >
               <span className="text-gray-700 truncate">{item.name}</span>
               <span className="font-medium text-gray-800">
-                ${parseFloat(item.currentPrice || 0).toFixed(2)}
+                ${parseFloat(item.variant?.[0]?.variantPrice || 0).toFixed(2)}
               </span>
             </motion.div>
           ))}

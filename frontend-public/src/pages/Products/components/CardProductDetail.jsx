@@ -1,4 +1,3 @@
-// src/components/CardProductDetail.jsx
 import { useState } from "react";
 import AddToCartButton from "./ButtonAddToCard.jsx";
 import GalleryImages from "./GalleryImages.jsx";
@@ -15,6 +14,43 @@ const CardProductDetail = ({ product }) => {
         <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
         <p className="text-gray-600 text-lg">{product.description}</p>
 
+        {/* Disponibilidad */}
+        <p className={`font-semibold ${product.availability ? "text-green-600" : "text-red-600"}`}>
+          {product.availability ? "Disponible" : "No disponible"}
+        </p>
+        {/* Variantes */}
+        {product.variant?.length > 0 && (
+          <div>
+            <h3 className="text-gray-400">Variantes</h3>
+            <ul className="list-disc list-inside text-sm">
+              {product.variant.map((v, i) => (
+                <li key={i}>
+                  {v.variant} - ${parseFloat(v.variantPrice).toFixed(2)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Componentes */}
+        {product.components?.length > 0 && (
+          <div>
+            <h3 className="text-gray-400">Componentes</h3>
+            <ul className="list-disc list-inside text-sm">
+              {product.components.map((comp, i) => (
+                <li key={i}>
+                  Componente:{" "}
+                  {comp.idComponent && comp.idComponent?.name
+                    ? comp.idComponent.name
+                    : "Nombre no disponible"}{" "}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+
+        {/* Instrucciones de uso */}
         {product.useForm?.length > 0 ? (
           <div className="flex flex-col gap-2">
             <h3 className="text-gray-400 ">Recomendaciones:</h3>
@@ -28,10 +64,7 @@ const CardProductDetail = ({ product }) => {
           <p>No hay instrucciones disponibles.</p>
         )}
 
-        <p className="text-2xl font-semibold text-black pl-2">
-          ${parseFloat(product.currentPrice).toFixed(2)} USD
-        </p>
-
+        {/* Cantidad y botón agregar al carrito */}
         <div className="flex flex-col items-center gap-4 pt-4 w-full max-w-sm">
           <span className="text-sm text-gray-600 self-start pl-2">Quantity</span>
 

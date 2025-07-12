@@ -12,26 +12,29 @@
 
 import { Schema, model } from "mongoose";
 
-const addressSchema = new Schema({
-  address: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: {
-      values: ["casa", "trabajo", "otro"],
-      message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
+const addressSchema = new Schema(
+  {
+    address: {
+      type: String,
+      required: true,
     },
-    default: "casa",
+    type: {
+      type: String,
+      enum: {
+        values: ["casa", "trabajo", "otro"],
+        message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
+      },
+      default: "casa",
+    },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
   },
-  isDefault: {
-    type: Boolean,
-    default: false,
-  },
-}, {
-  _id: true,
-});
+  {
+    _id: true,
+  }
+);
 
 const customerSchema = new Schema(
   {
