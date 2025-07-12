@@ -61,14 +61,8 @@ const PageCollections = () => {
     } else {
       await createCollection(data);
     }
-<<<<<<< HEAD
-    // ✅ Cierra el modal después de guardar
     setOpenDialogCollections(false);
-    // ✅ Limpia selección
     setSelectedCollection(null);
-=======
-    setOpenDialogCollections(false);
->>>>>>> d4edfd826307944dc9993c81feb3f4d3ddb7b3cf
   };
 
   const columns = {
@@ -130,7 +124,6 @@ const PageCollections = () => {
 
       {/* Modal */}
       {openDialogCollections && (
-<<<<<<< HEAD
         <Dialog
           open={openDialogCollections}
           onClose={() => {
@@ -138,9 +131,6 @@ const PageCollections = () => {
             setSelectedCollection(null);
           }}
         >
-=======
-        <Dialog open={openDialogCollections} onClose={() => setOpenDialogCollections(false)}>
->>>>>>> d4edfd826307944dc9993c81feb3f4d3ddb7b3cf
           <FormOneInput
             headerLabel={selectedCollection ? "Editar Colección" : "Agregar Colección"}
             onSubmit={handleSubmit(onSubmit)}

@@ -25,7 +25,7 @@ const PageRecord = () => {
     { name: "May", value: 350 },
   ];
 
-  // 🔴 Datos Stock vs Mínimo (Demo)
+  // 📊 Datos Stock vs Mínimo
   const stockMinData = [
     { name: "Calmness", stock: 150, minimo: 100 },
     { name: "Vela Aromática", stock: 80, minimo: 50 },
@@ -61,11 +61,6 @@ const PageRecord = () => {
     "Costo Total": "costoTotal",
   };
 
-  const productTableData = [
-    { producto: "Calmness", unidades: 250, ingresos: "$5000" },
-    { producto: "Calmness", unidades: 100, ingresos: "$3000" },
-  ];
-
   const productTableColumns = {
     Producto: "producto",
     Unidades: "unidades",
@@ -78,6 +73,7 @@ const PageRecord = () => {
       <h2 className="text-center text-3xl font-bold mb-4">Materia Prima</h2>
       <DataGrid columns={tableColumns} rows={tableData} editable={false} />
 
+      {/* Widgets y gráficas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-md font-semibold mb-2">Precio de Compra</h3>
@@ -112,7 +108,7 @@ const PageRecord = () => {
         </div>
       </div>
 
-      {/* Productos */}
+      {/* 📦 Productos */}
       <h2 className="text-center text-3xl font-bold mt-10 mb-4">Productos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl shadow">
@@ -143,10 +139,12 @@ const PageRecord = () => {
         />
       </div>
 
+      {/* 📊 Evolución de Ventas + Stock vs Mínimo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+        {/* Evolución de Ventas */}
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-md font-semibold mb-2">Evolución de Ventas</h3>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={250}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -156,38 +154,40 @@ const PageRecord = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+
+        {/* Stock vs Mínimo al lado */}
+        <div className="bg-white p-4 rounded-xl shadow h-80 overflow-x-auto">
+          <h3 className="text-md font-semibold mb-2">Stock vs Mínimo</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={stockMinData} barCategoryGap={20} barSize={30}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <XAxis dataKey="name" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  borderColor: "#e5e7eb",
+                }}
+                labelStyle={{ color: "#374151" }}
+              />
+              <Legend
+                wrapperStyle={{
+                  top: 0,
+                  right: 0,
+                  fontSize: "14px",
+                  color: "#374151",
+                }}
+              />
+              <Bar dataKey="stock" fill="#C2A878" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="minimo" fill="#9E9E9E" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      {/* Stock vs Mínimo */}
-      <div className="w-full bg-white rounded-2xl shadow-md p-6 h-80 overflow-x-auto mb-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          Stock vs Mínimo
-        </h3>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={stockMinData} barCategoryGap={20} barSize={30}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis dataKey="name" stroke="#6b7280" />
-            <YAxis stroke="#6b7280" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#fff",
-                borderRadius: "8px",
-                borderColor: "#e5e7eb",
-              }}
-              labelStyle={{ color: "#374151" }}
-            />
-            <Legend
-              wrapperStyle={{ top: 0, right: 0, fontSize: "14px", color: "#374151" }}
-            />
-            <Bar dataKey="stock" fill="#C2A878" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="minimo" fill="#9E9E9E" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/*  Más y menos vendidos */}
+      {/* 📊 Más y menos vendidos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        {/* Tabla Más Vendidos */}
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-lg font-semibold mb-4 text-center">
             Productos más vendidos
@@ -202,8 +202,6 @@ const PageRecord = () => {
             editable={false}
           />
         </div>
-
-        {/* Tabla Menos Vendidos */}
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-lg font-semibold mb-4 text-center">
             Productos menos vendidos
