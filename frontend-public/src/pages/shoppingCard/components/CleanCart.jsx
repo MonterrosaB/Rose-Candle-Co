@@ -1,17 +1,13 @@
 import React from "react";
 
-const ClearButton = ({ cartId, idUser, creationDate, onClear }) => {
+const ClearButton = ({ cartId, onClear }) => {
   const clearCart = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
+      const response = await fetch(`http://localhost:4000/api/cart/empty/${cartId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          idUser,
-          creationDate,
-          products: [],
-          total: 0,
-        }),
+        headers: { 
+          Authorization: `Bearer ${localStorage.getItem("token")}`, 
+          },
       });
 
       if (!response.ok) {

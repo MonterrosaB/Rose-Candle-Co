@@ -7,64 +7,31 @@ const AddToCartButton = ({ product }) => {
   const userId = "665d3836f3c56f70bdc308c5";
 
   const handleAddToCart = async () => {
-    if (
-      !product ||
-      !product._id ||
-      !product.name ||
-      !product.images?.[0] ||
-      !product.currentPrice
-    ) {
+    if (!product || !product._id) {
       console.error("Producto incompleto:", product);
       alert("El producto no tiene todos los datos necesarios.");
       return;
     }
 
-    const productId = product._id;
-    const productPrice = Number(product.currentPrice);
-
     try {
-      let cart;
-      const res = await fetch(`http://localhost:4000/api/cart/${cartId}`);
-
-      if (res.status === 404) {
-        const createRes = await fetch("http://localhost:4000/api/cart", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            idUser: userId,
-            creationDate: new Date(),
-            products: [],
-            total: 0,
-          }),
-        });
-
-        if (!createRes.ok) throw new Error(await createRes.text());
-
-        cart = await createRes.json();
-      } else if (!res.ok) {
-        throw new Error(await res.text());
-      } else {
-        cart = await res.json();
-      }
-
-      const updatedProducts = [...cart.products, productId];
-      const updatedTotal = Number(cart.total || 0) + productPrice;
-
-      const updateResponse = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
-        method: "PUT",
+      const res = await fetch("http://localhost:4000/api/cart/add", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          idUser: userId,
-          creationDate: cart.creationDate || new Date(),
-          products: updatedProducts,
-          total: updatedTotal,
+          productId: product._id,
         }),
       });
 
-      if (!updateResponse.ok) throw new Error(await updateResponse.text());
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+      }
 
+      const data = await res.json();
+      console.log("Carrito actualizado:", data.cart);
       alert("Producto agregado al carrito correctamente");
     } catch (err) {
       console.error("Error al agregar al carrito:", err);

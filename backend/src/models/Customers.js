@@ -12,6 +12,27 @@
 
 import { Schema, model } from "mongoose";
 
+const addressSchema = new Schema({
+  address: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    enum: {
+      values: ["casa", "trabajo", "otro"],
+      message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
+    },
+    default: "casa",
+  },
+  isDefault: {
+    type: Boolean,
+    default: false,
+  },
+}, {
+  _id: true,
+});
+
 const customerSchema = new Schema(
   {
     name: {
@@ -71,6 +92,10 @@ const customerSchema = new Schema(
       match: [/^\d{4}-\d{4}$/, , "Número de teléfono inválido"],
       minLength: 9,
       trim: true,
+    },
+    addresses: {
+      type: [addressSchema],
+      required: true,
     },
   },
   {

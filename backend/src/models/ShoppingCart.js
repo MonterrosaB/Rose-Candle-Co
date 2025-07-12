@@ -17,10 +17,6 @@ const shoppingCartSchema = new Schema({
         ref: "Customers", // Modelo de Customers
         trim: true
     },
-    creationDate: {
-        type: Date,
-        default: Date.now
-    },
     products: [{
         type: Schema.Types.ObjectId,
         ref: "Products", // Modelo de Products
@@ -33,7 +29,7 @@ const shoppingCartSchema = new Schema({
         trim: true
     }
 }, {
-    timestamps: false,
+    timestamps: true,
     strict: false 
 });
 

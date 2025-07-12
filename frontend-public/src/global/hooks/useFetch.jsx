@@ -5,6 +5,8 @@ const useFetch =()=>
     const useLogin = async (email, password)=>{
     
       const response = await fetch(`${SERVER_URL}/loginCustomer`, {
+        credentials: "include"
+      },{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

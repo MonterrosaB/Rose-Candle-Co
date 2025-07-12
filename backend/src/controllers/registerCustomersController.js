@@ -9,14 +9,24 @@ const registerCustomersController = {};
 // POST
 registerCustomersController.registerCustomers = async (req, res) => {
   // Obtener datos
-  const { name, surnames, email, password, user, phone } = req.body;
+  const { name, surnames, email, password, user, phone, addresses } = req.body;
 
   try {
     // Validaciones
-    if (!name || !surnames || !email || !phone || !password || !user) {
+    if (
+      !name ||
+      !surnames ||
+      !email ||
+      !phone ||
+      !password ||
+      !user ||
+      !addresses ||
+      !Array.isArray(addresses) ||
+      addresses.length === 0
+    ) {
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacíos
+        .json({ message: "Please complete all the fields" });
     }
 
     if (
@@ -25,26 +35,35 @@ registerCustomersController.registerCustomers = async (req, res) => {
       phone.length < 9 ||
       password.length < 8
     ) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" });
     }
 
     if (name.length > 100 || surnames.length > 100) {
-      return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
+      return res.status(400).json({ message: "Too large" });
+    }
+
+    for (const addr of addresses) {
+      if (addr.address.length > 250) {
+        return res.status(400).json({ message: "Address too large" });
+      }
     }
 
     // Validar formato de teléfono
     const phoneRegex = /^\d{4}-\d{4}$/;
     if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ message: "Formato de teléfono inválido (####-####)" });
+      return res
+        .status(400)
+        .json({ message: "Formato de teléfono inválido (####-####)" });
     }
-    
-     // Validar contraseña
-     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
-     if (!passwordRegex.test(password)) {
-       return res.status(400).json({
-         message: "La contraseña debe incluir mayúscula, minúscula, número y símbolo"
-       });
-     }
+
+    // Validar contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          "La contraseña debe incluir mayúscula, minúscula, número y símbolo",
+      });
+    }
 
     // Verificar si el cliente ya existe
     const existCustomer = await customersModel.findOne({ email });
@@ -55,6 +74,15 @@ registerCustomersController.registerCustomers = async (req, res) => {
     // Encriptar contraseña
     const passwordHash = await bcryptjs.hash(password, 10);
 
+    const cleanAddresses = addresses.map((addr) => ({
+      address: addr.address,
+      isDefault: addr.isDefault ?? false,
+      type: addr.type && addr.type.trim() !== "" ? addr.type : undefined, // <--- Si no viene, Mongoose pone default
+    }));
+
+    console.log("Addresses recibidas:", addresses);
+    console.log("Addresses final:", cleanAddresses);
+
     // Guardar datos
     const newCustomer = new customersModel({
       name,
@@ -63,6 +91,7 @@ registerCustomersController.registerCustomers = async (req, res) => {
       password: passwordHash,
       user,
       phone,
+      addresses: cleanAddresses,
     });
 
     await newCustomer.save();

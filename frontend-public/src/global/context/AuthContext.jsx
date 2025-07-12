@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }) => {
   // Iniciar sesión: enviar datos, guardar token y validar
   const login = async (email, password) => {
     try {
-
       if (!email || !password) {
         toast.error("Por favor completa todos los campos");
         return false;
@@ -55,7 +54,7 @@ export const AuthProvider = ({ children }) => {
 
       console.log("Enviando login:", { email, password });
 
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${API_URL}/loginCustomer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -65,21 +64,22 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const token = Cookies.get("authToken");
+        const token = data.token; // ✅ Ahora tomas el token del body
+        const user = data.customer; // ✅ Y el usuario
 
-        if (token) {
+        if (token && user) {
           localStorage.setItem("token", token);
-          setAuthCokie(token);
+          setAuthCokie(token); // O "true"
+          setUser(user);
           return true;
         } else {
-          toast.error("Token no recibido");
+          toast.error("Datos incompletos recibidos del servidor");
           return false;
         }
       } else {
-        // No muestro los mensajes del backend
         if (
-          data.message === "User not found" ||
-          data.message === "Invalid password"
+          data.message === "Cliente no encontrado" ||
+          data.message === "Contraseña incorrecta"
         ) {
           toast.error("Credenciales incorrectas");
         } else {
@@ -98,37 +98,27 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const cookieToken = Cookies.get("authToken");
+        const response = await fetch(`${API_URL}/loginCustomer/verifyCustomer`, 
+          {
+          method: "GET",
+          credentials: "include", // <--- manda la cookie automáticamente
+        });
 
-        if (token || cookieToken) {
-          const validToken = token || cookieToken;
+        if (response.ok) {
+          const data = await response.json();
 
-          const response = await fetch(`${API_URL}/products`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${validToken}`,
-            },
-            credentials: "include",
-          });
-
-          if (response.ok) {
-            // Extraer datos del usuario desde el token
-            const parts = validToken.split(".");
-            if (parts.length === 3) {
-              const payload = JSON.parse(atob(parts[1]));
-              setUser({ id: payload.id, userType: payload.userType });
-              setAuthCokie(validToken);
-            }
+          // Usa los datos devueltos
+          if (data.customer) {
+            setUser(data.customer);
+            setAuthCokie("true"); // Solo un flag para decir "sí hay sesión"
           } else {
-            clearSession(); // Token inválido
+            clearSession();
           }
         } else {
-          clearSession(); // No hay token
+          clearSession();
         }
       } catch (error) {
-        console.error("Error verificando la autenticación:", error);
+        console.error("Error verificando autenticación:", error);
         clearSession();
       } finally {
         setLoading(false);
@@ -143,8 +133,9 @@ export const AuthProvider = ({ children }) => {
   // Valor global del contexto
   const contextValue = {
     user,
+    setUser,
     authCokie,
-    isAuthenticated,  // ← ¡Esta línea es clave!
+    isAuthenticated, // ← ¡Esta línea es clave!
     loading,
     login,
     logout,
