@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiRawMaterialCategories = "http://localhost:4000/api/rawmaterialcategories"; // Cambia a tu ruta real
+const ApiRawMaterialCategories = "http://localhost:4000/api/rawmaterialcategories";
 
 const useRawMaterialCategories = (methods) => {
   const {
@@ -13,6 +13,7 @@ const useRawMaterialCategories = (methods) => {
 
   const [categories, setCategories] = useState([]);
 
+  // Obtener todas las categorías de materias primas
   const getCategories = async () => {
     try {
       const res = await fetch(ApiRawMaterialCategories);
@@ -25,6 +26,7 @@ const useRawMaterialCategories = (methods) => {
     }
   };
 
+  // Crear nueva categoría
   const createCategory = async (newCategory) => {
     try {
       const res = await fetch(ApiRawMaterialCategories, {
@@ -34,13 +36,14 @@ const useRawMaterialCategories = (methods) => {
       });
       if (!res.ok) throw new Error("Error al crear categoría");
       toast.success("Categoría agregada");
-      getCategories();
+      getCategories(); // Actualizar lista tras creación
     } catch (error) {
       console.error(error);
       toast.error("No se pudo agregar categoría");
     }
   };
 
+  // Actualizar categoría por ID
   const updateCategory = async (id, updatedCategory) => {
     try {
       const res = await fetch(`${ApiRawMaterialCategories}/${id}`, {
@@ -50,13 +53,14 @@ const useRawMaterialCategories = (methods) => {
       });
       if (!res.ok) throw new Error("Error al actualizar categoría");
       toast.success("Categoría actualizada");
-      getCategories();
+      getCategories(); // Actualizar lista tras actualización
     } catch (error) {
       console.error(error);
       toast.error("No se pudo actualizar categoría");
     }
   };
 
+  // Eliminar categoría por ID
   const deleteCategory = async (id) => {
     try {
       const res = await fetch(`${ApiRawMaterialCategories}/${id}`, {
@@ -64,13 +68,14 @@ const useRawMaterialCategories = (methods) => {
       });
       if (!res.ok) throw new Error("Error al eliminar categoría");
       toast.success("Categoría eliminada");
-      getCategories();
+      getCategories(); // Actualizar lista tras eliminación
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar categoría");
     }
   };
 
+  // Cargar categorías al montar el hook
   useEffect(() => {
     getCategories();
   }, []);

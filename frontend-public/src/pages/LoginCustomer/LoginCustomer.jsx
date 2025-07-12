@@ -31,7 +31,7 @@ const Login = () => {
 
     if (success) {
       toast.success("Inicio de sesión exitoso");
-      navigate("/"); // Navegar al home después del login
+      navigate("/cart"); // Navegar al home después del login
     }
   };
 
@@ -81,8 +81,8 @@ const Login = () => {
         {/* Campo de usuario */}
         <FormInput
           id="username"
-          label="Usuario"
-          placeholder="Nombre de usuario"
+          label="Correo eléctronico"
+          //placeholder="Nombre de usuario"
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -92,7 +92,7 @@ const Login = () => {
         <FormInput
           id="password"
           label="Contraseña"
-          placeholder="********"
+          //placeholder="********"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

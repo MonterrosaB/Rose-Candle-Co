@@ -12,6 +12,7 @@ router.route("/")
 .post(suppliersControllers.createSuppliers) 
 
 router.route("/:id")
+.get(suppliersControllers.getSupplierById)
 .put(suppliersControllers.updateSuppliers)
 .delete(suppliersControllers.deleteSuppliers)
 
