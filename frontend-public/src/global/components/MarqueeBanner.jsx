@@ -7,7 +7,7 @@ export default function MarqueeBanner() {
     <div className="fixed top-0 left-0 w-full z-[60] bg-black text-white py-2">
       <Marquee
         gradient={false}
-        speed={120}
+        speed={60}
         pauseOnHover={false} // que no se detenga
         direction="left"
         loop={0} // se repite
