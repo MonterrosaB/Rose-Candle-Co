@@ -59,10 +59,7 @@ const PageEmployees = () => {
         >
           <RegisterEmployee
             defaultValues={selectedEmployee}
-            onClose={() => {
-              setOpenDialogEmployees(false);
-              getEmployees(); // Actualiza los empleados después de cerrar el formulario
-            }}
+            onClose={() => setOpenDialogEmployees(false)}
           />
         </Dialog>
       )}

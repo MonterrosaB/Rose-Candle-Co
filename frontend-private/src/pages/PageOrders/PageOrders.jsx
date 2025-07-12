@@ -1,12 +1,19 @@
 import RegisterOrder from "./components/RegisterOrder"
 import CardProduct from "./components/CardProductOrder";
 import CardMaterials from "./components/CardMaterials";
+import { useState } from "react";
 import Card from "../../assets/calmness.jpg";
+
+import PrincipalDiv from "../../global/components/PrincipalDiv"
+import Dialog from "../../global/components/Dialog"
 
 import DataGrid from "../../global/components/DataGrid";
 
 
+
 const PageOrders = () => {
+
+    const [openDialogOrders, setOpenDialogOrders] = useState(false);
 
     const accordionData = [
         {
@@ -27,7 +34,8 @@ const PageOrders = () => {
 
     const salesOrdersMock = [
         {
-            idShoppingCart: "60fd58c1f49a3c2dc8ab9d23",
+            idShoppingCart: "10",
+            cliente: "Rodrigo",
             paymentMethod: "paypal",
             address: "123 Main Street, San Salvador",
             saleDate: new Date("2025-07-11T10:30:00"),
@@ -47,7 +55,8 @@ const PageOrders = () => {
             updatedAt: new Date("2025-07-12T14:00:00")
         },
         {
-            idShoppingCart: "60fd58c1f49a3c2dc8ab9d24",
+            idShoppingCart: "10",
+            cliente: "Rodrigo",
             paymentMethod: "credit card",
             address: "456 Avenue Libertad, Santa Tecla",
             saleDate: new Date("2025-07-10T09:15:00"),
@@ -75,27 +84,37 @@ const PageOrders = () => {
 
     const columns = {
         Productos: "idShoppingCart",
-        Cliente: "idShoppingCart",
+        Cliente: "cliente",
         Fecha: "createdAt",
         Monto: "total",
         Método: "paymentMethod",
         Estado: "shippingState[last].state"
     };
 
-
-
-
-
-
     return (
         <>
+            <PrincipalDiv>
+                <DataGrid
+                    title={"Ordenes"}
+                    columns={columns}
+                    rows={salesOrdersMock}
+                    primaryBtnText={"Add Order"}
+                    onClickPrimaryBtn={() => setOpenDialogOrders(true)}
+                />
 
-            <DataGrid
-                title={"Ordenes"}
-                columns={columns}
-                rows={salesOrdersMock}
+                {openDialogOrders && (
+                    <Dialog
+                        open={openDialogOrders}
+                        onClose={() => setOpenDialogOrders(false)}
+                    >
+                        <RegisterOrder
+                            onClose={() => setOpenDialogOrders(false)}
+                        />
+                    </Dialog>
+                )}
+            </PrincipalDiv>
 
-            />
+
         </>
     )
 }

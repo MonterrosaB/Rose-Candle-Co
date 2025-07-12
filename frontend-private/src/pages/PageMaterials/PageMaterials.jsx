@@ -1,21 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import Dialog from "../../global/components/Dialog";
 import RegisterMaterial from "./components/RegisterMaterial";
 import RegisterSupplies from "./components/RegisterSupplies";
 import useMaterials from "./hooks/useMaterials";
-
 import { useForm } from "react-hook-form";
 
-const Materials = () => {
+const PageMaterials = () => {
   const [openDialogMaterial, setOpenDialogMaterial] = useState(false);
   const [openDialogSupplies, setOpenDialogSupplies] = useState(false);
-  const [registroActual, setRegistroActual] = useState(null);
+  const [registroActual, setRegistroActual] = useState(null); // 🟡 Para editar
 
   const methods = useForm();
 
-  const { materials, loading, createMaterial } = useMaterials(methods);
+  const { materials, loading, deleteMaterial } = useMaterials(methods);
 
   const columns = {
     Nombre: "name",
@@ -35,23 +34,27 @@ const Materials = () => {
         loading={loading}
         primaryBtnText="Agregar Materia Prima"
         onClickPrimaryBtn={() => {
-          setRegistroActual(null);
+          setRegistroActual(null); // ➕ nuevo
           setOpenDialogMaterial(true);
         }}
         secondaryBtnText="Agregar Insumos"
         onClickSecondaryBtn={() => setOpenDialogSupplies(true)}
         updateRow={(row) => {
-          setRegistroActual(row);
+          setRegistroActual(row); // ✏️ editar
           setOpenDialogMaterial(true);
+        }}
+        deleteRow={(row) => {
+          if (confirm(`¿Eliminar "${row.name}"?`)) {
+            deleteMaterial(row._id);
+          }
         }}
       />
 
       {openDialogMaterial && (
         <Dialog open={openDialogMaterial} onClose={() => setOpenDialogMaterial(false)}>
           <RegisterMaterial
-            defaultValues={registroActual}
+            defaultValues={registroActual} // ✅ Aquí va lo editable
             onClose={() => setOpenDialogMaterial(false)}
-            onSubmitMaterial={createMaterial}
           />
         </Dialog>
       )}
@@ -65,4 +68,4 @@ const Materials = () => {
   );
 };
 
-export default Materials;
+export default PageMaterials;

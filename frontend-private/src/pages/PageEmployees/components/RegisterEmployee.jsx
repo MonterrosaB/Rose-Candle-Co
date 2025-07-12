@@ -20,8 +20,8 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     handleSubmit,
     errors,
     loading,
-    setValue,
-    isEditMode, // Determina si es modo edición
+    saveEmployeeForm,
+    editEmployee // Determina si es modo edición
   } = useDataEmployee(methods);
 
   const opcionesEstado = [
@@ -29,10 +29,23 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     { _id: "false", label: "Inactivo" },
   ];
 
+  const opcionesRol = [
+    { _id: "admin", label: "Admin" },
+    { _id: "employee", label: "Empleado" },
+  ];
+
+  const onSubmit = (data) => {
+    if (defaultValues) {
+      editEmployee(defaultValues._id, data);
+    } else {
+      saveEmployeeForm(data);
+    }
+  };
+
   return (
     <Form
       headerLabel={defaultValues ? "Editar Empleado" : "Agregar Empleado"}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
       <FormInputs>
@@ -111,6 +124,17 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               },
             }}
           />
+
+          {!defaultValues && (
+            <Dropdown
+              name="isActive"
+              label="Estado"
+              register={register}
+              error={errors.isActive?.message}
+              hideIcon={true}
+              options={opcionesEstado}
+            />
+          )}
         </InputsInline>
 
         <InputsInline>
@@ -129,55 +153,57 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
             }}
           />
 
-          {!defaultValues && (
-            <>
-              <Input
-                name="password"
-                label="Contraseña"
-                type="password"
-                register={register}
-                error={errors.password?.message}
-                options={{
-                  required: "La contraseña es requerida",
-                  minLength: {
-                    value: 8,
-                    message: "La contraseña debe tener al menos 8 caracteres",
-                  },
-                }}
-              />
-
-              <Input
-                name="confirmPassword"
-                label="Confirmar Contraseña"
-                type="password"
-                register={register}
-                error={errors.confirmPassword?.message}
-                options={{
-                  validate: (value) =>
-                    value === methods.getValues("password") ||
-                    "Las contraseñas no coinciden",
-                }}
-              />
-            </>
-          )}
-
-          {!defaultValues && (
-            <Dropdown
-              name="isActive"
-              label="Estado"
-              register={register}
-              error={errors.isActive?.message}
-              hideIcon={true}
-              options={opcionesEstado}
-              setValue={setValue}
-            />
-          )}
+          <Dropdown
+            name={"role"}
+            label={"Rol"}
+            register={register}
+            errors={errors}
+            hideIcon={true}
+            options={opcionesRol}
+          />
         </InputsInline>
+
+
+        {!defaultValues && (
+          <>
+            <Input
+              name="password"
+              label="Contraseña"
+              type="password"
+              register={register}
+              error={errors.password?.message}
+              options={{
+                required: "La contraseña es requerida",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+              }}
+            />
+
+            <Input
+              name="confirmPassword"
+              label="Confirmar Contraseña"
+              type="password"
+              register={register}
+              error={errors.confirmPassword?.message}
+              options={{
+                validate: (value) =>
+                  value === methods.getValues("password") ||
+                  "Las contraseñas no coinciden",
+              }}
+            />
+          </>
+        )}
+
+
+
+
       </FormInputs>
 
       <FormButton>
         <Button
-          buttonText={isEditMode ? "Guardar Cambios" : "Agregar Empleado"}
+          buttonText={defaultValues ? "Guardar Cambios" : "Agregar Empleado"}
           type="submit"
           disabled={loading}
         />

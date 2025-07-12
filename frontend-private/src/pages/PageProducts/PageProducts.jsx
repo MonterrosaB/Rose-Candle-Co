@@ -23,6 +23,7 @@ const PageProducts = () => {
     setOpenDialogProduct(true);
   };
 
+
   return (
     <>
       <PrincipalDiv>

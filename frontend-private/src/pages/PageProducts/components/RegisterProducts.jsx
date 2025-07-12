@@ -71,8 +71,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory._id);
-    formData.append("idCollection", data.collection._id); // si lo necesitas
+    formData.append("idProductCategory", data.idProductCategory);
+    formData.append("idCollection", data.collection); // si lo necesitas
 
     allImages.forEach((file) => {
       formData.append("images", file);

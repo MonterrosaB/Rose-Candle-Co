@@ -14,7 +14,7 @@ import Card from "../../../assets/calmness.jpg"
 import { useForm } from "react-hook-form";
 import useOrders from "../../PageMaterials/hooks/useMaterials";
 
-const RegisterOrder = () => {
+const RegisterOrder = ({ onClose }) => {
 
     const methods = useForm();
     const { register, handleSubmit, errors } = useOrders(methods);
@@ -61,7 +61,7 @@ const RegisterOrder = () => {
     };
 
     return (
-        <Form headerLabel={"Agregar Nueva Orden"} onSubmit={handleSubmit(onSubmit)} >
+        <Form headerLabel={"Agregar Nueva Orden"} onSubmit={handleSubmit(onSubmit)} onClose={onClose} >
             <FormInputs>
                 <div className="flex justify-center items-center gap-4 w-full">
                     <Input

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import useFetchEmployees from "./useFetchEmployees"; // Usamos el hook de fetch para obtener los empleados
+import useFetchEmployees from "./useFetchEmployees";
 
-const ApiEmployees = "http://localhost:4000/api/registerEmployees"; // API endpoint para empleados
+const ApiEmployeesRegister = "http://localhost:4000/api/registerEmployees";
+const ApiEmployees = "http://localhost:4000/api/employees";
 
 const useDataEmployee = (methods) => {
-  const { getEmployeeById, getEmployees } = useFetchEmployees(); // Usamos el hook de fetch para obtener los empleados
+  const { getEmployeeById, getEmployees } = useFetchEmployees();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -18,28 +19,24 @@ const useDataEmployee = (methods) => {
   } = methods;
 
   const [loading, setLoading] = useState(false);
-  const [employeeErrors, setEmployeeErrors] = useState({}); // Errores específicos para el empleado
+  const [employeeErrors, setEmployeeErrors] = useState({});
 
-  // Limpiar los datos del formulario
   const cleanData = () => {
     reset();
     setEmployeeErrors({});
   };
 
-  // Validaciones del formulario antes de hacer el submit
   const validateForm = (data) => {
     const errors = {};
 
-    // Validaciones de campos requeridos
     if (!data.name) errors.name = "Campo requerido";
     if (!data.surnames) errors.surnames = "Campo requerido";
     if (!data.email) errors.email = "Campo requerido";
-    if (!data.password) errors.password = "Campo requerido";
+    if (!data.password && !id) errors.password = "Campo requerido"; // Solo requerido en creación
     if (!data.phone) errors.phone = "Campo requerido";
     if (!data.dui) errors.dui = "Campo requerido";
     if (!data.user) errors.user = "Campo requerido";
 
-    // Validaciones de formato
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (data.email && !emailPattern.test(data.email)) {
       errors.email = "Correo electrónico inválido";
@@ -70,7 +67,13 @@ const useDataEmployee = (methods) => {
     return errors;
   };
 
-  // Guardar un nuevo empleado
+  const finishOperation = (message) => {
+    toast.success(message);
+    cleanData();
+    getEmployees();
+    navigate("/employees");
+  };
+
   const saveEmployeeForm = async (dataForm) => {
     const validationErrors = validateForm(dataForm);
     if (Object.keys(validationErrors).length > 0) {
@@ -81,13 +84,9 @@ const useDataEmployee = (methods) => {
     try {
       setLoading(true);
 
-      console.log(dataForm);
-
-      const response = await fetch(ApiEmployees, {
+      const response = await fetch(ApiEmployeesRegister, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataForm),
       });
 
@@ -99,10 +98,7 @@ const useDataEmployee = (methods) => {
         return;
       }
 
-      toast.success("Empleado creado exitosamente");
-      cleanData();
-      getEmployees(); // Refrescar lista de empleados
-      navigate("/employees"); // Redirigir a la página de empleados
+      finishOperation("Empleado creado exitosamente");
     } catch (error) {
       console.error("Error:", error);
       toast.error("Ocurrió un error al registrar el empleado");
@@ -111,8 +107,7 @@ const useDataEmployee = (methods) => {
     }
   };
 
-  // Editar un empleado existente
-  const editEmployee = async (dataForm) => {
+  const editEmployee = async (employeeId, dataForm) => {
     const validationErrors = validateForm(dataForm);
     if (Object.keys(validationErrors).length > 0) {
       setEmployeeErrors(validationErrors);
@@ -121,11 +116,12 @@ const useDataEmployee = (methods) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${ApiEmployees}/${id}`, {
+      console.log(dataForm);
+
+
+      const response = await fetch(`${ApiEmployees}/${employeeId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataForm),
       });
 
@@ -137,10 +133,7 @@ const useDataEmployee = (methods) => {
         return;
       }
 
-      toast.success("Empleado actualizado exitosamente");
-      cleanData();
-      getEmployees(); // Refrescar lista de empleados
-      navigate("/employees"); // Redirigir a la página de empleados
+      finishOperation("Empleado actualizado exitosamente");
     } catch (error) {
       console.error("Error:", error);
       toast.error("Ocurrió un error al actualizar el empleado");
@@ -149,47 +142,15 @@ const useDataEmployee = (methods) => {
     }
   };
 
-  // Decidir si guardar o editar un empleado
-  const handleEmployeeAction = (dataForm) => {
-    if (id) {
-      editEmployee(dataForm);
-    } else {
-      saveEmployeeForm(dataForm);
-    }
-  };
-
-  // Cargar datos del empleado cuando se edita
-  const loadEmployee = async () => {
-    if (id) {
-      const employee = await getEmployeeById(id);
-      if (employee) {
-        reset({
-          name: employee?.name,
-          surnames: employee?.surnames,
-          email: employee?.email,
-          phone: employee?.phone,
-          dui: employee?.dui,
-          password: employee?.password,
-          user: employee?.user,
-          role: employee?.role,
-          isActive: employee?.isActive,
-        });
-      }
-    }
-  };
-
-  // useEffect para cargar los datos cuando cambia el id
-  useEffect(() => {
-    loadEmployee();
-  }, [id]);
 
   return {
     register,
-    handleSubmit: handleSubmit(handleEmployeeAction),
+    handleSubmit,
     errors: { ...errors, ...employeeErrors },
     loading,
     handleUpdateEmployee: (id) => navigate(`/employees/${id}`),
-    loadEmployee,
+    editEmployee,
+    saveEmployeeForm,
   };
 };
 

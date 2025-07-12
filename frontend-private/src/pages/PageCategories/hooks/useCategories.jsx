@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiCategories = "http://localhost:4000/api/productcategories";
+const ApiCategories = "http://localhost:4000/api/rawMaterialCategories";
 
 const useCategories = (methods) => {
   const {
