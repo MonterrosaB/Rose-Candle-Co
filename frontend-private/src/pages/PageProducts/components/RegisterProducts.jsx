@@ -18,11 +18,34 @@ import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
 
-const RegisterProducts = ({ onClose }) => {
-  const {opcionesCategorias, opcionesColecciones, opcionesMateria} = useProductOptions;
-  const methods = useForm();
-  const { register, handleSubmit, errors, reset, control, createProduct } =
-    useProducts(methods);
+const RegisterProducts = ({ onClose, selectedProduct }) => {
+
+  const methods = useForm({
+    defaultValues: {
+      ...selectedProduct,
+      instrucctions: selectedProduct?.useForm || [],
+      receta: selectedProduct?.recipe || [],
+      variantes: selectedProduct?.variant || [],
+      componentes: selectedProduct?.components || [],
+      estado: selectedProduct?.availability, // para el dropdown
+      idProductCategory: selectedProduct?.idProductCategory,
+      collection: selectedProduct?.idCollection
+    },
+  });
+
+  const { agregarInput, inputs, resetInputs } = AddComponent();
+
+
+  useEffect(() => {
+    if (selectedProduct) {
+      resetInputs(); // opcional: limpia antes de volver a cargar
+      agregarInput("variantes", selectedProduct.variant || []);
+      agregarInput("componentes", selectedProduct.components || []);
+    }
+  }, [selectedProduct]);
+
+
+  const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
   const {
     productImage,
@@ -34,7 +57,43 @@ const RegisterProducts = ({ onClose }) => {
     onImageChange,
   } = changeImages();
 
-;
+
+
+  const onSubmit = async (data) => {
+
+    const allImages = [productImageFile, ...multipleFileFiles];
+
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("availability", data.estado);
+    formData.append("useForm", JSON.stringify(data.instrucctions));
+    formData.append("variant", JSON.stringify(data.variantes));
+    formData.append("idProductCategory", data.idProductCategory._id);
+    formData.append("idCollection", data.collection._id); // si lo necesitas
+
+    allImages.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    formData.append("components", JSON.stringify(data.componentes));
+    formData.append("recipe", JSON.stringify(data.receta));
+
+    if (selectedProduct) {
+      // 🔁 ACTUALIZAR producto existente
+      await handleUpdate(selectedProduct._id, formData);
+
+    } else {
+      // 🆕 CREAR nuevo producto
+      await createProduct(formData);
+    }
+
+    onClose(); // cerrar modal después de guardar
+  };
+
+
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
+
 
   console.log("Opciones Colecciones:", opcionesColecciones);
   console.log("Opciones Materia Prima:", opcionesMateria);
@@ -47,7 +106,7 @@ const RegisterProducts = ({ onClose }) => {
 
   return (
     <Form
-      headerLabel={"Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -218,7 +277,7 @@ const RegisterProducts = ({ onClose }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={"Agregar Producto"} type={"submit"} />
+        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} />
       </FormButton>
     </Form>
   );
