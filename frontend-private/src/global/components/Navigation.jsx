@@ -20,6 +20,7 @@ import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesM
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
+import Record from "../../pages/PageRecord/PageRecord.jsx";
 
 function Navigation() {
   const { authCokie } = useAuth();
@@ -27,7 +28,7 @@ function Navigation() {
   const { hasEmployees } = useHasEmployees();
   // Redirección desde raíz si no hay empleados
   const redirectPath = hasEmployees ? "/login" : "/start";
-  
+
   return (
     <>
       {authCokie && <Sidebar />}
@@ -78,6 +79,7 @@ function Navigation() {
             <Route path="/order" element={<Orders />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/record" element={<Record />} />
             <Route
               path="/others/categories-materia"
               element={<CategoriesMateria />}

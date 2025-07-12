@@ -80,6 +80,9 @@ const useDataEmployee = (methods) => {
 
     try {
       setLoading(true);
+
+      console.log(dataForm);
+
       const response = await fetch(ApiEmployees, {
         method: "POST",
         headers: {

@@ -55,14 +55,15 @@ const PageCollections = () => {
     } else {
       await createCollection(data);
     }
+    // ✅ Cierra el modal después de guardar
     setOpenDialogCollections(false);
+    // ✅ Limpia selección
+    setSelectedCollection(null);
   };
 
   const columns = {
     Nombre: "name",
-
   };
-
 
   const rows = collections;
 
@@ -81,7 +82,10 @@ const PageCollections = () => {
       {openDialogCollections && (
         <Dialog
           open={openDialogCollections}
-          onClose={() => setOpenDialogCollections(false)}
+          onClose={() => {
+            setOpenDialogCollections(false);
+            setSelectedCollection(null);
+          }}
         >
           <FormOneInput
             headerLabel={selectedCollection ? "Editar Colección" : "Agregar Colección"}
@@ -89,7 +93,10 @@ const PageCollections = () => {
             name={"name"}
             label={"Colección"}
             register={register}
-            onClose={() => setOpenDialogCollections(false)}
+            onClose={() => {
+              setOpenDialogCollections(false);
+              setSelectedCollection(null);
+            }}
             error={errors.name?.message}
             btnTxt={selectedCollection ? "Guardar Cambios" : "Agregar Colección"}
           />

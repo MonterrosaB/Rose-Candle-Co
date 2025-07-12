@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
 
+
 const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   const methods = useForm({
@@ -28,10 +29,12 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       variantes: selectedProduct?.variant || [],
       componentes: selectedProduct?.components || [],
       estado: selectedProduct?.availability, // para el dropdown
-      idProductCategory: selectedProduct?.idProductCategory,
-      collection: selectedProduct?.idCollection
+      idProductCategory: selectedProduct?.idProductCategory._id,
+      collection: selectedProduct?.idCollection._id
     },
   });
+
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
 
   const { agregarInput, inputs, resetInputs } = AddComponent();
 
@@ -58,7 +61,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   } = changeImages();
 
 
-
   const onSubmit = async (data) => {
 
     const allImages = [productImageFile, ...multipleFileFiles];
@@ -69,8 +71,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("availability", data.estado);
     formData.append("useForm", JSON.stringify(data.instrucctions));
     formData.append("variant", JSON.stringify(data.variantes));
-    formData.append("idProductCategory", data.idProductCategory._id);
-    formData.append("idCollection", data.collection._id); // si lo necesitas
+    formData.append("idProductCategory", data.idProductCategory);
+    formData.append("idCollection", data.collection); // si lo necesitas
 
     allImages.forEach((file) => {
       formData.append("images", file);
@@ -90,10 +92,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     onClose(); // cerrar modal después de guardar
   };
-
-
-  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
-
 
   console.log("Opciones Colecciones:", opcionesColecciones);
   console.log("Opciones Materia Prima:", opcionesMateria);

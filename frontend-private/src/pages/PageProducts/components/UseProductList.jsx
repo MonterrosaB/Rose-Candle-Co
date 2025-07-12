@@ -8,7 +8,7 @@ const ProductList = ({ onEdit }) => {
       {products.map((product) => (
         <div
           className="flex w-full max-w-sm border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-transform duration-200 hover:-translate-y-1 bg-gray-100 mx-auto"
-          onDoubleClick={onEdit}
+          onDoubleClick={() => onEdit(product)}
           key={product._id}
         >
           {/* Imagen (mitad izquierda) */}

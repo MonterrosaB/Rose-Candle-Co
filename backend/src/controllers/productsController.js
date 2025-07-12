@@ -137,7 +137,8 @@ productsController.deleteProduct = async (req, res) => {
 
 // PUT
 productsController.updateProduct = async (req, res) => {
-  // Obtener datos
+  console.log("Body", req.body);
+
   let {
     name,
     description,
@@ -145,12 +146,14 @@ productsController.updateProduct = async (req, res) => {
     recipe,
     availability,
     useForm,
-    currentPrice,
+    variant,
     idProductCategory,
+    idCollection,
   } = req.body;
 
   let imagesURL = [];
 
+  // Subida de imágenes a Cloudinary
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
@@ -162,44 +165,52 @@ productsController.updateProduct = async (req, res) => {
   }
 
   try {
-    // 🧠 Parsear campos que puedan venir como string
+    // Parsear arrays si vienen como strings
     if (typeof components === "string") components = JSON.parse(components);
     if (typeof recipe === "string") recipe = JSON.parse(recipe);
     if (typeof useForm === "string") useForm = JSON.parse(useForm);
-    if (typeof currentPrice === "string")
-      currentPrice = parseFloat(currentPrice);
+    if (typeof variant === "string") variant = JSON.parse(variant);
+    availability = availability === "true";
 
-    // Validaciones
-    if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" });
+    // Validaciones básicas
+    if (!name || name.length < 3)
+      return res.status(400).json({ message: "Name too short" });
+
+    if (!description || description.length < 5)
+      return res.status(400).json({ message: "Description too short" });
+
+    if (imagesURL.length > 8)
+      return res.status(400).json({ message: "Max 8 images allowed" });
+
+    if (
+      !components ||
+      !Array.isArray(components) ||
+      components.length < 1 ||
+      !recipe ||
+      !Array.isArray(recipe) ||
+      recipe.length < 1 ||
+      !useForm ||
+      !Array.isArray(useForm) ||
+      useForm.length < 1 ||
+      !variant ||
+      !Array.isArray(variant) ||
+      variant.length < 1
+    ) {
+      return res.status(400).json({ message: "All fields must be complete" });
     }
 
-    if (name.length > 1000) {
-      return res.status(400).json({ message: "Too long" });
-    }
-
-    if (description.length < 5) {
-      return res.status(400).json({ message: "Too short" });
-    }
-
-    if (imagesURL.length > 4) {
-      return res
-        .status(400)
-        .json({ message: "No puedes poner más de cuatro imágenes" });
-    }
-
-    // Si no se actualizan nuevas imágenes, usar las anteriores
+    // Buscar producto original
     const productOriginal = await productsModel.findById(req.params.id);
-    if (!productOriginal) {
-      return res.status(400).json({ message: "Product not found" });
-    }
+    if (!productOriginal)
+      return res.status(404).json({ message: "Product not found" });
 
+    // Si no se subieron nuevas imágenes, conservar las anteriores
     if (imagesURL.length === 0) {
       imagesURL = productOriginal.images;
     }
 
-    // Guardar datos
-    const productUpdated = await productsModel.findByIdAndUpdate(
+    // Actualización
+    const updatedProduct = await productsModel.findByIdAndUpdate(
       req.params.id,
       {
         name,
@@ -209,18 +220,20 @@ productsController.updateProduct = async (req, res) => {
         recipe,
         availability,
         useForm,
-        currentPrice,
+        variant,
         idProductCategory,
+        idCollection,
       },
       { new: true }
     );
 
-    res
-      .status(200)
-      .json({ message: "Updated Successfully", product: productUpdated });
+    res.status(200).json({
+      message: "Updated Successfully",
+      product: updatedProduct,
+    });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json("Internal server error");
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
