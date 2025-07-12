@@ -1,125 +1,60 @@
 import React, { useState, useEffect } from "react";
-import {
-  CiShop,
-  CiShoppingTag,
-  CiCreditCard1,
-  CiDeliveryTruck,
-} from "react-icons/ci";
-
-import Header from "../../global/components/Header.jsx"; // encabezado
-import GeneralQuestions from "./components/General.jsx"; // Componente de preguntas generales
-import ProductsQuestions from "./components/Product.jsx"; // Componente de preguntas de productos
-import OrdersQuestions from "./components/Order.jsx"; // Componente de preguntas de pedidos
-import CandlesQuestions from "./components/Candle.jsx"; // Componente de preguntas de velas
-
-import Star from "../../assets/star.svg?react"; // circulos del fondo
-import GradientBg from "../../global/components/GradientBg.jsx"; // degradado
+import Header from "../../global/components/Header.jsx";
+import GeneralQuestions from "./components/General.jsx";
+import ProductsQuestions from "./components/Product.jsx";
+import OrdersQuestions from "./components/Order.jsx";
+import CandlesQuestions from "./components/Candle.jsx";
 
 const Faqs = () => {
-  const [activeTab, setActiveTab] = useState("general"); // Establecer por defecto preguntas generales
+  const [activeTab, setActiveTab] = useState("general");
 
-  /* Cambiar título de la página */
   useEffect(() => {
     document.title = "Preguntas frecuentes | Rosé Candle Co.";
   }, []);
 
   return (
-    <div className="relative h-screen bg-[#F9F7F3] mx-12 mt-36">
-      {/* Elementos del fondo */}
-
-      {/* Estrellas de fondo */}
-
-      {/* Encabezado */}
+    <div className="relative min-h-screen bg-[#F9F7F3] mx-4 sm:mx-8 mt-24">
       <Header
         title={
-          <>
+          <div className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
             <span className="font-normal">Preguntas </span>
             <span className="font-bold">frecuentes</span>
-          </>
+          </div>
         }
         subtitle={
-          <>
-            <span className="font-normal">En </span>
-            <span className="font-bold">Rosé Candle Co., </span>
-            <span className="font-normal">
-              Queremos que tu experiencia con nosotros sea lo más fluida <br />y
-              agradable posible. Aquí encontrarás respuestas a las preguntas más
-              comunes. <br />
-              Si tienes alguna duda adicional, no dudes en contactarnos.
-            </span>
-          </>
+          <p className="text-sm sm:text-base md:text-lg text-center leading-relaxed text-[#1c1c1c] mt-4">
+            En <span className="font-bold">Rosé Candle Co.</span> queremos que tu experiencia con nosotros sea lo más fluida y agradable posible. Aquí encontrarás respuestas a las preguntas más comunes. Si tienes alguna duda adicional, no dudes en contactarnos.
+          </p>
         }
       />
 
-      {/* Navegación entre preguntas */}
-      <div className="flex flex-row items-center justify-center gap-12 -mb-4 mt-16 w-full font-[lora] font-bold text-[#1c1c1c] text-lg">
-        <button
-          className={`px-2 py-2 cursor-pointer focus:outline-none focus:border-b-2 focus:border-[#1c1c1c] ${
-            activeTab === "general"
-              ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
-              : "text-gray-600 hover:text-[#1c1c1c]"
-          }`}
-          onClick={() => setActiveTab("general")}
-        >
-          General
-        </button>
-        <button
-          className={`px-2 py-2 cursor-pointer focus:outline-none focus:border-b-2 focus:border-[#1c1c1c] ${
-            activeTab === "products"
-              ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
-              : "text-gray-600 hover:text-[#1c1c1c]"
-          }`}
-          onClick={() => setActiveTab("products")}
-        >
-          Productos
-        </button>
-        <button
-          className={`px-2 py-2 cursor-pointer focus:outline-none focus:border-b-2 focus:border-[#1c1c1c] ${
-            activeTab === "order"
-              ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
-              : "text-gray-600 hover:text-[#1c1c1c]"
-          }`}
-          onClick={() => setActiveTab("order")}
-        >
-          Pedidos
-        </button>
-        <button
-          className={`px-2 py-2 cursor-pointer focus:outline-none focus:border-b-2 focus:border-[#1c1c1c] ${
-            activeTab === "candles"
-              ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
-              : "text-gray-600 hover:text-[#1c1c1c]"
-          }`}
-          onClick={() => setActiveTab("candles")}
-        >
-          Velas
-        </button>
+      {/* Navegación */}
+      <div className="flex flex-wrap justify-center gap-6 mt-12 font-[lora] font-bold text-[#1c1c1c] text-base sm:text-lg">
+        {[
+          { id: "general", label: "General" },
+          { id: "products", label: "Productos" },
+          { id: "order", label: "Pedidos" },
+          { id: "candles", label: "Velas" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            className={`px-2 py-2 focus:outline-none transition-all duration-300 ${
+              activeTab === tab.id
+                ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
+                : "text-gray-600 hover:text-[#1c1c1c]"
+            }`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col">
-        {activeTab === "general" && (
-          <div className="flex-grow">
-            {/* Preguntas Generales */}
-            <GeneralQuestions />
-          </div>
-        )}
-        {activeTab === "products" && (
-          <div className="flex-grow">
-            {/* Preguntas Productos */}
-            <ProductsQuestions />
-          </div>
-        )}
-        {activeTab === "order" && (
-          <div className="flex-grow">
-            {/* Preguntas Pedidos */}
-            <OrdersQuestions />
-          </div>
-        )}
-        {activeTab === "candles" && (
-          <div className="flex-grow">
-            {/* Preguntas Velas */}
-            <CandlesQuestions />
-          </div>
-        )}
+      <div className="flex flex-col mt-10">
+        {activeTab === "general" && <GeneralQuestions />}
+        {activeTab === "products" && <ProductsQuestions />}
+        {activeTab === "order" && <OrdersQuestions />}
+        {activeTab === "candles" && <CandlesQuestions />}
       </div>
     </div>
   );

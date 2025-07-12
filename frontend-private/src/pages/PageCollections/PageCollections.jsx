@@ -58,8 +58,10 @@ const PageCollections = () => {
   };
 
   const columns = {
-    Nombre: "collection",
+    Nombre: "name",
+
   };
+
 
   const rows = collections;
 
@@ -83,7 +85,7 @@ const PageCollections = () => {
           <FormOneInput
             headerLabel={selectedCollection ? "Editar Colección" : "Agregar Colección"}
             onSubmit={handleSubmit(onSubmit)}
-            collection={"collection"}
+            name={"name"}
             label={"Colección"}
             register={register}
             onClose={() => setOpenDialogCollections(false)}

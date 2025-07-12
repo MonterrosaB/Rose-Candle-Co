@@ -16,6 +16,8 @@ import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
+import useProductOptions from "../hooks/useProductOptions";
+
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
 
@@ -31,6 +33,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       collection: selectedProduct?.idCollection._id
     },
   });
+
+  const { opcionesCategorias, opcionesColecciones, opcionesMateria } = useProductOptions();
 
   const { agregarInput, inputs, resetInputs } = AddComponent();
 
@@ -56,9 +60,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     onImageChange,
   } = changeImages();
 
-  const [opcionesCategorias, setOpcionesCategorias] = useState([]);
-  const [opcionesColecciones, setOpcionesColecciones] = useState([]);
-  const [opcionesMateria, setOpcionesMateria] = useState([]);
 
   const onSubmit = async (data) => {
 
@@ -91,53 +92,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     onClose(); // cerrar modal después de guardar
   };
-
-
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        // 🔵 Categorías
-        const resCategories = await fetch(
-          "http://localhost:4000/api/productcategories"
-        );
-        if (!resCategories.ok) throw new Error("Error al traer categorías");
-        const categories = await resCategories.json();
-        const mappedCategories = categories.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesCategorias(mappedCategories);
-
-        // 🟢 Colecciones
-        const resCollections = await fetch(
-          "http://localhost:4000/api/collections"
-        );
-        if (!resCollections.ok) throw new Error("Error al traer colecciones");
-        const collections = await resCollections.json();
-        const mappedCollections = collections.map((item) => ({
-          _id: item._id,
-          label: item.name || item.collection,
-        }));
-        setOpcionesColecciones(mappedCollections);
-
-        // 🟣 Componentes (Materia Prima)
-        const resMaterials = await fetch(
-          "http://localhost:4000/api/rawMaterials"
-        );
-        if (!resMaterials.ok) throw new Error("Error al traer materiales");
-        const materials = await resMaterials.json();
-        const mappedMaterials = materials.map((item) => ({
-          _id: item._id,
-          label: item.name,
-        }));
-        setOpcionesMateria(mappedMaterials);
-      } catch (error) {
-        console.error("Error fetching:", error);
-      }
-    };
-
-    fetchOptions();
-  }, []);
 
   console.log("Opciones Colecciones:", opcionesColecciones);
   console.log("Opciones Materia Prima:", opcionesMateria);

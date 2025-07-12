@@ -24,6 +24,7 @@ import registerCustomersRoutes from "./src/routes/registerCustomers.js";
 import loginCustomerRoutes from "./src/routes/loginCustomer.js";
 import logoutCustomerRoutes from "./src/routes/logoutCustomer.js";
 import logoutRoutes from "./src/routes/logout.js";
+import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 
 // Constante para la libreria de express
 const app = express();
@@ -60,7 +61,8 @@ app.use("/api/loginCustomer", loginCustomerRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/logoutCustomer", logoutCustomerRoutes);
 app.use("/api/registerCustomer", registerCustomersRoutes);
-app.use("/api/registerEmployees", registerEmployeesRoutes);
+app.use("/api/registerEmployees", registerEmployeesRoutes)
+app.use("/api/recoveryPassword", recoveryPasswordRoutes)
 
 // Exportar
 export default app;
