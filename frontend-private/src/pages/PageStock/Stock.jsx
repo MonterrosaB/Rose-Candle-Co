@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom"
-import { Package, Users, Layers, Tags } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Link } from "react-router-dom";
+import { Package, Users, Layers, Tags } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const PageStock = () => {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setIsLoaded(true)
-  }, [])
+    setIsLoaded(true);
+  }, []);
 
   const menuItems = [
     {
@@ -36,7 +36,7 @@ const PageStock = () => {
       path: "/others/categories-materia",
       icon: Package,
       gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
-      delay: "delay-500",
+      delay: "delay-400",
     },
     {
       title: "Productos",
@@ -50,16 +50,16 @@ const PageStock = () => {
       path: "/record",
       icon: Package,
       gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
-      delay: "delay-500",
+      delay: "delay-600",
     },
     {
       title: "Materia Prima",
       path: "/materials",
       icon: Package,
       gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
-      delay: "delay-500",
+      delay: "delay-700",
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-[#ffff] relative overflow-hidden">
@@ -87,43 +87,55 @@ const PageStock = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col min-h-screen w-full pt-8 px-4 ml-0">
+      <div className="relative z-10 flex flex-col min-h-screen w-full pt-8 px-4 sm:px-6 md:px-8 lg:px-10">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
-          <div className={`text-center mb-12 transform transition-all duration-1000 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-[#F9F7F3] via-[#DFCCAC] to-[#BCA88E] bg-clip-text text-transparent mb-4">
+          <div
+            className={`text-center mb-12 transform transition-all duration-1000 ${
+              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#F9F7F3] via-[#DFCCAC] to-[#BCA88E] bg-clip-text text-transparent mb-4">
               Panel de Control
             </h1>
-            <p className="text-xl text-[#D3CCBE] max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-[#D3CCBE] max-w-2xl mx-auto">
               Gestiona tu sistema
             </p>
           </div>
 
           {/* Grid menu */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {menuItems.map((item) => {
-              const IconComponent = item.icon
+              const IconComponent = item.icon;
               return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`group relative transform transition-all duration-700 hover:scale-105 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"} ${item.delay}`}
+                  className={`group relative transform transition-all duration-700 hover:scale-105 ${
+                    isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
+                  } ${item.delay}`}
                 >
-                  <div className="relative h-48 lg:h-56 rounded-2xl overflow-hidden backdrop-blur-sm bg-[#F9F7F3]/10 border border-[#DFCCAC]/20 shadow-2xl hover:shadow-[#A78A5E]/25 transition-all duration-500 hover:border-[#BCA88E]/40">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                  <div className="relative h-44 sm:h-48 md:h-52 lg:h-56 rounded-2xl overflow-hidden backdrop-blur-sm bg-[#F9F7F3]/10 border border-[#DFCCAC]/20 shadow-2xl hover:shadow-[#A78A5E]/25 transition-all duration-500 hover:border-[#BCA88E]/40">
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
+                    ></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F9F7F3]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
                     <div className="relative h-full flex flex-col justify-center items-center p-6 text-center">
                       <div className="mb-4 relative">
-                        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${item.gradient} p-0.5 group-hover:scale-110 transition-transform duration-300`}>
+                        <div
+                          className={`w-16 h-16 rounded-full bg-gradient-to-br ${item.gradient} p-0.5 group-hover:scale-110 transition-transform duration-300`}
+                        >
                           <div className="w-full h-full rounded-full bg-[#1C1C1C]/80 flex items-center justify-center">
                             <IconComponent className="w-8 h-8 text-[#F9F7F3] group-hover:rotate-12 transition-transform duration-300" />
                           </div>
                         </div>
-                        <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-30 animate-ping`}></div>
+                        <div
+                          className={`absolute inset-0 rounded-full bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-30 animate-ping`}
+                        ></div>
                       </div>
 
-                      <h3 className="text-xl lg:text-2xl font-bold text-[#000000] mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-black group-hover:via-white group-hover:to-gray-500 group-hover:bg-clip-text transition-all duration-300">
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#000000] mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-black group-hover:via-white group-hover:to-gray-500 group-hover:bg-clip-text transition-all duration-300">
                         {item.title}
                       </h3>
 
@@ -132,24 +144,32 @@ const PageStock = () => {
                       </p>
                     </div>
 
-                    <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`}></div>
+                    <div
+                      className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`}
+                    ></div>
                   </div>
 
                   <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#F9F7F3]/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-300 delay-100"></div>
                   <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-[#A78A5E]/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-300 delay-200"></div>
                 </Link>
-              )
+              );
             })}
           </div>
 
           {/* Footer */}
-          <div className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-            <p className="text-[#000000] text-sm">Selecciona una opción para continuar</p>
+          <div
+            className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${
+              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+          >
+            <p className="text-[#000000] text-sm sm:text-base">
+              Selecciona una opción para continuar
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PageStock
+export default PageStock;
