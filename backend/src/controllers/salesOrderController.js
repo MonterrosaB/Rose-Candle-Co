@@ -1,98 +1,162 @@
-import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Orden
+import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Orden de Venta
 
-// Array de métodos (CRUD)
+// Controlador con métodos CRUD para Ordenes de Venta
 const salesOrderController = {};
 
-// GET 
+// GET - Obtener todas las órdenes de venta
 salesOrderController.getSalesOrders = async (req, res) => {
   try {
+    // Buscar todas las órdenes y popular el campo idShoppingCart con los datos correspondientes
     const orders = await SalesOrderModel.find().populate("idShoppingCart");
+    // Enviar las órdenes encontradas al cliente con status 200
     res.status(200).json(orders); // Todo bien
   } catch (error) {
-      console.log("error "+error)
-      res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error);
+    // En caso de error inesperado, responder con error 500
+    res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// POST 
+// POST - Crear una nueva orden de venta
 salesOrderController.createSalesOrder = async (req, res) => {
-  // Obtener datos
-  const { idShoppingCart, paymentMethod, address, saleDate, shippingTotal, total, shippingState} = req.body;
+  // Obtener datos desde el cuerpo de la petición
+  const {
+    idShoppingCart,
+    paymentMethod,
+    address,
+    saleDate,
+    shippingTotal,
+    total,
+    shippingState,
+  } = req.body;
 
   try {
-    // Validaciones
-    if( !idShoppingCart || !paymentMethod || !address || !saleDate || !shippingTotal || !total || !shippingState ){
-        return res.status(400).json({message: "Please complete all the fields"}) // Error del cliente, campos vacios
+    // Validaciones básicas para evitar datos incompletos
+    if (
+      !idShoppingCart ||
+      !paymentMethod ||
+      !address ||
+      !saleDate ||
+      !shippingTotal ||
+      !total ||
+      !shippingState
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" }); // Campos vacíos
     }
 
-    if( address.length < 5 ){
-        return res.status(400).json({message: "Please an extra address information"}) // Error del cliente, dirección incorrecta
+    // Validar que la dirección tenga información mínima
+    if (address.length < 5) {
+      return res
+        .status(400)
+        .json({ message: "Please provide additional address information" }); // Dirección inválida
     }
 
-    if(total < 0){
-        return res.status(400).json({message: "The total can't be less than 0"}) // Error del cliente, el total no puede ser menor a 0
+    // Validar que el total sea positivo o cero
+    if (total < 0) {
+      return res
+        .status(400)
+        .json({ message: "The total can't be less than 0" }); // Total inválido
     }
 
-    // Guardar datos
-    const newOrder = new SalesOrderModel({ idShoppingCart, paymentMethod, address, saleDate, shippingTotal, total, shippingState});
+    // Crear nueva instancia del modelo con los datos recibidos
+    const newOrder = new SalesOrderModel({
+      idShoppingCart,
+      paymentMethod,
+      address,
+      saleDate,
+      shippingTotal,
+      total,
+      shippingState,
+    });
+
+    // Guardar la nueva orden en la base de datos
     await newOrder.save();
-    res.status(200).json({ message: "Order saved" }); // Todo bien
 
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Order saved" }); // Todo bien
   } catch (error) {
-        console.log("error "+error)
-        return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error);
+    // Responder con error de servidor en caso de fallo inesperado
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// PUT
+// PUT - Actualizar una orden de venta existente por ID
 salesOrderController.updateSalesOrder = async (req, res) => {
-  // Obtener datos
-  const { idShoppingCart, paymentMethod, address, saleDate, shippingTotal, total, shippingState} = req.body;
+  // Obtener datos desde el cuerpo de la petición
+  const {
+    idShoppingCart,
+    paymentMethod,
+    address,
+    saleDate,
+    shippingTotal,
+    total,
+    shippingState,
+  } = req.body;
 
   try {
-      // Validaciones
-      if( address.length < 5 ){
-          return res.status(400).json({message: "Please an extra address information"}) // Error del cliente, dirección incorrecta
-      }
+    // Validaciones similares a la creación para evitar datos inválidos
+    if (address.length < 5) {
+      return res
+        .status(400)
+        .json({ message: "Please provide additional address information" }); // Dirección inválida
+    }
 
-      if(total < 0){
-          return res.status(400).json({message: "The total can't be less than 0"}) // Error del cliente, el total no puede ser menor a 0
-      }
+    if (total < 0) {
+      return res
+        .status(400)
+        .json({ message: "The total can't be less than 0" }); // Total inválido
+    }
 
-      // Guardar datos
-      orderUpdated = await SalesOrderModel.findByIdAndUpdate(
-        req.params.id,
-        {idShoppingCart, paymentMethod, address, saleDate, shippingTotal, total, shippingState},
-        { new: true }
-      );
+    // Actualizar la orden en la base de datos, buscando por ID de la URL (req.params.id)
+    const orderUpdated = await SalesOrderModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        idShoppingCart,
+        paymentMethod,
+        address,
+        saleDate,
+        shippingTotal,
+        total,
+        shippingState,
+      },
+      { new: true } // Retornar el documento actualizado
+    );
 
-      if(!orderUpdated){
-          return res.status(400).json({message: "Order not found"}) // Error del cliente, orden no encontrada
-      }  
+    // Validar si la orden existía
+    if (!orderUpdated) {
+      return res.status(400).json({ message: "Order not found" }); // Orden no encontrada
+    }
 
-      res.status(200).json({ message: "Order updated" }); // Todo bien
-
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Order updated" }); // Todo bien
   } catch (error) {
-    res.status(400).json({ message: "Error al actualizar la orden de venta", error });
+    // Capturar error y responder con mensaje y detalle
+    res.status(400).json({ message: "Error updating sales order", error });
   }
 };
 
-// DELETE 
+// DELETE - Eliminar una orden de venta por ID
 salesOrderController.deleteSalesOrder = async (req, res) => {
   try {
-      const deletedOrder = await SalesOrderModel.findByIdAndDelete(req.params.id);
+    // Buscar y eliminar orden por ID recibido en URL
+    const deletedOrder = await SalesOrderModel.findByIdAndDelete(req.params.id);
 
-      if(!deletedOrder){
-          return res.status(400).json({message: "Order not found"}) // Error del cliente, orden no encontrada
-      } 
+    // Validar si la orden existía
+    if (!deletedOrder) {
+      return res.status(400).json({ message: "Order not found" }); // Orden no encontrada
+    }
 
-      res.status(200).json({ message: "Order deleted" }); // Todo bien
-      
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Order deleted" }); // Todo bien
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor  
+    console.log("error " + error);
+    // Responder con error de servidor si ocurre un problema inesperado
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// Exportar
+// Exportar controlador para usarlo en rutas
 export default salesOrderController;

@@ -2,58 +2,61 @@
     Colección para clientes
 
     Campos:
-        name
-        surnames
-        email
-        password
-        user
-        phone
+        name - Nombre del cliente
+        surnames - Apellidos del cliente
+        email - Correo electrónico único y válido
+        password - Contraseña con requisitos de seguridad
+        user - Nombre de usuario válido
+        phone - Número telefónico en formato ####-####
+        addresses - Arreglo de direcciones con tipo y si es predeterminada
 */
 
 import { Schema, model } from "mongoose";
 
+// Subesquema para las direcciones de un cliente
 const addressSchema = new Schema(
   {
     address: {
       type: String,
-      required: true,
+      required: true, // Dirección obligatoria
     },
     type: {
       type: String,
       enum: {
-        values: ["casa", "trabajo", "otro"],
+        values: ["casa", "trabajo", "otro"], // Solo estos valores permitidos
         message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
       },
-      default: "casa",
+      default: "casa", // Valor por defecto si no se especifica
     },
     isDefault: {
       type: Boolean,
-      default: false,
+      default: false, // Indica si es la dirección principal
     },
   },
   {
-    _id: true,
+    _id: true, // Cada dirección tendrá su propio _id
   }
 );
 
+// Esquema principal para clientes
 const customerSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: true, // Campo obligatorio
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, // Solo letras y espacios permitidos
         "El nombre solo puede contener letras y espacios",
       ],
-      minLength: 3,
-      maxLength: 100,
-      trim: true,
+      minLength: 3, // Mínimo 3 caracteres
+      maxLength: 100, // Máximo 100 caracteres
+      trim: true, // Quita espacios al inicio y final
     },
     surnames: {
       type: String,
       required: true,
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, // Solo letras y espacios
         "El apellido solo puede contener letras y espacios",
       ],
       minLength: 3,
@@ -62,10 +65,10 @@ const customerSchema = new Schema(
     },
     email: {
       type: String,
-      require: true,
-      unique: true,
+      require: true, // Obligatorio
+      unique: true, // Único en la base de datos
       match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, // Validación de formato email
         "Debe ser un correo electrónico válido",
       ],
       trim: true,
@@ -73,9 +76,9 @@ const customerSchema = new Schema(
     password: {
       type: String,
       require: true,
-      minlength: 8,
+      minlength: 8, // Mínimo 8 caracteres
       match: [
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, // Requiere mayúscula, minúscula, número y símbolo
         "La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo",
       ],
       trim: true,
@@ -84,7 +87,7 @@ const customerSchema = new Schema(
       type: String,
       require: true,
       match: [
-        /^[a-zA-Z0-9_]+$/,
+        /^[a-zA-Z0-9_]+$/, // Solo letras, números y guion bajo
         "El usuario solo puede contener letras, números y guiones bajos",
       ],
       trim: true,
@@ -92,20 +95,20 @@ const customerSchema = new Schema(
     phone: {
       type: String,
       require: true,
-      match: [/^\d{4}-\d{4}$/, , "Número de teléfono inválido"],
+      match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
       minLength: 9,
       trim: true,
     },
     addresses: {
-      type: [addressSchema],
-      required: true,
+      type: [addressSchema], // Arreglo de direcciones usando el subesquema definido
+      required: true, // Obligatorio que tenga al menos una dirección
     },
   },
   {
-    timestamps: true,
-    strict: false,
+    timestamps: true, // Campos createdAt y updatedAt automáticos
+    strict: false, // Permite guardar campos no definidos explícitamente (flexibilidad)
   }
 );
 
-// Exporto
+// Exportar modelo para uso en la app
 export default model("Customers", customerSchema);

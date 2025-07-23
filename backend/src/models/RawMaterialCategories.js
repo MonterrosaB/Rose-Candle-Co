@@ -1,18 +1,20 @@
-import { Schema, model } from "mongoose"
+import { Schema, model } from "mongoose";
 
-const rawMaterialCategoriesSchema = new Schema({
-    
+// Esquema para categorías de materias primas
+const rawMaterialCategoriesSchema = new Schema(
+  {
     name: {
-        type: String,
-        require: true,
-        minLength: 3,
-        trim: true
-}
+      type: String,
+      require: true, // Campo obligatorio
+      minLength: 3, // Mínimo 3 caracteres para el nombre
+      trim: true, // Elimina espacios en blanco al inicio y fin
+    },
+  },
+  {
+    timestamps: true, // Agrega campos createdAt y updatedAt automáticamente
+    strict: false, // Permite que se guarden campos no definidos en el esquema
+  }
+);
 
-}, {
-    timestamps: true,
-    strict: false
-});
-
-// Exporto
-export default model("RawMaterialCategories", rawMaterialCategoriesSchema)  
+// Exporto el modelo para usarlo en otras partes de la aplicación
+export default model("RawMaterialCategories", rawMaterialCategoriesSchema);

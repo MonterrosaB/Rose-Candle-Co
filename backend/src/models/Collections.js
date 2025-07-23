@@ -2,24 +2,29 @@
     Colección para colecciones de productos
 
     Campos:
-        name
+        name - Nombre de la colección, único y obligatorio
 */
 
-import { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose"; // Importar Schema y model de mongoose para definir el esquema y modelo
 
-const collectionSchema = new Schema({
+// Definición del esquema para la colección "Collections"
+const collectionSchema = new Schema(
+  {
+    // Campo "name" para el nombre de la colección
     name: {
-        type: String,
-        required: true,
-        unique: true,
-        minLength: 3,
-        maxLength: 100,
-        trim: true
-    }
-}, {
-  timestamps: true,
-  strict: false
-});
+      type: String, // Tipo de dato string
+      required: true, // Campo obligatorio
+      unique: true, // El nombre debe ser único (no puede repetirse)
+      minLength: 3, // Mínimo 3 caracteres
+      maxLength: 100, // Máximo 100 caracteres
+      trim: true, // Eliminar espacios en blanco al inicio y final
+    },
+  },
+  {
+    timestamps: true, // Agrega automáticamente campos "createdAt" y "updatedAt"
+    strict: false, // Permite almacenar campos adicionales no definidos en el esquema (flexibilidad)
+  }
+);
 
-// Exporto
+// Exportar el modelo para poder usarlo en otras partes de la aplicación
 export default model("Collections", collectionSchema);

@@ -2,38 +2,42 @@
 import nodemailer from "nodemailer";
 import { config } from "../config.js";
 
-// transportador
+// Configuración del transportador SMTP usando Gmail
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  host: "smtp.gmail.com", // Servidor SMTP de Gmail
+  port: 465, // Puerto SSL seguro
+  secure: true, // Usar conexión segura SSL/TLS
   auth: {
-    user: config.email.user,
-    pass: config.email.pass,
+    user: config.email.user, // Usuario (correo) desde configuración
+    pass: config.email.pass, // Contraseña o token de aplicación
   },
   tls: {
-    rejectUnauthorized: false, // <- Ignora errores de certificado
+    rejectUnauthorized: false, // Ignorar errores de certificado TLS (útil para desarrollo)
   },
 });
 
-// Función para enviar el correo
+// Función asíncrona para enviar un correo electrónico
 const sendEmail = async (to, subject, body, html) => {
   try {
+    // Envío del correo con los parámetros recibidos
     const info = await transporter.sendMail({
-      from: "danielgranados008@gmail.com", // correo provisional
-      to,
-      subject,
-      body,
-      html,
+      from: "danielgranados008@gmail.com", // Correo remitente provisional
+      to, // Destinatario (email)
+      subject, // Asunto del correo
+      body, // Texto plano del correo
+      html, // Contenido HTML del correo
     });
 
+    // Retorna información del envío para seguimiento o log
     return info;
   } catch (error) {
+    // En caso de error, imprimir en consola para debug
     console.log("error" + error);
   }
 };
 
-// Correo personalizado
+// Función que genera el contenido HTML personalizado para el correo de bienvenida
+// Recibe opcionalmente el nombre del usuario para personalizar el mensaje
 const HTMLWelcomeMail = (name = "Usuario") => {
   return `
   <div style="font-family: 'Poppins', sans-serif; background-color: #F9F7F3; padding: 40px 20px; max-width: 600px; margin: 0 auto; border-radius: 15px; border: 1px solid #DFCCAC; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
@@ -61,4 +65,5 @@ const HTMLWelcomeMail = (name = "Usuario") => {
   `;
 };
 
+// Exportación de funciones para ser usadas en otras partes del proyecto
 export { sendEmail, HTMLWelcomeMail };

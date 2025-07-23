@@ -1,66 +1,68 @@
-// Importar librerias y modelos
-import bcryptjs from "bcryptjs";
-import JsonWebToken from "jsonwebtoken";
-import { config } from "../config.js";
-import employeesModel from "../models/Employees.js";
+// Importar librerías y modelos
+import bcryptjs from "bcryptjs"; // Para encriptar y comparar contraseñas
+import JsonWebToken from "jsonwebtoken"; // Para generar tokens JWT
+import { config } from "../config.js"; // Archivo de configuración
+import employeesModel from "../models/Employees.js"; // Modelo de empleados
 
+// Controlador de login
 const loginController = {};
 
 // Función para el login
 loginController.login = async (req, res) => {
-  // Solicitar información
+  // Solicitar información del cuerpo de la solicitud
   const { email, password } = req.body;
 
   try {
-    // Posibles niveles:
-    // 1. Administrador
-    // 2. Empleado
+    // Posibles niveles de usuario:
+    // 1. Administrador (email y password definidos en config)
+    // 2. Empleado (almacenado en base de datos)
+
     let userFound; // Guardar el usuario encontrado
     let userType; // Guardar el tipo de usuario encontrado
 
-    // 1. Administrador
+    // Verificar si es un administrador
     if (
       email === config.ADMIN.emailAdmin &&
       password === config.ADMIN.passwordAdmin
     ) {
-      userType = "admin";
-      userFound = { _id: "admin" }; // Puedes agregar más datos si necesitas
+      userType = "admin"; // Tipo de usuario
+      userFound = { _id: "admin" }; // ID de referencia para el admin
     } else {
-      // 2. Empleado
-      userFound = await employeesModel.findOne({ email });
-      userType = "employee";
+      // Si no es admin, buscar como empleado
+      userFound = await employeesModel.findOne({ email }); // Buscar empleado por email
+      userType = "employee"; // Tipo de usuario
     }
 
+    // Si no se encuentra el usuario
     if (!userFound) {
-      return res.status(400).json({ message: "User not found" }); // Usuario no encontrado
+      return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
     // Validar la contraseña (solo si no es admin)
     if (userType !== "admin") {
-      const isMatch = await bcryptjs.compare(password, userFound.password);
+      const isMatch = await bcryptjs.compare(password, userFound.password); // Comparar contraseñas
       if (!isMatch) {
         return res.status(400).json({ message: "Invalid password" }); // Contraseña incorrecta
       }
     }
 
-    // TOKEN
+    // Generar y firmar el token JWT
     JsonWebToken.sign(
-      { id: userFound._id, userType },
-      config.JWT.secret,
-      { expiresIn: config.JWT.expiresIn },
+      { id: userFound._id, userType }, // Datos a incluir en el token
+      config.JWT.secret, // Clave secreta
+      { expiresIn: config.JWT.expiresIn }, // Tiempo de expiración
       (error, token) => {
-        if (error) console.log("error" + error);
+        if (error) console.log("error" + error); // Log en caso de error al generar token
+
+        // Guardar token en cookie
         res.cookie("authToken", token);
-        res.status(200).json({ message: "Login succesful" }); // todo bien
+        res.status(200).json({ message: "Login succesful" }); // Respuesta exitosa
       }
     );
-
-    
-    
   } catch (error) {
-    console.log("error " + error);
+    console.log("error " + error); // Log de error general
   }
 };
 
-// Exportar
+// Exportar controlador
 export default loginController;

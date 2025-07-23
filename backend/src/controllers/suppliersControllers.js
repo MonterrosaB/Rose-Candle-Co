@@ -1,28 +1,35 @@
 import suppliersModel from "../models/Suppliers.js"; // Modelo de Proveedores
 
-// Array de métodos (CRUD)
+// Controlador con métodos CRUD para proveedores
 const suppliersControllers = {};
 
 // GET - Obtener todos los proveedores
 suppliersControllers.getSuppliers = async (req, res) => {
   try {
+    // Buscar todos los documentos de proveedores en la colección
     const suppliers = await suppliersModel.find();
+
+    // Enviar listado completo de proveedores con código 200
     res.status(200).json(suppliers);
   } catch (error) {
+    // Mostrar error en consola y enviar respuesta 500
     console.log("error " + error);
     res.status(500).json("Internal server error");
   }
 };
 
-// GET - Obtener proveedor por ID
+// GET - Obtener un proveedor específico por ID
 suppliersControllers.getSupplierById = async (req, res) => {
   try {
+    // Buscar proveedor por ID recibido en parámetros de la URL
     const supplier = await suppliersModel.findById(req.params.id);
 
     if (!supplier) {
+      // Si no se encuentra el proveedor, enviar error 404
       return res.status(404).json({ message: "Supplier not found" });
     }
 
+    // Si se encontró, enviar datos del proveedor
     res.status(200).json(supplier);
   } catch (error) {
     console.log("error " + error);
@@ -30,85 +37,108 @@ suppliersControllers.getSupplierById = async (req, res) => {
   }
 };
 
-// POST - Crear proveedor
+// POST - Crear un nuevo proveedor
 suppliersControllers.createSuppliers = async (req, res) => {
-  const { name, contact } = req.body;
+  const { name, contact } = req.body; // Obtener datos del cuerpo de la petición
 
   try {
-    // Validaciones
+    // Validar que se hayan recibido ambos campos obligatorios
     if (!name || !contact) {
-      return res.status(400).json({ message: "Please complete all the fields" });
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
     }
 
+    // Validar longitud del nombre: mínimo 3, máximo 100 caracteres
     if (name.length < 3 || name.length > 100) {
       return res.status(400).json({ message: "Name length is invalid" });
     }
 
+    // Validar formato del contacto (ejemplo: ####-####)
     if (!/^\d{4}-\d{4}$/.test(contact)) {
-      return res.status(400).json({ message: "Contact must be in format ####-####" });
+      return res
+        .status(400)
+        .json({ message: "Contact must be in format ####-####" });
     }
 
+    // Crear instancia del modelo con los datos validados
     const newSupplier = new suppliersModel({ name, contact });
-    await newSupplier.save();
-    res.status(200).json({ message: "Supplier saved" });
 
+    // Guardar en la base de datos
+    await newSupplier.save();
+
+    // Confirmar creación exitosa con código 200
+    res.status(200).json({ message: "Supplier saved" });
   } catch (error) {
     console.log("error " + error);
     res.status(500).json("Internal server error");
   }
 };
 
-// DELETE - Eliminar proveedor
+// DELETE - Eliminar un proveedor por ID
 suppliersControllers.deleteSuppliers = async (req, res) => {
   try {
-    const deletedSupplier = await suppliersModel.findByIdAndDelete(req.params.id);
+    // Buscar y eliminar proveedor por ID
+    const deletedSupplier = await suppliersModel.findByIdAndDelete(
+      req.params.id
+    );
 
     if (!deletedSupplier) {
+      // Si no se encontró el proveedor para eliminar, responder 400
       return res.status(400).json({ message: "Supplier not found" });
     }
 
+    // Confirmar eliminación exitosa
     res.status(200).json({ message: "Supplier deleted" });
-
   } catch (error) {
     console.log("error " + error);
     res.status(500).json("Internal server error");
   }
 };
 
-// PUT - Actualizar proveedor
+// PUT - Actualizar datos de un proveedor existente
 suppliersControllers.updateSuppliers = async (req, res) => {
-  const { name, contact } = req.body;
+  const { name, contact } = req.body; // Obtener datos del cuerpo
 
   try {
+    // Validar que se reciban todos los campos requeridos
     if (!name || !contact) {
-      return res.status(400).json({ message: "Please complete all the fields" });
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
     }
 
+    // Validar longitud del nombre
     if (name.length < 3 || name.length > 100) {
       return res.status(400).json({ message: "Name length is invalid" });
     }
 
+    // Validar formato de contacto
     if (!/^\d{4}-\d{4}$/.test(contact)) {
-      return res.status(400).json({ message: "Contact must be in format ####-####" });
+      return res
+        .status(400)
+        .json({ message: "Contact must be in format ####-####" });
     }
 
+    // Buscar proveedor por ID y actualizar sus datos
     const updatedSupplier = await suppliersModel.findByIdAndUpdate(
       req.params.id,
       { name, contact },
-      { new: true }
+      { new: true } // Para que retorne el documento actualizado
     );
 
     if (!updatedSupplier) {
+      // Si no se encontró el proveedor a actualizar
       return res.status(400).json({ message: "Supplier not found" });
     }
 
+    // Confirmar actualización exitosa
     res.status(200).json({ message: "Supplier updated" });
-
   } catch (error) {
     console.log("error " + error);
     res.status(500).json("Internal server error");
   }
 };
 
-// Exportar
+// Exportar controlador para rutas
 export default suppliersControllers;

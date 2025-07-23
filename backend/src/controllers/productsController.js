@@ -1,28 +1,29 @@
-import productsModel from "../models/Products.js";
+import productsModel from "../models/Products.js"; // Modelo de productos
+import { config } from "../config.js"; // Archivo config
+import { v2 as cloudinary } from "cloudinary"; // Cloudinary
 
-import { config } from "../config.js";
-
-import { v2 as cloudinary } from "cloudinary";
-
+// Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
-  cloud_name: config.CLOUDINARY.cloudinary_name,
-  api_key: config.CLOUDINARY.cloudinary_api_key,
-  api_secret: config.CLOUDINARY.cloudinary_api_secret,
+  cloud_name: config.cloudinary.cloudinary_name,
+  api_key: config.cloudinary.cloudinary_api_key,
+  api_secret: config.cloudinary.cloudinary_api_secret,
 });
 
+// Array de funciones (vacío)
 const productsController = {};
 
-// GET
+// GET - Método para obtener todos los productos
 productsController.getproducts = async (req, res) => {
   try {
     const product = await productsModel
       .find()
       .populate({
+        // Populate para mostrar la información que contiene el id de components
         path: "components.idComponent",
         select: "name", // traer solo el campo nombre del componente
       })
-      .populate("idProductCategory")
-      .populate("idCollection");
+      .populate("idProductCategory") // Populate para mostrar la información que contiene el id de ProductsCategory
+      .populate("idCollection"); // Populate para mostrar la información que contiene el id de Colection
     res.status(200).json(product); // Todo bien
   } catch (error) {
     console.log("error " + error);
@@ -30,19 +31,20 @@ productsController.getproducts = async (req, res) => {
   }
 };
 
+// GET (POR ID) - Método para traer un producto por su id
 productsController.getProductById = async (req, res) => {
   try {
-    const product = await productsModel.findById(req.params.id); // o tu método según cómo lo traes
-    if (!product) return res.status(404).json({ error: "Producto not found" });
-    res.json(product);
+    const product = await productsModel.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Producto not found" }); // si el producto no se encuentra
+    res.status(200).json(product); // todo bien
   } catch (error) {
-    res.status(500).json({ error: "Error, couldnt found the product" });
+    res.status(500).json({ error: "Error, couldnt found the product" }); // Error del servidor
   }
 };
 
-// POST
+// POST - Método para insertar un producto
 productsController.createProduct = async (req, res) => {
-  console.log("Body", req.body);
+  console.log("Body", req.body); // cuerpo
 
   let {
     name,
@@ -54,7 +56,7 @@ productsController.createProduct = async (req, res) => {
     variant,
     idProductCategory,
     idCollection,
-  } = req.body;
+  } = req.body; // campos del schema
 
   let imagesURL = [];
 
@@ -62,8 +64,8 @@ productsController.createProduct = async (req, res) => {
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: "public",
-        allowed_formats: ["png", "jpg", "jpeg"],
+        folder: "public/products", // carpeta para products
+        allowed_formats: ["png", "jpg", "jpeg"], // archivos permitidos
       });
       imagesURL.push(result.secure_url);
     }
@@ -95,11 +97,11 @@ productsController.createProduct = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" });
+        .json({ message: "Please complete all the fields" }); // error del usuario
     }
 
     if (imagesURL.length > 8) {
-      return res.status(400).json({ message: "Max 8 images allowed" });
+      return res.status(400).json({ message: "Max 8 images allowed" }); // error del usuario
     }
 
     // Crear producto
@@ -117,19 +119,20 @@ productsController.createProduct = async (req, res) => {
     });
 
     await newProduct.save();
-    res.status(200).json({ message: "Saved successfully" });
+    res.status(200).json({ message: "Saved successfully" }); // se guarda
   } catch (error) {
     console.log("Error:", error);
-    res.status(500).json("Internal server error");
+    res.status(500).json("Internal server error"); // error interno
   }
 };
 
-// DELETE
+// DELETE - Método para eliminar un producto por su id
 productsController.deleteProduct = async (req, res) => {
   try {
     const deleteProduct = await productsModel.findByIdAndDelete(req.params.id);
 
     if (!deleteProduct) {
+      // Si no se elimina nada (porque no se encuentra)
       return res.status(400).json({ message: "Product not found" }); // Error del cliente, categoria no encontrado
     }
     res.status(200).json({ message: "Deleted Successfull" }); //Todo bien
@@ -139,9 +142,9 @@ productsController.deleteProduct = async (req, res) => {
   }
 };
 
-// PUT
+// PUT - Método para actualizar un producto por su id
 productsController.updateProduct = async (req, res) => {
-  console.log("Body", req.body);
+  console.log("Body", req.body); // cuerpo del schema
 
   let {
     name,
@@ -161,8 +164,8 @@ productsController.updateProduct = async (req, res) => {
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: "public",
-        allowed_formats: ["png", "jpg", "jpeg"],
+        folder: "public/products", // carpeta en donde se guarda el registro
+        allowed_formats: ["png", "jpg", "jpeg"], // archivos permitidos
       });
       imagesURL.push(result.secure_url);
     }
@@ -232,13 +235,14 @@ productsController.updateProduct = async (req, res) => {
     );
 
     res.status(200).json({
-      message: "Updated Successfully",
+      message: "Updated Successfully", // se actualiza
       product: updatedProduct,
     });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" }); // error del servidor
   }
 };
 
+// Exportar
 export default productsController;

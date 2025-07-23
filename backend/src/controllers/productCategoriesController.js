@@ -1,114 +1,134 @@
-import productCategories from "../models/ProductCategories.js";
+import productCategories from "../models/ProductCategories.js"; // Importar modelo de categorías de productos
 
 const productCategoriesController = {};
 
-// GET
+// GET - obtener todas las categorías de productos
 productCategoriesController.getproductCategories = async (req, res) => {
   try {
+    // Buscar todas las categorías en la base de datos
     const productCategory = await productCategories.find();
-    res.status(200).json(productCategory); // Todo bien
+    // Enviar respuesta con el listado de categorías
+    res.status(200).json(productCategory); // Respuesta exitosa
   } catch (error) {
+    // Manejo de errores en servidor
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json("Internal server error");
   }
 };
 
-// GET por ID
+// GET por ID - obtener una categoría específica por su ID
 productCategoriesController.getProductCategoryById = async (req, res) => {
   try {
+    // Buscar categoría por ID enviado en parámetros
     const category = await productCategories.findById(req.params.id);
 
+    // Validar si la categoría existe
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Category not found" }); // No encontrada
     }
 
-    res.status(200).json(category); // todo bien
+    // Enviar la categoría encontrada
+    res.status(200).json(category);
   } catch (error) {
+    // Manejo de errores en servidor
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // error
+    res.status(500).json("Internal server error");
   }
 };
 
-// POST
+// POST - crear una nueva categoría de producto
 productCategoriesController.createProductCategory = async (req, res) => {
-  // Obtener datos
+  // Extraer 'name' desde el cuerpo de la petición
   const { name } = req.body;
 
   try {
-    // Validaciones
+    // Validar que el campo 'name' no esté vacío
     if (!name) {
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacios
+        .json({ message: "Please complete all the fields" }); // Validación: campo vacío
     }
 
+    // Validar longitud mínima del nombre
     if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" }); // Validación: nombre muy corto
     }
 
+    // Validar longitud máxima del nombre
     if (name.length > 50) {
-      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+      return res.status(400).json({ message: "Too long" }); // Validación: nombre muy largo
     }
 
-    // Guardar datos
+    // Crear nueva categoría y guardarla en la base de datos
     const newProductCategory = new productCategories({ name });
     await newProductCategory.save();
-    res.status(200).json({ message: "Saved Successfull" }); // Todo bien
+
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Saved Successfull" });
   } catch (error) {
+    // Capturar errores del servidor
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json("Internal server error");
   }
 };
 
-// DELETE
+// DELETE - eliminar una categoría por ID
 productCategoriesController.deleteProductCategory = async (req, res) => {
   try {
+    // Buscar y eliminar la categoría por ID
     const deleteProductCategory = await productCategories.findByIdAndDelete(
       req.params.id
     );
 
+    // Validar si la categoría fue encontrada y eliminada
     if (!deleteProductCategory) {
-      return res.status(400).json({ message: "Category not found" }); // Error del cliente, categoria no encontrado
+      return res.status(400).json({ message: "Category not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "Deleted Successfull" }); //Todo bien
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Deleted Successfull" });
   } catch (error) {
+    // Manejo de errores del servidor
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json("Internal server error");
   }
 };
 
-// PUT
+// PUT - actualizar una categoría existente por ID
 productCategoriesController.updateProductCategory = async (req, res) => {
-  // Obtener datos
+  // Extraer 'name' desde el cuerpo de la petición
   const { name } = req.body;
 
   try {
-    // Validaciones
+    // Validar longitud mínima de nombre
     if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" }); // Validación: texto muy corto
     }
 
+    // Validar longitud máxima de nombre
     if (name.length > 50) {
-      return res.status(400).json({ message: "Too long" }); // Error del cliente, longitud del texto muy larga
+      return res.status(400).json({ message: "Too long" }); // Validación: texto muy largo
     }
 
-    // Guardar datos
+    // Buscar por ID y actualizar la categoría con el nuevo nombre
     const categoryUpdated = await productCategories.findByIdAndUpdate(
       req.params.id,
       { name },
-      { new: true }
+      { new: true } // Devuelve el documento actualizado
     );
 
+    // Validar si la categoría existe
     if (!categoryUpdated) {
-      return res.status(400).json({ message: "Category not found" }); // Error del cliente, categoria no encontrado
+      return res.status(400).json({ message: "Category not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "Updated Successfull" }); // Todo bien
+    // Responder con mensaje de éxito
+    res.status(200).json({ message: "Updated Successfull" });
   } catch (error) {
+    // Capturar errores del servidor
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json("Internal server error");
   }
 };
 
-export default productCategoriesController;
+export default productCategoriesController; // Exportar controlador

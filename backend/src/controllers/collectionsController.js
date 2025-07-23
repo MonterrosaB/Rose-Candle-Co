@@ -1,36 +1,38 @@
 import collectionModel from "../models/Collections.js"; // Modelo de colecciones
 
-// Array de métodos (CRUD)
+// Objeto que agrupa los métodos CRUD para colecciones
 const collectionsController = {};
 
-// GET
+// GET - Obtener todas las colecciones
 collectionsController.getCollections = async (req, res) => {
   try {
-    const collections = await collectionModel.find();
+    const collections = await collectionModel.find(); // Buscar todas las colecciones
 
-    const normalized = collections.map(c => ({
+    // Normalizar estructura de respuesta
+    const normalized = collections.map((c) => ({
       _id: c._id,
-      name: c.name || c.collection || "", 
+      name: c.name || c.collection || "", // Compatibilidad con campos antiguos
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
 
-    res.status(200).json(normalized);
+    res.status(200).json(normalized); // Respuesta exitosa
   } catch (error) {
     console.log("error " + error);
-    res.status(500).json("Internal server error");
+    res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// GET por ID
+// GET - Obtener una colección por ID
 collectionsController.getCollectionById = async (req, res) => {
   try {
-    const collection = await collectionModel.findById(req.params.id);
+    const collection = await collectionModel.findById(req.params.id); // Buscar por ID
 
     if (!collection) {
-      return res.status(404).json({ message: "Collection not found" });
+      return res.status(404).json({ message: "Collection not found" }); // No encontrada
     }
 
+    // Normalizar respuesta
     const normalized = {
       _id: collection._id,
       name: collection.name || collection.collection || "",
@@ -38,90 +40,95 @@ collectionsController.getCollectionById = async (req, res) => {
       updatedAt: collection.updatedAt,
     };
 
-    res.status(200).json(normalized); // todo bien
+    res.status(200).json(normalized); // Respuesta exitosa
   } catch (error) {
     console.log("error " + error);
-    res.status(500).json("Internal server error"); // error
+    res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// POST
+// POST - Crear una nueva colección
 collectionsController.createCollection = async (req, res) => {
-  // Obtener datos
-  const { name } = req.body;
+  const { name } = req.body; // Obtener campo desde el cuerpo
 
   try {
-      // Validaciones
-      if( !name){
-        return res.status(400).json({message: "Please complete all the fields"}) // Error del cliente, campos vacios
-      }
+    // Validación: campo vacío
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
+    }
 
-      if ( name.length < 3){
-          return res.status(400).json({message: "Too short"}) // Error del cliente, longitud del texto muy corta
-      }
+    // Validación: mínimo de caracteres
+    if (name.length < 3) {
+      return res.status(400).json({ message: "Too short" });
+    }
 
-      if ( name.length > 100){
-          return res.status(400).json({message: "Too large"}) // Error del cliente, longitud del texto muy larga
-      }
+    // Validación: máximo de caracteres
+    if (name.length > 100) {
+      return res.status(400).json({ message: "Too large" });
+    }
 
-      // Guardar datos
-      const newCollection = new collectionModel({ name });
-      await newCollection.save();
-      res.status(200).json({ message: "Collection saved" }); // Todo bien
+    // Crear y guardar nueva colección
+    const newCollection = new collectionModel({ name });
+    await newCollection.save();
 
+    res.status(200).json({ message: "Collection saved" }); // Creación exitosa
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// PUT
+// PUT - Actualizar una colección por ID
 collectionsController.updateCollection = async (req, res) => {
-  const { name } = req.body;
+  const { name } = req.body; // Obtener campo del cuerpo
 
   try {
-    if (!name || typeof name !== 'string' || name.length < 3) {
-      return res.status(400).json({ message: "Nombre inválido o muy corto" });
+    // Validación de campo
+    if (!name || typeof name !== "string" || name.length < 3) {
+      return res.status(400).json({ message: "Too short" });
     }
 
     if (name.length > 100) {
-      return res.status(400).json({ message: "Nombre muy largo" });
+      return res.status(400).json({ message: "Too large" });
     }
 
+    // Actualizar colección en base de datos
     const updatedCollection = await collectionModel.findByIdAndUpdate(
       req.params.id,
       { name },
-      { new: true }
+      { new: true } // Retornar el documento actualizado
     );
 
     if (!updatedCollection) {
-      return res.status(400).json({ message: "Colección no encontrada" });
+      return res.status(400).json({ message: "Collection not found" }); // No se encontró la colección
     }
 
-    res.status(200).json({ message: "Colección actualizada" });
+    res.status(200).json({ message: "Collection updated" }); // Actualización exitosa
   } catch (error) {
     console.log("error " + error);
-    return res.status(500).json("Internal server error");
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-
-// DELETE
+// DELETE - Eliminar una colección por ID
 collectionsController.deleteCollection = async (req, res) => {
   try {
-    const deletedCollection = await collectionModel.findByIdAndDelete(req.params.id);
+    const deletedCollection = await collectionModel.findByIdAndDelete(
+      req.params.id
+    ); // Eliminar por ID
 
-    if(!deletedCollection){
-        return res.status(400).json({message: "Collection not found"}) // Error del cliente, coleccion no encontrada
+    if (!deletedCollection) {
+      return res.status(400).json({ message: "Collection not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "Collection deleted" }); // Todo bien
-
+    res.status(200).json({ message: "Collection deleted" }); // Eliminación exitosa
   } catch (error) {
-      console.log("error "+error)
-      return res.status(500).json("Internal server error") // Error del servidor
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
-// Exportar
+// Exportar el controlador
 export default collectionsController;

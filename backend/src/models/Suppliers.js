@@ -1,24 +1,30 @@
-import { Schema, model } from "mongoose"
+import { Schema, model } from "mongoose";
 
-const suppliersSchema = new Schema({
-    
+const suppliersSchema = new Schema(
+  {
+    // Nombre del proveedor
     name: {
-        type: String,
-        required: true,
-        minLength: 3,
-        trim: true
+      type: String,
+      required: true, // Nombre obligatorio
+      minLength: 3, // Mínimo 3 caracteres
+      trim: true, // Elimina espacios al inicio y final
     },
-   contact: {
-  type: String,
-  required: true,
-  match: [/^\d{4}-\d{4}$/, 'Número de contacto no válido (formato debe ser ####-####)'],
-  trim: true
-}
+    // Número de contacto del proveedor, con formato específico
+    contact: {
+      type: String,
+      required: true, // Contacto obligatorio
+      match: [
+        /^\d{4}-\d{4}$/, // Debe seguir el formato 1234-5678
+        "Número de contacto no válido (formato debe ser ####-####)",
+      ],
+      trim: true, // Elimina espacios innecesarios
+    },
+  },
+  {
+    timestamps: true, // Crea createdAt y updatedAt automáticamente
+    strict: false, // Permite campos adicionales no definidos en el esquema
+  }
+);
 
-}, {
-    timestamps: true,
-    strict: false
-});
-
-// Exporto
-export default model("Suppliers", suppliersSchema)
+// Exporto el modelo para usarlo en la app
+export default model("Suppliers", suppliersSchema);

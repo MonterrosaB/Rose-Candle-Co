@@ -1,21 +1,22 @@
 import employeesModel from "../models/Employees.js"; // Modelo de empleados
-import bcryptjs from "bcryptjs"; // Encriptar
-import jsonwebtoken from "jsonwebtoken"; // Token
+import bcryptjs from "bcryptjs"; // Librería para encriptar contraseñas
+import jsonwebtoken from "jsonwebtoken"; // Librería para manejar tokens JWT
 import { config } from "../config.js";
 
-// Array de métodos (CRUD)
+// Controlador con métodos para registro de empleados
 const registerEmployeesController = {};
 
-// POST
+// POST - Registrar nuevo empleado
 registerEmployeesController.registerEmployees = async (req, res) => {
-  // Obtener datos
+  // Obtener datos enviados en el cuerpo de la petición
   const { name, surnames, email, phone, dui, password, user, role, isActive } =
     req.body;
 
+  // Log para revisar los datos recibidos (útil para debugging)
   console.log(req.body);
 
   try {
-    // Validaciones
+    // Validar que todos los campos requeridos estén presentes
     if (
       !name ||
       !surnames ||
@@ -26,11 +27,13 @@ registerEmployeesController.registerEmployees = async (req, res) => {
       !user ||
       !isActive
     ) {
+      // Responder con error si algún campo está vacío o no existe
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" }); // Error del cliente, campos vacíos
+        .json({ message: "Please complete all the fields" }); // Campos incompletos
     }
 
+    // Validar longitud mínima de campos importantes
     if (
       name.length < 3 ||
       surnames.length < 3 ||
@@ -38,58 +41,63 @@ registerEmployeesController.registerEmployees = async (req, res) => {
       dui.length < 10 ||
       password.length < 8
     ) {
-      return res.status(400).json({ message: "Too short" }); // Error del cliente, longitud del texto muy corta
+      return res.status(400).json({ message: "Too short" }); // Algún campo es demasiado corto
     }
 
+    // Validar longitud máxima para evitar inputs muy largos
     if (name.length > 100 || surnames.length > 100) {
-      return res.status(400).json({ message: "Too large" }); // Error del cliente, longitud del texto muy larga
+      return res.status(400).json({ message: "Too large" }); // Algún campo es demasiado largo
     }
 
-    // Verificar si el empleado ya existe
+    // Verificar si ya existe un empleado con el email proporcionado para evitar duplicados
     const existEmployee = await employeesModel.findOne({ email });
     if (existEmployee) {
-      return res.status(400).json({ message: "Employee already exists" }); // Error del cliente, empleado duplicado
+      return res.status(400).json({ message: "Employee already exists" }); // Empleado duplicado
     }
 
-    // Encriptar contraseña
+    // Encriptar la contraseña antes de guardarla en la base de datos
     const passwordHash = await bcryptjs.hash(password, 10);
 
-    // Guardar datos
+    // Crear instancia del nuevo empleado con los datos procesados
     const newEmployee = new employeesModel({
       name,
       surnames,
       email,
       phone,
       dui,
-      password: passwordHash,
+      password: passwordHash, // Guardar contraseña encriptada
       user,
       role,
       isActive,
     });
 
+    // Guardar el nuevo empleado en la base de datos
     await newEmployee.save();
 
-    // Token
+    // Generar token JWT para autenticación futura
     jsonwebtoken.sign(
-      { id: newEmployee._id }, // 1 - Qué voy a guardar
-      config.JWT.secret, // 2 - Secreto
-      { expiresIn: config.JWT.expiresIn }, // 3 - Expiración
+      { id: newEmployee._id }, // Payload: ID del empleado
+      config.JWT.secret, // Secreto para firmar el token
+      { expiresIn: config.JWT.expiresIn }, // Tiempo de expiración configurado
       (error, token) => {
-        // 4 - Función callback
+        // Callback para manejo del token generado
         if (error) {
           console.log("Token error: " + error);
-          return res.status(500).json({ message: "Token generation failed" }); // Error al generar token
+          return res.status(500).json({ message: "Token generation failed" }); // Error generando token
         }
 
-        res.cookie("authToken", token); // Guardar token como cookie
-        res.status(200).json({ message: "Employee saved" }); // Todo bien
+        // Guardar token JWT en cookie para mantener sesión activa
+        res.cookie("authToken", token);
+        // Responder indicando que el empleado fue guardado exitosamente
+        res.status(200).json({ message: "Employee saved" }); // Registro exitoso
       }
     );
   } catch (error) {
+    // Capturar errores inesperados y responder error de servidor
     console.log("error " + error);
-    return res.status(500).json("Internal server error"); // Error del servidor
+    return res.status(500).json("Internal server error"); // Error servidor
   }
 };
 
-// Exportar
+// Exportar controlador para su uso en rutas
 export default registerEmployeesController;
