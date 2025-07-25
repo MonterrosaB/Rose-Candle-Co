@@ -3,6 +3,7 @@
 
     Campos:
         name - Nombre de la colección, único y obligatorio
+        deleted - Campo para marcar como eliminado
 */
 
 import { Schema, model } from "mongoose"; // Importar Schema y model de mongoose para definir el esquema y modelo
@@ -19,6 +20,10 @@ const collectionSchema = new Schema(
       maxLength: 100, // Máximo 100 caracteres
       trim: true, // Eliminar espacios en blanco al inicio y final
     },
+    deleted: {
+      type: Boolean, // Tipo de dato boolean
+      default: false // por defecto en falso
+    }
   },
   {
     timestamps: true, // Agrega automáticamente campos "createdAt" y "updatedAt"

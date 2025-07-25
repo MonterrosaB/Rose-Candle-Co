@@ -6,7 +6,7 @@ const collectionsController = {};
 // GET - Obtener todas las colecciones
 collectionsController.getCollections = async (req, res) => {
   try {
-    const collections = await collectionModel.find(); // Buscar todas las colecciones
+    const collections = await collectionModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
 
     // Normalizar estructura de respuesta
     const normalized = collections.map((c) => ({
@@ -112,11 +112,13 @@ collectionsController.updateCollection = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar una colección por ID
+// DELETE - Eliminar una colección por ID (con soft delete)
 collectionsController.deleteCollection = async (req, res) => {
   try {
-    const deletedCollection = await collectionModel.findByIdAndDelete(
-      req.params.id
+    const deletedCollection = await collectionModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
     ); // Eliminar por ID
 
     if (!deletedCollection) {
@@ -124,6 +126,26 @@ collectionsController.deleteCollection = async (req, res) => {
     }
 
     res.status(200).json({ message: "Collection deleted" }); // Eliminación exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// RESTAURAR una colección eliminada
+collectionsController.restoreCollection = async (req, res) => {
+  try {
+    const restoredCollection = await collectionModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoredCollection) {
+      return res.status(400).json({ message: "Collection not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Collection restored" }); // Restauracion exitosa
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
