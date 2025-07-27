@@ -141,8 +141,11 @@ salesOrderController.updateSalesOrder = async (req, res) => {
 // DELETE - Eliminar una orden de venta por ID
 salesOrderController.deleteSalesOrder = async (req, res) => {
   try {
-    // Buscar y eliminar orden por ID recibido en URL
-    const deletedOrder = await SalesOrderModel.findByIdAndDelete(req.params.id);
+          const deletedOrder = await SalesOrderModel.findByIdAndUpdate(
+                req.params.id,
+                { deleted: true }, // Se marca como "eliminada"
+                { new: true }
+              ); // Eliminar por ID
 
     // Validar si la orden existía
     if (!deletedOrder) {
@@ -154,6 +157,25 @@ salesOrderController.deleteSalesOrder = async (req, res) => {
   } catch (error) {
     console.log("error " + error);
     // Responder con error de servidor si ocurre un problema inesperado
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+salesOrderController.restoreSalesOrder= async (req, res) => {
+  try {
+    const restoreSalesOrder = await SalesOrderModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreSalesOrder) {
+      return res.status(400).json({ message: "Restore Sales order not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Restore Sales Order restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };

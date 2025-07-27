@@ -54,54 +54,58 @@ const customerSchema = new Schema(
     },
     surnames: {
       type: String,
-      required: true,
+      required: true, // Campo obligatorio
       match: [
         /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, // Solo letras y espacios
         "El apellido solo puede contener letras y espacios",
       ],
-      minLength: 3,
-      maxLength: 100,
-      trim: true,
+      minLength: 3, // Mínimo 3 caracteres
+      maxLength: 100, // Máximo 100 caracteres
+      trim: true, // Elimina espacios al inicio y al final
     },
     email: {
       type: String,
-      require: true, // Obligatorio
+      required: true, // Obligatorio
       unique: true, // Único en la base de datos
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, // Validación de formato email
         "Debe ser un correo electrónico válido",
       ],
-      trim: true,
+      trim: true, // Elimina espacios al inicio y final
     },
     password: {
       type: String,
-      require: true,
+      required: true, // Campo obligatorio
       minlength: 8, // Mínimo 8 caracteres
       match: [
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, // Requiere mayúscula, minúscula, número y símbolo
         "La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo",
       ],
-      trim: true,
+      trim: true, // Elimina espacios innecesarios
     },
     user: {
       type: String,
-      require: true,
+      required: true, // Campo obligatorio
       match: [
         /^[a-zA-Z0-9_]+$/, // Solo letras, números y guion bajo
         "El usuario solo puede contener letras, números y guiones bajos",
       ],
-      trim: true,
+      trim: true, // Sin espacios innecesarios
     },
     phone: {
       type: String,
-      require: true,
+      required: true, // Obligatorio
       match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
-      minLength: 9,
-      trim: true,
+      minLength: 9, // Incluye guion
+      trim: true, // Limpia espacios
     },
     addresses: {
       type: [addressSchema], // Arreglo de direcciones usando el subesquema definido
       required: true, // Obligatorio que tenga al menos una dirección
+    },
+    deleted: {
+      type: Boolean, // Campo lógico para eliminaciones suaves
+      default: false, // Por defecto, no eliminado
     },
   },
   {
@@ -112,3 +116,4 @@ const customerSchema = new Schema(
 
 // Exportar modelo para uso en la app
 export default model("Customers", customerSchema);
+

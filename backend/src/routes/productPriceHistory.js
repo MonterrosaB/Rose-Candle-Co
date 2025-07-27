@@ -15,4 +15,8 @@ router.route("/:id")
 .put(productPriceHistory.updateProductPriceHistory)
 .delete(productPriceHistory.deleteProductPriceHistory)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(productPriceHistory.restoreProductPriceHistory); // restaurar por id
+
 export default router;

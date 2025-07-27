@@ -49,10 +49,12 @@ historyRawMaterialsController.createHistoriRawMaterials = async (req, res) => {
 
 // DELETE - Eliminar un historial por ID
 historyRawMaterialsController.deleteHistoriRawMaterials = async (req, res) => {
-  try {
-    const deletedHistory = await historyRawMaterialsModel.findOneAndDelete(
-      req.params.id
-    ); // Eliminar por ID
+   try {
+      const deletedHistory = await historyRawMaterialsModel.findByIdAndUpdate(
+            req.params.id,
+            { deleted: true }, // Se marca como "eliminada"
+            { new: true }
+          ); // Eliminar por ID
 
     if (!deletedHistory) {
       return res.status(400).json({ message: "History not found" }); // Historial no encontrado
@@ -77,6 +79,7 @@ historyRawMaterialsController.updateHistoriRawMaterials = async (req, res) => {
         .status(400)
         .json({ message: "The price can't be less than 0" }); // Precio inválido
     }
+    
 
     // Actualizar historial existente
     historyUpdated = await historyRawMaterialsModel.findByIdAndUpdate(
@@ -96,5 +99,23 @@ historyRawMaterialsController.updateHistoriRawMaterials = async (req, res) => {
   }
 };
 
+historyRawMaterialsController.restoreHistory = async (req, res) => {
+  try {
+    const restoreHistory = await historyRawMaterialsModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreHistory) {
+      return res.status(400).json({ message: "History not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Customers restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
 // Exportar controlador
 export default historyRawMaterialsController;

@@ -5,6 +5,7 @@
         idUser       -> Referencia al usuario propietario del carrito
         products     -> Lista de productos agregados al carrito
         total        -> Total acumulado del carrito
+        deleted      -> Campo para eliminación lógica
 */
 
 import { Schema, model } from "mongoose";
@@ -29,6 +30,12 @@ const shoppingCartSchema = new Schema(
       required: true, // Total debe estar definido (aunque sea 0)
       min: 0, // No puede ser negativo
       trim: true, // No afecta números, pero mantiene consistencia
+    },
+
+    // Campo para eliminación lógica del carrito
+    deleted: {
+      type: Boolean,
+      default: false, // Por defecto no eliminado
     },
   },
   {

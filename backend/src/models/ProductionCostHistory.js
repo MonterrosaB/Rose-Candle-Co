@@ -147,6 +147,12 @@ const productionCostHistorySchema = new Schema(
       ],
       required: true, // Ganancia obtenida en la producción
     },
+
+    // Campo para eliminación lógica del historial
+    deleted: {
+      type: Boolean, // Campo lógico para soft delete
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Campos createdAt y updatedAt automáticos

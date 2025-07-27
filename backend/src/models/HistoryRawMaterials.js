@@ -5,7 +5,6 @@
         price         -> Precio registrado de la materia prima
         idRawMateria  -> Referencia al documento de materia prima
 */
-
 import { Schema, model } from "mongoose";
 
 const historyRawMaterialSchema = new Schema(
@@ -26,6 +25,12 @@ const historyRawMaterialSchema = new Schema(
       ref: "RawMaterials", // Nombre del modelo de Materia Prima
       required: true, // Obligatorio indicar la materia prima
       trim: true, // Aunque no aplica para ObjectId, se deja por consistencia
+    },
+
+    // Campo para eliminación lógica del historial
+    deleted: {
+      type: Boolean, // Campo booleano
+      default: false, // Por defecto, no eliminado
     },
   },
   {

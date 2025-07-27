@@ -83,16 +83,13 @@ productionCostHistoryController.createProductionCostHistory = async (
 };
 
 // DELETE - Eliminar un registro del historial por ID
-productionCostHistoryController.deleteProductionCostHistory = async (
-  req,
-  res
-) => {
-  try {
-    // Buscar y eliminar registro por ID
-    const deleted = await productionCostHistoryModel.findByIdAndDelete(
-      req.params.id
-    );
-
+productionCostHistoryController.deleteProductionCostHistory = async ( req,res) => {
+ try {
+       const deleted = await productionCostHistoryModel.findByIdAndUpdate(
+             req.params.id,
+             { deleted: true }, // Se marca como "eliminada"
+             { new: true }
+           ); // Eliminar por ID
     // Validar que el registro exista para eliminar
     if (!deleted) {
       return res.status(400).json({ message: "Historial not found" }); // No encontrado
@@ -163,4 +160,22 @@ productionCostHistoryController.updateproductionCostHistory = async (
   }
 };
 
+productionCostHistoryController.restoreProductionCostHistory = async (req, res) => {
+  try {
+    const productionCostHistory = await productCategories.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!productionCostHistory) {
+      return res.status(400).json({ message: "production Cos tHistory not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "production Cost Historyt restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
 export default productionCostHistoryController; // Exportar controlador

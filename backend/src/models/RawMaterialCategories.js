@@ -9,6 +9,12 @@ const rawMaterialCategoriesSchema = new Schema(
       minLength: 3, // Mínimo 3 caracteres para el nombre
       trim: true, // Elimina espacios en blanco al inicio y fin
     },
+
+    // Campo para eliminación lógica de la categoría
+    deleted: {
+      type: Boolean, // Tipo booleano
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Agrega campos createdAt y updatedAt automáticamente
@@ -18,3 +24,4 @@ const rawMaterialCategoriesSchema = new Schema(
 
 // Exporto el modelo para usarlo en otras partes de la aplicación
 export default model("RawMaterialCategories", rawMaterialCategoriesSchema);
+

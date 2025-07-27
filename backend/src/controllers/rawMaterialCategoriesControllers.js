@@ -72,11 +72,12 @@ rawMaterialCategoriesControllers.createCategory = async (req, res) => {
 
 // DELETE - Eliminar categoría por ID
 rawMaterialCategoriesControllers.deleteCategory = async (req, res) => {
-  try {
-    // Buscar y eliminar categoría por ID recibido en los parámetros
-    const deletedCategory = await rawMaterialCategoriesModel.findByIdAndDelete(
-      req.params.id
-    );
+   try {
+          const deletedCategory = await rawMaterialCategoriesModel.findByIdAndUpdate(
+                req.params.id,
+                { deleted: true }, // Se marca como "eliminada"
+                { new: true }
+              ); // Eliminar por ID
 
     // Validar si la categoría existía para ser eliminada
     if (!deletedCategory) {
@@ -130,6 +131,23 @@ rawMaterialCategoriesControllers.updateCategory = async (req, res) => {
     res.status(500).json("Internal server error");
   }
 };
+rawMaterialCategoriesControllers.restoreRawMaterialCategories= async (req, res) => {
+  try {
+    const restoreRawMaterialCategories = await rawMaterialCategoriesModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
 
+    if (!restoreRawMaterialCategories) {
+      return res.status(400).json({ message: "restoreRawMaterialCategories not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "restore Raw Material Categories restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
 // Exportar controlador para usarlo en rutas
 export default rawMaterialCategoriesControllers;

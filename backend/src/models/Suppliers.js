@@ -19,6 +19,12 @@ const suppliersSchema = new Schema(
       ],
       trim: true, // Elimina espacios innecesarios
     },
+
+    // Campo para eliminación lógica del proveedor
+    deleted: {
+      type: Boolean,
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Crea createdAt y updatedAt automáticamente

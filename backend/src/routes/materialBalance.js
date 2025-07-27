@@ -15,4 +15,8 @@ router.route("/:id")
 .put(materialBalanceControllers.updateMaterialBalance)
 .delete(materialBalanceControllers.deleteMaterialBalance)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(materialBalanceControllers.restoreMaterialBalance); // restaurar por id
+
 export default router;

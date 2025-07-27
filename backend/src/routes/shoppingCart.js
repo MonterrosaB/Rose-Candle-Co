@@ -19,6 +19,10 @@ router
   //.put(auth, shoppingCartController.updateCart)
   .delete(auth, shoppingCartController.deleteCart);
 
+    // Rutas específicas
+    router.route("/restore/:id")
+      .put(shoppingCartController.restoreShoppingCart); // restaurar por id
+
 router.put("/empty/:id", auth, shoppingCartController.emptyCart);
 
 export default router;

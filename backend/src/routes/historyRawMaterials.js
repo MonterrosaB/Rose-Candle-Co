@@ -15,4 +15,8 @@ router.route("/:id")
 .put(historyRawMaterialsController.updateHistoriRawMaterials)
 .delete(historyRawMaterialsController.deleteHistoriRawMaterials)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(historyRawMaterialsController.restoreHistory); // restaurar por id
+
 export default router;

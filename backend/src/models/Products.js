@@ -12,60 +12,60 @@
         useForm           - Instrucciones de uso
         idProductCategory - Referencia a la categoría del producto
         idCollection      - Referencia a la colección a la que pertenece el producto
+        deleted           - Eliminación lógica (true = eliminado)
 */
-
 import { Schema, model } from "mongoose";
 
-// Subesquema: Componentes del producto, vinculados a materias primas
+// Subesquema: Componentes (materias primas) usados en el producto
 const componentSchema = new Schema(
   {
     idComponent: {
       type: Schema.Types.ObjectId,
-      ref: "RawMaterial", // Referencia al modelo de materias primas
+      ref: "RawMaterial", // Relación con la materia prima usada
       required: true,
     },
     amount: {
       type: Number,
       required: true,
-      min: 1, // Mínimo 1 unidad de la materia prima
+      min: 1, // Al menos 1 unidad
       max: 100, // Máximo 100 unidades por componente
-      trim: true, // Limpia espacios, aunque no afecta números
+      trim: true,
     },
   },
-  { _id: false } // No se genera un _id para cada componente
+  { _id: false } // No se genera _id para cada componente
 );
 
-// Subesquema: Pasos de la receta para la elaboración del producto
+// Subesquema: Pasos de elaboración (receta)
 const recipeSchema = new Schema(
   {
     step: {
       type: String,
       required: true,
-      minLength: 3, // Paso con descripción mínima de 3 caracteres
-      maxLength: 200, // Máximo 200 caracteres por paso
+      minLength: 3,
+      maxLength: 200,
       trim: true,
     },
   },
-  { _id: false } // No se genera _id para cada paso
+  { _id: false }
 );
 
-// Subesquema: Variantes del producto (ej. tamaño, sabor)
+// Subesquema: Variantes del producto (ej. tamaño, fragancia)
 const variantSchema = new Schema(
   {
     variant: {
       type: String,
       required: true,
-      minLength: 1, // Nombre mínimo de 1 carácter
-      maxLength: 200, // Máximo 200 caracteres para la variante
+      minLength: 1,
+      maxLength: 200,
     },
     variantPrice: {
       type: Number,
       required: true,
-      min: 1, // Precio mínimo 1
-      max: 100, // Precio máximo 100 (ajustable según necesidad)
+      min: 1,
+      max: 100,
     },
   },
-  { _id: false } // No genera _id para cada variante
+  { _id: false }
 );
 
 // Subesquema: Instrucciones de uso del producto
@@ -74,17 +74,18 @@ const useFormSchema = new Schema(
     instruction: {
       type: String,
       required: true,
-      minLength: 3, // Instrucción mínima de 3 caracteres
-      maxLength: 200, // Máximo 200 caracteres por instrucción
+      minLength: 3,
+      maxLength: 200,
       trim: true,
     },
   },
-  { _id: false } // No genera _id para cada instrucción
+  { _id: false }
 );
 
 // Esquema principal: Productos
 const productsSchema = new Schema(
   {
+    // Nombre del producto
     name: {
       type: String,
       required: true,
@@ -96,6 +97,8 @@ const productsSchema = new Schema(
       maxLength: 100,
       trim: true,
     },
+
+    // Descripción del producto
     description: {
       type: String,
       required: true,
@@ -107,66 +110,88 @@ const productsSchema = new Schema(
       maxLength: 1000,
       trim: true,
     },
+
+    // Arreglo de imágenes del producto (mín. 1, máx. 8)
     images: {
-      type: [String], // Array de URLs o paths de imágenes
+      type: [String],
       required: true,
       validate: {
         validator: function (arr) {
-          return arr.length >= 1 && arr.length <= 8; // Entre 1 y 8 imágenes
+          return arr.length >= 1 && arr.length <= 8;
         },
         message: "Debes subir entre 1 y 8 imágenes",
       },
     },
+
+    // Materias primas usadas para producir este producto
     components: {
-      type: [componentSchema], // Array de componentes (materias primas)
+      type: [componentSchema],
       required: true,
       validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 100, // Entre 1 y 100 componentes
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
         message: "Debes proporcionar entre 1 y 100 componentes",
       },
     },
+
+    // Receta o pasos de elaboración del producto
     recipe: {
-      type: [recipeSchema], // Array de pasos de receta
+      type: [recipeSchema],
       required: true,
       validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 100, // Entre 1 y 100 pasos
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
         message: "Debes proporcionar entre 1 y 100 pasos de receta",
       },
     },
+
+    // Variantes del producto (ej. tamaños o estilos diferentes)
     variant: {
-      type: [variantSchema], // Array de variantes del producto
+      type: [variantSchema],
       required: true,
       validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 10, // Entre 1 y 10 variantes (corregí de 100 a 10)
+        validator: (arr) => arr.length >= 1 && arr.length <= 10,
         message: "Debes proporcionar entre 1 y 10 variantes del producto",
       },
     },
+
+    // Disponibilidad del producto (true = activo)
     availability: {
-      type: Boolean, // Disponibilidad del producto (true = disponible)
+      type: Boolean,
       required: true,
     },
+
+    // Instrucciones de uso del producto
     useForm: {
-      type: [useFormSchema], // Array de instrucciones de uso
+      type: [useFormSchema],
       required: true,
       validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 100, // Entre 1 y 100 instrucciones
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
         message: "Debes proporcionar entre 1 y 100 instrucciones de uso",
       },
     },
+
+    // Relación con la categoría a la que pertenece el producto
     idProductCategory: {
       type: Schema.Types.ObjectId,
-      ref: "productCategories", // Referencia a la categoría del producto
+      ref: "productCategories",
       required: true,
     },
+
+    // Relación con la colección a la que pertenece el producto
     idCollection: {
       type: Schema.Types.ObjectId,
-      ref: "Collections", // Referencia a la colección del producto
+      ref: "Collections",
       required: true,
+    },
+
+    // Campo para eliminación lógica del producto
+    deleted: {
+      type: Boolean, // Tipo booleano
+      default: false, // Por defecto no eliminado
     },
   },
   {
-    timestamps: true, // Añade createdAt y updatedAt automáticamente
-    strict: false, // Permite campos adicionales no definidos en el esquema
+    timestamps: true, // createdAt y updatedAt automáticos
+    strict: false, // Permite almacenar campos adicionales no definidos
   }
 );
 

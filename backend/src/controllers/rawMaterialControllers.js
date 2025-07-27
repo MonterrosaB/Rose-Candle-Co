@@ -97,9 +97,12 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
 
 // DELETE - Eliminar materia prima por ID
 rawMaterialsControllers.deleterRawMaterial = async (req, res) => {
-  try {
-    // Buscar y eliminar materia prima por ID recibido en parámetros
-    const deleted = await rawMaterialModel.findByIdAndDelete(req.params.id);
+try {
+          const deleted = await rawMaterialModel.findByIdAndUpdate(
+                req.params.id,
+                { deleted: true }, // Se marca como "eliminada"
+                { new: true }
+              ); // Eliminar por ID
 
     // Validar si se encontró y eliminó el registro
     if (!deleted) {
@@ -187,6 +190,25 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
     // Capturar error, mostrar en consola y responder con error 500
     console.error("error", error);
     res.status(500).json("Internal server error");
+  }
+};
+
+rawMaterialsControllers.restoreRawMaterials= async (req, res) => {
+  try {
+    const restoreRawMaterials = await rawMaterialModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreRawMaterials) {
+      return res.status(400).json({ message: "Restore Raw Materials not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Restore Raw Materials restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 

@@ -19,4 +19,8 @@ router.route("/:id")
 .put(upload.array("images"), productsController.updateProduct)
 .delete(productsController.deleteProduct)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(productsController.restoreProduct); // restaurar por id
+
 export default router;

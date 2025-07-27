@@ -15,4 +15,8 @@ router.route("/:id")
 .put(productionCostHistoryController.updateproductionCostHistory)
 .delete(productionCostHistoryController.deleteProductionCostHistory)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(productionCostHistoryController.restoreProductionCostHistory); // restaurar por id
+
 export default router;

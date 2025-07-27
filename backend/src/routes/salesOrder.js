@@ -17,4 +17,8 @@ router.route("/:id")
   .put(salesOrderController.updateSalesOrder)
   .delete(salesOrderController.deleteSalesOrder);
 
+  // Rutas específicas
+  router.route("/restore/:id")
+    .put(salesOrderController.restoreSalesOrder); // restaurar por id
+
 export default router;

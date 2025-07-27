@@ -78,10 +78,11 @@ suppliersControllers.createSuppliers = async (req, res) => {
 // DELETE - Eliminar un proveedor por ID
 suppliersControllers.deleteSuppliers = async (req, res) => {
   try {
-    // Buscar y eliminar proveedor por ID
-    const deletedSupplier = await suppliersModel.findByIdAndDelete(
-      req.params.id
-    );
+    const deletedSupplier = await suppliersModel.findByIdAndUpdate(
+    req.params.id,
+    { deleted: true }, // Se marca como "eliminada"
+    { new: true }
+   ); // Eliminar por ID
 
     if (!deletedSupplier) {
       // Si no se encontró el proveedor para eliminar, responder 400
@@ -137,6 +138,24 @@ suppliersControllers.updateSuppliers = async (req, res) => {
   } catch (error) {
     console.log("error " + error);
     res.status(500).json("Internal server error");
+  }
+};
+suppliersControllers.restoreSuppliers= async (req, res) => {
+  try {
+    const restoreSuppliers = await suppliersModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreSuppliers) {
+      return res.status(400).json({ message: "Restore Shopping Cart not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Restore Shopping Cart restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 

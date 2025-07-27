@@ -22,6 +22,12 @@ const productCategoriesSchema = new Schema(
       maxLength: 100, // Máximo 100 caracteres
       trim: true, // Elimina espacios en blanco al inicio y final
     },
+
+    // Campo para eliminación lógica de la categoría
+    deleted: {
+      type: Boolean, // Tipo booleano
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Agrega createdAt y updatedAt automáticamente

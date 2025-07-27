@@ -16,4 +16,8 @@ router.route("/:id")
 .put(rawMaterialCategoriesControllers.updateCategory)
 .delete(rawMaterialCategoriesControllers.deleteCategory)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(rawMaterialCategoriesControllers.restoreRawMaterialCategories); // restaurar por id
+
 export default router;

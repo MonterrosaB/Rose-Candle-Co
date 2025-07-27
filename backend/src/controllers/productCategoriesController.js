@@ -74,11 +74,12 @@ productCategoriesController.createProductCategory = async (req, res) => {
 
 // DELETE - eliminar una categoría por ID
 productCategoriesController.deleteProductCategory = async (req, res) => {
-  try {
-    // Buscar y eliminar la categoría por ID
-    const deleteProductCategory = await productCategories.findByIdAndDelete(
-      req.params.id
-    );
+ try {
+       const deleteProductCategory = await productCategories.findByIdAndUpdate(
+             req.params.id,
+             { deleted: true }, // Se marca como "eliminada"
+             { new: true }
+           ); // Eliminar por ID
 
     // Validar si la categoría fue encontrada y eliminada
     if (!deleteProductCategory) {
@@ -131,4 +132,22 @@ productCategoriesController.updateProductCategory = async (req, res) => {
   }
 };
 
+productCategoriesController.restoreCategory = async (req, res) => {
+  try {
+    const restoreCategory = await productCategories.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreCategory) {
+      return res.status(400).json({ message: "Category product not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Category product restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
 export default productCategoriesController; // Exportar controlador

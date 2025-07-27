@@ -60,11 +60,12 @@ productPriceHistoryController.createProductPriceHistory = async (req, res) => {
 
 // DELETE - Eliminar un registro del historial por ID
 productPriceHistoryController.deleteProductPriceHistory = async (req, res) => {
-  try {
-    // Buscar y eliminar el documento por ID
-    const deletedHistory = await productPriceHistoryModel.findOneAndDelete(
-      req.params.id
-    );
+ try {
+        const deletedHistory = await productPriceHistoryModel.findByIdAndUpdate(
+              req.params.id,
+              { deleted: true }, // Se marca como "eliminada"
+              { new: true }
+            ); // Eliminar por ID
 
     // Validar si se encontró el registro
     if (!deletedHistory) {
@@ -118,5 +119,23 @@ productPriceHistoryController.updateProductPriceHistory = async (req, res) => {
   }
 };
 
+productPriceHistoryController.restoreProductPriceHistory= async (req, res) => {
+  try {
+    const productPriceHistory = await productCategories.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!productPriceHistory) {
+      return res.status(400).json({ message: "Product Price History not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Product Price History restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
 // Exportar controlador para ser usado en rutas
 export default productPriceHistoryController;

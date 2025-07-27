@@ -14,4 +14,8 @@ router.route("/:id")
 .put(customersController.updateCustomers)
 .delete(customersController.deleteCustomers)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(customersController.restoreCustomers); // restaurar por id
+
 export default router;

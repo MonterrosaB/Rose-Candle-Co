@@ -17,9 +17,11 @@ employeesController.getEmployees = async (req, res) => {
 // DELETE - eliminar un empleado por ID
 employeesController.deleteEmployees = async (req, res) => {
   try {
-    const deletedEmployee = await employeesModel.findOneAndDelete({
-      _id: req.params.id, // Buscar y eliminar por ID recibido en la URL
-    });
+    const deletedEmployee = await employeesModel.findByIdAndUpdate(
+          req.params.id,
+          { deleted: true }, // Se marca como "eliminada"
+          { new: true }
+        ); // Eliminar por ID
 
     if (!deletedEmployee) {
       return res.status(404).json({ message: "Employee not found" }); // Empleado no encontrado
@@ -76,6 +78,25 @@ employeesController.updateEmployees = async (req, res) => {
   } catch (error) {
     console.error("Error al actualizar empleado:", error); // Log de error
     res.status(500).json({ message: "Internal server error" }); // Error del servidor
+  }
+};
+
+employeesController.restoreEmployees = async (req, res) => {
+  try {
+    const restoreEmployees = await employeesModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreEmployees) {
+      return res.status(400).json({ message: "Employees not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Customers restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 

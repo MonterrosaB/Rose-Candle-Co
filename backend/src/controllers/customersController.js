@@ -17,9 +17,11 @@ customersController.getCustomers = async (req, res) => {
 // DELETE - Eliminar un cliente por ID
 customersController.deleteCustomers = async (req, res) => {
   try {
-    const deletedCustomer = await customersModel.findOneAndDelete(
-      req.params.id
-    ); // Eliminar por ID
+   const deletedCustomer = await customersModel.findByIdAndUpdate(
+         req.params.id,
+         { deleted: true }, // Se marca como "eliminada"
+         { new: true }
+       ); // Eliminar por ID
 
     if (!deletedCustomer) {
       return res.status(400).json({ message: "Customer not found" }); // Cliente no encontrado
@@ -65,6 +67,24 @@ customersController.updateCustomers = async (req, res) => {
     }
 
     res.status(200).json({ message: "Customer updated" }); // Actualización exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+customersController.restoreCustomers = async (req, res) => {
+  try {
+    const restoredcustomers = await customersModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoredcustomers) {
+      return res.status(400).json({ message: "Customers not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Customers restored" }); // Restauracion exitosa
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor

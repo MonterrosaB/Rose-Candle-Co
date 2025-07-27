@@ -61,6 +61,12 @@ const materialBalance = new Schema(
         message: "Fecha inválida",
       },
     },
+
+    // Campo para eliminación lógica del movimiento
+    deleted: {
+      type: Boolean, // Campo lógico
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Crea automáticamente createdAt y updatedAt

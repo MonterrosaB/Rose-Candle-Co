@@ -162,13 +162,21 @@ shoppingCartController.addProduct = async (req, res) => {
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
-  try {
-    const userId = req.user.id;
+  //Comentado para verificar su uso con el SoftDeleted
+ // try {
+   // const userId = req.user.id;
 
     // Buscar y eliminar carrito del usuario
-    const deletedCart = await shoppingCartModel.findOneAndDelete({
-      idUser: userId,
-    });
+  //  const deletedCart = await shoppingCartModel.findOneAndDelete({
+    //  idUser: userId,
+    //});
+      try {
+              const deletedCart = await shoppingCartModel.findByIdAndUpdate(
+                    req.params.id,
+                    { deleted: true }, // Se marca como "eliminada"
+                    { new: true }
+                  ); // Eliminar por ID
+    
 
     if (!deletedCart) {
       // No existía carrito para ese usuario
@@ -246,6 +254,27 @@ shoppingCartController.emptyCart = async (req, res) => {
     res.status(500).json("Internal server error");
   }
 };
+
+
+shoppingCartController.restoreShoppingCart= async (req, res) => {
+  try {
+    const restoreShoppingCart = await shoppingCartModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreShoppingCart) {
+      return res.status(400).json({ message: "Restore Shopping Cart not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "Restore Shopping Cart restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
 
 // Exportar controlador para usar en rutas
 export default shoppingCartController;

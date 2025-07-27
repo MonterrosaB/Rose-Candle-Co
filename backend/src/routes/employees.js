@@ -16,4 +16,8 @@ router.route("/:id")
 .put(employeesController.updateEmployees)
 .delete(employeesController.deleteEmployees)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(employeesController.restoreEmployees); // restaurar por id
+
 export default router;

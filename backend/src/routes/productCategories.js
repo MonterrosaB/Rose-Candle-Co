@@ -16,4 +16,8 @@ router.route("/:id")
 .put(productCategories.updateProductCategory)
 .delete(productCategories.deleteProductCategory)
 
+// Rutas específicas
+router.route("/restore/:id")
+  .put(productCategories.restoreCategory); // restaurar por id
+
 export default router;

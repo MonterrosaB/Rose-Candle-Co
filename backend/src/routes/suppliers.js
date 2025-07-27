@@ -16,4 +16,9 @@ router.route("/:id")
 .put(suppliersControllers.updateSuppliers)
 .delete(suppliersControllers.deleteSuppliers)
 
+// Rutas específicas
+ router.route("/restore/:id")
+ .put(suppliersControllers.restoreSuppliers); // restaurar por id
+
+
 export default router;

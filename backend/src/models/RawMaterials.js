@@ -50,6 +50,12 @@ const RawMaterial = new Schema(
       ref: "Suppliers", // Nombre del modelo referenciado
       required: [true, "Supplier reference is required"], // Campo obligatorio
     },
+
+    // Campo para eliminación lógica de la materia prima
+    deleted: {
+      type: Boolean, // Tipo booleano
+      default: false, // Por defecto no eliminado
+    },
   },
   {
     timestamps: true, // Agrega createdAt y updatedAt automáticamente

@@ -9,6 +9,7 @@
         shippingTotal     -> Costo total del envío
         total             -> Total de la orden (productos + envío)
         shippingState     -> Historial de estados del envío con fechas
+        deleted           -> Campo para eliminación lógica
 */
 
 import { Schema, model } from "mongoose";
@@ -65,6 +66,12 @@ const SalesOrderSchema = new Schema(
     shippingState: {
       type: [shippingStateSchema], // Array de estados del envío
       default: [], // Por defecto, ningún estado registrado inicialmente
+    },
+
+    // Campo para eliminación lógica de la orden de venta
+    deleted: {
+      type: Boolean, // Tipo booleano
+      default: false, // Por defecto no eliminado
     },
   },
   {

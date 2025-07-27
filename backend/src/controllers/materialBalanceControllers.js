@@ -92,11 +92,13 @@ materialBalanceControllers.updateMaterialBalance = async (req, res) => {
 
 // DELETE - eliminar un registro por ID
 materialBalanceControllers.deleteMaterialBalance = async (req, res) => {
-  try {
-    // Buscar y eliminar el registro por ID
-    const deletedMaterialBalance = await materialBalanceModel.findByIdAndDelete(
-      req.params.id
-    );
+
+    try {
+      const deletedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
+        req.params.id,
+        { deleted: false }, // Se marca como "no eliminada"
+        { new: true }
+      ); // Se actualiza por ID
 
     // Validar si el registro fue encontrado y eliminado
     if (!deletedMaterialBalance) {
@@ -109,6 +111,24 @@ materialBalanceControllers.deleteMaterialBalance = async (req, res) => {
     // Manejo de errores del servidor
     console.log("error " + error);
     return res.status(500).json("Internal server error");
+  }
+};
+materialBalanceControllers.restoreMaterialBalance = async (req, res) => {
+  try {
+    const restoreMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
+
+    if (!restoreMaterialBalance) {
+      return res.status(400).json({ message: "MaterialBalance not found" }); // No encontrada
+    }
+
+    res.status(200).json({ message: "MaterialBalance restored" }); // Restauracion exitosa
+  } catch (error) {
+    console.log("error " + error);
+    return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
 
