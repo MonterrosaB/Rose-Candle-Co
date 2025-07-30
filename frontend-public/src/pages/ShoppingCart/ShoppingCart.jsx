@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ClearButton from "./components/CleanCart.jsx";
 import CheckoutFlow from "./components/CheckoutFlow.jsx";
-
 import useShoppingCart from "./hooks/useShoppingCart.jsx";
 
 const Cart = () => {
-
   const {
     cartId,
     cartItems,
@@ -15,6 +13,30 @@ const Cart = () => {
     getTotal,
   } = useShoppingCart();
 
+  // 👇 Estado para alternar entre carrito y checkout
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const handleBackToCart = () => {
+    setShowCheckout(false);
+  };
+
+  const handleContinue = () => {
+    setShowCheckout(true);
+  };
+
+  //  Si está en checkout, renderiza el componente
+  if (showCheckout) {
+    return (
+      <CheckoutFlow
+        cartItems={cartItems}
+        total={getTotal()}
+        onBack={handleBackToCart}
+        onClearCart={handleClear}
+      />
+    );
+  }
+
+  //  Si no, muestra el carrito
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-8 mt-40">
       {/* Sección de productos */}
@@ -108,7 +130,7 @@ const Cart = () => {
         </div>
 
         <div className="mt-6 flex gap-3">
-          {/* Botón continuar con animación glow y gradiente */}
+          {/* ✅ Botón CONTINUAR */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="w-full relative px-4 py-2 rounded-md text-white font-medium overflow-hidden"
@@ -116,6 +138,7 @@ const Cart = () => {
               background: "linear-gradient(135deg, #A3A380 0%, #D2CFCB 100%)",
               boxShadow: "0 0 15px rgba(163, 163, 128, 0.5)",
             }}
+            onClick={handleContinue}
           >
             <span className="relative z-10">CONTINUAR</span>
             <motion.div
@@ -124,7 +147,7 @@ const Cart = () => {
             />
           </motion.button>
 
-          {/* Botón para limpiar carrito */}
+          {/* Botón limpiar carrito */}
           <motion.div whileHover={{ scale: 1.05 }} className="w-full">
             <ClearButton cartId={cartId} onClear={handleClear} />
           </motion.div>
@@ -135,4 +158,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
