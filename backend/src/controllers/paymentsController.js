@@ -44,9 +44,10 @@ export const testPayment = async (req, res) => {
 
     // Sobrescribe o agrega el email al formData
     const finalFormData = {
-      ...formData,
-      emailCliente, // asegúrate de que este campo sea el que Wompi espera
-    };
+  ...formData,
+  emailCliente: req.user?.email || formData.emailCliente,
+};
+
 
     const paymentResponse = await fetch(
       "https://api.wompi.sv/TransaccionCompra/TokenizadaSin3Ds",

@@ -79,11 +79,15 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
 
     // 2. Preparar datos de pago
     const paymentData = {
-      monto: total,
-      emailCliente: formData.shipping.email,
-      nombreCliente: `${formData.shipping.firstName} ${formData.shipping.lastName}`,
-      tokenTarjeta: "null", // simulado
-    };
+  monto: total,
+  emailCliente: formData.shipping.email,
+  nombreCliente: `${formData.shipping.firstName} ${formData.shipping.lastName}`,
+  tokenTarjeta: "null", // simulado
+};
+
+// 🧪 Consola para verificar si el email está llegando
+console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
+
 
     // 3. Enviar pago simulado
     const paymentResponse = await fetch("http://localhost:4000/api/payments/testPayment", {
