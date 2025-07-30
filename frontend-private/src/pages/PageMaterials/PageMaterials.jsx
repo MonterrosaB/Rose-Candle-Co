@@ -36,13 +36,13 @@ const PageMaterials = () => {
           loading={loading}
           primaryBtnText="Agregar Materia Prima"
           onClickPrimaryBtn={() => {
-            setRegistroActual(null); // ➕ nuevo
+            setRegistroActual(null);
             setOpenDialogMaterial(true);
           }}
           secondaryBtnText="Agregar Insumos"
           onClickSecondaryBtn={() => setOpenDialogSupplies(true)}
           updateRow={(row) => {
-            setRegistroActual(row); // ✏️ editar
+            setRegistroActual(row);
             setOpenDialogMaterial(true);
           }}
           deleteRow={(row) => {

@@ -36,7 +36,6 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
     { _id: "piece", label: "Pieza" },
   ];
 
-  // ✅ Al montar o al cambiar defaultValues
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);

@@ -22,8 +22,8 @@ loginController.login = async (req, res) => {
 
     // Verificar si es un administrador
     if (
-      email === config.ADMIN.emailAdmin &&
-      password === config.ADMIN.passwordAdmin
+      email === config.admin.emailAdmin &&
+      password === config.admin.passwordAdmin
     ) {
       userType = "admin"; // Tipo de usuario
       userFound = { _id: "admin" }; // ID de referencia para el admin

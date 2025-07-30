@@ -10,6 +10,7 @@ import Home from "../../pages/PageHome/Home.jsx";
 import Products from "../../pages/PageProducts/PageProducts.jsx";
 import Materials from "../../pages/PageMaterials/PageMaterials.jsx";
 import Orders from "../../pages/PageOrders/PageOrders.jsx";
+import Record from "../../pages/PageRecord/PageRecord.jsx";
 import Employees from "../../pages/PageEmployees/logic/PageEmployees.jsx";
 import Collections from "../../pages/PageCollections/PageCollections.jsx";
 import Categories from "../../pages/PageCategories/PageCategories.jsx";
@@ -94,10 +95,11 @@ function Navigation() {
             <Route path="/materials" element={<Materials />} />
             <Route path="/products" element={<Products />} />
             <Route path="/order" element={<Orders />} />
+            <Route path="/record" element={<Record />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
             <Route
-              path="/others/categories-materia"
+              path="categories-materia"
               element={<CategoriesMateria />}
             />
           </Route>

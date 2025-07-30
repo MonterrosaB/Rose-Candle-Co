@@ -11,34 +11,6 @@ const PageStock = () => {
 
   const menuItems = [
     {
-      title: "Categorías",
-      path: "/categories",
-      icon: Tags,
-      gradient: "from-[#A78A5E] via-[#BCA88E] to-[#DFCCAC]",
-      delay: "delay-100",
-    },
-    {
-      title: "Proveedores",
-      path: "/supplies",
-      icon: Users,
-      gradient: "from-[#7D7954] via-[#86918C] to-[#D3CCBE]",
-      delay: "delay-200",
-    },
-    {
-      title: "Colecciones",
-      path: "/colections",
-      icon: Layers,
-      gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
-      delay: "delay-300",
-    },
-    {
-      title: "Categorías Materia",
-      path: "/others/categories-materia",
-      icon: Package,
-      gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
-      delay: "delay-400",
-    },
-    {
       title: "Productos",
       path: "/products",
       icon: Package,
@@ -53,11 +25,39 @@ const PageStock = () => {
       delay: "delay-600",
     },
     {
+      title: "Proveedores",
+      path: "/supplies",
+      icon: Users,
+      gradient: "from-[#7D7954] via-[#86918C] to-[#D3CCBE]",
+      delay: "delay-200",
+    },
+    {
       title: "Materia Prima",
       path: "/materials",
       icon: Package,
       gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
       delay: "delay-700",
+    },
+    {
+      title: "Categorías",
+      path: "/categories",
+      icon: Tags,
+      gradient: "from-[#A78A5E] via-[#BCA88E] to-[#DFCCAC]",
+      delay: "delay-100",
+    },
+    {
+      title: "Categorías Materia",
+      path: "categories-materia",
+      icon: Package,
+      gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
+      delay: "delay-400",
+    },
+    {
+      title: "Colecciones",
+      path: "/colections",
+      icon: Layers,
+      gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
+      delay: "delay-300",
     },
   ];
 
@@ -87,13 +87,12 @@ const PageStock = () => {
       </div>
 
       {/* Main content */}
-     <div className="relative z-10 flex flex-col min-h-screen w-full pt-19 px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="relative z-10 flex flex-col min-h-screen w-full pt-19 px-4 sm:px-6 md:px-8 lg:px-10">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
           <div
-            className={`text-center mb-12 transform transition-all duration-1000 ${
-              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className={`text-center mb-12 transform transition-all duration-1000 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              }`}
           >
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#F9F7F3] via-[#DFCCAC] to-[#BCA88E] bg-clip-text text-transparent mb-4">
               Panel de Control
@@ -111,9 +110,8 @@ const PageStock = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`group relative transform transition-all duration-700 hover:scale-105 ${
-                    isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
-                  } ${item.delay}`}
+                  className={`group relative transform transition-all duration-700 hover:scale-105 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
+                    } ${item.delay}`}
                 >
                   <div className="relative h-44 sm:h-48 md:h-52 lg:h-56 rounded-2xl overflow-hidden backdrop-blur-sm bg-[#F9F7F3]/10 border border-[#DFCCAC]/20 shadow-2xl hover:shadow-[#A78A5E]/25 transition-all duration-500 hover:border-[#BCA88E]/40">
                     <div
@@ -158,9 +156,8 @@ const PageStock = () => {
 
           {/* Footer */}
           <div
-            className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${
-              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              }`}
           >
             <p className="text-[#000000] text-sm sm:text-base">
               Selecciona una opción para continuar
