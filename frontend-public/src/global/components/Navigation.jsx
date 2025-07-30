@@ -17,7 +17,7 @@ import Faqs from "../../pages/Faqs/Faqs.jsx";
 import Products from "../../pages/Products/Products.jsx";
 import ProductDetail from "../../pages/Products/ProductDetail.jsx";
 import Profile from "../../pages/Profile/Profile.jsx";
-import Cart from "../../pages/shoppingCart/ShoppingCart.jsx";
+import Cart from "../../pages/ShoppingCart/ShoppingCart.jsx";
 import LoginCustomer from "../../pages/LoginCustomer/LoginCustomer.jsx";
 import RegisterCustomer from "../../pages/RegisterCustomer/Register.jsx";
 import TermsAndConditions from "../../pages/TermsAndConditions/TermsAndConditions.jsx"
