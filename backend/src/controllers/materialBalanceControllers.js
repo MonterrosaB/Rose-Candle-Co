@@ -1,4 +1,4 @@
-import materialBalanceModel from "../models/materialBalance.js"; // Importar modelo de materialBalance
+import materialBalanceModel from "../models/MaterialBalance.js"; // Importar modelo de materialBalance
 
 // Controlador con métodos CRUD para materialBalance
 const materialBalanceControllers = {};

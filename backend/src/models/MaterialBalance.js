@@ -75,4 +75,4 @@ const materialBalance = new Schema(
 );
 
 // Exporto el modelo para usarlo en la aplicación
-export default model("materialBalance", materialBalance);
+export default model("MaterialBalance", materialBalance);
