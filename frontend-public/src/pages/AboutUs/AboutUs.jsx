@@ -4,7 +4,7 @@ import Historia from "./components/History.jsx";
 import Productos from "./components/ProductSection.jsx";
 import MisionVision from "./components/MissionAndVision";
 import Valores from "./components/Values.jsx";
-import Hero from "./components/hero.jsx";
+import Hero from "./components/Hero.jsx";
 
 const AboutUs = () => {
   useEffect(() => {
