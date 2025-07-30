@@ -6,7 +6,7 @@ const historyRawMaterialsController = {};
 // GET - Obtener todo el historial de precios de materias primas
 historyRawMaterialsController.getHistoriRawMaterials = async (req, res) => {
   try {
-    const historyRawMaterials = await historyRawMaterialsModel.find(); // Buscar todos los registros
+    const historyRawMaterials = await historyRawMaterialsModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
     res.status(200).json(historyRawMaterials); // Respuesta exitosa
   } catch (error) {
     console.log("error " + error);

@@ -16,7 +16,7 @@ const productsController = {};
 productsController.getproducts = async (req, res) => {
   try {
     const product = await productsModel
-      .find()
+      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
         // Populate para mostrar la información que contiene el id de components
         path: "components.idComponent",

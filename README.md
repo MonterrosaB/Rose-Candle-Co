@@ -1,10 +1,7 @@
 # Rosé Candle Co. - Velas de Soja
 
-Rosé Candle Co es una tienda de velas aromáticas ecológicas hechas a mano con  
-ingredientes naturales y fragancias inspiradas en la calma, la naturaleza y el bienestar.  
-Este proyecto digital nace para acompañar el crecimiento del emprendimiento, permitiendo a los clientes explorar fácilmente los productos,  
-hacer pedidos y seguir sus compras; mientras que el equipo de Rosé puede gestionar el inventario, la producción y  
-las finanzas desde una plataforma práctica e intuitiva.
+Rosé Candle Co es una tienda de velas aromáticas ecológicas hechas a mano con ingredientes naturales y fragancias inspiradas en la calma, la naturaleza y el bienestar. 
+Este proyecto digital nace para acompañar el crecimiento del emprendimiento, permitiendo a los clientes explorar fácilmente los productos, hacer pedidos y seguir sus compras; mientras que el equipo de Rosé puede gestionar el inventario, la producción y las finanzas desde una plataforma práctica e intuitiva.
 
 ---
 

@@ -7,7 +7,7 @@ const suppliersControllers = {};
 suppliersControllers.getSuppliers = async (req, res) => {
   try {
     // Buscar todos los documentos de proveedores en la colección
-    const suppliers = await suppliersModel.find();
+    const suppliers = await suppliersModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
 
     // Enviar listado completo de proveedores con código 200
     res.status(200).json(suppliers);

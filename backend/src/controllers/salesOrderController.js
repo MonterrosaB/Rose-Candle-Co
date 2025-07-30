@@ -7,7 +7,8 @@ const salesOrderController = {};
 salesOrderController.getSalesOrders = async (req, res) => {
   try {
     // Buscar todas las órdenes y popular el campo idShoppingCart con los datos correspondientes
-    const orders = await SalesOrderModel.find().populate("idShoppingCart");
+    const orders = await SalesOrderModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    .populate("idShoppingCart");
     // Enviar las órdenes encontradas al cliente con status 200
     res.status(200).json(orders); // Todo bien
   } catch (error) {

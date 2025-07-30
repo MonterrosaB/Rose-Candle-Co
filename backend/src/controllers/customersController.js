@@ -6,7 +6,7 @@ const customersController = {};
 // GET - Obtener todos los clientes
 customersController.getCustomers = async (req, res) => {
   try {
-    const customers = await customersModel.find(); // Buscar todos los clientes
+    const customers = await customersModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
     res.status(200).json(customers); // Respuesta exitosa
   } catch (error) {
     console.log("error " + error);
