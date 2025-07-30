@@ -73,7 +73,7 @@ passwordRecoveryController.verifyCode = async (req, res) => {
     const token = req.cookies.tokenRecoveryCode;
 
     // Decodificar y verificar el token con la clave secreta
-    const decoded = jsonwebtoken.verify(token, config.JWT.secret);
+    const decoded = jsonwebtoken.verify(token, config.jwt.secret);
 
     // Validar que el código ingresado coincida con el almacenado en el token
     if (decoded.code !== code) {
