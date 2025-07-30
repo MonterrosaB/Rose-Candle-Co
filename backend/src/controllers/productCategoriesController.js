@@ -6,7 +6,7 @@ const productCategoriesController = {};
 productCategoriesController.getproductCategories = async (req, res) => {
   try {
     // Buscar todas las categorías en la base de datos
-    const productCategory = await productCategories.find();
+    const productCategory = await productCategories.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
     // Enviar respuesta con el listado de categorías
     res.status(200).json(productCategory); // Respuesta exitosa
   } catch (error) {

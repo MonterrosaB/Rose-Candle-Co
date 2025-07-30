@@ -7,7 +7,7 @@ const rawMaterialCategoriesControllers = {};
 rawMaterialCategoriesControllers.getCategories = async (req, res) => {
   try {
     // Buscar todas las categorías en la base de datos
-    const categories = await rawMaterialCategoriesModel.find();
+    const categories = await rawMaterialCategoriesModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
     // Enviar respuesta con código 200 y lista de categorías
     res.status(200).json(categories);
   } catch (error) {

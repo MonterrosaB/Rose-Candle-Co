@@ -6,7 +6,7 @@ const employeesController = {};
 // GET - obtener todos los empleados
 employeesController.getEmployees = async (req, res) => {
   try {
-    const employees = await employeesModel.find(); // Buscar todos los empleados en la base de datos
+    const employees = await employeesModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
     res.status(200).json(employees); // Responder con los empleados encontrados
   } catch (error) {
     console.error("Error al obtener empleados:", error); // Log de error en consola

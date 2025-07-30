@@ -6,8 +6,7 @@ const productionCostHistoryController = {};
 productionCostHistoryController.getProductionCostHistory = async (req, res) => {
   try {
     // Buscar todos los registros y popular referencias a otras colecciones
-    const productionCostHistory = await productionCostHistoryModel
-      .find()
+    const productionCostHistory = await productionCostHistoryModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
         path: "idSalesOrder", // Popular detalles del pedido de venta
       })
