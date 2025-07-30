@@ -49,8 +49,8 @@ loginController.login = async (req, res) => {
     // Generar y firmar el token JWT
     JsonWebToken.sign(
       { id: userFound._id, userType }, // Datos a incluir en el token
-      config.JWT.secret, // Clave secreta
-      { expiresIn: config.JWT.expiresIn }, // Tiempo de expiración
+      config.jwt.secret, // Clave secreta
+      { expiresIn: config.jwt.expiresIn }, // Tiempo de expiración
       (error, token) => {
         if (error) console.log("error" + error); // Log en caso de error al generar token
 

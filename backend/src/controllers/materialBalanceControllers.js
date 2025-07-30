@@ -1,4 +1,4 @@
-import materialBalanceModel from "../models/materialBalance.js"; // Importar modelo de materialBalance
+import materialBalanceModel from "../models/MaterialBalance.js"; // Importar modelo de materialBalance
 
 // Controlador con métodos CRUD para materialBalance
 const materialBalanceControllers = {};
@@ -7,7 +7,7 @@ const materialBalanceControllers = {};
 materialBalanceControllers.getMaterialBalance = async (req, res) => {
   try {
     // Buscar todos los documentos en la colección
-    const MaterialBalance = await materialBalanceModel.find();
+    const MaterialBalance = await materialBalanceModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
     // Enviar respuesta con datos encontrados
     res.status(200).json(MaterialBalance); // Respuesta exitosa
   } catch (error) {

@@ -17,7 +17,7 @@ const auth = (req, res, next) => {
 
   try {
     // Verificar el token usando la clave secreta definida en config
-    const decoded = jwt.verify(token, config.JWT.secret);
+    const decoded = jwt.verify(token, config.jwt.secret);
 
     // Mostrar en consola el contenido decodificado del token (útil para debugging)
     console.log("Decoded JWT:", decoded);

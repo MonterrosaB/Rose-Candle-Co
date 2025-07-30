@@ -29,10 +29,11 @@ loginCustomerController.login = async (req, res) => {
 
     // Crear token JWT
     const token = JsonWebToken.sign(
-      { id: customer._id, userType: "client" }, // Cargar el id y tipo de usuario
-      config.JWT.secret, // Clave secreta
-      { expiresIn: config.JWT.expiresIn } // Tiempo de expiración
-    );
+  { id: customer._id, email: customer.email, userType: "client" },
+        config.jwt.secret,
+  { expiresIn: config.jwt.expiresIn }
+);
+
 
     // Verificar si el cliente ya tiene un carrito
     let cart = await shoppingCartModel.findOne({ idUser: customer._id });
@@ -83,7 +84,7 @@ loginCustomerController.verifyCustomer = async (req, res) => {
     }
 
     // Verificar el token con la clave secreta
-    const decoded = JsonWebToken.verify(token, config.JWT.secret);
+    const decoded = JsonWebToken.verify(token, config.jwt.secret);
 
     // Buscar cliente por ID decodificado
     const customer = await customersModel.findById(decoded.id);

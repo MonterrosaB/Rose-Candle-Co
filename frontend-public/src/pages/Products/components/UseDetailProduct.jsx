@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useFetchProduct from "./UseFetchProducts.jsx";
+import useFetchProduct from "./useFetchProducts.jsx";
 import { useParams } from "react-router-dom";
 
 const useDetailProduct = () => {

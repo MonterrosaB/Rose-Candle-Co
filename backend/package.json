@@ -21,6 +21,7 @@
     "mongoose": "^8.14.3",
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.1"
   },
   "keywords": []

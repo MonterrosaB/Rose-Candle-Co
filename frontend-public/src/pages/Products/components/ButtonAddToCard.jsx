@@ -25,7 +25,7 @@ const AddToCartButton = ({ product }) => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            productId: product._id, // Solo mandas el ID
+            productId: product._id, 
           }),
         }
       );

@@ -162,20 +162,15 @@ shoppingCartController.addProduct = async (req, res) => {
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
-  //Comentado para verificar su uso con el SoftDeleted
- // try {
-   // const userId = req.user.id;
+ 
+ try {
+    const userId = req.user.id;
 
-    // Buscar y eliminar carrito del usuario
-  //  const deletedCart = await shoppingCartModel.findOneAndDelete({
-    //  idUser: userId,
-    //});
-      try {
-              const deletedCart = await shoppingCartModel.findByIdAndUpdate(
-                    req.params.id,
-                    { deleted: true }, // Se marca como "eliminada"
-                    { new: true }
-                  ); // Eliminar por ID
+     //Buscar y eliminar carrito del usuario
+    const deletedCart = await shoppingCartModel.findOneAndDelete({
+    idUser: userId,
+    });
+     
     
 
     if (!deletedCart) {

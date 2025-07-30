@@ -9,7 +9,7 @@ rawMaterialsControllers.getrawMaterial = async (req, res) => {
     // Buscar todas las materias primas en la base de datos
     // Además, poblar (populate) las referencias a categoría y proveedor para mostrar sus nombres
     const rawMaterial = await rawMaterialModel
-      .find()
+      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate("idRawMaterialCategory", "name")
       .populate("idSupplier", "name");
 

@@ -5,7 +5,7 @@ const materialBalance = new Schema(
     // Referencia al material relacionado con este movimiento de balance
     idMaterial: {
       type: Schema.Types.ObjectId,
-      ref: "materialBalance", // Referencia al modelo relacionado, puede que quieras cambiarlo a "RawMaterials" u otro modelo según corresponda
+      ref: "RawMaterials", // Referencia al modelo relacionado
       required: [true, "La referencia al material es obligatoria"],
     },
 
@@ -75,4 +75,4 @@ const materialBalance = new Schema(
 );
 
 // Exporto el modelo para usarlo en la aplicación
-export default model("materialBalance", materialBalance);
+export default model("MaterialBalance", materialBalance);

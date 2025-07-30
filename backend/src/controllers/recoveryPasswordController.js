@@ -40,7 +40,7 @@ passwordRecoveryController.requestCode = async (req, res) => {
     // El token expirará en 20 minutos
     const token = jsonwebtoken.sign(
       { email, code, userType, verified: false },
-      config.JWT.secret,
+      config.jwt.secret,
       { expiresIn: "20m" }
     );
 
@@ -73,7 +73,7 @@ passwordRecoveryController.verifyCode = async (req, res) => {
     const token = req.cookies.tokenRecoveryCode;
 
     // Decodificar y verificar el token con la clave secreta
-    const decoded = jsonwebtoken.verify(token, config.JWT.secret);
+    const decoded = jsonwebtoken.verify(token, config.jwt.secret);
 
     // Validar que el código ingresado coincida con el almacenado en el token
     if (decoded.code !== code) {
@@ -88,7 +88,7 @@ passwordRecoveryController.verifyCode = async (req, res) => {
         userType: decoded.userType,
         verified: true,
       },
-      config.JWT.secret,
+      config.jwt.secret,
       { expiresIn: "20m" }
     );
 
@@ -113,7 +113,7 @@ passwordRecoveryController.newPassword = async (req, res) => {
     const token = req.cookies.tokenRecoveryCode;
 
     // Decodificar y verificar token con clave secreta
-    const decoded = jsonwebtoken.verify(token, config.JWT.secret);
+    const decoded = jsonwebtoken.verify(token, config.jwt.secret);
 
     // Validar que el código haya sido verificado antes de permitir cambio de contraseña
     if (!decoded.verified) {

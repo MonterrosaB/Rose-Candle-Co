@@ -7,7 +7,7 @@ const productPriceHistoryController = {};
 productPriceHistoryController.getProductPriceHistory = async (req, res) => {
   try {
     // Buscar todos los registros en la colección
-    const productPriceHistory = await productPriceHistoryModel.find();
+    const productPriceHistory = await productPriceHistoryModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
     // Responder con los datos encontrados
     res.status(200).json(productPriceHistory); // Todo bien
   } catch (error) {
