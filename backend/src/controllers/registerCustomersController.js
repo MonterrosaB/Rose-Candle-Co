@@ -115,8 +115,8 @@ registerCustomersController.registerCustomers = async (req, res) => {
     // Generar token JWT para autenticación posterior
     jsonwebtoken.sign(
       { id: newCustomer._id }, // Payload: ID del usuario
-      config.JWT.secret, // Secreto para firmar el token
-      { expiresIn: config.JWT.expiresIn }, // Tiempo de expiración configurado
+      config.jwt.secret, // Secreto para firmar el token
+      { expiresIn: config.jwt.expiresIn }, // Tiempo de expiración configurado
       (error, token) => {
         // Callback para manejo del token generado
         if (error) {

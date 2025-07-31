@@ -6,8 +6,7 @@ export const useVerifyCode = () => {
     const toastId = toast.loading("Verificando código...");
 
     try {
-      const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/recoveryPassword/verifyCode",
+      const res = await fetch("https://rose-candle-co.onrender.com/api/recoveryPassword/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
