@@ -7,7 +7,7 @@ export const useVerifyCode = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:4000/api/recoveryPassword/verifyCode",
+        "https://rose-candle-co.onrender.com/api/recoveryPassword/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
