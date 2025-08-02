@@ -11,7 +11,7 @@ const useRegisterCustomer = () => {
         setSuccess(false);
 
         try {
-            const response = await fetch("http://localhost:4000/api/registerCustomer", {
+            const response = await fetch("https://rose-candle-co.onrender.com/api/registerCustomer", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

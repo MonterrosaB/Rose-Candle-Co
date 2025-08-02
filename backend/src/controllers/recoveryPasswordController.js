@@ -72,6 +72,8 @@ passwordRecoveryController.verifyCode = async (req, res) => {
     // Obtener token JWT desde cookie
     const token = req.cookies.tokenRecoveryCode;
 
+    console.log({token})
+
     // Decodificar y verificar el token con la clave secreta
     const decoded = jsonwebtoken.verify(token, config.jwt.secret);
 
