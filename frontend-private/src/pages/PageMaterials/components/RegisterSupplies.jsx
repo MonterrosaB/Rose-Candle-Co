@@ -16,7 +16,7 @@ const RegisterSupplies = ({ onClose }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/rawMaterialCategories");
+        const res = await fetch("http://localhost:4000/api/rawMaterials");
         const data = await res.json();
         // Formatea para el dropdown
         const formatted = data.map(cat => ({

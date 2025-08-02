@@ -47,7 +47,7 @@ const PageStock = () => {
     },
     {
       title: "Categorías Materia",
-      path: "categories-materia",
+      path: "/categories-materia",
       icon: Package,
       gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
       delay: "delay-400",
@@ -62,7 +62,7 @@ const PageStock = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#ffff] relative overflow-hidden">
+    <div className="min-h-dvh bg-[#ffff] relative overflow-hidden">
       {/* Background circles */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#A78A5E]/20 rounded-full blur-3xl animate-pulse"></div>
@@ -87,7 +87,7 @@ const PageStock = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col min-h-screen w-full pt-19 px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="relative z-10 flex flex-col min-h-screen w-full p-4 sm:px-6 md:px-8 lg:px-10">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
           <div

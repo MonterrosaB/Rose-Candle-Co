@@ -99,7 +99,7 @@ function Navigation() {
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
             <Route
-              path="categories-materia"
+              path="/categories-materia"
               element={<CategoriesMateria />}
             />
           </Route>
