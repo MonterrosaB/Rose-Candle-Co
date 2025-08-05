@@ -7,9 +7,13 @@ import FormButton from "../../../global/components/FormButton";
 import Input from "../../../global/components/Input";
 import Dropdown from "../../../global/components/Dropdown";
 import Button from "../../../global/components/Button";
+import useSupplies from "../hooks/useSupplies";
 
 const RegisterSupplies = ({ onClose }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const methods = useForm();
+  const { createMaterial, register, handleSubmit, errors } = useSupplies(methods);
+
   const [categories, setCategories] = useState([]);
 
   // 🧠 useEffect con fetch para traer categorías reales
@@ -33,7 +37,7 @@ const RegisterSupplies = ({ onClose }) => {
   }, []);
 
   const onSubmit = (data) => {
-    console.log("Formulario enviado:", data);
+    createMaterial(data)
   };
 
   return (
@@ -42,7 +46,7 @@ const RegisterSupplies = ({ onClose }) => {
         <Dropdown
           options={categories}
           label={"Materia Prima"}
-          name={"rawMateria"}
+          name={"idMaterial"}
           register={register}
           errors={errors}
           hideIcon={true}
@@ -51,14 +55,14 @@ const RegisterSupplies = ({ onClose }) => {
           <Input
             label={"Stock Agregado"}
             type="number"
-            name={"stockAdded"}
+            name={"amount"}
             register={register}
             errors={errors}
           />
           <Input
             label={"Precio de compra"}
             type="number"
-            name={"buyPrice"}
+            name={"unitPrice"}
             register={register}
             errors={errors}
           />

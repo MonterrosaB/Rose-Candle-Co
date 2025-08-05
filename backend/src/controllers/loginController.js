@@ -55,7 +55,12 @@ loginController.login = async (req, res) => {
         if (error) console.log("error" + error); // Log en caso de error al generar token
 
         // Guardar token en cookie
-        res.cookie("authToken", token);
+        res.cookie("authToken", token, {
+          httpOnly: true,
+          secure: true, // solo si estás en HTTPS
+          sameSite: "None", // o "Lax" si todo está en el mismo dominio
+          path: "/",
+        });
         res.status(200).json({ message: "Login succesful" }); // Respuesta exitosa
       }
     );

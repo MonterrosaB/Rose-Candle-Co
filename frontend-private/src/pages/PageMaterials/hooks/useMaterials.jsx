@@ -90,9 +90,6 @@ const useMaterials = (methods) => {
     }
   };
 
-
-
-
   useEffect(() => {
     getMaterials();
   }, []);

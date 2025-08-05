@@ -10,7 +10,7 @@ export { AuthContext };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [authCokie, setAuthCokie] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const API_URL = "http://localhost:4000/api";
 
@@ -18,10 +18,9 @@ export const AuthProvider = ({ children }) => {
 
   // Eliminar sesión: token local, cookie, y estado
   const clearSession = () => {
-    localStorage.removeItem("token");
     Cookies.remove("authToken", { path: "/" });
     setUser(null);
-    setAuthCokie(null);
+    setIsAuthenticated(false);
   };
 
   // Cerrar sesión: notificar backend y limpiar sesión
@@ -57,18 +56,16 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const token = Cookies.get("authToken");
+        setIsAuthenticated(true);
 
-        if (token) {
-          localStorage.setItem("token", token);
-          setAuthCokie(token);
-          return true;
-        } else {
-          toast.error("Token no recibido");
-          return false;
+        // Obtener usuario desde el endpoint protegido
+        const userData = await verifySession();
+        if (userData) {
+          setUser(userData);
         }
+
+        return true;
       } else {
-        // No muestro los mensajes del backend
         if (
           data.message === "User not found" ||
           data.message === "Invalid password"
@@ -86,58 +83,58 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+
+  const verifySession = async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/verify`, {
+        method: "GET",
+        credentials: "include", // Necesario para enviar cookies
+      });
+
+      if (!res.ok) {
+        throw new Error("No autorizado");
+      }
+
+      const data = await res.json();
+      console.log("Sesión válida:", data);
+
+      // Aquí podrías setear el usuario al contexto
+      return data;
+
+    } catch (error) {
+      console.error("Error al verificar sesión:", error.message);
+      return null;
+    }
+  };
+
   // Verificar sesión automáticamente al cargar la app
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkSession = async () => {
+
       try {
-        const token = localStorage.getItem("token");
-        const cookieToken = Cookies.get("authToken");
-
-        if (token || cookieToken) {
-          const validToken = token || cookieToken;
-
-          const response = await fetch(`${API_URL}/products`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${validToken}`,
-            },
-            credentials: "include",
-          });
-
-          if (response.ok) {
-            // Extraer datos del usuario desde el token
-            const parts = validToken.split(".");
-            if (parts.length === 3) {
-              const payload = JSON.parse(atob(parts[1]));
-              setUser({ id: payload.id, userType: payload.userType });
-              setAuthCokie(validToken);
-            }
-          } else {
-            clearSession(); // Token inválido
-          }
-        } else {
-          clearSession(); // No hay token
-        }
-      } catch (error) {
-        console.error("Error verificando la autenticación:", error);
-        clearSession();
+        const data = await verifySession();
+        setUser(data);
+        setIsAuthenticated(true);
+      } catch {
+        setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
-  }, [API_URL]);
+    checkSession();
+  }, []);
 
   // Valor global del contexto
   const contextValue = {
     user,
-    authCokie,
     loading,
     login,
     logout,
     API: API_URL,
+    isAuthenticated
   };
 
   return (

@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { PrivateRoute } from "./PrivateRoute.jsx";
@@ -21,8 +23,14 @@ import Stock from "../../pages/PageStock/Stock.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/RecoveryPassword.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
+import { useNavigate } from "react-router-dom";
+
 function Navigation() {
-  const { authCokie } = useAuth();
+
+  const navigate = useNavigate();
+
+
+  const { isAuthenticated, user } = useAuth();
   const { hasEmployees } = useHasEmployees();
 
   // Redirección desde raíz si no hay empleados
@@ -31,9 +39,17 @@ function Navigation() {
   const noNavFooterRoutes = ["/login", "/start", "/recoveryPassword"];
   const hideNavFooter = noNavFooterRoutes.includes(location.pathname);
 
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate("/home");
+    }
+  }, [isAuthenticated, user]);
+
   return (
     <>
       {!hideNavFooter && <Sidebar />}
+
 
 
       <main className={!hideNavFooter ? "md:ml-64" : ""}>
@@ -63,25 +79,11 @@ function Navigation() {
             }
           />
 
-          {/* Ruta pública: login o start según si hay empleados */}
-          <Route
-            path="/laogin"
-            element={
-              authCokie ? (
-                <Navigate to="/home" replace />
-              ) : hasEmployees ? (
-                <Login />
-              ) : (
-                <Navigate to="/start" replace />
-              )
-            }
-          />
-
           {/* Ruta raíz */}
           <Route
             path="/"
             element={
-              <Navigate to={authCokie ? "/home" : redirectPath} replace />
+              <Navigate to={isAuthenticated ? "/home" : redirectPath} replace />
             }
           />
 
@@ -107,7 +109,7 @@ function Navigation() {
           {/* Ruta comodín: para rutas no válidas */}
           <Route
             path="*"
-            element={<Navigate to={authCokie ? "/home" : "/login"} replace />}
+            element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />}
           />
         </Routes>
       </main>

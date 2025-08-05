@@ -1,4 +1,5 @@
 import materialBalanceModel from "../models/MaterialBalance.js"; // Importar modelo de materialBalance
+import rawMaterial from "../models/RawMaterials.js"; // Importar modelo de materialBalance
 
 // Controlador con métodos CRUD para materialBalance
 const materialBalanceControllers = {};
@@ -19,37 +20,49 @@ materialBalanceControllers.getMaterialBalance = async (req, res) => {
 
 // POST - crear nuevo registro de materialBalance
 materialBalanceControllers.createMaterialBalance = async (req, res) => {
-  // Extraer dato 'name' del cuerpo de la petición
-  const { name } = req.body;
+  const { idMaterial, movement, amount, unitPrice, reference, date } = req.body;
 
   try {
-    // Validar que 'name' no esté vacío
-    if (!name) {
-      return res
-        .status(400)
-        .json({ message: "Please complete all the fields" }); // Validación cliente: campo vacío
-    }
-
-    // Validar longitud mínima de 'name'
-    if (name.length < 3) {
-      return res.status(400).json({ message: "Too short" }); // Validación cliente: texto muy corto
-    }
-
-    // Validar longitud máxima de 'name'
-    if (name.length > 100) {
-      return res.status(400).json({ message: "Too large" }); // Validación cliente: texto muy largo
-    }
-
-    // Crear nueva instancia y guardar en BD
-    const newMaterialBalance = new materialBalanceModel({ name });
+    // 1. Crear nuevo registro de balance
+    const newMaterialBalance = new materialBalanceModel({
+      idMaterial,
+      movement,
+      amount,
+      unitPrice,
+      reference,
+      date: date || new Date().toISOString(), // Usa la fecha proporcionada o actual en UTC
+    });
     await newMaterialBalance.save();
 
-    // Responder con mensaje de éxito
-    res.status(200).json({ message: "MaterialBalance saved" });
+    // 2. Buscar el material original para actualizarlo
+    const rawMaterialNewBalance = await rawMaterial.findById(idMaterial);
+    if (!rawMaterialNewBalance) {
+      return res.status(404).json({ message: "Raw material not found" });
+    }
+
+    // 3. Calcular nuevo stock y precio
+    let newStock = rawMaterialNewBalance.currentStock;
+    if (movement === "entrada") newStock += amount;
+    else if (movement === "salida") newStock -= amount;
+
+    const totalValorExistente =
+      rawMaterialNewBalance.currentStock * rawMaterialNewBalance.currentPrice;
+    const totalValorNuevo = amount * unitPrice;
+    const newTotalStock = rawMaterialNewBalance.currentStock + amount;
+
+    const newPrice = (totalValorExistente + totalValorNuevo) / newTotalStock;
+
+    // 4. Actualizar el documento de materia prima
+    rawMaterialNewBalance.currentStock = newStock;
+    rawMaterialNewBalance.currentPrice = newPrice;
+    await rawMaterialNewBalance.save();
+
+    res
+      .status(200)
+      .json({ message: "Material balance saved and raw material updated" });
   } catch (error) {
-    // Capturar y responder errores del servidor
-    console.log("error " + error);
-    return res.status(500).json("Internal server error");
+    console.error("Error in createMaterialBalance:", error);
+    res.status(500).json("Internal server error");
   }
 };
 
@@ -70,7 +83,7 @@ materialBalanceControllers.updateMaterialBalance = async (req, res) => {
     }
 
     // Buscar por ID y actualizar el registro
-    updatedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
+    const updatedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
       req.params.id,
       { name },
       { new: true } // Retorna el documento actualizado
@@ -92,13 +105,12 @@ materialBalanceControllers.updateMaterialBalance = async (req, res) => {
 
 // DELETE - eliminar un registro por ID
 materialBalanceControllers.deleteMaterialBalance = async (req, res) => {
-
-    try {
-      const deletedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
-        req.params.id,
-        { deleted: false }, // Se marca como "no eliminada"
-        { new: true }
-      ); // Se actualiza por ID
+  try {
+    const deletedMaterialBalance = await materialBalanceModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: false }, // Se marca como "no eliminada"
+      { new: true }
+    ); // Se actualiza por ID
 
     // Validar si el registro fue encontrado y eliminado
     if (!deletedMaterialBalance) {

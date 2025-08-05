@@ -24,10 +24,9 @@ import registerCustomersRoutes from "./src/routes/registerCustomers.js";
 import loginCustomerRoutes from "./src/routes/loginCustomer.js";
 import logoutCustomerRoutes from "./src/routes/logoutCustomer.js";
 import logoutRoutes from "./src/routes/logout.js";
-import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js"
+import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 import paymentsRoutes from "./src/routes/payments.js";
-
-
+import authRoutes from "./src/routes/auth.js";
 
 // Constante para la libreria de express
 const app = express();
@@ -39,7 +38,11 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["https://rose-candle-co-79w9.vercel.app","http://localhost:5173", "http://localhost:5174"], // frontend
+    origin: [
+      "https://rose-candle-co-79w9.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ], // frontend
     credentials: true, // permitir cookies
   })
 );
@@ -64,10 +67,10 @@ app.use("/api/loginCustomer", loginCustomerRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/logoutCustomer", logoutCustomerRoutes);
 app.use("/api/registerCustomer", registerCustomersRoutes);
-app.use("/api/registerEmployees", registerEmployeesRoutes)
-app.use("/api/recoveryPassword", recoveryPasswordRoutes)
+app.use("/api/registerEmployees", registerEmployeesRoutes);
+app.use("/api/recoveryPassword", recoveryPasswordRoutes);
 app.use("/api/payments", paymentsRoutes);
-
+app.use("/api/auth", authRoutes);
 
 // Exportar
 export default app;

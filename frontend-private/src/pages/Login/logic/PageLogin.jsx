@@ -1,5 +1,5 @@
 // Lógica para la página del Login
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import Star from "../../../assets/star.svg?react";
@@ -15,6 +15,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
 
   // Función para manejar el login
   const handleLogin = async (e) => {
