@@ -17,7 +17,7 @@ const AddToCartButton = ({ product }) => {
 
     try {
       const addProductRes = await fetch(
-        `http://localhost:4000/api/cart/add`,
+        `https://rose-candle-co-79w9.vercel.app/api/cart/add`,
         {
           method: "POST",
           headers: {
