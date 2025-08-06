@@ -66,7 +66,7 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
     setIsProcessing(true);
 
     // 1. Obtener token
-    const tokenResponse = await fetch("http://localhost:4000/api/payments/token", {
+    const tokenResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -90,7 +90,7 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
 
 
     // 3. Enviar pago simulado
-    const paymentResponse = await fetch("http://localhost:4000/api/payments/testPayment", {
+    const paymentResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/testPayment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: accessToken, formData: paymentData }),

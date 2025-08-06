@@ -3,7 +3,7 @@ import React from "react";
 const ClearButton = ({ cartId, onClear }) => {
   const clearCart = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/cart/empty/${cartId}`, {
+      const response = await fetch(`https://rose-candle-co.onrender.com/api/cart/empty/${cartId}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
       });
