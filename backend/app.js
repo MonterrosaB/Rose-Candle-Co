@@ -37,7 +37,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["https://rose-candle-co-79w9.vercel.app","http://localhost:5173", "http://localhost:5174"], // frontend
+    origin: ["https://rose-candle-co-imt9.vercel.app","http://localhost:5173", "http://localhost:5174"], // frontend
     credentials: true, // permitir cookies
   })
 );
