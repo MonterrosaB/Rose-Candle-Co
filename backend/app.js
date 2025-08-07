@@ -27,8 +27,6 @@ import logoutRoutes from "./src/routes/logout.js";
 import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js"
 import paymentsRoutes from "./src/routes/payments.js";
 
-
-
 // Constante para la libreria de express
 const app = express();
 

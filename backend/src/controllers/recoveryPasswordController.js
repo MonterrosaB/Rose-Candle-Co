@@ -15,22 +15,25 @@ passwordRecoveryController.requestCode = async (req, res) => {
   try {
     let userFound;
     let userType;
+    let name;
 
     // Buscar usuario en colección de clientes
     userFound = await customersModel.findOne({ email });
     if (userFound) {
       userType = "customer"; // Identificar tipo usuario
+      name = userFound.name; // Obtener nombre del usuario para enviar el correo
     } else {
       // Si no encontrado, buscar en colección de empleados
       userFound = await employeesModel.findOne({ email });
       if (userFound) {
         userType = "employee"; // Identificar tipo usuario
+        name = userFound.name; // Obtener nombre del usuario para enviar el correo
       }
     }
 
     // Si no se encontró usuario en ninguna colección, retornar error
     if (!userFound) {
-      return res.status(400).json({ message: "User not found" }); // error cliente
+      return res.status(400).json({ message: "Usuario no encontrado" }); // error cliente
     }
 
     // Generar código de 5 dígitos aleatorio para verificación
@@ -39,7 +42,7 @@ passwordRecoveryController.requestCode = async (req, res) => {
     // Crear token JWT con email, código, tipo usuario y flag verified en false
     // El token expirará en 20 minutos
     const token = jsonwebtoken.sign(
-      { email, code, userType, verified: false },
+      { email, code, name, userType, verified: false },
       config.jwt.secret,
       { expiresIn: "20m" }
     );
@@ -52,7 +55,7 @@ passwordRecoveryController.requestCode = async (req, res) => {
       email,
       "Código de verificación | Rosé Candle Co.",
       "Hola",
-      HTMLRecoveryEmail(code)
+      HTMLRecoveryEmail(code, name)
     );
 
     // Responder con éxito
@@ -72,14 +75,14 @@ passwordRecoveryController.verifyCode = async (req, res) => {
     // Obtener token JWT desde cookie
     const token = req.cookies.tokenRecoveryCode;
 
-    console.log({token})
+    console.log({ token });
 
     // Decodificar y verificar el token con la clave secreta
     const decoded = jsonwebtoken.verify(token, config.jwt.secret);
 
     // Validar que el código ingresado coincida con el almacenado en el token
     if (decoded.code !== code) {
-      return res.json({ message: "Invalid code" }); // código incorrecto
+      return res.json({ message: "Código incorrecto" }); // código incorrecto
     }
 
     // Generar nuevo token con flag verified en true y expiración de 20 minutos

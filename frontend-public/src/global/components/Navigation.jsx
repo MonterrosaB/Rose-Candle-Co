@@ -21,7 +21,7 @@ import Cart from "../../pages/ShoppingCart/ShoppingCart.jsx";
 import LoginCustomer from "../../pages/LoginCustomer/LoginCustomer.jsx";
 import RegisterCustomer from "../../pages/RegisterCustomer/Register.jsx";
 import TermsAndConditions from "../../pages/TermsAndConditions/TermsAndConditions.jsx"
-import PasswordRecovery from "../../pages/RecoveryPassword/logic/RecoveryPassword.jsx";
+import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
 
 // Auth
 import { AuthProvider } from "../../global/context/AuthContext.jsx";

@@ -1,61 +1,120 @@
-// Página para recuperar contraseña
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
+// Custom hooks para cada paso del proceso
 import { useRequestCode } from "../hooks/useRequestCode.jsx";
-import { useVerifyCode } from "../hooks/useVerifyCode";
-import { useNewPassword } from "../hooks/useNewPassword";
+import { useVerifyCode } from "../hooks/useVerifyCode.jsx";
+import { useNewPassword } from "../hooks/useNewPassword.jsx";
+
+// Recursos visuales
 import Star from "../../../assets/star.svg?react";
 import AnimatedLine from "../../../global/components/AnimatedLine.jsx";
-import FormInput from "../../Login/components/FormInput.jsx";
-import FormButton from "../components/FormButton.jsx";
 
-const PagePasswordRecovery = () => {
-  /* Cambiar título de la página */
+// Componentes del formulario
+import RequestCodeForm from "../components/RequestCodeForm.jsx";
+import VerifyCodeForm from "../components/VerifyCodeForm.jsx";
+import UpdatePasswordForm from "../components/UpdatePasswordForm.jsx";
+import SuccessMessage from "../components/SuccessMessage.jsx";
+
+const PasswordRecovery = () => {
+  // Cambia el título del documento al montar el componente
   useEffect(() => {
     document.title = "Recuperar Contraseña | Rosé Candle Co.";
   }, []);
 
+  // Estado para controlar el paso actual del formulario
+  // 1: solicitar código, 2: verificar código, 3: nueva contraseña, 4: éxito
   const [step, setStep] = useState(1);
-  const navigate = useNavigate();
 
+  // Estado para almacenar el email del usuario ingresado en paso 1
+  const [userEmail, setUserEmail] = useState("");
+
+  // Estados para controlar indicadores de carga en cada acción
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false);
+  const [isLoadingVerify, setIsLoadingVerify] = useState(false);
+  const [isLoadingResend, setIsLoadingResend] = useState(false);
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+
+  // Hook react-hook-form para manejo y validación de formularios
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
+    register, // Registra campos en el formulario
+    handleSubmit, // Función para manejar el envío
+    reset, // Resetea los campos del formulario
+    setValue, // Establece valor manualmente en un campo
+    getValues, // Obtiene el valor actual de un campo
+    watch, // Observa cambios en campos específicos
+    formState, // Estado con errores y validaciones
   } = useForm();
+
+  // Custom hooks para lógica de negocio en cada paso
   const { requestCode, message: messageRequest } = useRequestCode();
   const { verifyCode, message: messageVerify } = useVerifyCode();
   const { updatePassword, message: messageUpdate } = useNewPassword();
 
+  // Maneja envío del formulario en paso 1 para solicitar código
   const handleRequest = async (data) => {
-    const success = await requestCode(data);
-    if (success) {
-      setStep(2);
-      reset();
+    setIsLoadingRequest(true);
+    try {
+      const success = await requestCode(data);
+      if (success) {
+        setUserEmail(data.email); // Guarda el email para siguientes pasos
+        setStep(2); // Avanza al paso 2 (verificar código)
+        reset(); // Limpia el formulario
+      }
+    } finally {
+      setIsLoadingRequest(false);
     }
   };
 
+  // Maneja envío del formulario en paso 2 para verificar código
   const handleVerify = async (data) => {
-    const success = await verifyCode(data);
-    if (success) {
-      setStep(3);
-      reset();
+    setIsLoadingVerify(true);
+    try {
+      const success = await verifyCode(data);
+      if (success) {
+        setStep(3); // Avanza al paso 3 (ingresar nueva contraseña)
+        reset(); // Limpia el formulario
+      }
+    } finally {
+      setIsLoadingVerify(false);
     }
   };
 
+  // Maneja envío del formulario en paso 3 para actualizar contraseña
   const handleUpdate = async (data) => {
-    const success = await updatePassword(data);
-    if (success) {
-      setStep(4);
-      reset();
+    setIsLoadingUpdate(true);
+    try {
+      const success = await updatePassword(data);
+      if (success) {
+        setStep(4); // Muestra mensaje de éxito en paso 4
+        reset(); // Limpia el formulario
+      }
+    } finally {
+      setIsLoadingUpdate(false);
     }
+  };
+
+  // Función para reenviar código al email almacenado
+  const handleResendCode = async () => {
+    if (!userEmail) return;
+
+    setIsLoadingResend(true);
+    try {
+      await requestCode({ email: userEmail });
+    } finally {
+      setIsLoadingResend(false);
+    }
+  };
+
+  // Función para volver al paso 1 y reiniciar formulario
+  const handleGoBack = () => {
+    setStep(1);
+    reset(); // Limpia los campos del formulario
   };
 
   return (
     <div className="relative overflow-hidden flex items-center justify-center h-screen bg-[#F0ECE6]">
-      {/* Fondo decorativo */}
+      {/* Fondo decorativo radial */}
       <div
         style={{
           width: "130%",
@@ -72,9 +131,10 @@ const PagePasswordRecovery = () => {
         }}
       ></div>
 
+      {/* Línea animada decorativa */}
       <AnimatedLine />
 
-      {/* Estrellas decorativas */}
+      {/* Estrellas decorativas posicionadas */}
       <div className="absolute -top-90 -right-50 w-[500px] h-[500px] rotate-[20deg] z-[10]">
         <Star />
       </div>
@@ -82,93 +142,51 @@ const PagePasswordRecovery = () => {
         <Star />
       </div>
 
-      {/* Formulario */}
-      <div className="z-10 p-8 rounded-xl shadow-md w-full max-w-lg bg-[#F7F5EE]">
+      {/* Contenedor principal del formulario */}
+      <div className="relative z-20 max-w-lg mx-auto mt-20 bg-white p-8 rounded-2xl shadow-lg text-center font-[Poppins]">
+        {/* Renderiza formulario o mensaje según el paso actual */}
         {step === 1 && (
-          <form
-            onSubmit={handleSubmit(handleRequest)}
-            className="w-full max-w-md mx-auto"
-          >
-            <h2 className="text-[#7D7954] text-2xl font-semibold mb-8 text-center">
-              Recuperar contraseña
-            </h2>
-
-            <FormInput
-              id="email"
-              label="Correo electrónico"
-              type="email"
-              placeholder="Correo electrónico"
-              {...register("email", { required: true })}
-              error={errors.email && "El correo es obligatorio"}
-            />
-
-            <FormButton title="Enviar código" type="submit" />
-
-            {messageRequest && (
-              <p className="text-sm text-[#86918C] mt-3">{messageRequest}</p>
-            )}
-          </form>
+          <RequestCodeForm
+            register={register}
+            handleSubmit={handleSubmit}
+            handleRequest={handleRequest}
+            message={messageRequest}
+            isLoading={isLoadingRequest}
+          />
         )}
 
         {step === 2 && (
-          <form
-            onSubmit={handleSubmit(handleVerify)}
-            className="w-full max-w-md mx-auto"
-          >
-            <h2 className="text-[#7D7954] text-2xl font-semibold mb-8 text-center">
-              Verificar código
-            </h2>
-
-            <FormInput
-              id="code"
-              label="Código de verificación"
-              placeholder="12345"
-              type="text"
-              {...register("code", { required: true })}
-              error={errors.email && "El código es obligatorio"}
-            />
-
-            <FormButton title="Enviar código" type="submit" />
-
-            {messageRequest && (
-              <p className="text-sm text-[#86918C] mt-3">{messageRequest}</p>
-            )}
-          </form>
+          <VerifyCodeForm
+            register={register}
+            handleSubmit={handleSubmit}
+            setValue={setValue}
+            getValues={getValues}
+            handleVerify={handleVerify}
+            message={messageVerify}
+            isLoading={isLoadingVerify}
+            email={userEmail}
+            onResendCode={handleResendCode}
+            onGoBack={handleGoBack}
+            resendLoading={isLoadingResend}
+          />
         )}
 
         {step === 3 && (
-          <>
-            <h2 className="text-[#7D7954] text-xl font-semibold mb-2 text-center">
-              Nueva Contraseña
-            </h2>
-            <FormInput
-              id="newPassword"
-              label="Nueva contraseña"
-              placeholder="********"
-              type="password"
-              {...register("newPassword", { required: true, minLength: 6 })}
-            />
-            <FormButton title="Actualizar contraseña" type="submit" />
-          </>
+          <UpdatePasswordForm
+            register={register}
+            handleSubmit={handleSubmit}
+            handleUpdate={handleUpdate}
+            watch={watch}
+            formState={formState}
+            message={messageUpdate}
+            isLoading={isLoadingUpdate}
+          />
         )}
 
-        {step === 4 && (
-          <div className="text-center text-[#86918C]">
-            <h2 className="text-[#7D7954] text-2xl font-semibold mb-2">
-              ¡Contraseña actualizada!
-            </h2>
-            <p>Ya puedes iniciar sesión con tu nueva contraseña.</p>
-            <br />
-            <FormButton
-              title="Iniciar sesión"
-              type="button"
-              onClick={() => navigate("/login")} // Navega al login
-            />
-          </div>
-        )}
+        {step === 4 && <SuccessMessage />}
       </div>
     </div>
   );
 };
 
-export default PagePasswordRecovery;
+export default PasswordRecovery;
