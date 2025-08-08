@@ -16,7 +16,5 @@ node_modules/
 
 public/
 
-.idea/
-/.vscode/
-*.sublime-project
-*.sublime-workspace
+
+./.vscode/
