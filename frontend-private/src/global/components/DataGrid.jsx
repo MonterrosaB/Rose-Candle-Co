@@ -14,6 +14,10 @@ const DataGrid = ({ title,
     secondaryBtnText,
     onClickPrimaryBtn,
     onClickSecondaryBtn,
+    checkbox = false,
+    checkboxText,
+    checkboxChecked = false,
+    onCheckboxChange = () => { },
     editable = true }) => {
     //Obtenes los valores anidados
     //ejemplo: product.idCategory.name
@@ -29,14 +33,24 @@ const DataGrid = ({ title,
                 return acc?.[key];
             }, obj);
 
-            // ✅ Si es Date, convertir a string
-            if (value instanceof Date) return value.toLocaleDateString("en-GB");
+            // ✅ Formatear si es fecha válida en string
+            if (typeof value === "string" && !isNaN(Date.parse(value))) {
+                return new Date(value).toLocaleDateString("es-SV", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                });
+            }
 
             return value ?? "-";
         } catch {
             return "-";
         }
     };
+
 
     const StatusBadge = ({ status }) => {
         const map = {
@@ -76,6 +90,13 @@ const DataGrid = ({ title,
             <div className="flex justify-between items-center">
                 <h2 className="p-2 text-xl font-semibold">{title}</h2>
                 <div className="flex gap-4 px-4">
+                    {checkbox && (
+                        <div class="flex items-center">
+                            <input id="default-checkbox" type="checkbox" checked={checkboxChecked} onChange={onCheckboxChange} class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <label for="default-checkbox" class="ms-2 text-sm font-medium text-[#7D9775]">{checkboxText}</label>
+                        </div>
+                    )}
+
                     {secondaryBtnText && (
                         <Button
                             buttonText={secondaryBtnText}

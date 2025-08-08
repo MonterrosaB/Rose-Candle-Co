@@ -5,7 +5,7 @@ const materialBalance = new Schema(
     // Referencia al material relacionado con este movimiento de balance
     idMaterial: {
       type: Schema.Types.ObjectId,
-      ref: "RawMaterials", // Referencia al modelo relacionado
+      ref: "RawMaterial", // Referencia al modelo relacionado
       required: [true, "La referencia al material es obligatoria"],
     },
 

@@ -14,16 +14,31 @@ const PageMaterials = () => {
 
   const methods = useForm();
 
-  const { materials, loading, deleteMaterial } = useMaterials(methods);
+  const { materials, materialsBalance, loading, deleteMaterial } = useMaterials(methods);
 
-  const columns = {
-    Nombre: "name",
-    Stock: "currentStock",
-    Unidad: "unit",
-    Precio: "currentPrice",
-    Categoria: "idRawMaterialCategory.name",
-    Proveedor: "idSupplier.name",
-  };
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  }
+  const columns = isChecked
+    ? {
+      Nombre: "idMaterial.name",
+      Movimiento: "movement",
+      Cantidad: "amount",
+      Precio: "unitPrice",
+      Referencia: "reference",
+      Fecha: "date",
+    }
+
+    : {
+      Nombre: "name",
+      Stock: "currentStock",
+      Unidad: "unit",
+      Precio: "currentPrice",
+      Categoria: "idRawMaterialCategory.name",
+      Proveedor: "idSupplier.name",
+    };
 
   return (
     <PrincipalDiv>
@@ -32,9 +47,14 @@ const PageMaterials = () => {
         <DataGrid
           title="Materia Prima"
           columns={columns}
-          rows={materials}
+          rows={isChecked ? materialsBalance : materials}
           loading={loading}
+          checkbox={true}
+          checkboxText={"Mostar movimientos"}
           primaryBtnText="Agregar Materia Prima"
+          checkboxChecked={isChecked}
+          onCheckboxChange={handleCheckboxChange}
+          editable={isChecked ? false : true}
           onClickPrimaryBtn={() => {
             setRegistroActual(null);
             setOpenDialogMaterial(true);

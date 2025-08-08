@@ -11,6 +11,7 @@ const useMaterials = (methods) => {
   } = methods;
 
   const [materials, setMaterials] = useState([]);
+  const [materialsBalance, setMaterialsBalance] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const ApiURL = "http://localhost:4000/api/rawMaterials";
@@ -22,6 +23,20 @@ const useMaterials = (methods) => {
       if (!res.ok) throw new Error("No se pudo obtener materias primas");
       const data = await res.json();
       setMaterials(data);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMaterialsBalance = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:4000/api/materialBalance");
+      if (!res.ok) throw new Error("No se pudo obtener el balance de materias primas");
+      const data = await res.json();
+      setMaterialsBalance(data);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -92,10 +107,11 @@ const useMaterials = (methods) => {
 
   useEffect(() => {
     getMaterials();
+    getMaterialsBalance();
   }, []);
 
   return {
-    materials, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
+    materials, materialsBalance, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
   };
 };
 

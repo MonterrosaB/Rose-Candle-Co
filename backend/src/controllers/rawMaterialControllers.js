@@ -1,4 +1,5 @@
 import rawMaterialModel from "../models/RawMaterials.js"; // Importar modelo de materia prima
+import materialBalance from "../models/MaterialBalance.js"; // Importar modelo del balance de materia prima
 
 // Controlador con métodos CRUD para materias primas
 const rawMaterialsControllers = {};
@@ -74,7 +75,7 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
     }
 
     // Crear nueva instancia del modelo con datos validados
-    const newrRawMaterial = new rawMaterialModel({
+    const newRawMaterial = new rawMaterialModel({
       currentStock,
       currentPrice,
       idRawMaterialCategory,
@@ -84,7 +85,19 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
     });
 
     // Guardar en la base de datos
-    await newrRawMaterial.save();
+    const result = await newRawMaterial.save();
+    const insertedIdMaterial = result._id;
+
+    const initialBalanceMaterial = new materialBalance({
+      idMaterial: insertedIdMaterial,
+      movement: "entrada",
+      amount: currentStock,
+      unitPrice: currentPrice,
+      reference: "Balance inicial",
+      date: new Date().toISOString(),
+    });
+
+    await initialBalanceMaterial.save();
 
     // Responder con éxito
     res.status(200).json({ message: "Saved Successfully" });
@@ -97,12 +110,12 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
 
 // DELETE - Eliminar materia prima por ID
 rawMaterialsControllers.deleterRawMaterial = async (req, res) => {
-try {
-          const deleted = await rawMaterialModel.findByIdAndUpdate(
-                req.params.id,
-                { deleted: true }, // Se marca como "eliminada"
-                { new: true }
-              ); // Eliminar por ID
+  try {
+    const deleted = await rawMaterialModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     // Validar si se encontró y eliminó el registro
     if (!deleted) {
@@ -193,7 +206,7 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
   }
 };
 
-rawMaterialsControllers.restoreRawMaterials= async (req, res) => {
+rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
   try {
     const restoreRawMaterials = await rawMaterialModel.findByIdAndUpdate(
       req.params.id,
@@ -202,7 +215,9 @@ rawMaterialsControllers.restoreRawMaterials= async (req, res) => {
     ); // Se actualiza por ID
 
     if (!restoreRawMaterials) {
-      return res.status(400).json({ message: "Restore Raw Materials not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "Restore Raw Materials not found" }); // No encontrada
     }
 
     res.status(200).json({ message: "Restore Raw Materials restored" }); // Restauracion exitosa
