@@ -9,7 +9,7 @@ const useCart = () => {
 
     const fetchCart = async () => {
         try {
-            const res = await fetch(`http://localhost:4000/api/cart`, {
+            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await res.json();
@@ -34,7 +34,7 @@ const useCart = () => {
 
     const updateCartBackend = async (newProducts) => {
         try {
-            const res = await fetch(`http://localhost:4000/api/cart/${cartId}`, {
+            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart/${cartId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const useCart = () => {
         if (!cartId) return;
 
         try {
-            const res = await fetch(`http://localhost:4000/api/cart/empty/${cartId}`, {
+            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart/empty/${cartId}`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -85,7 +85,7 @@ const useCart = () => {
 
         try {
             const res = await fetch(
-                `http://localhost:4000/api/cart/removeProduct/${productToRemove._id}`,
+                `https://rose-candle-co.onrender.com/api/cart/removeProduct/${productToRemove._id}`,
                 {
                     method: "PUT",
                     headers: {

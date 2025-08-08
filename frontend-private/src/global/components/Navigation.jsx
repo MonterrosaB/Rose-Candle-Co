@@ -20,7 +20,7 @@ import Suppliers from "../../pages/PageSuppliers/PageSuppliers.jsx";
 import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesMateria.jsx";
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
-import PasswordRecovery from "../../pages/RecoveryPassword/logic/RecoveryPassword.jsx";
+import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 import { useNavigate } from "react-router-dom";

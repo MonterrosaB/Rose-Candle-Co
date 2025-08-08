@@ -101,7 +101,7 @@ const customerSchema = new Schema(
     },
     addresses: {
       type: [addressSchema], // Arreglo de direcciones usando el subesquema definido
-      required: true, // Obligatorio que tenga al menos una dirección
+      default: null // Por defecto vacío
     },
     deleted: {
       type: Boolean, // Campo lógico para eliminaciones suaves

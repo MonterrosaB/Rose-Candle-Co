@@ -3,17 +3,119 @@ import bcryptjs from "bcryptjs"; // Librería para encriptar contraseñas
 import jsonwebtoken from "jsonwebtoken"; // Librería para manejar tokens JWT
 import { config } from "../config.js";
 
+import { HTMLAccountCreatedEmail } from "../utils/mailAccountConfirmation.js"; // Funciones para enviar código de verificación del correo
 import { sendEmail, HTMLWelcomeMail } from "../utils/mailWelcome.js"; // Funciones para enviar email de bienvenida
 
 // Controlador con métodos para registro de clientes
 const registerCustomersController = {};
 
-// POST - Registrar nuevo cliente
-registerCustomersController.registerCustomers = async (req, res) => {
-  // Obtener datos enviados en el cuerpo de la petición
-  const { name, surnames, email, password, user, phone, addresses } = req.body;
+// Antes de guardar, se solicita un código de verificación por seguridad
+registerCustomersController.requestCode = async (req, res) => {
+  const { email } = req.body;
 
   try {
+    // Generar código de 5 dígitos aleatorio para verificación
+    const code = Math.floor(10000 + Math.random() * 90000).toString();
+
+    // Crear token JWT con email, código
+    // El token expirará en 20 minutos
+    const token = jsonwebtoken.sign({ email, code }, config.jwt.secret, {
+      expiresIn: "20m",
+    });
+
+    // Guardar token en cookie para mantener estado de recuperación
+    res.cookie("tokenRecoveryCode", token, { maxAge: 20 * 60 * 1000 });
+
+    // Enviar email con el código de recuperación usando plantilla HTML
+    await sendEmail(
+      email,
+      "Código de verificación | Rosé Candle Co.",
+      "Hola",
+      HTMLAccountCreatedEmail(code)
+    );
+
+    // Responder con éxito
+    res.status(200).json({ message: "Code sent successfully" }); // todo bien
+  } catch (error) {
+    // Manejo de errores: respuesta 500 y log de error
+    res.status(500).json({ message: "Internal Server Error" }); // error servidor
+    console.log("error" + error);
+  }
+};
+
+// Verificar el código recibido por el usuario
+registerCustomersController.verifyCode = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    // Obtener token JWT desde cookie
+    const token = req.cookies.tokenRecoveryCode;
+
+    console.log({ token });
+
+    // Decodificar y verificar el token con la clave secreta
+    const decoded = jsonwebtoken.verify(token, config.jwt.secret);
+
+    // Validar que el código ingresado coincida con el almacenado en el token
+    if (decoded.code !== code) {
+      return res.json({ message: "Código incorrecto" }); // código incorrecto
+    }
+
+    // Generar nuevo token con flag verified en true y expiración de 20 minutos
+    const newToken = jsonwebtoken.sign(
+      {
+        email: decoded.email,
+        code: decoded.code,
+        userType: decoded.userType,
+        verified: true,
+      },
+      config.jwt.secret,
+      { expiresIn: "20m" }
+    );
+
+    // Actualizar cookie con el nuevo token validado
+    res.cookie("tokenRecoveryCode", newToken, { maxAge: 20 * 60 * 1000 }); // 20 minutos
+
+    // Responder con éxito
+    res.status(200).json({ message: "Code verified successfully" }); // todo bien
+  } catch (error) {
+    // Manejo de errores: respuesta 500 y log de error
+    res.status(500).json({ message: "Internal Server Error" }); // error servidor
+    console.log("error" + error);
+  }
+};
+
+// POST - Registrar nuevo cliente (una vez confirmado el correo)
+registerCustomersController.registerCustomers = async (req, res) => {
+  // Obtener datos enviados en el cuerpo de la petición
+  const { name, surnames, password, user, phone, addresses } = req.body;
+
+  try {
+    // Leer token desde cookies
+    const token = req.cookies.tokenRecoveryCode;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No verification token provided" });
+    }
+
+    // Verificar y decodificar el token
+    let decoded;
+    try {
+      decoded = jsonwebtoken.verify(token, config.jwt.secret);
+    } catch (err) {
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired verification token" });
+    }
+
+    // Verificar si el correo fue validado
+    if (!decoded.verified) {
+      return res.status(401).json({ message: "Email not verified" });
+    }
+
+    const email = decoded.email; // Usar el email del token para mayor seguridad
+
     // Validar que todos los campos requeridos estén presentes y correctos
     if (
       !name ||
@@ -107,8 +209,8 @@ registerCustomersController.registerCustomers = async (req, res) => {
     // Enviar correo de bienvenida al nuevo cliente
     await sendEmail(
       email,
-      "Bienvenida a Rosé Candle Co | Rosé Candle Co.",
-      "Un gusto tenerte aquí!",
+      "Bienvenido a Rosé Candle Co | Rosé Candle Co.",
+      "¡Un gusto tenerte aquí!",
       HTMLWelcomeMail(name)
     );
 

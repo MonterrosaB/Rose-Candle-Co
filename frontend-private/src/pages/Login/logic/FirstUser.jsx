@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useHasEmployees } from "../hooks/useHasEmployees";
@@ -11,6 +11,10 @@ import useEmployees from "../hooks/useEmployee"; // Importamos el hook
 import { useForm } from "react-hook-form";
 
 const FirstUser = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Registrarse | Rosé Candle Co.";
+  }, []);
 
   // useEmployees (hook de empleados)
   const {
@@ -46,7 +50,6 @@ const FirstUser = () => {
       toast.error("Las contraseñas no coinciden");
       return;
     }
-
 
     const success = await handleSubmit(e, { isActive: true, role: "admin" });
 

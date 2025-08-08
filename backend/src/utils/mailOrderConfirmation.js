@@ -1,4 +1,4 @@
-// Correo electrónico que se envía con el código de verificación
+// Correo electrónico que se envía con el código de verificación de la cuenta
 import nodemailer from "nodemailer";
 import { config } from "../config.js";
 
@@ -33,8 +33,8 @@ const sendEmail = async (to, subject, body, html) => {
   }
 };
 
-// Función que genera el contenido HTML personalizado para el correo de recuperación
-const HTMLRecoveryEmail = (code, name = "Usuario") => {
+// Función que genera el contenido HTML personalizado para el correo de confirmación de cuenta
+const HTMLOrderConfirmationEmail = (code, name = "Usuario") => {
   return `
   <div style="font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F9F7F3; padding: 0; max-width: 600px; margin: 0 auto; border-radius: 20px; overflow: hidden; border: 1px solid #DFCCAC; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);">
     <div style="background: linear-gradient(135deg, #EADBC3, #DFCCAC); padding: 40px 20px; text-align: center;">
@@ -49,12 +49,12 @@ const HTMLRecoveryEmail = (code, name = "Usuario") => {
 
     <div style="background-color: #FFFFFF; padding: 40px 30px; position: relative; text-align: center;">
       <h1 style="color: #A78A5E; font-size: 22px; font-weight: 650; margin-bottom: 12px; position: relative; z-index: 2;">
-        Código de verificación
+        Confirma tu compra
       </h1>
 
       <p style="color: #6F6A50; font-size: 15px; line-height: 1.6; margin-bottom: 20px; position: relative; z-index: 2;">
         ¡Hola, <strong>${name}</strong>!<br>
-        Recibimos una solicitud para restablecer tu contraseña. Utiliza este código para continuar:
+        Gracias por elegir Rosé Candle Co. Para completar y confirmar tu compra, por favor utiliza el siguiente código:
       </p>
 
       <div style="background-color: #F2E7D5; padding: 16px 32px; font-size: 26px; font-weight: bold; color: #A77A44; border-radius: 12px; display: inline-block; letter-spacing: 4px; position: relative; z-index: 2;">
@@ -62,7 +62,7 @@ const HTMLRecoveryEmail = (code, name = "Usuario") => {
       </div>
 
       <p style="color: #8E8A76; font-size: 13.5px; line-height: 1.5; margin-top: 30px; position: relative; z-index: 2;">
-        Este código expira en <strong>20 minutos</strong>. Si no solicitaste esta acción, puedes ignorar este correo.
+        Este código es válido por <strong>20 minutos</strong>. Si no realizaste esta compra, por favor ignora este correo y contáctanos.
       </p>
 
       <div style="margin-top: 35px; border-top: 1px solid #E6DACA; padding-top: 15px; font-size: 13px; color: #A3A093; position: relative; z-index: 2;">
@@ -76,5 +76,5 @@ const HTMLRecoveryEmail = (code, name = "Usuario") => {
   `;
 };
 
-// Exportación de las funciones para ser usadas en otras partes del proyecto
-export { sendEmail, HTMLRecoveryEmail };
+// Exportación de funciones para ser usadas en otras partes del proyecto
+export { sendEmail, HTMLOrderConfirmationEmail };
