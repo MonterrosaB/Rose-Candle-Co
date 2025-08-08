@@ -16,7 +16,7 @@ const productsController = {};
 productsController.getproducts = async (req, res) => {
   try {
     const product = await productsModel
-      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+      .find({ availability: true }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
         // Populate para mostrar la información que contiene el id de components
         path: "components.idComponent",
@@ -128,12 +128,12 @@ productsController.createProduct = async (req, res) => {
 
 // DELETE - Método para eliminar un producto por su id
 productsController.deleteProduct = async (req, res) => {
- try {
-        const deleteProduct = await productsModel.findByIdAndUpdate(
-              req.params.id,
-              { deleted: true }, // Se marca como "eliminada"
-              { new: true }
-            ); // Eliminar por ID
+  try {
+    const deleteProduct = await productsModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     if (!deleteProduct) {
       // Si no se elimina nada (porque no se encuentra)
@@ -248,7 +248,7 @@ productsController.updateProduct = async (req, res) => {
   }
 };
 
-productsController.restoreProduct= async (req, res) => {
+productsController.restoreProduct = async (req, res) => {
   try {
     const restoreProduct = await productsModel.findByIdAndUpdate(
       req.params.id,
@@ -257,7 +257,9 @@ productsController.restoreProduct= async (req, res) => {
     ); // Se actualiza por ID
 
     if (!restoreProduct) {
-      return res.status(400).json({ message: "Product Price History not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "Product Price History not found" }); // No encontrada
     }
 
     res.status(200).json({ message: "Product Price History restored" }); // Restauracion exitosa
