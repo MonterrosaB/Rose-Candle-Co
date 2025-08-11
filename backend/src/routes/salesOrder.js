@@ -1,24 +1,22 @@
-
 import express from "express";
-
 
 import salesOrderController from "../controllers/salesOrderController.js";
 
-
 const router = express.Router();
 
-
-router.route("/")
+router
+  .route("/")
   .get(salesOrderController.getSalesOrders)
   .post(salesOrderController.createSalesOrder);
 
+router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
 
-router.route("/:id")
+router
+  .route("/:id")
   .put(salesOrderController.updateSalesOrder)
   .delete(salesOrderController.deleteSalesOrder);
 
-  // Rutas específicas
-  router.route("/restore/:id")
-    .put(salesOrderController.restoreSalesOrder); // restaurar por id
+// Rutas específicas
+router.route("/restore/:id").put(salesOrderController.restoreSalesOrder); // restaurar por id
 
 export default router;

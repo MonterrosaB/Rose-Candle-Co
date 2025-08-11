@@ -34,7 +34,7 @@ const SalesOrderSchema = new Schema(
     idShoppingCart: {
       type: Schema.Types.ObjectId,
       required: true, // Debe referenciar un carrito de compras existente
-      ref: "ShoppingCart", // Nombre del modelo referenciado
+      ref: "shoppingCart", // Nombre del modelo referenciado
       trim: true, // Elimina espacios en cadena
     },
     paymentMethod: {
@@ -66,12 +66,6 @@ const SalesOrderSchema = new Schema(
     shippingState: {
       type: [shippingStateSchema], // Array de estados del envío
       default: [], // Por defecto, ningún estado registrado inicialmente
-    },
-
-    // Campo para eliminación lógica de la orden de venta
-    deleted: {
-      type: Boolean, // Tipo booleano
-      default: false, // Por defecto no eliminado
     },
   },
   {

@@ -31,11 +31,10 @@ const shoppingCartSchema = new Schema(
       min: 0, // No puede ser negativo
       trim: true, // No afecta números, pero mantiene consistencia
     },
-
-    // Campo para eliminación lógica del carrito
-    deleted: {
-      type: Boolean,
-      default: false, // Por defecto no eliminado
+    status: {
+      type: String,
+      required: true, // Total debe estar definido (aunque sea 0)
+      enum: ["active", "completed"],
     },
   },
   {

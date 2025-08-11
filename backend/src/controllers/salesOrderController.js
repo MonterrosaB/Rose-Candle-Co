@@ -7,8 +7,20 @@ const salesOrderController = {};
 salesOrderController.getSalesOrders = async (req, res) => {
   try {
     // Buscar todas las órdenes y popular el campo idShoppingCart con los datos correspondientes
-    const orders = await SalesOrderModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
-    .populate("idShoppingCart");
+    const orders = await SalesOrderModel.find() // Buscar todas las colecciones, salvo las que no han sido eliminadas
+      .populate({
+        path: "idShoppingCart",
+        populate: [
+          {
+            path: "idUser",
+            select: "name",
+          },
+          {
+            path: "products",
+            select: "name variant",
+          },
+        ],
+      });
     // Enviar las órdenes encontradas al cliente con status 200
     res.status(200).json(orders); // Todo bien
   } catch (error) {
@@ -142,11 +154,11 @@ salesOrderController.updateSalesOrder = async (req, res) => {
 // DELETE - Eliminar una orden de venta por ID
 salesOrderController.deleteSalesOrder = async (req, res) => {
   try {
-          const deletedOrder = await SalesOrderModel.findByIdAndUpdate(
-                req.params.id,
-                { deleted: true }, // Se marca como "eliminada"
-                { new: true }
-              ); // Eliminar por ID
+    const deletedOrder = await SalesOrderModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     // Validar si la orden existía
     if (!deletedOrder) {
@@ -162,7 +174,7 @@ salesOrderController.deleteSalesOrder = async (req, res) => {
   }
 };
 
-salesOrderController.restoreSalesOrder= async (req, res) => {
+salesOrderController.restoreSalesOrder = async (req, res) => {
   try {
     const restoreSalesOrder = await SalesOrderModel.findByIdAndUpdate(
       req.params.id,
@@ -178,6 +190,43 @@ salesOrderController.restoreSalesOrder= async (req, res) => {
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+salesOrderController.countSalesOrderAndTotal = async (req, res) => {
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), 1)
+    );
+    const startOfNextMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth() + 1, 1)
+    );
+
+    console.log(startOfMonth);
+    console.log(startOfNextMonth);
+
+    const result = await SalesOrderModel.aggregate([
+      {
+        $match: {
+          saleDate: {
+            $gte: startOfMonth,
+            $lt: startOfNextMonth,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalVentas: { $sum: "$total" },
+          cantidadPedidos: { $sum: 1 },
+        },
+      },
+    ]);
+    return res.json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 

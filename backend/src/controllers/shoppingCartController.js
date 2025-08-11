@@ -1,5 +1,7 @@
 import shoppingCartModel from "../models/ShoppingCart.js"; // Modelo de Carrito de Compras
+import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Carrito de Compras
 import Product from "../models/Products.js"; // Modelo de Productos
+import ShoppingCart from "../models/ShoppingCart.js";
 
 // Controlador con métodos CRUD para Carrito de Compras
 const shoppingCartController = {};
@@ -162,16 +164,13 @@ shoppingCartController.addProduct = async (req, res) => {
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
- 
- try {
+  try {
     const userId = req.user.id;
 
-     //Buscar y eliminar carrito del usuario
+    //Buscar y eliminar carrito del usuario
     const deletedCart = await shoppingCartModel.findOneAndDelete({
-    idUser: userId,
+      idUser: userId,
     });
-     
-    
 
     if (!deletedCart) {
       // No existía carrito para ese usuario
@@ -250,8 +249,7 @@ shoppingCartController.emptyCart = async (req, res) => {
   }
 };
 
-
-shoppingCartController.restoreShoppingCart= async (req, res) => {
+shoppingCartController.restoreShoppingCart = async (req, res) => {
   try {
     const restoreShoppingCart = await shoppingCartModel.findByIdAndUpdate(
       req.params.id,
@@ -260,7 +258,9 @@ shoppingCartController.restoreShoppingCart= async (req, res) => {
     ); // Se actualiza por ID
 
     if (!restoreShoppingCart) {
-      return res.status(400).json({ message: "Restore Shopping Cart not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "Restore Shopping Cart not found" }); // No encontrada
     }
 
     res.status(200).json({ message: "Restore Shopping Cart restored" }); // Restauracion exitosa
@@ -270,6 +270,32 @@ shoppingCartController.restoreShoppingCart= async (req, res) => {
   }
 };
 
+shoppingCartController.getAbandonettedCars = async (req, res) => {
+  const stats = await ShoppingCart.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalCarts: { $sum: 1 },
+        totalPurchases: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        abandonedCartRate: {
+          $multiply: [
+            { $subtract: [1, { $divide: ["$totalPurchases", "$totalCarts"] }] },
+            100,
+          ],
+        },
+      },
+    },
+  ]);
+
+  res.json(`${stats[0].abandonedCartRate.toFixed(2)}%`);
+};
 
 // Exportar controlador para usar en rutas
 export default shoppingCartController;

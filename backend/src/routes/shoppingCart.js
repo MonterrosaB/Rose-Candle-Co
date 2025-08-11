@@ -9,9 +9,14 @@ router
   .get(auth, shoppingCartController.getCart)
   .post(auth, shoppingCartController.createCart);
 
-router.post("/add", auth, shoppingCartController.addProduct);
-router.put("/removeProduct/:productId", auth, shoppingCartController.removeProduct);
+router.route("/count").get(shoppingCartController.getAbandonettedCars);
 
+router.post("/add", auth, shoppingCartController.addProduct);
+router.put(
+  "/removeProduct/:productId",
+  auth,
+  shoppingCartController.removeProduct
+);
 
 router
   .route("/:id")
@@ -19,11 +24,9 @@ router
   //.put(auth, shoppingCartController.updateCart)
   .delete(auth, shoppingCartController.deleteCart);
 
-    // Rutas específicas
-    router.route("/restore/:id")
-      .put(shoppingCartController.restoreShoppingCart); // restaurar por id
+// Rutas específicas
+router.route("/restore/:id").put(shoppingCartController.restoreShoppingCart); // restaurar por id
 
 router.put("/empty/:id", auth, shoppingCartController.emptyCart);
 
 export default router;
-
