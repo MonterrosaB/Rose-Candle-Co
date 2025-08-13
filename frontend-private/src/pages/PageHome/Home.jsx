@@ -6,7 +6,9 @@ import DataGrid from "../../global/components/DataGrid";
 import useHome from "./hooks/useHome"; // Hook
 
 const Home = () => {
-    const { customerCount, latestCustomerCount } = useHome(); // Contador
+    const { customerCount, latestCustomerCount } = useHome(); // Contador usuarios
+    const { totalOrders, currentMonthOrders } = useHome(); // Contador pedidos
+    const { totalEarnings, monthlyEarnings } = useHome(); // COntador ingresos
 
     const columnsMaterial = {
         "Materia": "Materia",
@@ -64,16 +66,16 @@ const Home = () => {
                     bgColor={"#F7F5EE"}
                     textColor={"#333"}
                     tittle={"Pedidos Totales"}
-                    value={"100"}
-                    increment={"5"}
+                    value={totalOrders.toString()}
+                    increment={currentMonthOrders.toString()}
                     icon={<Boxes size={32} strokeWidth={2.5} />}
                 />
                 <CardWidgets
                     bgColor={"#C2A878"}
                     textColor={"#FFFFFF"}
                     tittle={"Ingresos Totales"}
-                    value={"$100"}
-                    increment={"5"}
+                    value={totalEarnings.toString()}
+                    increment={monthlyEarnings.toString()}
                     icon={<DollarSign size={32} strokeWidth={3} />}
                 />
                 <CardWidgets
