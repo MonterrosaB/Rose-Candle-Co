@@ -49,7 +49,6 @@ const RegisterOrder = ({ onClose }) => {
     });
     setSearch(product.name);
   };
-
   // Funciones para aumentar o disminuir cantidad
   const increment = (id) => {
     setQuantities((prev) => ({
@@ -71,11 +70,16 @@ const RegisterOrder = ({ onClose }) => {
   };
 
   // Calcular total
-  const total = Object.entries(quantities).reduce((acc, [id, qty]) => {
-    const prod = products.find((p) => p._id === id);
-    if (!prod) return acc;
-    return acc + qty * prod.currentPrice * (1 - (prod.discount || 0) / 100);
-  }, 0);
+const total = Object.entries(quantities).reduce((acc, [id, qty]) => {
+  const prod = products.find((p) => p._id === id);
+  if (!prod) return acc;
+
+  //tomamos el precio de la primera (o la seleccionada)
+  const precio = prod.variant?.[0]?.variantPrice ?? prod.currentPrice;
+
+  return acc + qty * precio;
+}, 0);
+
 
   const metodosPago = [
     { _id: "credit card", label: "Tarjeta de Crédito" },
@@ -84,22 +88,30 @@ const RegisterOrder = ({ onClose }) => {
     { _id: "bank transfer", label: "Transferencia" },
   ];
 
-  const onSubmit = (data) => {
-    const orderData = {
-      idShoppingCart: "ID_DEL_CARRITO",
-      paymentMethod: data.paymentMethod,
-      address: data.address,
-      saleDate: new Date(),
-      shippingTotal: 5.0,
-      total: total,
-      shippingState: "Pendiente",
-      products: Object.entries(quantities).map(([id, quantity]) => ({
-        productId: id,
-        quantity,
-      })),
-    };
-    createOrder(orderData);
+  const onSubmit = async (data) => {
+  const orderData = {
+    idShoppingCart: "ID_DEL_CARRITO",
+    paymentMethod: data.paymentMethod,
+    address: data.address,
+    saleDate: new Date(),
+    shippingTotal: 5.0,
+    total: total,
+    shippingState: "Pendiente",
+    products: Object.entries(quantities).map(([id, quantity]) => ({
+      productId: id,
+      quantity,
+    })),
   };
+
+  const newOrder = await createOrder(orderData); // crea en MongoDB
+
+  if (newOrder && onOrderCreated) {
+    onOrderCreated(newOrder); // agrega a la lista de PageOrders
+  }
+
+  onClose(); // cierra el modal
+};
+
 
   return (
     <Form headerLabel="Agregar Nueva Orden" onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
@@ -165,16 +177,17 @@ const RegisterOrder = ({ onClose }) => {
             alt={prod.name}
             className="w-16 h-16 object-cover rounded"
           />
-          <div>
-            <p className="font-semibold">{prod.name}</p>
-            <p className="text-sm text-gray-600">
-              Precio: $
-              {(
-                prod.currentPrice *
-                (1 - (prod.discount || 0) / 100)
-              ).toFixed(2)}
-            </p>
-          </div>
+         <div>
+  <p className="font-semibold">{prod.name}</p>
+  <p className="text-sm text-gray-600">
+    Precio: $
+    {(
+      (prod.variant?.[0]?.variantPrice ?? 0) *
+      (1 - (prod.discount || 0) / 100)
+    ).toFixed(2)}
+  </p>
+</div>
+
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -199,19 +212,17 @@ const RegisterOrder = ({ onClose }) => {
 </div>
 
 
-        <div className="flex justify-between items-center mt-6">
-          <Input
-            name="address"
-            label="Dirección"
-            type="text"
-            register={register}
-            errors={errors}
-          />
-          <Input name="discount" label="Descuento" type="number" register={register} />
-        </div>
+ 
+<Input
+  name="address"
+  label="Dirección"
+  type="text"
+  register={register}
+  errors={errors}
+/>
 
-        <h2 className="font-bold text-2xl mt-6">Total: $0{total.toFixed(2)}</h2>
-      </FormInputs>
+
+        <h2 className="font-bold text-2xl mt-6">Total: ${total.toFixed(2)}</h2>  </FormInputs>
 
       <FormButton>
         <Button buttonText="Agregar Orden" showIcon={true} type="submit" />

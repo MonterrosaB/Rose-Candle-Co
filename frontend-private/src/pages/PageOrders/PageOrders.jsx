@@ -54,11 +54,26 @@ const PageOrders = () => {
             open={openDialogOrders}
             onClose={() => setOpenDialogOrders(false)}
           >
-            <RegisterOrder
-              onClose={() => setOpenDialogOrders(false)}
-            />
-          </Dialog>
-        )}
+              <RegisterOrder
+      onClose={() => setOpenDialogOrders(false)}  // Cierra el modal
+      onOrderCreated={(newOrder) => {            // Actualiza la lista de órdenes
+        const formatted = {
+          idShoppingCart: newOrder.idShoppingCart?._id || "",
+          cliente: newOrder.idShoppingCart?.idUser?.name || "Sin cliente",
+          paymentMethod: newOrder.paymentMethod || "No especificado",
+          address: newOrder.address || "Sin dirección",
+          saleDate: newOrder.saleDate,
+          shippingTotal: newOrder.shippingTotal,
+          total: newOrder.total,
+          shippingState: newOrder.shippingState || [],
+          createdAt: newOrder.createdAt,
+          updatedAt: newOrder.updatedAt
+        };
+        setSalesOrders(prev => [...prev, formatted]);
+      }}
+    />
+  </Dialog>
+)}
       </div>
 
       {/* Cards móvil */}
