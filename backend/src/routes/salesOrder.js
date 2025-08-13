@@ -10,6 +10,8 @@ router
   .post(salesOrderController.createSalesOrder);
 
 router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
+router.route("/salesByCategory").get(salesOrderController.getProductByCategory);
+
 
 router
   .route("/:id")

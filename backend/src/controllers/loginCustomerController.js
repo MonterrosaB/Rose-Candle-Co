@@ -29,10 +29,10 @@ loginCustomerController.login = async (req, res) => {
 
     // Crear token JWT
     const token = JsonWebToken.sign(
-  { id: customer._id, email: customer.email, userType: "client" },
-        config.jwt.secret,
-  { expiresIn: config.jwt.expiresIn }
-);
+      { id: customer._id, email: customer.email, userType: "client" },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
+    );
 
 
     // Verificar si el cliente ya tiene un carrito
@@ -44,6 +44,7 @@ loginCustomerController.login = async (req, res) => {
         idUser: customer._id,
         products: [],
         total: 0,
+        status: "active"
       });
       await cart.save(); // Guardar el nuevo carrito
     }

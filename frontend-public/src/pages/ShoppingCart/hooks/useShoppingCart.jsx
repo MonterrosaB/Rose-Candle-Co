@@ -9,7 +9,7 @@ const useCart = () => {
 
     const fetchCart = async () => {
         try {
-            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart`, {
+            const res = await fetch(`http://localhost:4000/api/cart`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await res.json();

@@ -17,7 +17,7 @@ const AddToCartButton = ({ product }) => {
 
     try {
       const addProductRes = await fetch(
-        `https://rose-candle-co.onrender.com/api/cart/add`,
+        `http://localhost:4000/api/cart/add`,
         {
           method: "POST",
           headers: {
@@ -25,7 +25,7 @@ const AddToCartButton = ({ product }) => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            productId: product._id, 
+            productId: product._id,
           }),
         }
       );

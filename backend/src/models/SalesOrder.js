@@ -21,7 +21,7 @@ const shippingStateSchema = new Schema(
       type: String,
       required: true, // Estado del envío obligatorio (ej. "enviado", "entregado")
     },
-    fecha: {
+    date: {
       type: Date,
       required: true, // Fecha en que se registró este estado
     },
@@ -52,6 +52,7 @@ const SalesOrderSchema = new Schema(
       type: Date,
       required: true, // Fecha de la venta obligatoria
       trim: true, // (No afecta fechas, pero por consistencia)
+      default: Date.now,
     },
     shippingTotal: {
       type: Number,
