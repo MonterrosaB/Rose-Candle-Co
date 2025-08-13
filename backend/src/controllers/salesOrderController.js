@@ -21,13 +21,14 @@ salesOrderController.getSalesOrders = async (req, res) => {
             select: "name variant",
           },
         ],
-      });
+      })
+        .sort({ saleDate: -1 });
     // Enviar las órdenes encontradas al cliente con status 200
     res.status(200).json(orders); // Todo bien
   } catch (error) {
-    console.log("error " + error);
+    console.log("Error al obtener órdenes " + error);
     // En caso de error inesperado, responder con error 500
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json("Error al obtener órdenes"); // Error del servidor
   }
 };
 
