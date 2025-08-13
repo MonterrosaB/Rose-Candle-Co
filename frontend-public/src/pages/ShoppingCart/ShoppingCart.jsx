@@ -10,8 +10,9 @@ const Cart = () => {
     cartId,
     cartItems,
     handleClear,
-    handleRemoveItem,
-    getTotal,
+    decreaseProduct,
+    increaseProduct,
+    total,
   } = useShoppingCart();
 
   // 👇 Estado para alternar entre carrito y checkout
@@ -70,6 +71,9 @@ const Cart = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-[#444]">{item.idProduct?.name}</h3>
                   <p className="text-sm text-gray-600">{item.idProduct?.description}</p>
+                  <p className="text-sm text-gray-600">
+                    {item.idProduct?.variant?.[item.selectedVariantIndex]?.variant}</p>
+
                   <p
                     className="text-sm text-black underline cursor-pointer mt-1"
                     onClick={() => moreInfo(item.idProduct)}
@@ -80,29 +84,34 @@ const Cart = () => {
               </div>
 
               {/* Cantidad + Precio + Eliminar */}
-              <div className="flex justify-between sm:justify-end items-center gap-4">
-                {/* Control de cantidad */}
-                <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
-                  <button
-                    onClick={() => decreaseProduct(cartId, item.idProduct?._id)}
-                    className="text-gray-600 hover:text-black"
-                  >
-                    {item.quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
-                  </button>
-                  <span className="text-sm font-medium">{item.quantity}</span>
-                  <button
-                    onClick={() => increaseProduct(cartId, item.idProduct?._id)}
-                    className="text-gray-600 hover:text-black"
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
+              {cartItems.map((item, idx) => (
+                <div key={idx} className="flex justify-between sm:justify-end items-center gap-4">
+                  {/* Control de cantidad */}
+                  <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                    <button
+                      onClick={() => decreaseProduct(idx)} // 👈 ahora solo mandas el índice
+                      className="text-gray-600 hover:text-black"
+                    >
+                      {item.quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
+                    </button>
+                    <span className="text-sm font-medium">{item.quantity}</span>
+                    <button
+                      onClick={() =>
+                        increaseProduct(item.idProduct?._id, 1, item.selectedVariantIndex)
+                      }
+                      className="text-gray-600 hover:text-black"
+                    >
+                      <Plus size={18} />
+                    </button>
+                  </div>
 
-                {/* Precio subtotal */}
-                <div className="text-right font-semibold text-lg min-w-[80px]">
-                  ${(item.idProduct?.variant?.[0]?.variantPrice * item.quantity).toFixed(2)}
+                  {/* Precio subtotal */}
+                  <div className="text-right font-semibold text-lg min-w-[80px]">
+                    ${(item.idProduct?.variant?.[item.selectedVariantIndex]?.variantPrice).toFixed(2)}
+                  </div>
                 </div>
-              </div>
+              ))}
+
             </motion.div>
 
           ))
@@ -129,7 +138,7 @@ const Cart = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
-              <span className="text-gray-700 truncate">{item.idProduct?.name}</span>
+              <span className="text-gray-700 truncate">{item.idProduct?.name} - {item.idProduct?.variant?.[item.selectedVariantIndex]?.variant}</span>
               <span className="font-medium text-gray-800">
                 ${parseFloat(item.subtotal).toFixed(2)}
               </span>
@@ -139,7 +148,7 @@ const Cart = () => {
 
         <div className="bg-[#eaeae3] mt-5 p-4 rounded-lg flex justify-between items-center font-bold text-lg text-[#444] shadow-inner">
           <span>Total</span>
-          <span>${getTotal()}</span>
+          <span>${total}</span>
         </div>
 
         <div className="mt-6 flex gap-3">

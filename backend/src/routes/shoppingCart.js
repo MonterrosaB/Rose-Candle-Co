@@ -11,7 +11,11 @@ router
 
 router.route("/count").get(shoppingCartController.getAbandonettedCars);
 
-router.post("/add", auth, shoppingCartController.addProduct);
+
+router.put("/increase", auth, shoppingCartController.increaseProduct);
+
+// Disminuir cantidad
+router.put("/decrease", auth, shoppingCartController.decreaseProduct);
 router.put(
   "/removeProduct/:productId",
   auth,
@@ -27,7 +31,7 @@ router
 // Rutas específicas
 router.route("/restore/:id").put(shoppingCartController.restoreShoppingCart); // restaurar por id
 
-router.put("/empty/:id", auth, shoppingCartController.emptyCart);
+router.put("/empty/:idCart", auth, shoppingCartController.emptyCart);
 // Completar carrito y generar orden automáticamente
 router.post("/complete", auth, shoppingCartController.completeCart);
 

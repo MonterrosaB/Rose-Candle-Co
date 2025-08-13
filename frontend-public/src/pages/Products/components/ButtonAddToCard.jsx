@@ -2,8 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import Swal from "sweetalert2";
+import useShoppingCart from "../../ShoppingCart/hooks/useShoppingCart.jsx"
 
-const AddToCartButton = ({ product }) => {
+
+// AddToCartButton.jsx
+const AddToCartButton = ({ product, quantity, selectedVariantIndex }) => {
+
+  const { increaseProduct } = useShoppingCart();
+
   const handleAddToCart = async () => {
     if (!product || !product._id) {
       console.error("Producto incompleto:", product);
@@ -16,23 +22,11 @@ const AddToCartButton = ({ product }) => {
     }
 
     try {
-      const addProductRes = await fetch(
-        `http://localhost:4000/api/cart/add`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            productId: product._id,
-          }),
-        }
+      await increaseProduct(
+        product._id,
+        quantity,
+        selectedVariantIndex
       );
-
-      if (!addProductRes.ok) {
-        throw new Error(await addProductRes.text());
-      }
 
       Swal.fire({
         icon: "success",

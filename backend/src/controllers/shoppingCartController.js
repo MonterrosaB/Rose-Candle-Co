@@ -103,57 +103,128 @@ shoppingCartController.createCart = async (req, res) => {
 };
 
 // POST - Agregar un producto al carrito del usuario
-shoppingCartController.addProduct = async (req, res) => {
-
+shoppingCartController.increaseProduct = async (req, res) => {
   const userId = req.user.id;
-  const { productId } = req.body;
+  const { cartId, productId, quantityVariant, indexVariant } = req.body;
 
-  const product = await Product.findById(productId);
-  if (!product) return res.status(404).json({ message: "Product not found" });
+  try {
+    // Buscar carrito activo del usuario
+    let cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    if (!cart) {
+      // Crear carrito si no existe
+      cart = new shoppingCartModel({
+        idUser: userId,
+        products: [],
+        total: 0,
+        status: "active"
+      });
+    }
 
-  let cart = await shoppingCartModel.findOne({ idUser: userId, status: "active" });
+    // Buscar producto en DB
+    const productDB = await Product.findById(productId);
+    if (!productDB) return res.status(404).json({ message: "Producto no encontrado" });
 
-  // Crear nuevo carrito si no existe
-  if (!cart) {
-    cart = new shoppingCartModel({
+    // Obtener precio de la variante seleccionada
+    let price = 0;
+    if (productDB.variant && productDB.variant.length > 0) {
+      price = Number(productDB.variant[indexVariant]?.variantPrice || productDB.variant[0].variantPrice);
+    }
+
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ message: "Precio del producto inválido" });
+    }
+
+    // Buscar item en carrito considerando la variante
+    const item = cart.products.find(
+      p => p.idProduct.toString() === productId && p.selectedVariantIndex === indexVariant
+    );
+
+    if (item) {
+      // Ya existe → aumentar cantidad
+      item.quantity += quantityVariant || 1;
+      item.subtotal = item.quantity * price;
+    } else {
+      // Nuevo item con la variante seleccionada
+      cart.products.push({
+        idProduct: productId,
+        quantity: quantityVariant || 1,
+        selectedVariantIndex: indexVariant || 0,
+        subtotal: (quantityVariant || 1) * price
+      });
+    }
+
+    // Recalcular total
+    cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
+
+    await cart.save();
+
+    return res.status(200).json({ message: "Producto agregado", cart });
+  } catch (error) {
+    console.error("Error al agregar producto:", error);
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+
+shoppingCartController.decreaseProduct = async (req, res) => {
+  const userId = req.user.id;
+  const { cartId, productId, indexVariant } = req.body;
+
+  try {
+    const cart = await shoppingCartModel.findOne({
+      _id: cartId,
       idUser: userId,
-      products: [],
-      total: 0,
       status: "active"
     });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Carrito no encontrado" });
+    }
+
+    const productDB = await Product.findById(productId);
+    if (!productDB) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    // Usar precio de la variante indicada
+    let variantIndexToUse = Number(indexVariant);
+    if (isNaN(variantIndexToUse) || variantIndexToUse < 0 || variantIndexToUse >= productDB.variant.length) {
+      variantIndexToUse = 0; // fallback
+    }
+
+    const price = Number(productDB.variant[variantIndexToUse]?.variantPrice);
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ message: "Precio del producto inválido" });
+    }
+
+    // Buscar producto en carrito considerando la variante
+    const itemIndex = cart.products.findIndex(
+      p => p.idProduct.toString() === productId && p.selectedVariantIndex === variantIndexToUse
+    );
+
+    if (itemIndex > -1) {
+      const item = cart.products[itemIndex];
+
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+        item.subtotal = item.quantity * price;
+      } else {
+        // Eliminar solo esta variante del producto
+        cart.products.splice(itemIndex, 1);
+      }
+    } else {
+      return res.status(404).json({ message: "Producto con esta variante no encontrado en el carrito" });
+    }
+
+    // Recalcular total
+    cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
+
+    await cart.save();
+    return res.status(200).json({ message: "Producto actualizado", cart });
+  } catch (error) {
+    console.error("Error al disminuir cantidad:", error);
+    res.status(500).json({ message: "Error del servidor" });
   }
-
-  // Buscar si el producto ya está en el carrito
-  const existingProduct = cart.products.find(p => p.idProduct.toString() === productId);
-
-  // Obtener el precio del producto
-  let price = 0;
-  if (product.variant && product.variant.length > 0) {
-    price = Number(product.variant[0].variantPrice);
-  }
-
-  if (isNaN(price) || price <= 0) {
-    return res.status(400).json({ message: "Invalid product price" });
-  }
-
-  if (existingProduct) {
-    // Si ya existe, aumentar cantidad y subtotal
-    existingProduct.quantity += 1;
-    existingProduct.subtotal = existingProduct.quantity * price;
-  } else {
-    // Si no existe, agregarlo como nuevo
-    cart.products.push({
-      idProduct: productId,
-      quantity: 1,
-      subtotal: price
-    });
-  }
-
-  // Recalcular total del carrito
-  cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
-
-  await cart.save();
-  return res.status(200).json({ message: "Product added", cart });
 };
 
 // POST - Completar carrito y generar orden automáticamente
@@ -270,12 +341,11 @@ shoppingCartController.removeProduct = async (req, res) => {
 shoppingCartController.emptyCart = async (req, res) => {
   try {
     const userId = req.user.id;
+    const cartId = req.params.idCart;
 
-    // Buscar carrito del usuario
-    const cart = await shoppingCartModel.findOne({ idUser: userId });
-
+    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
     if (!cart) {
-      return res.status(404).json({ message: "Shopping cart not found" });
+      return res.status(404).json({ message: "Carrito no encontrado" });
     }
 
     // Vaciar arreglo de productos y resetear total
