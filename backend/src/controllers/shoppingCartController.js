@@ -104,14 +104,16 @@ shoppingCartController.createCart = async (req, res) => {
 
 // POST - Agregar un producto al carrito del usuario
 shoppingCartController.addProduct = async (req, res) => {
-
   const userId = req.user.id;
   const { productId } = req.body;
 
   const product = await Product.findById(productId);
   if (!product) return res.status(404).json({ message: "Product not found" });
 
-  let cart = await shoppingCartModel.findOne({ idUser: userId, status: "active" });
+  let cart = await shoppingCartModel.findOne({
+    idUser: userId,
+    status: "active",
+  });
 
   // Crear nuevo carrito si no existe
   if (!cart) {
@@ -119,12 +121,14 @@ shoppingCartController.addProduct = async (req, res) => {
       idUser: userId,
       products: [],
       total: 0,
-      status: "active"
+      status: "active",
     });
   }
 
   // Buscar si el producto ya está en el carrito
-  const existingProduct = cart.products.find(p => p.idProduct.toString() === productId);
+  const existingProduct = cart.products.find(
+    (p) => p.idProduct.toString() === productId
+  );
 
   // Obtener el precio del producto
   let price = 0;
@@ -145,7 +149,7 @@ shoppingCartController.addProduct = async (req, res) => {
     cart.products.push({
       idProduct: productId,
       quantity: 1,
-      subtotal: price
+      subtotal: price,
     });
   }
 
@@ -168,7 +172,9 @@ shoppingCartController.completeCart = async (req, res) => {
       .populate("products");
 
     if (!cart || cart.products.length === 0) {
-      return res.status(404).json({ message: "Shopping cart is empty or not found" });
+      return res
+        .status(404)
+        .json({ message: "Shopping cart is empty or not found" });
     }
 
     // Marcar carrito como completado
@@ -183,9 +189,7 @@ shoppingCartController.completeCart = async (req, res) => {
       saleDate: new Date(),
       shippingTotal: req.body.shippingTotal || 5.75,
       total: cart.total + (req.body.shippingTotal || 5.75),
-      shippingState: [
-        { state: "Pedido recibido", fecha: new Date() }
-      ]
+      shippingState: [{ state: "Pedido recibido", fecha: new Date() }],
     });
 
     await newOrder.save();
@@ -195,16 +199,14 @@ shoppingCartController.completeCart = async (req, res) => {
       message: "Cart completed and order created",
       order: await newOrder.populate({
         path: "idShoppingCart",
-        populate: [{ path: "idUser" }, { path: "products" }]
-      })
+        populate: [{ path: "idUser" }, { path: "products" }],
+      }),
     });
-
   } catch (error) {
     console.error("Error completing cart:", error);
     res.status(500).json("Internal server error");
   }
 };
-
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
@@ -339,6 +341,59 @@ shoppingCartController.getAbandonettedCars = async (req, res) => {
   ]);
 
   res.json(`${stats[0].abandonedCartRate.toFixed(2)}%`);
+};
+
+// REPORTES
+// Obtener productos más vendidos
+shoppingCartController.bestSellingProducts = async (req, res) => {
+  try {
+    const resultado = await shoppingCartModel.aggregate([
+      // Descomponer productos
+      { $unwind: "$products" },
+
+      // Agrupar por idProduct y sumar la cantidad
+      {
+        $group: {
+          _id: "$products.idProduct",
+          totalQuantity: { $sum: "$products.quantity" },
+        },
+      },
+
+      // Ordenar de mayor a menor
+      { $sort: { totalQuantity: -1 } },
+
+      // Limitar a los 3 más vendidos
+      { $limit: 3 },
+
+      // Hacer lookup en la colección Products
+      {
+        $lookup: {
+          from: "products", // nombre de la colección
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+
+      // Desenrollar el arreglo productInfo
+      { $unwind: "$productInfo" },
+
+      // Proyectar solo los campos deseados
+      {
+        $project: {
+          _id: 1,
+          totalQuantity: 1,
+          productName: "$productInfo.name",
+          productPrice: "$productInfo.price",
+        },
+      },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error("Error fetching best selling products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // Exportar controlador para usar en rutas

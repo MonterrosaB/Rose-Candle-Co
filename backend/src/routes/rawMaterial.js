@@ -17,6 +17,9 @@ router.route("/:id")
 
 // Rutas específicas
 router.route("/restore/:id")
-  .put(rawMaterialsController.restoreRawMaterials); // restaurar por id
+.put(rawMaterialsController.restoreRawMaterials); // restaurar por id
+
+router.route("/lowStock") // materia prima con bajo stock
+.get(rawMaterialsController.getLowestRawMaterials)
 
 export default router;

@@ -11,6 +11,13 @@ const ApiOrders = "http://localhost:4000/api/salesOrder/countTotal";
 // Ingresos
 const ApiEarnings = "http://localhost:4000/api/salesOrder/totalEarnings";
 
+// Stock
+const ApiLowStock = "http://localhost:4000/api/rawMaterials/lowStock";
+
+// Productos
+const ApiBestSellingProducts =
+  "http://localhost:4000/api/cart/bestSellingProducts";
+
 const useHome = () => {
   // Clientes
   const [customerCount, setCustomerCount] = useState(0);
@@ -23,6 +30,12 @@ const useHome = () => {
   // Ingresos
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [monthlyEarnings, setMonthlyEarnings] = useState(0);
+
+  // Materias primas
+  const [lowStockMaterials, setLowStockMaterials] = useState([]);
+
+  // Productos más vendidos
+  const [bestSellingProducts, setBestSellingProducts] = useState([]);
 
   // Contador de usuarios
   const getCustomers = async () => {
@@ -86,12 +99,47 @@ const useHome = () => {
     }
   };
 
+  // Obtener materias primas con menos stock
+  const getLowStockMaterials = async () => {
+    try {
+      const res = await fetch(ApiLowStock);
+      if (!res.ok)
+        throw new Error("Error al obtener materiales con bajo stock");
+
+      const data = await res.json();
+      setLowStockMaterials(data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo cargar el stock bajo de materias primas");
+    }
+  };
+
+  // Obtener productos más vendidos
+  const getBestSellingProducts = async () => {
+    try {
+      const res = await fetch(ApiBestSellingProducts, {
+        method: "GET",
+        credentials: "include",
+      });
+  
+      if (!res.ok) throw new Error("Error al obtener productos más vendidos");
+  
+      const data = await res.json();
+      setBestSellingProducts(data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo cargar los productos más vendidos");
+    }
+  };
+
   // Cargar automáticamente
   useEffect(() => {
     getCustomers();
     getLatestCustomers();
     getOrdersCount();
     getEarnings();
+    getLowStockMaterials();
+    getBestSellingProducts();
   }, []);
 
   return {
@@ -110,6 +158,14 @@ const useHome = () => {
     totalEarnings,
     monthlyEarnings,
     getEarnings,
+
+    // Materias primas
+    lowStockMaterials,
+    getLowStockMaterials,
+
+    // Productos más vendidos
+    bestSellingProducts,
+    getBestSellingProducts,
   };
 };
 
