@@ -17,11 +17,11 @@ customersController.getCustomers = async (req, res) => {
 // DELETE - Eliminar un cliente por ID
 customersController.deleteCustomers = async (req, res) => {
   try {
-   const deletedCustomer = await customersModel.findByIdAndUpdate(
-         req.params.id,
-         { deleted: true }, // Se marca como "eliminada"
-         { new: true }
-       ); // Eliminar por ID
+    const deletedCustomer = await customersModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     if (!deletedCustomer) {
       return res.status(400).json({ message: "Customer not found" }); // Cliente no encontrado
@@ -88,6 +88,45 @@ customersController.restoreCustomers = async (req, res) => {
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// REPORTES
+// GET - USUARIOS TOTALES
+customersController.countCustomers = async (req, res) => {
+  try {
+    const count = await customersModel.countDocuments(); // Contar documentos en la colección
+    res.status(200).json({ count }); // Responder con la cantidad
+  } catch (error) {
+    console.error("Error al contar usuarios:", error); // Log de error
+    res.status(500).json({ message: "Internal server error" }); // Error del servidor
+  }
+};
+
+// GET - USUARIOS TOTALES EL ÚLTIMO MES
+customersController.countCustomersByMonth = async (req, res) => {
+  try {
+    // Obtener la fecha del mes actual
+    const now = new Date();
+
+    // Inicio del mes actual
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Inicio del mes siguiente
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    // Consulta con rango
+    const count = await customersModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: startOfNextMonth,
+      },
+    });
+
+    res.status(200).json({ count }); // Responder con el conteo
+  } catch (error) {
+    console.error("Error al contar usuarios:", error);
+    res.status(500).json({ message: "Internal server error" }); // Error del servidor
   }
 };
 

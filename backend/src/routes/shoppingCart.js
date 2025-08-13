@@ -35,4 +35,14 @@ router.put("/empty/:idCart", auth, shoppingCartController.emptyCart);
 // Completar carrito y generar orden automáticamente
 router.post("/complete", auth, shoppingCartController.completeCart);
 
+router
+  .route("/bestSellingProducts") // productos más vendidos
+  .get(shoppingCartController.bestSellingProducts);
+
+router
+  .route("/:id")
+  .get(auth, shoppingCartController.getCartById)
+  //.put(auth, shoppingCartController.updateCart)
+  .delete(auth, shoppingCartController.deleteCart);
+
 export default router;
