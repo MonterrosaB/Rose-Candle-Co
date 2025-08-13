@@ -10,6 +10,24 @@
 
 import { Schema, model } from "mongoose";
 
+// Subesquema: Productos usados en el carrito
+const productSchema = new Schema({
+  idProduct: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "Products"
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+  },
+  subtotal: {
+    type: Number,
+    required: true,
+  },
+});
+
+//Esquema: Carrito de productos
 const shoppingCartSchema = new Schema(
   {
     idUser: {
@@ -18,13 +36,7 @@ const shoppingCartSchema = new Schema(
       ref: "Customers", // Referencia al modelo Customers (usuarios/clientes)
       trim: true, // Elimina espacios en strings, aunque aquí no es tan crítico
     },
-    products: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Products", // Referencia al modelo Products
-        required: true, // Cada producto en el arreglo es obligatorio
-      },
-    ],
+    products: [productSchema],
     total: {
       type: Number,
       required: true, // Total debe estar definido (aunque sea 0)

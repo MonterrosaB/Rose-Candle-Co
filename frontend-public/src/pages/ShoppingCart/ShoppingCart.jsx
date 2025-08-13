@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import ClearButton from "./components/CleanCart.jsx";
 import CheckoutFlow from "./components/CheckoutFlow.jsx";
 import useShoppingCart from "./hooks/useShoppingCart.jsx";
+import { Minus, Trash2, Plus } from "lucide-react";
 
 const Cart = () => {
   const {
@@ -54,44 +55,56 @@ const Cart = () => {
           cartItems.map((item, idx) => (
             <motion.div
               key={idx}
-              className="bg-white shadow-md rounded-xl p-4 flex items-center gap-4 hover:scale-[1.01] transition-transform duration-300 relative"
+              className="bg-white shadow-md rounded-xl p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:scale-[1.01] transition-transform duration-300 relative"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
-              <img
-                src={item.images?.[0]}
-                alt={item.name}
-                className="w-24 h-24 rounded-lg object-cover"
-              />
-              <div className="flex flex-col flex-grow">
-                <h3 className="text-lg font-semibold text-[#444]">
-                  {item.name}
-                </h3>
-                <p className="text-[#666] mt-1 text-sm">
-                  ${parseFloat(item.variant?.[0]?.variantPrice || 0).toFixed(2)}
-                </p>
-                <div className="text-xs text-gray-500 mt-1">
-                  <p>* Caja de regalo</p>
-                  <p>* Tarjeta personalizada</p>
-                </div>
-                <div className="mt-2 flex gap-2">
-                  <span className="bg-[#e6e6e6] text-xs px-2 py-1 rounded">
-                    8oz
-                  </span>
-                  <span className="bg-[#e6e6e6] text-xs px-2 py-1 rounded">
-                    Vaso
-                  </span>
+              {/* Imagen y datos del producto */}
+              <div className="flex gap-4 items-start">
+                <img
+                  src={item.idProduct?.images?.[0]}
+                  alt={item.idProduct?.name}
+                  className="w-24 h-24 rounded-lg object-cover"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-[#444]">{item.idProduct?.name}</h3>
+                  <p className="text-sm text-gray-600">{item.idProduct?.description}</p>
+                  <p
+                    className="text-sm text-black underline cursor-pointer mt-1"
+                    onClick={() => moreInfo(item.idProduct)}
+                  >
+                    Más información
+                  </p>
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                onClick={() => handleRemoveItem(idx)}
-                className="absolute top-2 right-2 bg-red-100 hover:bg-red-200 text-red-600 text-xs px-2 py-1 rounded transition-all"
-              >
-                Eliminar
-              </motion.button>
+
+              {/* Cantidad + Precio + Eliminar */}
+              <div className="flex justify-between sm:justify-end items-center gap-4">
+                {/* Control de cantidad */}
+                <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                  <button
+                    onClick={() => decreaseProduct(cartId, item.idProduct?._id)}
+                    className="text-gray-600 hover:text-black"
+                  >
+                    {item.quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
+                  </button>
+                  <span className="text-sm font-medium">{item.quantity}</span>
+                  <button
+                    onClick={() => increaseProduct(cartId, item.idProduct?._id)}
+                    className="text-gray-600 hover:text-black"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+
+                {/* Precio subtotal */}
+                <div className="text-right font-semibold text-lg min-w-[80px]">
+                  ${(item.idProduct?.variant?.[0]?.variantPrice * item.quantity).toFixed(2)}
+                </div>
+              </div>
             </motion.div>
+
           ))
         ) : (
           <p className="text-gray-600">El carrito está vacío.</p>
@@ -116,9 +129,9 @@ const Cart = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
-              <span className="text-gray-700 truncate">{item.name}</span>
+              <span className="text-gray-700 truncate">{item.idProduct?.name}</span>
               <span className="font-medium text-gray-800">
-                ${parseFloat(item.variant?.[0]?.variantPrice || 0).toFixed(2)}
+                ${parseFloat(item.subtotal).toFixed(2)}
               </span>
             </motion.div>
           ))}

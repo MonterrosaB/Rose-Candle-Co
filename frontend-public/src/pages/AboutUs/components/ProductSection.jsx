@@ -3,6 +3,8 @@ import ProductSection1 from "../../../assets/ProductSection1.png";
 import ProductSection2 from "../../../assets/ProductSection2.png";
 import ProductSection3 from "../../../assets/ProductSection3.png";
 
+import { Link } from "react-router";
+
 const ProductSection = () => {
   const scrollRef = useRef(null);
 
@@ -10,11 +12,11 @@ const ProductSection = () => {
     const container = scrollRef.current;
     if (container && window.innerWidth < 1024) {
       // Centra la segunda tarjeta visualmente
-      const imageWidth = 160; 
-      const gap = 24; 
+      const imageWidth = 160;
+      const gap = 24;
       const totalCard = imageWidth + gap;
-      const scrollTo = totalCard; 
-      container.scrollLeft = scrollTo - 20; 
+      const scrollTo = totalCard;
+      container.scrollLeft = scrollTo - 20;
     }
   }, []);
 
@@ -60,7 +62,7 @@ const ProductSection = () => {
               />
             </div>
 
-            <div className="bg-[#87ceeb] p-4 lg:p-6 rounded-lg shadow-sm flex-shrink-0">
+            <div className="bg-[#d4b896] p-4 lg:p-6 rounded-lg shadow-sm flex-shrink-0">
               <img
                 src={ProductSection3}
                 alt="Velas encendidas sobre superficie blanca"
@@ -71,9 +73,12 @@ const ProductSection = () => {
         </div>
 
         <div className="mt-14 flex justify-center lg:justify-start pl-0 lg:pl-12">
-          <button className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+          <Link
+            to="/products"
+            className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
             VER PRODUCTOS
-          </button>
+          </Link>
         </div>
       </div>
     </section>

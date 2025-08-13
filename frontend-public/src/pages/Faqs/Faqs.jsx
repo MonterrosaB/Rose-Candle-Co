@@ -39,8 +39,8 @@ const Faqs = () => {
           <button
             key={tab.id}
             className={`px-2 py-2 focus:outline-none transition-all duration-300 ${activeTab === tab.id
-                ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
-                : "text-gray-600 hover:text-[#1c1c1c]"
+              ? "text-[#1c1c1c] border-b-2 border-[#1c1c1c]"
+              : "text-gray-600 hover:text-[#1c1c1c]"
               }`}
             onClick={() => setActiveTab(tab.id)}
           >

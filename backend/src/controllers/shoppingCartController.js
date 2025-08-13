@@ -13,9 +13,16 @@ shoppingCartController.getCart = async (req, res) => {
 
     // Buscar el carrito asociado a ese usuario y popular datos de usuario y productos
     const cart = await shoppingCartModel
-      .findOne({ idUser: userId })
+      .findOne({ idUser: userId, status: "active" })
       .populate("idUser") // Popular info del usuario
-      .populate("products"); // Popular info de productos dentro del carrito
+      .populate({
+        path: "products",
+        populate: [
+          {
+            path: "idProduct",
+          },
+        ],
+      }); // Popular info de productos dentro del carrito
 
     if (!cart) {
       // Si no existe carrito para el usuario, responder 404
@@ -97,69 +104,60 @@ shoppingCartController.createCart = async (req, res) => {
 
 // POST - Agregar un producto al carrito del usuario
 shoppingCartController.addProduct = async (req, res) => {
-  const userId = req.user.id; // ID del usuario autenticado
-  const { productId } = req.body; // ID del producto a agregar
+  const userId = req.user.id;
+  const { productId } = req.body;
 
-  // Buscar el producto para verificar que exista
   const product = await Product.findById(productId);
   if (!product) return res.status(404).json({ message: "Product not found" });
 
-  // Buscar carrito del usuario
-  let cart = await shoppingCartModel.findOne({ idUser: userId });
+  let cart = await shoppingCartModel.findOne({
+    idUser: userId,
+    status: "active",
+  });
 
-  // Si no existe carrito, crear uno vacío para el usuario
+  // Crear nuevo carrito si no existe
   if (!cart) {
     cart = new shoppingCartModel({
       idUser: userId,
       products: [],
       total: 0,
+      status: "active",
     });
   }
 
-  // Agregar el producto (su ID) al arreglo de productos del carrito
-  cart.products.push(productId);
+  // Buscar si el producto ya está en el carrito
+  const existingProduct = cart.products.find(
+    (p) => p.idProduct.toString() === productId
+  );
 
-  // Contar cuántas veces aparece cada producto en el carrito (para calcular total)
-  const productCount = {};
-  for (const pid of cart.products) {
-    productCount[pid.toString()] = (productCount[pid.toString()] || 0) + 1;
+  // Obtener el precio del producto
+  let price = 0;
+  if (product.variant && product.variant.length > 0) {
+    price = Number(product.variant[0].variantPrice);
   }
 
-  // Obtener lista de IDs únicos de productos para hacer una consulta eficiente
-  const uniqueProductIds = [...new Set(cart.products.map((p) => p.toString()))];
-
-  // Buscar los datos completos de los productos para calcular total
-  const productsData = await Product.find({ _id: { $in: uniqueProductIds } });
-
-  // Calcular el total acumulando el precio * cantidad por producto
-  let total = 0;
-  for (const p of productsData) {
-    const count = productCount[p._id.toString()] || 0;
-
-    // Obtener el precio de la primera variante (asumiendo estructura variante)
-    let price = 0;
-    if (p.variant && p.variant.length > 0) {
-      price = Number(p.variant[0].variantPrice); // Convertir a número
-    }
-
-    if (!isNaN(price) && price > 0) {
-      total += price * count;
-    } else {
-      // Avisar en consola si el producto tiene precio inválido
-      console.warn(
-        `Producto con precio inválido: ${p._id}, variantePrecio: ${p.variant?.[0]?.variantPrice}`
-      );
-    }
+  if (isNaN(price) || price <= 0) {
+    return res.status(400).json({ message: "Invalid product price" });
   }
 
-  // Actualizar total del carrito
-  cart.total = total;
+  if (existingProduct) {
+    // Si ya existe, aumentar cantidad y subtotal
+    existingProduct.quantity += 1;
+    existingProduct.subtotal = existingProduct.quantity * price;
+  } else {
+    // Si no existe, agregarlo como nuevo
+    cart.products.push({
+      idProduct: productId,
+      quantity: 1,
+      subtotal: price,
+    });
+  }
 
-  // Guardar carrito actualizado en BD
+  // Recalcular total del carrito
+  cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
+
   await cart.save();
-
-  // Responder con carrito actualizado
-  res.status(200).json({ message: "Product added", cart });
+  return res.status(200).json({ message: "Product added", cart });
 };
 
 // POST - Completar carrito y generar orden automáticamente
@@ -174,7 +172,9 @@ shoppingCartController.completeCart = async (req, res) => {
       .populate("products");
 
     if (!cart || cart.products.length === 0) {
-      return res.status(404).json({ message: "Shopping cart is empty or not found" });
+      return res
+        .status(404)
+        .json({ message: "Shopping cart is empty or not found" });
     }
 
     // Marcar carrito como completado
@@ -189,9 +189,7 @@ shoppingCartController.completeCart = async (req, res) => {
       saleDate: new Date(),
       shippingTotal: req.body.shippingTotal || 5.75,
       total: cart.total + (req.body.shippingTotal || 5.75),
-      shippingState: [
-        { state: "Pedido recibido", fecha: new Date() }
-      ]
+      shippingState: [{ state: "Pedido recibido", fecha: new Date() }],
     });
 
     await newOrder.save();
@@ -201,16 +199,14 @@ shoppingCartController.completeCart = async (req, res) => {
       message: "Cart completed and order created",
       order: await newOrder.populate({
         path: "idShoppingCart",
-        populate: [{ path: "idUser" }, { path: "products" }]
-      })
+        populate: [{ path: "idUser" }, { path: "products" }],
+      }),
     });
-
   } catch (error) {
     console.error("Error completing cart:", error);
     res.status(500).json("Internal server error");
   }
 };
-
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
@@ -345,6 +341,59 @@ shoppingCartController.getAbandonettedCars = async (req, res) => {
   ]);
 
   res.json(`${stats[0].abandonedCartRate.toFixed(2)}%`);
+};
+
+// REPORTES
+// Obtener productos más vendidos
+shoppingCartController.bestSellingProducts = async (req, res) => {
+  try {
+    const resultado = await shoppingCartModel.aggregate([
+      // Descomponer productos
+      { $unwind: "$products" },
+
+      // Agrupar por idProduct y sumar la cantidad
+      {
+        $group: {
+          _id: "$products.idProduct",
+          totalQuantity: { $sum: "$products.quantity" },
+        },
+      },
+
+      // Ordenar de mayor a menor
+      { $sort: { totalQuantity: -1 } },
+
+      // Limitar a los 3 más vendidos
+      { $limit: 3 },
+
+      // Hacer lookup en la colección Products
+      {
+        $lookup: {
+          from: "products", // nombre de la colección
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+
+      // Desenrollar el arreglo productInfo
+      { $unwind: "$productInfo" },
+
+      // Proyectar solo los campos deseados
+      {
+        $project: {
+          _id: 1,
+          totalQuantity: 1,
+          productName: "$productInfo.name",
+          productPrice: "$productInfo.price",
+        },
+      },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error("Error fetching best selling products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // Exportar controlador para usar en rutas
