@@ -3,8 +3,11 @@ import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
 import DataGrid from "../../global/components/DataGrid";
+import useHome from "./hooks/useHome"; // Hook
 
 const Home = () => {
+    const { customerCount, latestCustomerCount } = useHome(); // Contador
+
     const columnsMaterial = {
         "Materia": "Materia",
         "Cantidad": "Cantidad"
@@ -76,9 +79,9 @@ const Home = () => {
                 <CardWidgets
                     bgColor={"#F7F5EE"}
                     textColor={"#333"}
-                    tittle={"Pedidos Totales"}
-                    value={"100"}
-                    increment={"5"}
+                    tittle={"Usuarios Totales"}
+                    value={customerCount.toString()}
+                    increment={latestCustomerCount.toString()}
                     icon={<User size={32} strokeWidth={3} />}
                 />
             </div>

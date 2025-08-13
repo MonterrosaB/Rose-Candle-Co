@@ -16,6 +16,12 @@ router.route("/:id")
 
 // Rutas específicas
 router.route("/restore/:id")
-  .put(customersController.restoreCustomers); // restaurar por id
+.put(customersController.restoreCustomers); // restaurar por id
+
+router.route("/count") // contador de usuarios
+.get(customersController.countCustomers)
+
+router.route("/countByMonth") // contador de usuarios del último mes
+.get(customersController.countCustomersByMonth)
 
 export default router;
