@@ -162,6 +162,56 @@ shoppingCartController.addProduct = async (req, res) => {
   res.status(200).json({ message: "Product added", cart });
 };
 
+// POST - Completar carrito y generar orden automáticamente
+shoppingCartController.completeCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Buscar carrito del usuario
+    const cart = await shoppingCartModel
+      .findOne({ idUser: userId })
+      .populate("idUser")
+      .populate("products");
+
+    if (!cart || cart.products.length === 0) {
+      return res.status(404).json({ message: "Shopping cart is empty or not found" });
+    }
+
+    // Marcar carrito como completado
+    cart.status = "completed";
+    await cart.save();
+
+    // Crear nueva orden de venta
+    const newOrder = new SalesOrderModel({
+      idShoppingCart: cart._id,
+      paymentMethod: req.body.paymentMethod || "paypal",
+      address: req.body.address || "Sin dirección",
+      saleDate: new Date(),
+      shippingTotal: req.body.shippingTotal || 5.75,
+      total: cart.total + (req.body.shippingTotal || 5.75),
+      shippingState: [
+        { state: "Pedido recibido", fecha: new Date() }
+      ]
+    });
+
+    await newOrder.save();
+
+    // Responder con la orden generada
+    res.status(201).json({
+      message: "Cart completed and order created",
+      order: await newOrder.populate({
+        path: "idShoppingCart",
+        populate: [{ path: "idUser" }, { path: "products" }]
+      })
+    });
+
+  } catch (error) {
+    console.error("Error completing cart:", error);
+    res.status(500).json("Internal server error");
+  }
+};
+
+
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
   try {

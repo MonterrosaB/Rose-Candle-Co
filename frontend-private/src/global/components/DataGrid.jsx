@@ -54,11 +54,11 @@ const DataGrid = ({ title,
 
     const StatusBadge = ({ status }) => {
         const map = {
-            pending: ["bg-yellow-100", "text-yellow-600"],
+            pendiente: ["bg-yellow-100", "text-yellow-600"],
             processing: ["bg-orange-100", "text-orange-600"],
-            shipped: ["bg-blue-100", "text-blue-600"],
-            delivered: ["bg-green-100", "text-green-600"],
-            cancelled: ["bg-red-100", "text-red-600"],
+            transito: ["bg-blue-100", "text-blue-600"],
+            entregado: ["bg-green-100", "text-green-600"],
+            cancelado: ["bg-red-100", "text-red-600"],
         };
 
         const [bg, text] = map[status?.toLowerCase()] || ["bg-gray-100", "text-gray-600"];

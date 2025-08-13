@@ -31,7 +31,7 @@ const PageOrders = () => {
   const columns = {
     Productos: "idShoppingCart",
     Cliente: "cliente",
-    Fecha: "createdAt",
+    Fecha: "saleDate",
     Monto: "total",
     Método: "paymentMethod",
     Estado: "shippingState[last].state"

@@ -28,5 +28,7 @@ router
 router.route("/restore/:id").put(shoppingCartController.restoreShoppingCart); // restaurar por id
 
 router.put("/empty/:id", auth, shoppingCartController.emptyCart);
+// Completar carrito y generar orden automáticamente
+router.post("/complete", auth, shoppingCartController.completeCart);
 
 export default router;
