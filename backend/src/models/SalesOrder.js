@@ -23,7 +23,7 @@ const shippingStateSchema = new Schema(
     },
     date: {
       type: Date,
-      required: true, // Fecha en que se registró este estado
+      default: Date.now, // Fecha en que se registró este estado
     },
   },
   { _id: false }
