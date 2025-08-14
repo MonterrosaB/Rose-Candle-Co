@@ -10,27 +10,36 @@ salesOrderController.getSalesOrders = async (req, res) => {
     // Buscar todas las órdenes y popular el campo idShoppingCart con los datos correspondientes
     const orders = await SalesOrderModel.find() // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
-        path: "idShoppingCart",
-        populate: [
-          {
-            path: "idUser",
-            select: "name",
-          },
-          {
-            path: "products",
-            select: "name variant",
-          },
-        ],
-      })
-      .sort({ saleDate: -1 });
-    // Enviar las órdenes encontradas al cliente con status 200
-    res.status(200).json(orders); // Todo bien
+   path: "idShoppingCart",
+    populate: [
+      { path: "idUser", select: "name" },
+      { path: "products.idProduct", select: "name" }
+    ]
+  });
+      
+    // Calcular el total de productos y precio total por cada orden
+    const ordersWithTotals = orders.map(order => {
+      const products = order.idShoppingCart?.products || [];
+      const totalQuantity = products.length; // número de productos
+      const totalPrice = products.reduce((acc, prod) => {
+        const price = prod.currentPrice * (1 - (prod.discount || 0) / 100);
+        return acc + price;
+      }, 0);
+
+      return {
+        ...order.toObject(),
+        totalQuantity,
+        totalPrice: totalPrice.toFixed(2),
+      };
+    });
+
+    res.json(ordersWithTotals);
   } catch (error) {
-    console.log("Error al obtener órdenes " + error);
-    // En caso de error inesperado, responder con error 500
-    res.status(500).json("Error al obtener órdenes"); // Error del servidor
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener las órdenes" });
   }
 };
+      
 
 // POST - Crear una nueva orden de venta
 salesOrderController.createSalesOrder = async (req, res) => {
@@ -307,6 +316,8 @@ salesOrderController.deleteSalesOrder = async (req, res) => {
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
+
+
 
 // PUT - Restaurar orden eliminada
 salesOrderController.restoreSalesOrder = async (req, res) => {

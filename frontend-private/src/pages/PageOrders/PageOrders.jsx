@@ -29,8 +29,8 @@ const PageOrders = () => {
   }, []);
 
   const columns = {
-    Productos: "idShoppingCart",
     Cliente: "cliente",
+    Productos: "idShoppingCart",
     Fecha: "saleDate",
     Monto: "total",
     Método: "paymentMethod",
