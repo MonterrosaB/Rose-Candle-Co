@@ -1,6 +1,8 @@
 import { Plus } from "lucide-react";
 
 const DoubleInputDropDown = ({
+    id,
+    grupo,
     register,
     name1,
     name2,
@@ -11,12 +13,20 @@ const DoubleInputDropDown = ({
     options,       // opciones para el <select>
     options2 = {}, // validaciones para el <input>
     hideIcon = true,
+    eliminarInput
 }) => {
     return (
-        <div className="mb-3 w-full">
+        <div className="mb-2 w-full">
+            <button
+                type="button"
+                onClick={() => eliminarInput()}
+                className="right-2 text-gray-500 hover:text-red-500"
+            >
+                ✕
+            </button>
             <div className="flex w-full">
                 {/* Select + error */}
-                <div className="flex justify-center items-baseline gap-4 mb-4 w-1/2">
+                <div className="flex justify-center items-baseline gap-4 w-1/2">
                     <div className="relative w-full">
                         <select
                             id={name1}

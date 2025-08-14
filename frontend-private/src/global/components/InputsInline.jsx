@@ -1,7 +1,7 @@
 const InputsInline = ({ children }) => {
 
     return (
-        <div className="flex justify-center items-center gap-4 w-full">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
             {children}
         </div>
     )

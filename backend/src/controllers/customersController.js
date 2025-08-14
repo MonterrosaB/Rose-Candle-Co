@@ -95,7 +95,7 @@ customersController.restoreCustomers = async (req, res) => {
 // GET - USUARIOS TOTALES
 customersController.countCustomers = async (req, res) => {
   try {
-    const count = await customersModel.countDocuments(); // Contar documentos en la colección
+    const count = await customersModel.estimatedDocumentCount(); // Contar documentos en la colección
     res.status(200).json({ count }); // Responder con la cantidad
   } catch (error) {
     console.error("Error al contar usuarios:", error); // Log de error
@@ -116,7 +116,7 @@ customersController.countCustomersByMonth = async (req, res) => {
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
     // Consulta con rango
-    const count = await customersModel.countDocuments({
+    const count = await customersModel.estimatedDocumentCount({
       createdAt: {
         $gte: startOfMonth,
         $lt: startOfNextMonth,

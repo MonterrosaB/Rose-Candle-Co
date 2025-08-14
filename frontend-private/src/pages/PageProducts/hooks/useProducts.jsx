@@ -8,6 +8,7 @@ const useProducts = (methods) => {
     reset,
     control,
     formState: { errors },
+    unregister
   } = methods;
 
   // Api de productos
@@ -179,6 +180,7 @@ const useProducts = (methods) => {
     handleUpdate,
     // RHF
     register,
+    unregister,
     reset,
     errors,
     control,

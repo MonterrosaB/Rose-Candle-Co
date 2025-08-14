@@ -49,10 +49,7 @@ function Navigation() {
   return (
     <>
       {!hideNavFooter && <Sidebar />}
-
-
-
-      <main className={!hideNavFooter ? "md:ml-64" : ""}>
+      <main className={!hideNavFooter ? "transition-all duration-300 ml-0 lg:ml-60" : ""}>
         <Routes>
           {/* Ruta para el primer usuario */}
           <Route

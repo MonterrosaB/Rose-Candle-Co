@@ -1,4 +1,6 @@
 const DoubleInput = ({
+    id,
+    grupo,
     register,
     name1,
     name2,
@@ -8,12 +10,22 @@ const DoubleInput = ({
     error2,
     options1 = {},
     options2 = {},
+    eliminarInput
 }) => {
     return (
-        <div className="mb-3 w-full">
+        <div className="mb-2 w-full">
+            <button
+                type="button"
+                onClick={() => eliminarInput()}
+                className="right-2 text-gray-500 hover:text-red-500"
+            >
+                ✕
+            </button>
             <div className="flex w-full">
+                {/* Botón X */}
+
                 {/* Primer input */}
-                <div className="flex justify-center items-baseline gap-4 mb-4 w-1/2">
+                <div className="flex justify-center items-baseline gap-4 w-1/2">
                     <div className="relative w-full">
                         <input
                             id={name1}

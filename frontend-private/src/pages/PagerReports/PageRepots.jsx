@@ -69,28 +69,28 @@ const PageReports = () => {
                     <div className="flex flex-col lg:flex-row gap-6 mb-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-2/3">
                             <Widget
-                                tittle="Pedidos del mes"
+                                title="Pedidos del mes"
                                 value={orders.cantidadPedidos}
                                 bgColor="#F7F5EE"
                                 textColor="#333"
                                 variant="compact"
                             />
                             <Widget
-                                tittle="Tasa de carritos abandonados"
+                                title="Tasa de carritos abandonados"
                                 value={carts}
                                 bgColor="#F7F5EE"
                                 textColor="#333"
                                 variant="compact"
                             />
                             <Widget
-                                tittle="Ingresos del mes"
+                                title="Ingresos del mes"
                                 value={`$${orders.totalVentas}`}
                                 bgColor="#F7F5EE"
                                 textColor="#333"
                                 variant="compact"
                             />
                             <Widget
-                                tittle="Ganancias del mes"
+                                title="Ganancias del mes"
                                 value="$60"
                                 bgColor="#F7F5EE"
                                 textColor="#333"
@@ -149,7 +149,7 @@ const PageReports = () => {
                         <div className="w-full xl:w-1/4 mt-4 xl:mt-0">
                             <AverageSellByOrders
                                 tittle="Tamaño promedio de compras"
-                                value={`$${orders.averageOrderValue}`}
+                                value={`$${parseFloat(orders.averageOrderValue).toFixed(2)}`}
                                 bgColor="#F7F5EE"
                                 textColor="#333"
                                 variant="compact"
@@ -196,29 +196,29 @@ const PageReports = () => {
                     </div>
 
                     {/* Widgets finales */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
                         <Widget
-                            tittle="Ingresos Totales"
+                            title="Ingresos Totales"
                             value="$5000"
                             bgColor="#F7F5EE"
                             textColor="#333"
                             variant="compact"
                         />
                         <Widget
-                            tittle="Ingresos del mes"
+                            title="Ingresos del mes"
                             value="$150"
                             bgColor="#F7F5EE"
                             textColor="#333"
                         />
                         <Widget
-                            tittle="Costo promedio por unidad"
+                            title="Costo promedio por unidad"
                             value="$6.20"
                             bgColor="#F7F5EE"
                             textColor="#333"
                             variant="compact"
                         />
                         <Widget
-                            tittle="Costos totales"
+                            title="Costos totales"
                             value="$3000"
                             bgColor="#F7F5EE"
                             textColor="#333"

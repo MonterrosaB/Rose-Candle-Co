@@ -2,6 +2,7 @@ import RegisterOrder from "./components/RegisterOrder";
 import { useState, useEffect } from "react";
 import Dialog from "../../global/components/Dialog";
 import DataGrid from "../../global/components/DataGrid";
+import PrincipalDiv from "../../global/components/PrincipalDiv";
 
 const PageOrders = () => {
   const [openDialogOrders, setOpenDialogOrders] = useState(false);
@@ -39,72 +40,78 @@ const PageOrders = () => {
 
   return (
     <>
-      {/* Tabla desktop */}
-      <div className="hidden md:block">
-        <DataGrid
-          title={"Órdenes"}
-          columns={columns}
-          rows={salesOrders}
-          primaryBtnText={"Add Order"}
-          onClickPrimaryBtn={() => setOpenDialogOrders(true)}
-        />
+      <PrincipalDiv>
+        <div className="pt-12 px-4 sm:px-6 lg:px-8 w-full">
 
-        {openDialogOrders && (
-          <Dialog
-            open={openDialogOrders}
-            onClose={() => setOpenDialogOrders(false)}
-          >
-              <RegisterOrder
-      onClose={() => setOpenDialogOrders(false)}  // Cierra el modal
-      onOrderCreated={(newOrder) => {            // Actualiza la lista de órdenes
-        const formatted = {
-          idShoppingCart: newOrder.idShoppingCart?._id || "",
-          cliente: newOrder.idShoppingCart?.idUser?.name || "Sin cliente",
-          paymentMethod: newOrder.paymentMethod || "No especificado",
-          address: newOrder.address || "Sin dirección",
-          saleDate: newOrder.saleDate,
-          shippingTotal: newOrder.shippingTotal,
-          total: newOrder.total,
-          shippingState: newOrder.shippingState || [],
-          createdAt: newOrder.createdAt,
-          updatedAt: newOrder.updatedAt
-        };
-        setSalesOrders(prev => [...prev, formatted]);
-      }}
-    />
-  </Dialog>
-)}
-      </div>
+          <div className="hidden md:block">
+            <DataGrid
+              title={"Órdenes"}
+              columns={columns}
+              rows={salesOrders}
+              primaryBtnText={"Add Order"}
+              onClickPrimaryBtn={() => setOpenDialogOrders(true)}
+            />
 
-      {/* Cards móvil */}
-      <div className="md:hidden pt-17 space-y-4 px-4 py-4">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
-        {salesOrders.map((order) => (
-          <div
-            key={order.idShoppingCart}
-            className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
-          >
-            <p className="text-sm text-gray-600 mb-1">
-              <strong>ID Orden:</strong> {order.idShoppingCart}
-            </p>
-            <p className="text-sm text-gray-600 mb-1">
-              <strong>Fecha:</strong> {new Date(order.createdAt).toLocaleString()}
-            </p>
-            <p className="text-sm text-gray-600 mb-1">
-              <strong>Monto:</strong> ${order.total?.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-600 mb-1">
-              <strong>Método de pago:</strong> {order.paymentMethod}
-            </p>
-            <p className="text-sm text-gray-600 mb-1">
-              <strong>Estado:</strong> {order.shippingState[0]?.state || "Sin estado"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Dirección:</strong> {order.address}
-            </p>
+            {openDialogOrders && (
+              <Dialog
+                open={openDialogOrders}
+                onClose={() => setOpenDialogOrders(false)}
+              >
+                <RegisterOrder
+                  onClose={() => setOpenDialogOrders(false)}  // Cierra el modal
+                  onOrderCreated={(newOrder) => {            // Actualiza la lista de órdenes
+                    const formatted = {
+                      idShoppingCart: newOrder.idShoppingCart?._id || "",
+                      cliente: newOrder.idShoppingCart?.idUser?.name || "Sin cliente",
+                      paymentMethod: newOrder.paymentMethod || "No especificado",
+                      address: newOrder.address || "Sin dirección",
+                      saleDate: newOrder.saleDate,
+                      shippingTotal: newOrder.shippingTotal,
+                      total: newOrder.total,
+                      shippingState: newOrder.shippingState || [],
+                      createdAt: newOrder.createdAt,
+                      updatedAt: newOrder.updatedAt
+                    };
+                    setSalesOrders(prev => [...prev, formatted]);
+                  }}
+                />
+              </Dialog>
+            )}
           </div>
-        ))}
-      </div>
+
+          {/* Cards móvil */}
+          <div className="md:hidden pt-17 space-y-4 px-4 py-4">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
+            {salesOrders.map((order) => (
+              <div
+                key={order.idShoppingCart}
+                className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+              >
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>ID Orden:</strong> {order.idShoppingCart}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Fecha:</strong> {new Date(order.createdAt).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Monto:</strong> ${order.total?.toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Método de pago:</strong> {order.paymentMethod}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Estado:</strong> {order.shippingState[0]?.state || "Sin estado"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Dirección:</strong> {order.address}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </PrincipalDiv>
+      {/* Tabla desktop */}
+
     </>
   );
 };

@@ -26,7 +26,14 @@ const useInputGroups = () => {
         setInputs({ variantes: [], componentes: [] });
     };
 
-    return { agregarInput, inputs, resetInputs };
+    const eliminarInput = (grupo, id) => {
+        setInputs((prev) => ({
+            ...prev,
+            [grupo]: prev[grupo].filter((item) => item.id !== id),
+        }));
+    };
+
+    return { agregarInput, inputs, resetInputs, eliminarInput };
 };
 
 export default useInputGroups;
