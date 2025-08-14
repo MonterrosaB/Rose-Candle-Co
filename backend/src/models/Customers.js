@@ -3,11 +3,11 @@
 
     Campos:
         name - Nombre del cliente
+        contact - Teléfono, email u otro contacto
         surnames - Apellidos del cliente
         email - Correo electrónico único y válido
         password - Contraseña con requisitos de seguridad
         user - Nombre de usuario válido
-        phone - Número telefónico en formato ####-####
         addresses - Arreglo de direcciones con tipo y si es predeterminada
 */
 
@@ -17,8 +17,7 @@ import { Schema, model } from "mongoose";
 const addressSchema = new Schema(
   {
     address: {
-      type: String,
-      required: true, // Dirección obligatoria
+      type: String, // Dirección opcional
     },
     type: {
       type: String,
@@ -43,77 +42,69 @@ const customerSchema = new Schema(
   {
     name: {
       type: String,
-      required: true, // Campo obligatorio
+      required: true, // Obligatorio
       match: [
         /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, // Solo letras y espacios permitidos
         "El nombre solo puede contener letras y espacios",
       ],
-      minLength: 3, // Mínimo 3 caracteres
-      maxLength: 100, // Máximo 100 caracteres
-      trim: true, // Quita espacios al inicio y final
+      minLength: 3,
+      maxLength: 100,
+      trim: true,
+    },
+    contact: {
+      type: String,
+      required: true, // Obligatorio (teléfono, email, etc.)
+      trim: true,
     },
     surnames: {
       type: String,
-      required: true, // Campo obligatorio
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, // Solo letras y espacios
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
         "El apellido solo puede contener letras y espacios",
       ],
-      minLength: 3, // Mínimo 3 caracteres
-      maxLength: 100, // Máximo 100 caracteres
-      trim: true, // Elimina espacios al inicio y al final
+      minLength: 3,
+      maxLength: 100,
+      trim: true,
     },
     email: {
       type: String,
-      required: true, // Obligatorio
-      unique: true, // Único en la base de datos
+      unique: true,
       match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, // Validación de formato email
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Debe ser un correo electrónico válido",
       ],
-      trim: true, // Elimina espacios al inicio y final
+      trim: true,
     },
     password: {
       type: String,
-      required: true, // Campo obligatorio
-      minlength: 8, // Mínimo 8 caracteres
+      minlength: 8,
       match: [
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, // Requiere mayúscula, minúscula, número y símbolo
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
         "La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo",
       ],
-      trim: true, // Elimina espacios innecesarios
+      trim: true,
     },
     user: {
       type: String,
-      required: true, // Campo obligatorio
       match: [
-        /^[a-zA-Z0-9_]+$/, // Solo letras, números y guion bajo
+        /^[a-zA-Z0-9_]+$/,
         "El usuario solo puede contener letras, números y guiones bajos",
       ],
-      trim: true, // Sin espacios innecesarios
-    },
-    phone: {
-      type: String,
-      required: true, // Obligatorio
-      match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
-      minLength: 9, // Incluye guion
-      trim: true, // Limpia espacios
+      trim: true,
     },
     addresses: {
-      type: [addressSchema], // Arreglo de direcciones usando el subesquema definido
-      default: null // Por defecto vacío
+      type: [addressSchema],
+      default: [], // Opcional
     },
     deleted: {
-      type: Boolean, // Campo lógico para eliminaciones suaves
-      default: false, // Por defecto, no eliminado
+      type: Boolean,
+      default: false, // Opcional
     },
   },
   {
     timestamps: true, // Campos createdAt y updatedAt automáticos
-    strict: false, // Permite guardar campos no definidos explícitamente (flexibilidad)
+    strict: false, // Permite guardar campos no definidos explícitamente
   }
 );
 
-// Exportar modelo para uso en la app
 export default model("Customers", customerSchema);
-

@@ -1,6 +1,7 @@
 import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Orden de Venta
 import Product from "../models/Products.js"; // Modelo de Orden de Venta
 
+
 // Controlador con métodos CRUD para Ordenes de Venta
 const salesOrderController = {};
 
@@ -107,137 +108,55 @@ salesOrderController.createSalesOrder = async (req, res) => {
   }
 };
 
-// POST - Crear una orden desde el lado privado
+
+// ---------------- POST - Crear nueva orden manual ----------------
 salesOrderController.createSalesOrderPrivate = async (req, res) => {
-  const { productId, userId } = req.body; // ID del producto a agregar
+  const { name, phoneNumber, paymentMethod, address, shippingTotal, products } = req.body;
 
-  // Buscar el producto para verificar que exista
-  const product = await Product.findById(productId);
-  if (!product) return res.status(404).json({ message: "Product not found" });
+  if (!name || !phoneNumber) {
+    return res.status(400).json({ message: "Name and phone are required" });
+  }
 
-  // Buscar carrito del usuario
-  let cart = await shoppingCartModel.findOne({
-    idUser: userId,
-    status: "active",
-  });
+  try {
+    // 1️Crear cliente mínimo
+    const customer = await Customers.create({ name, contact: phoneNumber });
 
-  // Si no existe carrito, crear uno vacío para el usuario
-  if (!cart) {
-    cart = new shoppingCartModel({
-      idUser: userId,
+    //  Crear carrito vacío
+    const cart = await ShoppingCart.create({
+      idUser: customer._id,
       products: [],
       total: 0,
       status: "active",
     });
-  }
 
-  // Agregar el producto (su ID) al arreglo de productos del carrito
-  cart.products.push(productId);
-
-  // Contar cuántas veces aparece cada producto en el carrito (para calcular total)
-  const productCount = {};
-  for (const pid of cart.products) {
-    productCount[pid.toString()] = (productCount[pid.toString()] || 0) + 1;
-  }
-
-  // Obtener lista de IDs únicos de productos para hacer una consulta eficiente
-  const uniqueProductIds = [...new Set(cart.products.map((p) => p.toString()))];
-
-  // Buscar los datos completos de los productos para calcular total
-  const productsData = await Product.find({ _id: { $in: uniqueProductIds } });
-
-  // Calcular el total acumulando el precio * cantidad por producto
-  let totalCart = 0;
-  for (const p of productsData) {
-    const count = productCount[p._id.toString()] || 0;
-
-    // Obtener el precio de la primera variante (asumiendo estructura variante)
-    let price = 0;
-    if (p.variant && p.variant.length > 0) {
-      price = Number(p.variant[0].variantPrice); // Convertir a número
+    // Agregar productos y calcular total
+    let total = 0;
+    for (const p of products || []) {
+      const price = p.price ?? 0;
+      total += price * p.quantity;
+      cart.products.push({ idProduct: p.productId, quantity: p.quantity, subtotal: price * p.quantity });
     }
+    cart.total = total + (shippingTotal ?? 0);
+    await cart.save();
 
-    if (!isNaN(price) && price > 0) {
-      totalCart += price * count;
-    } else {
-      // Avisar en consola si el producto tiene precio inválido
-      console.warn(
-        `Producto con precio inválido: ${p._id}, variantePrecio: ${p.variant?.[0]?.variantPrice}`
-      );
-    }
-  }
-
-  // Actualizar total del carrito
-  cart.total = totalCart;
-
-  // Guardar carrito actualizado en BD
-  await cart.save();
-
-  //--------------------------------------------------------------------------------------
-
-  // Obtener datos desde el cuerpo de la petición
-  const {
-    idShoppingCart,
-    paymentMethod,
-    address,
-    saleDate,
-    shippingTotal,
-    total,
-    shippingState,
-  } = req.body;
-
-  try {
-    // Validaciones básicas para evitar datos incompletos
-    if (
-      !idShoppingCart ||
-      !paymentMethod ||
-      !address ||
-      !saleDate ||
-      !shippingTotal ||
-      !total ||
-      !shippingState
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Please complete all the fields" }); // Campos vacíos
-    }
-
-    // Validar que la dirección tenga información mínima
-    if (address.length < 5) {
-      return res
-        .status(400)
-        .json({ message: "Please provide additional address information" }); // Dirección inválida
-    }
-
-    // Validar que el total sea positivo o cero
-    if (total < 0) {
-      return res
-        .status(400)
-        .json({ message: "The total can't be less than 0" }); // Total inválido
-    }
-
-    // Crear nueva instancia del modelo con los datos recibidos
-    const newOrder = new SalesOrderModel({
-      idShoppingCart,
+    // Crear orden
+    const newOrder = await SalesOrderModel.create({
+      idShoppingCart: cart._id,
+      cliente: customer._id,
       paymentMethod,
       address,
-      saleDate,
-      shippingTotal,
-      total,
-      shippingState,
+      shippingTotal: shippingTotal ?? 0,
+      total: cart.total,
+      shippingState: [{ state: "Pendiente" }],
     });
 
-    // Guardar la nueva orden en la base de datos
-    await newOrder.save();
-
-    // Responder con mensaje de éxito
-    res.status(200).json({ message: "Order saved" }); // Todo bien
+    res.status(200).json(newOrder);
   } catch (error) {
-    console.log("error " + error);
-    // Responder con error de servidor en caso de fallo inesperado
-    return res.status(500).json("Internal server error"); // Error del servidor
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // PUT - Actualizar una orden de venta existente por ID
 salesOrderController.updateSalesOrder = async (req, res) => {
@@ -591,5 +510,104 @@ salesOrderController.totalEarnings = async (req, res) => {
     res.status(500).json({ message: "Internal server error" }); // error
   }
 };
+
+// Obtener los últimos pedidos
+salesOrderController.getLatestOrders = async (req, res) => {
+  try {
+    // Buscar las últimas 10 órdenes (ordenadas por fecha descendente)
+    const orders = await SalesOrderModel.find()
+      .sort({ saleDate: -1 })
+      .limit(10)
+      .populate({
+        path: "idShoppingCart",
+        populate: { path: "idUser", select: "name" },
+      });
+
+    // Formatear los datos con los campos requeridos
+    const formattedOrders = orders.map((order) => {
+      return {
+        Nombre: order.idShoppingCart?.idUser?.name || "Desconocido",
+        "Fecha Pedido": order.saleDate,
+        Ubicación: order.address,
+        "Productos Totales": order.idShoppingCart?.products?.length || 0,
+      };
+    });
+
+    res.status(200).json(formattedOrders); // todo bien
+  } catch (error) {
+    console.error("Error al obtener últimos pedidos:", error);
+    res.status(500).json({ message: "Internal server error" }); // error
+  }
+};
+
+
+
+// GET - Obtener carrito activo de un usuario y sus productos
+salesOrderController.getUserCartWithProducts = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Buscamos la orden cuyo carrito activo corresponde al usuario
+    const order = await SalesOrder.findOne()
+      .populate({
+        path: 'idShoppingCart',
+        match: { idUser: userId, status: 'active' },
+        populate: {
+          path: 'products.idProduct',
+          select: 'name variant discount',
+        },
+      })
+      .sort({ saleDate: -1 }); // orden más reciente
+
+    // Si no hay orden o carrito activo
+    if (!order || !order.idShoppingCart) {
+      return res.status(404).json({ message: 'Carrito activo no encontrado para el usuario' });
+    }
+
+    // Formateamos los productos igual que antes
+    const formattedProducts = order.idShoppingCart.products.map(item => {
+      const product = item.idProduct;
+      if (!product || !product.variant || product.variant.length === 0) return null;
+
+      const variantIndex = item.selectedVariantIndex || 0;
+      const variant = product.variant[variantIndex] || product.variant[0];
+      const basePrice = parseFloat(variant.variantPrice) || 0;
+      const discount = product.discount || 0;
+      const finalPrice = basePrice * (1 - discount / 100);
+
+      const quantity = item.quantity || 1;
+
+      return {
+        id: product._id,
+        name: product.name,
+        basePrice,
+        discount,
+        finalPrice: finalPrice.toFixed(2),
+        quantity,
+        subtotal: (finalPrice * quantity).toFixed(2),
+        selectedVariantIndex: variantIndex,
+      };
+    }).filter(Boolean);
+
+    const totalCartPrice = formattedProducts.reduce((sum, p) => sum + parseFloat(p.subtotal), 0);
+
+    return res.status(200).json({
+      orderId: order._id,
+      cartId: order.idShoppingCart._id,
+      paymentMethod: order.paymentMethod,
+      address: order.address,
+      saleDate: order.saleDate,
+      shippingTotal: order.shippingTotal,
+      totalCalculated: totalCartPrice.toFixed(2),
+      products: formattedProducts,
+      shippingState: order.shippingState,
+    });
+  } catch (error) {
+    console.error('Error al obtener la orden con carrito:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+
 // Exportar controlador para usarlo en rutas
 export default salesOrderController;

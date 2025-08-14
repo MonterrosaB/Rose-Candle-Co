@@ -15,8 +15,10 @@ const ApiEarnings = "http://localhost:4000/api/salesOrder/totalEarnings";
 const ApiLowStock = "http://localhost:4000/api/rawMaterials/lowStock";
 
 // Productos
-const ApiBestSellingProducts =
-  "http://localhost:4000/api/cart/bestSellingProducts";
+const ApiBestSellingProducts = "http://localhost:4000/api/cart/bestSellingProducts";
+
+// Últimos pedidos
+const ApiLatestOrders = "http://localhost:4000/api/salesOrder/latestOrders";
 
 const useHome = () => {
   // Clientes
@@ -36,6 +38,9 @@ const useHome = () => {
 
   // Productos más vendidos
   const [bestSellingProducts, setBestSellingProducts] = useState([]);
+
+  // Pedidos
+  const [latestOrders, setLatestOrders] = useState([]);
 
   // Contador de usuarios
   const getCustomers = async () => {
@@ -121,14 +126,28 @@ const useHome = () => {
         method: "GET",
         credentials: "include",
       });
-  
+
       if (!res.ok) throw new Error("Error al obtener productos más vendidos");
-  
+
       const data = await res.json();
       setBestSellingProducts(data || []);
     } catch (error) {
       console.error(error);
       toast.error("No se pudo cargar los productos más vendidos");
+    }
+  };
+
+  // Obtener últimos pedidos
+  const getLatestOrders = async () => {
+    try {
+      const res = await fetch(ApiLatestOrders);
+      if (!res.ok) throw new Error("Error al obtener últimos pedidos");
+  
+      const data = await res.json();
+      setLatestOrders(data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo cargar la lista de últimos pedidos");
     }
   };
 
@@ -140,6 +159,7 @@ const useHome = () => {
     getEarnings();
     getLowStockMaterials();
     getBestSellingProducts();
+    getLatestOrders();
   }, []);
 
   return {
@@ -166,6 +186,10 @@ const useHome = () => {
     // Productos más vendidos
     bestSellingProducts,
     getBestSellingProducts,
+
+    // Últimos pedidos
+    latestOrders,
+    getLatestOrders,
   };
 };
 

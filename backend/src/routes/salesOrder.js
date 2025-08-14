@@ -1,5 +1,4 @@
 import express from "express";
-
 import salesOrderController from "../controllers/salesOrderController.js";
 
 const router = express.Router();
@@ -13,13 +12,20 @@ router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
 router.route("/salesByCategory").get(salesOrderController.getProductByCategory);
 router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthly); // cantidad de pedidos por mes
 router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total de ingresos
+router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthly);
 
+router.route("/createSalesOrder").post(salesOrderController.createSalesOrderPrivate)//
+
+
+// Rutas específicas antes de rutas dinámicas
+router.get("/user/:userId", salesOrderController.getUserCartWithProducts);
+
+// Luego las rutas dinámicas para ID
 router
   .route("/:id")
   .put(salesOrderController.updateSalesOrder)
   .delete(salesOrderController.deleteSalesOrder);
 
-// Rutas específicas
-router.route("/restore/:id").put(salesOrderController.restoreSalesOrder); // restaurar por id
+router.route("/restore/:id").put(salesOrderController.restoreSalesOrder);
 
 export default router;

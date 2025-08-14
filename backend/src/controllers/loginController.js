@@ -28,6 +28,16 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
+    // Validar si la cuenta no está bloqueada
+    if (userType !== "admin") {
+      if (userFound.timeOut > Date.now()) {
+        const time = Math.ceil((userFound.timeOut - Date.now()) / 60000);
+        return res
+          .status(403)
+          .json({ message: "Cuenta bloqueada, faltan " + time + " minutos" });
+      }
+    }
+
     // Verificar contraseña
     const isMatch = await bcryptjs.compare(password, userFound.password);
     if (!isMatch) {

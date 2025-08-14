@@ -37,6 +37,12 @@ const SalesOrderSchema = new Schema(
       ref: "shoppingCart", // Nombre del modelo referenciado
       trim: true, // Elimina espacios en cadena
     },
+      cliente: {
+      type: Schema.Types.ObjectId, // o String si solo quieres nombre
+      ref: "Customers",
+      required: true,
+      trim: true,
+    },
     paymentMethod: {
       type: String,
       required: true, // Método de pago obligatorio
