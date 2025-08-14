@@ -99,6 +99,18 @@ const employeeSchema = new Schema(
       default: true, // Por defecto activo
     },
 
+    // Número de intentos al iniciar sesión
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+
+    // Tiempo que esta bloqueado
+    timeOut: {
+      type: Date,
+      default: null,
+    },
+
     // Eliminación lógica del empleado
     deleted: {
       type: Boolean, // Campo lógico para indicar si el registro está eliminado

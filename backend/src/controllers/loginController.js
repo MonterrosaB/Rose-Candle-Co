@@ -10,7 +10,7 @@ const loginController = {};
 // Función para el login
 loginController.login = async (req, res) => {
   // Solicitar información del cuerpo de la solicitud
-  const { email, password } = req.body;
+  const { user, password } = req.body;
 
   try {
     // Posibles niveles de usuario:
@@ -22,14 +22,14 @@ loginController.login = async (req, res) => {
 
     // Verificar si es un administrador
     if (
-      email === config.admin.emailAdmin &&
+      user === config.admin.emailAdmin &&
       password === config.admin.passwordAdmin
     ) {
       userType = "admin"; // Tipo de usuario
       userFound = { _id: "admin" }; // ID de referencia para el admin
     } else {
       // Si no es admin, buscar como empleado
-      userFound = await employeesModel.findOne({ email }); // Buscar empleado por email
+      userFound = await employeesModel.findOne({ user }); // Buscar empleado por usuario
       userType = "employee"; // Tipo de usuario
     }
 
@@ -38,12 +38,45 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
+    // Validar si la cuenta no está bloqueada
+    if (userType !== "admin") {
+      if (userFound.timeOut > Date.now()) {
+        const time = Math.ceil(
+          (userFound.timeOut - Date.now()) / 60000
+        );
+        return res
+          .status(403)
+          .json({ message: "Cuenta bloqueada, faltan " + time + " minutos"});
+      }
+    }
+
     // Validar la contraseña (solo si no es admin)
     if (userType !== "admin") {
       const isMatch = await bcryptjs.compare(password, userFound.password); // Comparar contraseñas
       if (!isMatch) {
+        // Si la contraseña es incorrecta, se suma +1 a los intentos
+        userFound.loginAttempts = userFound.loginAttempts + 1;
+
+        if (userFound.loginAttempts >= 3) {
+          // Si es mayor a 3, se bloquea por 5 minutos
+          userFound.timeOut = Date.now() + 5 * 60 * 1000;
+
+          // Se reinicia a 0
+          userFound.loginAttempts = 0;
+          await userFound.save();
+
+          return res.status(403).json({ message: "Cuenta bloqueada" });
+        }
+
+        await userFound.save();
         return res.status(400).json({ message: "Invalid password" }); // Contraseña incorrecta
       }
+
+      // Se reinicia a 0
+      userFound.loginAttempts = 0;
+      userFound.timeOut = null;
+
+      await userFound.save();
     }
 
     // Generar y firmar el token JWT
