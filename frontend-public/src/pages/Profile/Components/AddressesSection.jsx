@@ -55,7 +55,25 @@ export default function AddressesSection() {
 
   return (
     <div className="space-y-8">
-      {/* ...titulo y botón agregar (igual que antes)... */}
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            Direcciones
+          </h1>
+          <p className="text-gray-600">Gestiona tus direcciones de envío</p>
+        </div>
+        <Button
+          className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          onClick={() => {
+            setEditingAddress(null);
+            setIsAdding(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Agregar Dirección
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {addresses.map((address) => (
