@@ -22,6 +22,7 @@ const Home = () => {
     monthlyEarnings,
     lowStockMaterials,
     bestSellingProducts,
+    latestOrders,
   } = useHome();
 
   // Columnas del stock
@@ -36,48 +37,22 @@ const Home = () => {
     Cantidad: `${material.currentStock} ${material.unit}`,
   }));
 
+  // Columnas de ùltimos pedidos
   const columnsOrders = {
     Nombre: "Nombre",
-    "Fecha Pedido": "Orders",
-    Ubicación: "Ubicacion",
-    "Productos Totales": "Productos",
+    "Fecha Pedido": "Fecha Pedido",
+    Ubicación: "Ubicación",
+    "Productos Totales": "Productos Totales",
   };
 
-  const rowsOrders = [
-    {
-      Nombre: "Rodrigo Monterrosa",
-      Orders: "1 May, 2025 : 15:12",
-      Ubicacion: "La Libertad",
-      Productos: "10",
-    },
-    {
-      Nombre: "Rodrigo Monterrosa",
-      Orders: "1 May, 2025 : 15:12",
-      Ubicacion: "La Libertad",
-      Productos: "10",
-    },
-    {
-      Nombre: "Rodrigo Monterrosa",
-      Orders: "1 May, 2025 : 15:12",
-      Ubicacion: "La Libertad",
-      Productos: "10",
-    },
-    {
-      Nombre: "Rodrigo Monterrosa",
-      Orders: "1 May, 2025 : 15:12",
-      Ubicacion: "La Libertad",
-      Productos: "10",
-    },
-  ];
-
-  return ( 
+  return (
     <PrincipalDiv>
-      <h1 className="text-2xl font-semibold mb-4 ml-15">
+      <h1 className="text-2xl font-semibold mb-1">
         Bienvenida de nuevo, Eli
       </h1>
 
       {/* Widgets */}
-      <div className="w-full flex flex-wrap justify-center gap-x-14 gap-y-8">
+      <div className="w-full flex flex-wrap justify-left gap-x-14 gap-y-8 mb-1">
         <CardWidgets
           bgColor={"#F7F5EE"}
           textColor={"#333"}
@@ -105,30 +80,31 @@ const Home = () => {
       </div>
 
       {/* Grid responsive */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center">
+      <div className="flex flex-col lg:flex-row gap-4 mb-1 items-center">
         <div className="w-full lg:w-2/3">
           <DataGrid
             title={"Valores bajos de materia prima"}
             columns={columnsMaterial}
             rows={rowsMaterial}
             editable={false}
+            rowsPerPage={3} // Se limita la cantidad de materia prima
           />
         </div>
-        
+
         <div className="w-full flex justify-center lg:w-1/3 lg:flex lg:justify-center">
           <PopularProducts data={bestSellingProducts} />
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="w-full lg:w-14/15">
         <DataGrid
           title={"Últimos pedidos"}
           columns={columnsOrders}
-          rows={rowsOrders}
+          rows={latestOrders}
           editable={false}
+          rowsPerPage={3} // Se limita la cantidad de pedidos
         />
       </div>
-      
     </PrincipalDiv>
   );
 };

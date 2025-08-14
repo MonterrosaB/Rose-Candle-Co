@@ -44,12 +44,12 @@ export const AuthProvider = ({ children }) => {
   }, [API_URL, navigate]);
 
   // Iniciar sesión: enviar datos, guardar token y validar
-  const login = async (email, password) => {
+  const login = async (user, password) => {
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ user, password }),
         credentials: "include",
       });
 

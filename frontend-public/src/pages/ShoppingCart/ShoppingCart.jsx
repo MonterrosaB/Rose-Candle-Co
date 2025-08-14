@@ -135,7 +135,7 @@ const Cart = () => {
         </div>
 
         <div className="mt-6 flex gap-3">
-          {/* ✅ Botón CONTINUAR */}
+          {/*  Botón CONTINUAR */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="w-full relative px-4 py-2 rounded-md text-white font-medium overflow-hidden"
