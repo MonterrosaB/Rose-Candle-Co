@@ -24,4 +24,23 @@ router.route("/count") // contador de usuarios
 router.route("/countByMonth") // contador de usuarios del último mes
 .get(customersController.countCustomersByMonth)
 
+
+// Direcciones
+// Obtener direcciones
+router.route("/:id/addresses")
+.get(customersController.getAddresses)
+
+// Agregar nueva dirección
+router.route("/:id/addresses")
+.post(customersController.addAddress)
+
+// Eliminar dirección específica
+router.route("/:id/addresses/:addressId")
+.delete(customersController.deleteAddress)
+
+// Editar dirección específica
+router.route("/:id/addresses/:addressId")
+.put(customersController.updateAddress)
+
+
 export default router;
