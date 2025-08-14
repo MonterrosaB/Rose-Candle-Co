@@ -168,64 +168,35 @@ shoppingCartController.increaseProduct = async (req, res) => {
 
 shoppingCartController.decreaseProduct = async (req, res) => {
   const userId = req.user.id;
-  const { cartId, productId, indexVariant } = req.body;
+  const { cartId, index } = req.body;
 
   try {
-    const cart = await shoppingCartModel.findOne({
-      _id: cartId,
-      idUser: userId,
-      status: "active"
-    });
+    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    if (!cart) return res.status(404).json({ message: "Carrito no encontrado" });
 
-    if (!cart) {
-      return res.status(404).json({ message: "Carrito no encontrado" });
-    }
+    const item = cart.products[index];
+    if (!item) return res.status(404).json({ message: "Producto no encontrado en el carrito" });
 
-    const productDB = await Product.findById(productId);
-    if (!productDB) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
-
-    // Usar precio de la variante indicada
-    let variantIndexToUse = Number(indexVariant);
-    if (isNaN(variantIndexToUse) || variantIndexToUse < 0 || variantIndexToUse >= productDB.variant.length) {
-      variantIndexToUse = 0; // fallback
-    }
-
-    const price = Number(productDB.variant[variantIndexToUse]?.variantPrice);
-    if (isNaN(price) || price <= 0) {
-      return res.status(400).json({ message: "Precio del producto inválido" });
-    }
-
-    // Buscar producto en carrito considerando la variante
-    const itemIndex = cart.products.findIndex(
-      p => p.idProduct.toString() === productId && p.selectedVariantIndex === variantIndexToUse
-    );
-
-    if (itemIndex > -1) {
-      const item = cart.products[itemIndex];
-
-      if (item.quantity > 1) {
-        item.quantity -= 1;
-        item.subtotal = item.quantity * price;
-      } else {
-        // Eliminar solo esta variante del producto
-        cart.products.splice(itemIndex, 1);
-      }
+    // Obtener precio desde la variante
+    const productDB = await Product.findById(item.idProduct);
+    const price = Number(productDB.variant[item.selectedVariantIndex]?.variantPrice || 0);
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      item.subtotal = item.quantity * price;
     } else {
-      return res.status(404).json({ message: "Producto con esta variante no encontrado en el carrito" });
+      cart.products.splice(index, 1);
     }
 
-    // Recalcular total
     cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
-
     await cart.save();
-    return res.status(200).json({ message: "Producto actualizado", cart });
+
+    res.status(200).json({ message: "Producto actualizado", cart });
   } catch (error) {
     console.error("Error al disminuir cantidad:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
 };
+
 
 // POST - Completar carrito y generar orden automáticamente
 shoppingCartController.completeCart = async (req, res) => {

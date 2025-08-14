@@ -16,17 +16,7 @@ router.put("/increase", auth, shoppingCartController.increaseProduct);
 
 // Disminuir cantidad
 router.put("/decrease", auth, shoppingCartController.decreaseProduct);
-router.put(
-  "/removeProduct/:productId",
-  auth,
-  shoppingCartController.removeProduct
-);
-
-router
-  .route("/:id")
-  .get(auth, shoppingCartController.getCartById)
-  //.put(auth, shoppingCartController.updateCart)
-  .delete(auth, shoppingCartController.deleteCart);
+router.put("/removeProduct/:productId", auth, shoppingCartController.removeProduct);
 
 // Rutas específicas
 router.route("/restore/:id").put(shoppingCartController.restoreShoppingCart); // restaurar por id
@@ -42,7 +32,6 @@ router
 router
   .route("/:id")
   .get(auth, shoppingCartController.getCartById)
-  //.put(auth, shoppingCartController.updateCart)
   .delete(auth, shoppingCartController.deleteCart);
 
 export default router;

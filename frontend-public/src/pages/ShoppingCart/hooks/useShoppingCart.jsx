@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2"; // suponiendo que usas SweetAlert para alertas
 
+import { useNavigate } from "react-router";
+
+
 const useCart = () => {
     const [idCart, setIdCart] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCheckout, setShowCheckout] = useState(false);
+
+    const navigate = useNavigate();
+
 
     const API = "http://localhost:4000"
     //https://rose-candle-co.onrender.com
@@ -164,8 +170,9 @@ const useCart = () => {
         }
     };
 
-
-
+    const moreInfo = (product) => {
+        navigate(`/product/${product}`, { state: { product } });
+    };
 
     const getTotal = () => {
         setTotal(
@@ -174,8 +181,6 @@ const useCart = () => {
                 .toFixed(2)
         );
     };
-
-
 
     useEffect(() => {
         fetchCart();
@@ -196,7 +201,8 @@ const useCart = () => {
         handleClear,
         decreaseProduct,
         increaseProduct,
-        total
+        total,
+        moreInfo
     };
 };
 

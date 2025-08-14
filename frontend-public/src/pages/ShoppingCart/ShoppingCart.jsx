@@ -13,6 +13,7 @@ const Cart = () => {
     decreaseProduct,
     increaseProduct,
     total,
+    moreInfo
   } = useShoppingCart();
 
   // 👇 Estado para alternar entre carrito y checkout
@@ -61,59 +62,41 @@ const Cart = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
-              {/* Imagen y datos del producto */}
+              {/* Imagen y datos */}
               <div className="flex gap-4 items-start">
-                <img
-                  src={item.idProduct?.images?.[0]}
-                  alt={item.idProduct?.name}
-                  className="w-24 h-24 rounded-lg object-cover"
-                />
+                <img src={item.idProduct?.images?.[0]} alt={item.idProduct?.name} className="w-24 h-24 rounded-lg object-cover" />
                 <div>
                   <h3 className="text-lg font-semibold text-[#444]">{item.idProduct?.name}</h3>
-                  <p className="text-sm text-gray-600">{item.idProduct?.description}</p>
                   <p className="text-sm text-gray-600">
-                    {item.idProduct?.variant?.[item.selectedVariantIndex]?.variant}</p>
-
-                  <p
-                    className="text-sm text-black underline cursor-pointer mt-1"
-                    onClick={() => moreInfo(item.idProduct)}
-                  >
+                    {item.idProduct?.variant?.[item.selectedVariantIndex]?.variant}
+                  </p>
+                  <p className="text-sm text-black underline cursor-pointer"
+                    onClick={() => moreInfo(item.idProduct?._id)}>
                     Más información
                   </p>
                 </div>
               </div>
 
               {/* Cantidad + Precio + Eliminar */}
-              {cartItems.map((item, idx) => (
-                <div key={idx} className="flex justify-between sm:justify-end items-center gap-4">
-                  {/* Control de cantidad */}
-                  <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
-                    <button
-                      onClick={() => decreaseProduct(idx)} // 👈 ahora solo mandas el índice
-                      className="text-gray-600 hover:text-black"
-                    >
-                      {item.quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
-                    </button>
-                    <span className="text-sm font-medium">{item.quantity}</span>
-                    <button
-                      onClick={() =>
-                        increaseProduct(item.idProduct?._id, 1, item.selectedVariantIndex)
-                      }
-                      className="text-gray-600 hover:text-black"
-                    >
-                      <Plus size={18} />
-                    </button>
-                  </div>
-
-                  {/* Precio subtotal */}
-                  <div className="text-right font-semibold text-lg min-w-[80px]">
-                    ${(item.idProduct?.variant?.[item.selectedVariantIndex]?.variantPrice).toFixed(2)}
-                  </div>
+              <div className="flex justify-between sm:justify-end items-center gap-4">
+                <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                  <button onClick={() => decreaseProduct(idx)} className="text-gray-600 hover:text-black">
+                    {item.quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
+                  </button>
+                  <span className="text-sm font-medium">{item.quantity}</span>
+                  <button
+                    onClick={() => increaseProduct(item.idProduct?._id, 1, item.selectedVariantIndex)}
+                    className="text-gray-600 hover:text-black"
+                  >
+                    <Plus size={18} />
+                  </button>
                 </div>
-              ))}
 
+                <div className="text-right font-semibold text-lg min-w-[80px]">
+                  ${(item.idProduct?.variant?.[item.selectedVariantIndex]?.variantPrice).toFixed(2)}
+                </div>
+              </div>
             </motion.div>
-
           ))
         ) : (
           <p className="text-gray-600">El carrito está vacío.</p>
