@@ -33,7 +33,7 @@ const DataGrid = ({ title,
                 return acc?.[key];
             }, obj);
 
-            // ✅ Formatear si es fecha válida en string
+            //  Formatear si es fecha válida en string
             if (typeof value === "string" && !isNaN(Date.parse(value))) {
                 return new Date(value).toLocaleDateString("es-SV", {
                     day: "2-digit",

@@ -3,6 +3,7 @@ import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Carrito de C
 import Product from "../models/Products.js"; // Modelo de Productos
 import ShoppingCart from "../models/ShoppingCart.js";
 
+
 // Controlador con métodos CRUD para Carrito de Compras
 const shoppingCartController = {};
 
