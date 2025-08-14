@@ -591,5 +591,36 @@ salesOrderController.totalEarnings = async (req, res) => {
     res.status(500).json({ message: "Internal server error" }); // error
   }
 };
+
+// Obtener los últimos pedidos
+salesOrderController.getLatestOrders = async (req, res) => {
+  try {
+    // Buscar las últimas 10 órdenes (ordenadas por fecha descendente)
+    const orders = await SalesOrderModel.find()
+      .sort({ saleDate: -1 })
+      .limit(10)
+      .populate({
+        path: "idShoppingCart",
+        populate: { path: "idUser", select: "name" },
+      });
+
+    // Formatear los datos con los campos requeridos
+    const formattedOrders = orders.map((order) => {
+      return {
+        Nombre: order.idShoppingCart?.idUser?.name || "Desconocido",
+        "Fecha Pedido": order.saleDate,
+        Ubicación: order.address,
+        "Productos Totales": order.idShoppingCart?.products?.length || 0,
+      };
+    });
+
+    res.status(200).json(formattedOrders); // todo bien
+  } catch (error) {
+    console.error("Error al obtener últimos pedidos:", error);
+    res.status(500).json({ message: "Internal server error" }); // error
+  }
+};
+
+
 // Exportar controlador para usarlo en rutas
 export default salesOrderController;

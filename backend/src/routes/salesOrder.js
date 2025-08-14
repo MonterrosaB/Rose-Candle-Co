@@ -13,6 +13,7 @@ router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
 router.route("/salesByCategory").get(salesOrderController.getProductByCategory);
 router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthly); // cantidad de pedidos por mes
 router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total de ingresos
+router.route("/latestOrders").get(salesOrderController.getLatestOrders); // total de ingresos
 
 router
   .route("/:id")
