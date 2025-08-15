@@ -537,16 +537,19 @@ salesOrderController.getUserCartWithProducts = async (req, res) => {
 
   try {
     // Buscamos la orden cuyo carrito activo corresponde al usuario
-    const order = await SalesOrderModel.find({ "idShoppingCart.idUser": userId }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
-      .populate({
-        path: "idShoppingCart",
-        populate: [
-          { path: "idUser", select: "name" },
-          { path: "products.idProduct" , select :  "name"},
-        ],
-      });
+   const order = await SalesOrderModel.find({ "idShoppingCart.idUser": userId })
+  .populate({
+    path: "idShoppingCart",
+    populate: [
+      { path: "idUser", select: "name" },
+      {
+        path: "products.idProduct",
+        select: "name images",
+      },
+    ],
+  });
 
-    // Formateamos los productos igual que antes
+
 
 
     return res.status(200).json(order);
