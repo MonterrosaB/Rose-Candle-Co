@@ -10,6 +10,8 @@ const router = express.Router();
 router.route("/")
 .get(customersController.getCustomers)
 
+router.route("/addresses").get(customersController.getCustomersAddress)
+
 router.route("/:id")
 .put(customersController.updateCustomers)
 .delete(customersController.deleteCustomers)

@@ -1,4 +1,6 @@
 import customersModel from "../models/Customers.js"; // Modelo de Clientes
+import jwt from "jsonwebtoken";
+
 
 // Objeto que agrupa los métodos CRUD para clientes
 const customersController = {};
@@ -13,6 +15,37 @@ customersController.getCustomers = async (req, res) => {
     res.status(500).json("Internal server error"); // Error del servidor
   }
 };
+
+customersController.getCustomersAddress = async (req, res) => {
+  try {
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.status(401).json({ message: "No autorizado" });
+    }
+
+    // Decodificar token para obtener el ID del usuario
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userID = decoded.id;
+
+    // Buscar solo direcciones del usuario
+    const customer = await customersModel.findOne(
+      { _id: userID, deleted: false },
+      { addresses: 1 } // solo obtener el campo addresses
+    );
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    res.status(200).json(customer.addresses || []);
+  } catch (error) {
+    console.error("Error obteniendo direcciones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+
+
 
 // DELETE - Eliminar un cliente por ID
 customersController.deleteCustomers = async (req, res) => {

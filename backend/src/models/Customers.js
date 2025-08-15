@@ -17,25 +17,46 @@ import { Schema, model } from "mongoose";
 const addressSchema = new Schema(
   {
     address: {
-      type: String, // Dirección opcional
+      type: String,
+      required: true,
+      trim: true,
+    },
+    state: {
+      type: String,
+      required: true,
+      trim: true,
+      match: [
+        /^[a-zA-Z\s]+$/,
+        "City must contain only letters and spaces",
+      ],
+    },
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+      match: [
+        /^[a-zA-Z\s]+$/,
+        "city must contain only letters and spaces",
+      ],
     },
     type: {
       type: String,
       enum: {
-        values: ["casa", "trabajo", "otro"], // Solo estos valores permitidos
-        message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
+        values: ["home", "work", "other"],
+        message: "Address type must be 'home', 'work', or 'other'",
       },
-      default: "otro", // Valor por defecto si no se especifica
+      default: "other",
     },
     isDefault: {
       type: Boolean,
-      default: false, // Indica si es la dirección principal
+      default: false,
     },
   },
   {
-    _id: true, // Cada dirección tendrá su propio _id
+    _id: true,
   }
 );
+
 
 // Esquema principal para clientes
 const customerSchema = new Schema(
