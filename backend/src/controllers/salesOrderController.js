@@ -531,28 +531,26 @@ salesOrderController.getLatestOrders = async (req, res) => {
   }
 };
 
+
 // GET - Obtener carrito activo de un usuario y sus productos
 salesOrderController.getUserCartWithProducts = async (req, res) => {
   const { userId } = req.params.userId;
 
   try {
     // Buscamos la orden cuyo carrito activo corresponde al usuario
-   const order = await SalesOrderModel.find({ "idShoppingCart.idUser": userId })
-  .populate({
-    path: "idShoppingCart",
-    populate: [
-      { path: "idUser", select: "name" },
-      {
-        path: "products.idProduct",
-        select: "name images",
-      },
-    ],
-  });
+    const order = await SalesOrderModel.find({ "idShoppingCart.idUser": userId })
+      .populate({
+        path: "idShoppingCart",
+        populate: [
+          { path: "idUser", select: "name" },
+          {
+            path: "products.idProduct",
+            select: "name images",
+          },
+        ],
+      });
 
-
-
-
-    return res.status(200).json(order);
+    return res.status(200).json(order); // Aquí `shippingStates` ya va incluido
   } catch (error) {
     console.error("Error al obtener la orden con carrito:", error);
     return res.status(500).json({ message: "Error interno del servidor" });

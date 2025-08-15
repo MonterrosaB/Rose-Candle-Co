@@ -46,37 +46,39 @@ export default function OrdersSection() {
         if (!response.ok) throw new Error("Error al obtener pedidos")
         const data = await response.json()
 
-        const pedidosTransformados = data.flatMap((order) => {
-          const estadoRaw =
-            order.shippingState?.[order.shippingState.length - 1]?.state ||
-            "pendiente"
+      const pedidosTransformados = data.flatMap((order) => {
+  // Ordenar estados de envío por fecha descendente
+  const shippingStates = (order.shippingState || []).sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  )
 
-          const estado = (() => {
-            switch (estadoRaw.toLowerCase()) {
-              case "processing":
-                return "pendiente"
-              case "shipped":
-                return "enviado"
-              case "delivered":
-                return "entregado"
-              case "cancelled":
-                return "cancelado"
-              default:
-                return estadoRaw.toLowerCase().trim()
-            }
-          })()
+  const estadoRaw = shippingStates[0]?.state || "pendiente"
 
-          return order.idShoppingCart.products.map((productItem) => {
-            const producto = productItem.idProduct
-            return {
-              _id: productItem._id,
-              nombre: producto?.name || "Sin nombre",
-              estado,
-              imagen: producto?.images?.[0] || "/placeholder.jpg",
-            }
-          })
-        })
+  const estado = (() => {
+    switch (estadoRaw.toLowerCase()) {
+      case "processing":
+        return "pendiente"
+      case "shipped":
+        return "enviado"
+      case "delivered":
+        return "completado"
+      case "cancelled":
+        return "cancelado"
+      default:
+        return estadoRaw.toLowerCase().trim()
+    }
+  })()
 
+  return order.idShoppingCart.products.map((productItem) => {
+    const producto = productItem.idProduct
+    return {
+      _id: productItem._id,
+      nombre: producto?.name || "Sin nombre",
+      estado,
+      imagen: producto?.images?.[0] || "/placeholder.jpg",
+    }
+  })
+})
         setPedidos(pedidosTransformados)
       } catch (error) {
         console.error("Error al cargar pedidos:", error)
@@ -137,7 +139,7 @@ export default function OrdersSection() {
               <option value="todos">Todos</option>
               <option value="pendiente">Pendiente</option>
               <option value="enviado">Enviado</option>
-              <option value="entregado">Entregado</option>
+              <option value="entregado">completado</option>
               <option value="cancelado">Cancelado</option>
             </select>
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
