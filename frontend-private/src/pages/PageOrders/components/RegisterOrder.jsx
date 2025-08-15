@@ -11,40 +11,63 @@ import Button from "../../../global/components/Button";
 import useOrders from "../../PageOrders/hooks/useOrders";
 
 const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated }) => {
-  const methods = useForm({ defaultValues: initialData || {} });
-  const { register, handleSubmit, errors, createOrder, updateOrder, products } = useOrders(methods);
+  const methods = useForm({ defaultValues: initialData || { products: [], total: 0 } });
+  const { register, handleSubmit, setValue, watch, formState: errors, createOrder, updateOrder, products, createSalesOrderPrivate } = useOrders(methods);
 
-  const [editingOrderId, setEditingOrderId] = useState(initialData?._id || null);
+  const [editingOrderId] = useState(initialData?._id || null);
   const [search, setSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products || []);
+
+  const productsInForm = watch("products");
+
+
   const [quantities, setQuantities] = useState(() => {
     if (initialData?.products) {
       return initialData.products.reduce((acc, p) => {
-        acc[p.productId] = p.quantity;
+        acc[p.idProduct] = p.quantity;
         return acc;
       }, {});
     }
     return {};
   });
 
+  // Prellenar datos iniciales
   useEffect(() => {
     if (initialData) {
       Object.entries(initialData).forEach(([key, value]) => {
-        methods.setValue(key, value);
+        setValue(key, value);
       });
     }
-  }, [initialData, methods]);
+  }, [initialData, setValue]);
 
   // Filtrar productos
   useEffect(() => {
     if (!search.trim()) setFilteredProducts(products);
-    else
+    else {
       setFilteredProducts(
         products.filter((p) =>
           p.name.toLowerCase().includes(search.toLowerCase())
         )
       );
+    }
   }, [search, products]);
+
+  // Actualiza el array `products` del form en base a quantities
+  useEffect(() => {
+    const formProducts = Object.entries(quantities).map(([id, qty]) => {
+      const prod = products.find((p) => p._id === id);
+      if (!prod) return null;
+      const price = (prod.variant?.[0]?.variantPrice ?? prod.currentPrice) * (1 - (prod.discount || 0) / 100);
+      return {
+        idProduct: prod._id,
+        quantity: qty,
+        selectedVariantIndex: 0, // puedes cambiarlo si el usuario elige otra variante
+        subtotal: +(price * qty).toFixed(2),
+      };
+    }).filter(Boolean);
+
+    setValue("products", formProducts);
+  }, [quantities, products, setValue]);
 
   // Seleccionar producto
   const selectProduct = (product) => {
@@ -68,13 +91,13 @@ const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated })
     });
   };
 
-  // Calcular total
-  const total = Object.entries(quantities).reduce((acc, [id, qty]) => {
-    const prod = products.find((p) => p._id === id);
-    if (!prod) return acc;
-    const precio = prod.variant?.[0]?.variantPrice ?? prod.currentPrice;
-    return acc + qty * precio;
-  }, 0);
+  // Calcular total desde el form
+  const total = watch("products")?.reduce((acc, p) => acc + (p.subtotal || 0), 0) || 0;
+
+  useEffect(() => {
+    const total = productsInForm?.reduce((acc, p) => acc + (p.subtotal || 0), 0) || 0;
+    setValue("total", total); // Guarda el total en el form
+  }, [productsInForm, setValue]);
 
   const metodosPago = [
     { _id: "credit card", label: "Tarjeta de Crédito" },
@@ -83,60 +106,11 @@ const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated })
     { _id: "bank transfer", label: "Transferencia" },
   ];
 
-  // Guardar orden (crear o editar)
   const onSubmit = async (data) => {
     try {
-      let orderData;
+      await createSalesOrderPrivate(data)
+      console.log(data);
 
-      if (!editingOrderId) {
-        // --- Crear cliente mínimo ---
-        const customer = await Customers.create({
-          name: data.name,
-          contact: data.phoneNumber
-        });
-
-        // --- Crear carrito vacío ---
-        const cart = await ShoppingCart.create({
-          idUser: customer._id,
-          products: [],
-          total: 0,
-          status: "active"
-        });
-
-        // --- Crear orden ---
-        orderData = await SalesOrder.create({
-          idShoppingCart: cart._id,
-          cliente: data.name,
-          paymentMethod: data.paymentMethod,
-          address: data.address,
-          saleDate: new Date(),
-          shippingTotal: 5.0,
-          total: total,
-          shippingState: [{ state: "Pendiente" }],
-          products: Object.entries(quantities).map(([id, quantity]) => ({
-            productId: id,
-            quantity,
-          })),
-        });
-
-        if (onOrderCreated) onOrderCreated(orderData);
-      } else {
-        // Editar orden existente
-        orderData = {
-          cliente: data.name,
-          paymentMethod: data.paymentMethod,
-          address: data.address,
-          total: total,
-          products: Object.entries(quantities).map(([id, quantity]) => ({
-            productId: id,
-            quantity,
-          })),
-        };
-        const result = await updateOrder(editingOrderId, orderData);
-        if (result && onOrderUpdated) onOrderUpdated(result);
-      }
-
-      onClose();
     } catch (err) {
       console.error("Error al crear/editar orden:", err);
     }
@@ -152,7 +126,7 @@ const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated })
         <div className="flex justify-center items-center gap-4 w-full">
           <Input name="name" label="Nombre" type="text" register={register} errors={errors} />
           <Dropdown name="paymentMethod" label="Método de pago" options={metodosPago} register={register} />
-          <Input name="phoneNumber" label="Teléfono" type="text" register={register} />
+          <Input name="email" label="Correo Electronico" type="text" register={register} />
         </div>
 
         <input
@@ -170,9 +144,8 @@ const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated })
               <div
                 key={prod._id}
                 onClick={() => selectProduct(prod)}
-                className={`cursor-pointer p-3 rounded-lg shadow-sm border ${
-                  isSelected ? "bg-pink-200" : "bg-pink-50 border-pink-200"
-                } hover:shadow-md transition`}
+                className={`cursor-pointer p-3 rounded-lg shadow-sm border ${isSelected ? "bg-pink-200" : "bg-pink-50 border-pink-200"
+                  } hover:shadow-md transition`}
               >
                 <img src={prod.images?.[0]} alt={prod.name} className="w-full h-28 object-cover rounded mb-2" />
                 <p className="text-center font-semibold">{prod.name}</p>
@@ -195,7 +168,7 @@ const RegisterOrder = ({ onClose, initialData, onOrderCreated, onOrderUpdated })
                   <div>
                     <p className="font-semibold">{prod.name}</p>
                     <p className="text-sm text-gray-600">
-                      Precio: ${((prod.variant?.[0]?.variantPrice ?? 0) * (1 - (prod.discount || 0)/100)).toFixed(2)}
+                      Precio: ${((prod.variant?.[0]?.variantPrice) * (1 - (prod.discount || 0) / 100)).toFixed(2)}
                     </p>
                   </div>
                 </div>

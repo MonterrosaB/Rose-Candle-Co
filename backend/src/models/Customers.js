@@ -25,7 +25,7 @@ const addressSchema = new Schema(
         values: ["casa", "trabajo", "otro"], // Solo estos valores permitidos
         message: "El tipo de dirección debe ser 'casa', 'trabajo' u 'otro'",
       },
-      default: "casa", // Valor por defecto si no se especifica
+      default: "otro", // Valor por defecto si no se especifica
     },
     isDefault: {
       type: Boolean,
@@ -51,11 +51,6 @@ const customerSchema = new Schema(
       maxLength: 100,
       trim: true,
     },
-    contact: {
-      type: String,
-      required: true, // Obligatorio (teléfono, email, etc.)
-      trim: true,
-    },
     surnames: {
       type: String,
       match: [
@@ -69,6 +64,7 @@ const customerSchema = new Schema(
     email: {
       type: String,
       unique: true,
+      required: true, // Obligatorio
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Debe ser un correo electrónico válido",

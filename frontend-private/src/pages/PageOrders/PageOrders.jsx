@@ -100,37 +100,35 @@ const PageOrders = () => {
         )}
       </div>
 
-          {/* Cards móvil */}
-          <div className="md:hidden pt-17 space-y-4 px-4 py-4">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
-            {salesOrders.map((order) => (
-              <div
-                key={order.idShoppingCart}
-                className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
-              >
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>ID Orden:</strong> {order.idShoppingCart}
-                </p>
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>Fecha:</strong> {new Date(order.createdAt).toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>Monto:</strong> ${order.total?.toFixed(2)}
-                </p>
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>Método de pago:</strong> {order.paymentMethod}
-                </p>
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>Estado:</strong> {order.shippingState[0]?.state || "Sin estado"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Dirección:</strong> {order.address}
-                </p>
-              </div>
-            ))}
+      {/* Cards móvil */}
+      <div className="md:hidden pt-17 space-y-4 px-4 py-4">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
+        {salesOrders.map((order) => (
+          <div
+            key={order.idShoppingCart}
+            className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
+          >
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>ID Orden:</strong> {order.idShoppingCart}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Fecha:</strong> {new Date(order.createdAt).toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Monto:</strong> ${order.total?.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Método de pago:</strong> {order.paymentMethod}
+            </p>
+            <p className="text-sm text-gray-600 mb-1">
+              <strong>Estado:</strong> {order.shippingState[0]?.state || "Sin estado"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Dirección:</strong> {order.address}
+            </p>
           </div>
-        </div>
-      </PrincipalDiv>
+        ))}
+      </div>
       {/* Tabla desktop */}
 
     </>

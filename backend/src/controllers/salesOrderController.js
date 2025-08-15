@@ -1,6 +1,6 @@
 import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Orden de Venta
-import Product from "../models/Products.js"; // Modelo de Orden de Venta
-
+import Customers from "../models/Customers.js";
+import ShoppingCart from "../models/ShoppingCart.js";
 
 // Controlador con métodos CRUD para Ordenes de Venta
 const salesOrderController = {};
@@ -11,15 +11,15 @@ salesOrderController.getSalesOrders = async (req, res) => {
     // Buscar todas las órdenes y popular el campo idShoppingCart con los datos correspondientes
     const orders = await SalesOrderModel.find() // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
-   path: "idShoppingCart",
-    populate: [
-      { path: "idUser", select: "name" },
-      { path: "products.idProduct", select: "name" }
-    ]
-  });
-      
+        path: "idShoppingCart",
+        populate: [
+          { path: "idUser", select: "name" },
+          { path: "products.idProduct", select: "name" },
+        ],
+      });
+
     // Calcular el total de productos y precio total por cada orden
-    const ordersWithTotals = orders.map(order => {
+    const ordersWithTotals = orders.map((order) => {
       const products = order.idShoppingCart?.products || [];
       const totalQuantity = products.length; // número de productos
       const totalPrice = products.reduce((acc, prod) => {
@@ -40,7 +40,6 @@ salesOrderController.getSalesOrders = async (req, res) => {
     res.status(500).json({ message: "Error al obtener las órdenes" });
   }
 };
-      
 
 // POST - Crear una nueva orden de venta
 salesOrderController.createSalesOrder = async (req, res) => {
@@ -108,45 +107,39 @@ salesOrderController.createSalesOrder = async (req, res) => {
   }
 };
 
-
 // ---------------- POST - Crear nueva orden manual ----------------
 salesOrderController.createSalesOrderPrivate = async (req, res) => {
-  const { name, phoneNumber, paymentMethod, address, shippingTotal, products } = req.body;
+  const { name, email, paymentMethod, address, products, total } = req.body;
 
-  if (!name || !phoneNumber) {
-    return res.status(400).json({ message: "Name and phone are required" });
+  if (!name || !email) {
+    return res.status(400).json({ message: "Name and email are required" });
   }
 
   try {
     // 1️Crear cliente mínimo
-    const customer = await Customers.create({ name, contact: phoneNumber });
 
-    //  Crear carrito vacío
-    const cart = await ShoppingCart.create({
-      idUser: customer._id,
-      products: [],
-      total: 0,
-      status: "active",
+    const customer = await Customers.create({
+      name,
+      email,
+      addresses: [{ address: address, default: true }],
     });
 
-    // Agregar productos y calcular total
-    let total = 0;
-    for (const p of products || []) {
-      const price = p.price ?? 0;
-      total += price * p.quantity;
-      cart.products.push({ idProduct: p.productId, quantity: p.quantity, subtotal: price * p.quantity });
-    }
-    cart.total = total + (shippingTotal ?? 0);
-    await cart.save();
+    console.log(req.body);
+
+    //  Crear carrito
+    const cart = await ShoppingCart.create({
+      idUser: customer._id,
+      products,
+      total: total,
+      status: "active",
+    });
 
     // Crear orden
     const newOrder = await SalesOrderModel.create({
       idShoppingCart: cart._id,
-      cliente: customer._id,
       paymentMethod,
-      address,
-      shippingTotal: shippingTotal ?? 0,
-      total: cart.total,
+      shippingTotal: 0,
+      total: total,
       shippingState: [{ state: "Pendiente" }],
     });
 
@@ -156,7 +149,6 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 // PUT - Actualizar una orden de venta existente por ID
 salesOrderController.updateSalesOrder = async (req, res) => {
@@ -235,8 +227,6 @@ salesOrderController.deleteSalesOrder = async (req, res) => {
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
-
-
 
 // PUT - Restaurar orden eliminada
 salesOrderController.restoreSalesOrder = async (req, res) => {
@@ -501,7 +491,8 @@ salesOrderController.totalEarnings = async (req, res) => {
 
     const monthlyEarnings = monthlyEarningsResult[0]?.monthlyEarnings || 0;
 
-    res.status(200).json({ // todo bien
+    res.status(200).json({
+      // todo bien
       totalEarnings,
       monthlyEarnings,
     });
@@ -540,8 +531,6 @@ salesOrderController.getLatestOrders = async (req, res) => {
   }
 };
 
-
-
 // GET - Obtener carrito activo de un usuario y sus productos
 salesOrderController.getUserCartWithProducts = async (req, res) => {
   const { userId } = req.params;
@@ -550,46 +539,54 @@ salesOrderController.getUserCartWithProducts = async (req, res) => {
     // Buscamos la orden cuyo carrito activo corresponde al usuario
     const order = await SalesOrder.findOne()
       .populate({
-        path: 'idShoppingCart',
-        match: { idUser: userId, status: 'active' },
+        path: "idShoppingCart",
+        match: { idUser: userId, status: "active" },
         populate: {
-          path: 'products.idProduct',
-          select: 'name variant discount',
+          path: "products.idProduct",
+          select: "name variant discount",
         },
       })
       .sort({ saleDate: -1 }); // orden más reciente
 
     // Si no hay orden o carrito activo
     if (!order || !order.idShoppingCart) {
-      return res.status(404).json({ message: 'Carrito activo no encontrado para el usuario' });
+      return res
+        .status(404)
+        .json({ message: "Carrito activo no encontrado para el usuario" });
     }
 
     // Formateamos los productos igual que antes
-    const formattedProducts = order.idShoppingCart.products.map(item => {
-      const product = item.idProduct;
-      if (!product || !product.variant || product.variant.length === 0) return null;
+    const formattedProducts = order.idShoppingCart.products
+      .map((item) => {
+        const product = item.idProduct;
+        if (!product || !product.variant || product.variant.length === 0)
+          return null;
 
-      const variantIndex = item.selectedVariantIndex || 0;
-      const variant = product.variant[variantIndex] || product.variant[0];
-      const basePrice = parseFloat(variant.variantPrice) || 0;
-      const discount = product.discount || 0;
-      const finalPrice = basePrice * (1 - discount / 100);
+        const variantIndex = item.selectedVariantIndex || 0;
+        const variant = product.variant[variantIndex] || product.variant[0];
+        const basePrice = parseFloat(variant.variantPrice) || 0;
+        const discount = product.discount || 0;
+        const finalPrice = basePrice * (1 - discount / 100);
 
-      const quantity = item.quantity || 1;
+        const quantity = item.quantity || 1;
 
-      return {
-        id: product._id,
-        name: product.name,
-        basePrice,
-        discount,
-        finalPrice: finalPrice.toFixed(2),
-        quantity,
-        subtotal: (finalPrice * quantity).toFixed(2),
-        selectedVariantIndex: variantIndex,
-      };
-    }).filter(Boolean);
+        return {
+          id: product._id,
+          name: product.name,
+          basePrice,
+          discount,
+          finalPrice: finalPrice.toFixed(2),
+          quantity,
+          subtotal: (finalPrice * quantity).toFixed(2),
+          selectedVariantIndex: variantIndex,
+        };
+      })
+      .filter(Boolean);
 
-    const totalCartPrice = formattedProducts.reduce((sum, p) => sum + parseFloat(p.subtotal), 0);
+    const totalCartPrice = formattedProducts.reduce(
+      (sum, p) => sum + parseFloat(p.subtotal),
+      0
+    );
 
     return res.status(200).json({
       orderId: order._id,
@@ -603,11 +600,10 @@ salesOrderController.getUserCartWithProducts = async (req, res) => {
       shippingState: order.shippingState,
     });
   } catch (error) {
-    console.error('Error al obtener la orden con carrito:', error);
-    return res.status(500).json({ message: 'Error interno del servidor' });
+    console.error("Error al obtener la orden con carrito:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
 
 // Exportar controlador para usarlo en rutas
 export default salesOrderController;
