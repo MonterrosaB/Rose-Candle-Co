@@ -35,15 +35,12 @@ export default function OrdersSection() {
 
   useEffect(() => {
     const fetchPedidos = async () => {
-      if (!user?._id) {
+      if (!user?.id) {
         setLoading(false)
         return
       }
       try {
-        console.log("Este es el id"+user._id)
-        console.log("Entra al try")
-        console.log("no se")
-        const response = await fetch(`${API}/orders/cart/user/${user._id}`, {
+        const response = await fetch(`${API}/salesOrder/user/${user.id}`, {
           credentials: "include",
         })
         if (!response.ok) throw new Error("Error al obtener pedidos")

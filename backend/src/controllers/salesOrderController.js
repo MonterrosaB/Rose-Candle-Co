@@ -533,72 +533,23 @@ salesOrderController.getLatestOrders = async (req, res) => {
 
 // GET - Obtener carrito activo de un usuario y sus productos
 salesOrderController.getUserCartWithProducts = async (req, res) => {
-  const { userId } = req.params;
+  const { userId } = req.params.userId;
 
   try {
     // Buscamos la orden cuyo carrito activo corresponde al usuario
-    const order = await SalesOrder.findOne()
+    const order = await SalesOrderModel.find({ "idShoppingCart.idUser": userId }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
         path: "idShoppingCart",
-        match: { idUser: userId, status: "active" },
-        populate: {
-          path: "products.idProduct",
-          select: "name variant discount",
-        },
-      })
-      .sort({ saleDate: -1 }); // orden más reciente
-
-    // Si no hay orden o carrito activo
-    if (!order || !order.idShoppingCart) {
-      return res
-        .status(404)
-        .json({ message: "Carrito activo no encontrado para el usuario" });
-    }
+        populate: [
+          { path: "idUser", select: "name" },
+          { path: "products.idProduct" , select :  "name"},
+        ],
+      });
 
     // Formateamos los productos igual que antes
-    const formattedProducts = order.idShoppingCart.products
-      .map((item) => {
-        const product = item.idProduct;
-        if (!product || !product.variant || product.variant.length === 0)
-          return null;
 
-        const variantIndex = item.selectedVariantIndex || 0;
-        const variant = product.variant[variantIndex] || product.variant[0];
-        const basePrice = parseFloat(variant.variantPrice) || 0;
-        const discount = product.discount || 0;
-        const finalPrice = basePrice * (1 - discount / 100);
 
-        const quantity = item.quantity || 1;
-
-        return {
-          id: product._id,
-          name: product.name,
-          basePrice,
-          discount,
-          finalPrice: finalPrice.toFixed(2),
-          quantity,
-          subtotal: (finalPrice * quantity).toFixed(2),
-          selectedVariantIndex: variantIndex,
-        };
-      })
-      .filter(Boolean);
-
-    const totalCartPrice = formattedProducts.reduce(
-      (sum, p) => sum + parseFloat(p.subtotal),
-      0
-    );
-
-    return res.status(200).json({
-      orderId: order._id,
-      cartId: order.idShoppingCart._id,
-      paymentMethod: order.paymentMethod,
-      address: order.address,
-      saleDate: order.saleDate,
-      shippingTotal: order.shippingTotal,
-      totalCalculated: totalCartPrice.toFixed(2),
-      products: formattedProducts,
-      shippingState: order.shippingState,
-    });
+    return res.status(200).json(order);
   } catch (error) {
     console.error("Error al obtener la orden con carrito:", error);
     return res.status(500).json({ message: "Error interno del servidor" });

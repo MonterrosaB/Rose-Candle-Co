@@ -32,7 +32,7 @@ const Cart = () => {
     return (
       <CheckoutFlow
         cartItems={cartItems}
-        total={getTotal()}
+        total={total}
         onBack={handleBackToCart}
         onClearCart={handleClear}
       />

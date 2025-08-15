@@ -62,7 +62,10 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
 
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
-  try {
+    console.log(formData);
+    
+  /*try {
+    
     setIsProcessing(true);
 
     // 1. Obtener token
@@ -121,7 +124,7 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
     console.error("Error en el proceso de pago:", err);
     alert(`Error: ${err.message}`);
     setIsProcessing(false);
-  }
+  }*/
 };
 
 
