@@ -49,7 +49,7 @@ loginController.login = async (req, res) => {
 
     // Generar y firmar el token JWT
     const token = JsonWebToken.sign(
-      { id: userFound._id, userType },
+      { id: userFound._id, userType, name: userFound.name},
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn } // ej: "30d"
     );
