@@ -95,7 +95,7 @@ customersController.restoreCustomers = async (req, res) => {
 // GET - USUARIOS TOTALES
 customersController.countCustomers = async (req, res) => {
   try {
-    const count = await customersModel.estimatedDocumentCount(); // Contar documentos en la colección
+    const count = await customersModel.countDocuments({ deleted: false }); // Contar documentos en la colección, solo los que estén activos
     res.status(200).json({ count }); // Responder con la cantidad
   } catch (error) {
     console.error("Error al contar usuarios:", error); // Log de error
@@ -106,7 +106,6 @@ customersController.countCustomers = async (req, res) => {
 // GET - USUARIOS TOTALES EL ÚLTIMO MES
 customersController.countCustomersByMonth = async (req, res) => {
   try {
-    // Obtener la fecha del mes actual
     const now = new Date();
 
     // Inicio del mes actual
@@ -115,18 +114,19 @@ customersController.countCustomersByMonth = async (req, res) => {
     // Inicio del mes siguiente
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-    // Consulta con rango
-    const count = await customersModel.estimatedDocumentCount({
+    // Consulta con filtros
+    const count = await customersModel.countDocuments({
       createdAt: {
         $gte: startOfMonth,
         $lt: startOfNextMonth,
       },
+      deleted: false, // Solo las cuentas activas
     });
 
-    res.status(200).json({ count }); // Responder con el conteo
+    res.status(200).json({ count });
   } catch (error) {
     console.error("Error al contar usuarios:", error);
-    res.status(500).json({ message: "Internal server error" }); // Error del servidor
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

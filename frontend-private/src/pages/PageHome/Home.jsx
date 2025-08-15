@@ -4,7 +4,7 @@ import { Boxes, DollarSign, User } from "lucide-react";
 import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
-import DataGrid from "../../global/components/DataGrid";
+import DataGrid from "./components/DataGrid.jsx";
 import useHome from "./hooks/useHome"; // Hook
 
 const Home = () => {
