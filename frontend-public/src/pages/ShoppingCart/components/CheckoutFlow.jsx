@@ -80,27 +80,9 @@ const CheckoutFlow = ({
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
     console.log(formData);
-
-    const orderPayload = {
-  idShoppingCart: shoppingCartId, // debes obtenerlo de tu lógica
-  paymentMethod: formData.payment.paymentMethod, // "card"
-  address: `${formData.shipping.address}, ${formData.shipping.city}, ${formData.shipping.zipCode}, ${formData.shipping.country}`,
-  saleDate: new Date(),
-  shippingTotal: 0, // ejemplo
-  total: total, // suma productos + envío
-  shippingState: [
-    { state: "procesado", date: new Date() },
-  ],
-};
-
-    const createOrder = await fetch("http://localhost:4000/api/salesOrder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(orderPayload),
-    });
-
-    /*try {
+    
+  /*try {
+    
     setIsProcessing(true);
 
     // 1. Obtener token
@@ -160,7 +142,8 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
     alert(`Error: ${err.message}`);
     setIsProcessing(false);
   }*/
-  };
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 pt-45">
