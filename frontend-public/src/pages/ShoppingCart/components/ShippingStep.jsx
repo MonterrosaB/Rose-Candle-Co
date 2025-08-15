@@ -107,21 +107,9 @@ const ShippingStep = ({ formData, handleInputChange }) => {
       </div>
 
       <div className="relative">
-        <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={formData.email}
-          disabled={isDisabled}
-          onChange={(e) => handleInputChange("shipping", "email", e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg disabled:bg-gray-100"
-        />
-      </div>
-
-      <div className="relative">
         <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <input
-          type="tel"
+          type="phone"
           placeholder="Teléfono"
           value={formData.phone}
           disabled={isDisabled}
@@ -145,7 +133,15 @@ const ShippingStep = ({ formData, handleInputChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input
           type="text"
-          placeholder="Ciudad"
+          placeholder="Departamento"
+          value={formData.state}
+          disabled={isDisabled}
+          onChange={(e) => handleInputChange("shipping", "state", e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg disabled:bg-gray-100"
+        />
+        <input
+          type="text"
+          placeholder="Municipio"
           value={formData.city}
           disabled={isDisabled}
           onChange={(e) => handleInputChange("shipping", "city", e.target.value)}
@@ -159,16 +155,6 @@ const ShippingStep = ({ formData, handleInputChange }) => {
           onChange={(e) => handleInputChange("shipping", "zipCode", e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg disabled:bg-gray-100"
         />
-        <select
-          value={formData.country}
-          disabled={isDisabled}
-          onChange={(e) => handleInputChange("shipping", "country", e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg disabled:bg-gray-100"
-        >
-          <option value="México">México</option>
-          <option value="Estados Unidos">Estados Unidos</option>
-          <option value="Canadá">Canadá</option>
-        </select>
       </div>
     </div>
   );

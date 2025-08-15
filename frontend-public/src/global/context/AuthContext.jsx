@@ -64,8 +64,8 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const token = data.token; // ✅ Ahora tomas el token del body
-        const user = data.customer; // ✅ Y el usuario
+        const token = data.token; // Ahora tomas el token del body
+        const user = data.customer; // Y el usuario
 
         if (token && user) {
           localStorage.setItem("token", token);

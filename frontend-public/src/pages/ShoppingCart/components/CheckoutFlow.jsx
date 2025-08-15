@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "../../../global/context/AuthContext.jsx"
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,6 +15,7 @@ import ShippingStep from "./ShippingStep";
 import PaymentStep from "./PaymentStep";
 import ReviewStep from "./ReviewStep";
 import ConfirmationStep from "./ConfirmationStep";
+ 
 
 const CheckoutFlow = ({
   cartItems = [],
@@ -21,6 +24,9 @@ const CheckoutFlow = ({
   onClearCart,
 }) => {
 
+  const { user } = useContext(AuthContext)
+
+
  
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -28,10 +34,11 @@ const CheckoutFlow = ({
     shipping: {
       firstName: "",
       lastName: "",
-      email: "",
+      email: user.email || "",
       phone: "",
       address: "",
       city: "",
+      state: "",
       zipCode: "",
       country: "El Salvador",
     },
@@ -105,8 +112,8 @@ const CheckoutFlow = ({
   tokenTarjeta: "null", // simulado
 };
 
-// 🧪 Consola para verificar si el email está llegando
-console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
+//  Consola para verificar si el email está llegando
+console.log(" Email cliente (desde frontend):", formData.shipping.email);
 
 
     // 3. Enviar pago simulado

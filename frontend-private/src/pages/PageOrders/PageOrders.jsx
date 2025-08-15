@@ -13,26 +13,40 @@ const PageOrders = () => {
     fetch("http://localhost:4000/api/salesOrder")
       .then(res => res.json())
       .then(data => {
-        const formatted = data.map(order => ({
-          _id: order._id,
-          idShoppingCart: order.idShoppingCart?._id || "",
-          cliente: order.idShoppingCart?.idUser?.name || "Sin cliente",
-          paymentMethod: order.paymentMethod || "No especificado",
-          address: order.address || "Sin dirección",
-          saleDate: order.saleDate,
-          shippingTotal: order.shippingTotal,
-          total: order.total,
-          shippingState: order.shippingState || [],
-          createdAt: order.createdAt,
-          updatedAt: order.updatedAt
-        }));
+        const formatted = data.map(order => {
+          const products = order.idShoppingCart?.products || [];
+  
+          const totalQuantity = products.reduce((sum, p) => sum + (p.quantity || 0), 0);
+          const totalPrice = products.reduce((sum, p) => sum + (p.subtotal || 0), 0);
+  
+          return {
+            _id: order._id,
+            idShoppingCart: order.idShoppingCart?._id || "",
+            name: order.idShoppingCart?.idUser?.name || "Sin cliente",
+            paymentMethod: order.paymentMethod || "No especificado",
+            address: order.address || "Sin dirección",
+            saleDate: order.saleDate,
+            shippingTotal: order.shippingTotal,
+            total: order.total,
+            shippingState: order.shippingState || [],
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            products,
+            totalQuantity,
+            totalPrice
+          };
+        });
+        console.log(formatted);
+
         setSalesOrders(formatted);
+        
       })
       .catch(err => console.error("Error al traer órdenes:", err));
   }, []);
+  
 
   const columns = {
-    Cliente: "cliente",
+    Cliente: "name",
     Productos: "idShoppingCart",
     Fecha: "saleDate",
     Monto: "total",
@@ -46,7 +60,7 @@ const PageOrders = () => {
     setOpenDialogOrders(true);
   };
 
-  // 🔹 Abrir modal para editar
+  // Abrir modal para editar
   const handleEditOrder = (order) => {
     setSelectedOrder(order);
     setOpenDialogOrders(true);

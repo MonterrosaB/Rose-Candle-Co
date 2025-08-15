@@ -21,6 +21,24 @@ const addressSchema = new Schema(
       required: true,
       trim: true,
     },
+    firstName: {
+      type: String,
+      required : true,
+      match: [
+        /^[a-zA-Z\s]+$/,
+        "firstname must contain only letters and spaces",
+      ],
+      trim: true
+    },
+    lastName: {
+      type: String,
+      required : true,
+      match: [
+        /^[a-zA-Z\s]+$/,
+        "lastname must contain only letters and spaces",
+      ],
+      trim: true
+    },
     state: {
       type: String,
       required: true,
@@ -39,17 +57,19 @@ const addressSchema = new Schema(
         "city must contain only letters and spaces",
       ],
     },
-    type: {
+    zipCode: {
       type: String,
-      enum: {
-        values: ["home", "work", "other"],
-        message: "Address type must be 'home', 'work', or 'other'",
-      },
-      default: "other",
+      required: true,
+      trim: true,
+      match: [/^[a-zA-Z0-9\-]+$/, "Zip code must contain only letters, numbers, or hyphens"],
     },
-    isDefault: {
-      type: Boolean,
-      default: false,
+    
+    phone: {
+      type: String,
+      required: true, // Obligatorio
+      match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
+      minLength: 9, // Incluye guion
+      trim: true, // Limpia espacios
     },
   },
   {
@@ -101,13 +121,12 @@ const customerSchema = new Schema(
       ],
       trim: true,
     },
-    user: {
+    phone: {
       type: String,
-      match: [
-        /^[a-zA-Z0-9_]+$/,
-        "El usuario solo puede contener letras, números y guiones bajos",
-      ],
-      trim: true,
+      required: true, // Obligatorio
+      match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
+      minLength: 9, // Incluye guion
+      trim: true, // Limpia espacios
     },
     addresses: {
       type: [addressSchema],

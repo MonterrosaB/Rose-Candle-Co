@@ -8,7 +8,15 @@ const useOrders = (methods) => {
   const { register, handleSubmit, reset, formState: { errors }, setValue, control, watch } = methods;
 
   const [products, setProducts] = useState([]);
-
+  const [quantities, setQuantities] = useState(() => {
+    if (initialData?.products) {
+      return initialData.products.reduce((acc, p) => {
+        acc[p.idProduct] = p.quantity;
+        return acc;
+      }, {});
+    }
+    return {};
+  });
   // Obtener productos desde el backend
   const getProductsForOrders = async () => {
     try {
@@ -85,6 +93,8 @@ const useOrders = (methods) => {
     watch,
     createSalesOrderPrivate,
     products,
+    quantities,
+    setQuantities,
   };
 };
 
