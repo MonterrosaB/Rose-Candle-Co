@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
-import { Link } from "react-router-dom";
+import ProfileForm from "../components/ProfileForm.jsx"
 
 const Profile = () => {
   // Cambiar el título de la página al montar el componente
@@ -12,7 +12,7 @@ const Profile = () => {
 
   return (
     <PrincipalDiv>
-      
+        <ProfileForm/>
     </PrincipalDiv>
   );
 };
