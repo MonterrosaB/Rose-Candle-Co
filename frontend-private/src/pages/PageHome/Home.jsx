@@ -1,17 +1,21 @@
 // Lógica para la página de home
-import React, { useState, useEffect } from "react";
-import { Boxes, DollarSign, User } from "lucide-react";
+import React, { useState, useEffect, useContext } from "react";
+import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
 import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
 import DataGrid from "./components/DataGrid.jsx";
+import { AuthContext } from "../../global/context/AuthContext"; // Para el nombre del usuario
 import useHome from "./hooks/useHome"; // Hook
+import { Link } from "react-router-dom";
 
 const Home = () => {
   // Cambiar el título de la página al montar el componente
   useEffect(() => {
     document.title = "Home | Rosé Candle Co.";
   }, []);
+
+  const { user } = useContext(AuthContext); // Nombre del usuario
 
   const {
     customerCount,
@@ -47,9 +51,14 @@ const Home = () => {
 
   return (
     <PrincipalDiv>
-      <h1 className="text-2xl font-semibold mb-1">
-        Bienvenida de nuevo, Eli
-      </h1>
+      <Link to="/profile">
+        <div className="flex flex-wrap mb-1 items-center">
+          <CircleUser strokeWidth={2.5} className="cursor-pointer" />
+          <h1 className="text-2xl font-semibold ml-2">
+            Hola de nuevo, {user?.name || "usuario"}
+          </h1>
+        </div>
+      </Link>
 
       {/* Widgets */}
       <div className="w-full flex flex-wrap justify-left gap-x-14 gap-y-8 mb-1">
