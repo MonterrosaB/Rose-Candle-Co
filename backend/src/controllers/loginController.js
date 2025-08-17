@@ -7,6 +7,9 @@ import employeesModel from "../models/Employees.js"; // Modelo de empleados
 // Controlador de login
 const loginController = {};
 
+const MAX_ATTEMPTS = 5; // número máximo de intentos
+const LOCK_TIME = 1 * 60 * 1000; // 1 minuto
+
 // Función para el login
 loginController.login = async (req, res) => {
   // Solicitar información del cuerpo de la solicitud
@@ -38,12 +41,51 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
-    // Validar la contraseña (solo si no es admin)
-    if (userType !== "admin") {
-      const isMatch = await bcryptjs.compare(password, userFound.password); // Comparar contraseñas
-      if (!isMatch) {
-        return res.status(400).json({ message: "Invalid password" }); // Contraseña incorrecta
+    //Si es empleado, verificar bloqueo
+    if (userType === "employee") {
+      if (userFound.lockUntil && userFound.lockUntil > Date.now()) {
+        const remaining = Math.ceil(
+          (userFound.lockUntil - Date.now()) / 1000 / 60
+        );
+        return res.status(403).json({
+          message: `Cuenta bloqueada. Intente nuevamente en ${remaining} minuto(s)`,
+        });
       }
+    }
+
+    // Validar la contraseña (solo si no es admin)
+      if (userType !== "admin") {
+      const isMatch = await bcryptjs.compare(password, userFound.password);
+
+      if (!isMatch) {
+        if (userType === "employee") {
+          // Incrementar intentos fallidos
+          userFound.loginAttempts = (userFound.loginAttempts || 0) + 1;
+
+          if (userFound.loginAttempts >= MAX_ATTEMPTS) {
+            userFound.lockUntil = Date.now() + LOCK_TIME;
+            await userFound.save();
+            return res.status(403).json({
+              message: `Cuenta bloqueada por ${LOCK_TIME / 60000} minuto(s)`,
+            });
+          }
+
+          await userFound.save();
+           return res.status(401).json({
+        message: `Contraseña incorrecta. Intentos restantes: ${MAX_ATTEMPTS - userFound.loginAttempts}`
+      });
+        }
+
+        // Si fuera admin pero contraseña incorrecta
+        return res.status(400).json({ message: "Invalid password" });
+      }
+    }
+
+     //Si es empleado y pasa login se resetean los intentos
+    if (userType === "employee") {
+      userFound.loginAttempts = 0;
+      userFound.lockUntil = null;
+      await userFound.save();
     }
 
     // Generar y firmar el token JWT

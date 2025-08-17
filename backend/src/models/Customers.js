@@ -101,12 +101,14 @@ const customerSchema = new Schema(
     },
     addresses: {
       type: [addressSchema], // Arreglo de direcciones usando el subesquema definido
-      default: null // Por defecto vacío
+      default: null, // Por defecto vacío
     },
     deleted: {
       type: Boolean, // Campo lógico para eliminaciones suaves
       default: false, // Por defecto, no eliminado
     },
+    loginAttempts: { type: Number, default: 0 }, //incrementador de intentos de inicio de sesion 
+    lockUntil: { type: Date, default: null }, //bloqueo hasta cierto tiempo 
   },
   {
     timestamps: true, // Campos createdAt y updatedAt automáticos
@@ -116,4 +118,3 @@ const customerSchema = new Schema(
 
 // Exportar modelo para uso en la app
 export default model("Customers", customerSchema);
-

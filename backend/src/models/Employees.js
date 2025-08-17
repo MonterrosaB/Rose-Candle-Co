@@ -104,6 +104,8 @@ const employeeSchema = new Schema(
       type: Boolean, // Campo lógico para indicar si el registro está eliminado
       default: false, // Por defecto no está eliminado
     },
+    loginAttempts: { type: Number, default: 0 }, //incrementador de intentos de inicio de sesion 
+    lockUntil: { type: Date, default: null }, //bloqueo hasta cierto tiempo 
   },
   {
     timestamps: true, // Campos automáticos createdAt y updatedAt
