@@ -23,7 +23,7 @@ const shippingStateSchema = new Schema(
     },
     date: {
       type: Date,
-      required: true, // Fecha en que se registró este estado
+      default: Date.now, // Fecha en que se registró este estado
     },
   },
   { _id: false }
@@ -41,12 +41,6 @@ const SalesOrderSchema = new Schema(
       type: String,
       required: true, // Método de pago obligatorio
       enum: ["credit card", "paypal", "cash", "bank transfer"], // Métodos permitidos
-    },
-    address: {
-      type: String,
-      required: true, // Dirección de envío obligatoria
-      minLength: 5, // Longitud mínima para evitar datos inválidos
-      trim: true,
     },
     saleDate: {
       type: Date,

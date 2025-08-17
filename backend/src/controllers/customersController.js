@@ -1,4 +1,6 @@
 import customersModel from "../models/Customers.js"; // Modelo de Clientes
+import jwt from "jsonwebtoken";
+
 
 // Objeto que agrupa los métodos CRUD para clientes
 const customersController = {};
@@ -14,14 +16,45 @@ customersController.getCustomers = async (req, res) => {
   }
 };
 
+customersController.getCustomersAddress = async (req, res) => {
+  try {
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.status(401).json({ message: "No autorizado" });
+    }
+
+    // Decodificar token para obtener el ID del usuario
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userID = decoded.id;
+
+    // Buscar solo direcciones del usuario
+    const customer = await customersModel.findOne(
+      { _id: userID, deleted: false },
+      { addresses: 1 } // solo obtener el campo addresses
+    );
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    res.status(200).json(customer.addresses || []);
+  } catch (error) {
+    console.error("Error obteniendo direcciones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+
+
+
 // DELETE - Eliminar un cliente por ID
 customersController.deleteCustomers = async (req, res) => {
   try {
-   const deletedCustomer = await customersModel.findByIdAndUpdate(
-         req.params.id,
-         { deleted: true }, // Se marca como "eliminada"
-         { new: true }
-       ); // Eliminar por ID
+    const deletedCustomer = await customersModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     if (!deletedCustomer) {
       return res.status(400).json({ message: "Customer not found" }); // Cliente no encontrado
@@ -88,6 +121,139 @@ customersController.restoreCustomers = async (req, res) => {
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// REPORTES
+// GET - USUARIOS TOTALES
+customersController.countCustomers = async (req, res) => {
+  try {
+    const count = await customersModel.countDocuments({ deleted: false }); // Contar documentos en la colección, solo los que estén activos
+    res.status(200).json({ count }); // Responder con la cantidad
+  } catch (error) {
+    console.error("Error al contar usuarios:", error); // Log de error
+    res.status(500).json({ message: "Internal server error" }); // Error del servidor
+  }
+};
+
+// GET - USUARIOS TOTALES EL ÚLTIMO MES
+customersController.countCustomersByMonth = async (req, res) => {
+  try {
+    const now = new Date();
+
+    // Inicio del mes actual
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Inicio del mes siguiente
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    // Consulta con filtros
+    const count = await customersModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: startOfNextMonth,
+      },
+      deleted: false, // Solo las cuentas activas
+    });
+
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error("Error al contar usuarios:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Obtener direcciones de un cliente
+customersController.getAddresses = async (req, res) => {
+  try {
+    const customer = await customersModel.findById(req.params.id);
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    res.status(200).json(customer.addresses || []);
+  } catch (error) {
+    console.error("Error al obtener direcciones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Agregar una dirección al cliente
+customersController.addAddress = async (req, res) => {
+  const { address, type, isDefault } = req.body;
+
+  try {
+    const customer = await customersModel.findById(req.params.id);
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    // Si es predeterminada, desmarcar otras
+    if (isDefault) {
+      customer.addresses.forEach((addr) => (addr.isDefault = false));
+    }
+
+    customer.addresses.push({ address, type, isDefault });
+
+    await customer.save();
+    res.status(201).json({ message: "Dirección agregada", addresses: customer.addresses });
+  } catch (error) {
+    console.error("Error al agregar dirección:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Eliminar una dirección específica por su _id
+customersController.deleteAddress = async (req, res) => {
+  const { id, addressId } = req.params;
+
+  try {
+    const customer = await customersModel.findById(id);
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    customer.addresses = customer.addresses.filter((addr) => addr._id.toString() !== addressId);
+
+    await customer.save();
+    res.status(200).json({ message: "Dirección eliminada", addresses: customer.addresses });
+  } catch (error) {
+    console.error("Error al eliminar dirección:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Editar una dirección específica
+customersController.updateAddress = async (req, res) => {
+  const { id, addressId } = req.params;
+  const { address, type, isDefault } = req.body;
+
+  try {
+    const customer = await customersModel.findById(id);
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+
+    const addr = customer.addresses.id(addressId);
+    if (!addr) {
+      return res.status(404).json({ message: "Dirección no encontrada" });
+    }
+
+    // Si se define como predeterminada, desactivar las demás
+    if (isDefault) {
+      customer.addresses.forEach((a) => (a.isDefault = false));
+    }
+
+    addr.address = address || addr.address;
+    addr.type = type || addr.type;
+    addr.isDefault = isDefault ?? addr.isDefault;
+
+    await customer.save();
+    res.status(200).json({ message: "Dirección actualizada", addresses: customer.addresses });
+  } catch (error) {
+    console.error("Error al actualizar dirección:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 

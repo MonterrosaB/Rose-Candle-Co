@@ -21,6 +21,7 @@ import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesM
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
+import Profile from "../../pages/PageProfile/logic/PageProfile.jsx"
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 import { useNavigate } from "react-router-dom";
@@ -49,10 +50,7 @@ function Navigation() {
   return (
     <>
       {!hideNavFooter && <Sidebar />}
-
-
-
-      <main className={!hideNavFooter ? "md:ml-64" : ""}>
+      <main className={!hideNavFooter ? "transition-all duration-300 ml-0 lg:ml-60" : ""}>
         <Routes>
           {/* Ruta para el primer usuario */}
           <Route
@@ -100,6 +98,7 @@ function Navigation() {
             <Route path="/record" element={<Record />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/profile" element={<Profile />} />
             <Route
               path="/categories-materia"
               element={<CategoriesMateria />}

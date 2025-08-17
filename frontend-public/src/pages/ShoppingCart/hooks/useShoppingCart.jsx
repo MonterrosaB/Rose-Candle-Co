@@ -1,21 +1,31 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2"; // suponiendo que usas SweetAlert para alertas
 
+import { useNavigate } from "react-router";
+
+
 const useCart = () => {
-    const [cartId, setCartId] = useState(null);
+    const [idCart, setIdCart] = useState(null);
     const [cartItems, setCartItems] = useState([]);
+    const [total, setTotal] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCheckout, setShowCheckout] = useState(false);
 
+    const navigate = useNavigate();
+
+
+    const API = "http://localhost:4000"
+    //https://rose-candle-co.onrender.com
+
     const fetchCart = async () => {
         try {
-            const res = await fetch(`http://localhost:4000/api/cart`, {
+            const res = await fetch(API + "/api/cart", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await res.json();
 
             if (data._id) {
-                setCartId(data._id);
+                setIdCart(data._id);
             }
 
             if (Array.isArray(data.products)) {
@@ -28,13 +38,9 @@ const useCart = () => {
         }
     };
 
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
     const updateCartBackend = async (newProducts) => {
         try {
-            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart/${cartId}`, {
+            const res = await fetch(API + `/api/cart/${idCart}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -49,10 +55,10 @@ const useCart = () => {
     };
 
     const handleClear = async () => {
-        if (!cartId) return;
+        if (!idCart) return;
 
         try {
-            const res = await fetch(`https://rose-candle-co.onrender.com/api/cart/empty/${cartId}`, {
+            const res = await fetch(API + `/api/cart/empty/${idCart}`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -79,39 +85,113 @@ const useCart = () => {
         }
     };
 
-    const handleRemoveItem = async (indexToRemove) => {
-        const productToRemove = cartItems[indexToRemove];
-        if (!productToRemove || !productToRemove._id) return;
+    const increaseProduct = async (idProductToIncrease, quantityRecived, indexRecived) => {
+        if (!idProductToIncrease) return;
 
         try {
-            const res = await fetch(
-                `https://rose-candle-co.onrender.com/api/cart/removeProduct/${productToRemove._id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
+            let variantIndexToUse = indexRecived;
+            let quantityToUse = quantityRecived || 1;
+
+            // Si no se proporcionó indexRecived, buscar en el carrito
+            if (variantIndexToUse === undefined || variantIndexToUse === null) {
+                const existingItem = cartItems.find(
+                    (item) => item.idProduct._id === idProductToIncrease
+                );
+
+                if (existingItem) {
+                    // Usar la variante que ya está en el carrito
+                    variantIndexToUse = existingItem.selectedVariantIndex;
+                    // Si no se pasó quantity, tomar la del carrito como incremento
+                    if (!quantityRecived) quantityToUse = 1;
+                } else {
+                    // Si no existe en el carrito, usar la primera variante del producto
+                    const productData = await fetch(API + `/api/products/${idProductToIncrease}`)
+                        .then((res) => res.json());
+
+                    const product = productData.variant ? productData : productData.product;
+
+                    if (!product.variant || product.variant.length === 0) {
+                        console.warn("El producto no tiene variantes disponibles");
+                        return;
+                    }
+
+                    variantIndexToUse = 0;
                 }
-            );
+            }
 
-            if (!res.ok) throw new Error("Error al eliminar el producto");
+            console.log("Variant index a usar:", variantIndexToUse);
+            console.log("Cantidad a usar:", quantityToUse);
 
-            setCartItems((prevItems) =>
-                prevItems.filter((_, idx) => idx !== indexToRemove)
-            );
+            const res = await fetch(API + "/api/cart/increase", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    productId: idProductToIncrease,
+                    cartId: idCart,
+                    indexVariant: variantIndexToUse,
+                    quantityVariant: quantityToUse,
+                }),
+            });
+
+            if (!res.ok) throw new Error("Error al incrementar el producto");
+
+            await res.json();
+            fetchCart();
         } catch (error) {
-            console.error("Error al eliminar producto del carrito:", error);
-            alert("No se pudo eliminar el producto");
+            console.error("Error al incrementar producto del carrito:", error);
+            alert("No se pudo incrementar el producto");
         }
     };
 
-    const getTotal = () =>
-        cartItems
-            .reduce((acc, item) => acc + Number(item.variant?.[0]?.variantPrice || 0), 0)
-            .toFixed(2);
+    const decreaseProduct = async (cartIndex) => {
+        try {
+            const res = await fetch(API + "/api/cart/decrease", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    cartId: idCart,
+                    index: cartIndex // 👈 ahora mandamos el índice en el carrito
+                }),
+            });
+
+            if (!res.ok) throw new Error("Error al disminuir el producto");
+
+            await res.json();
+            fetchCart();
+        } catch (error) {
+            console.error("Error al disminuir producto del carrito:", error);
+            alert("No se pudo disminuir el producto");
+        }
+    };
+
+    const moreInfo = (product) => {
+        navigate(`/product/${product}`, { state: { product } });
+    };
+
+    const getTotal = () => {
+        setTotal(
+            cartItems
+                .reduce((acc, item) => acc + Number(item.subtotal || 0), 0)
+                .toFixed(2)
+        );
+    };
+
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    useEffect(() => {
+        getTotal();
+    }, [cartItems]);
 
     return {
-        cartId,
+        idCart,
         cartItems,
         isLoading,
         showCheckout,
@@ -119,8 +199,10 @@ const useCart = () => {
         fetchCart,
         updateCartBackend,
         handleClear,
-        handleRemoveItem,
-        getTotal,
+        decreaseProduct,
+        increaseProduct,
+        total,
+        moreInfo
     };
 };
 

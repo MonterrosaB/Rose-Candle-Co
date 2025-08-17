@@ -8,6 +8,13 @@ router.get("/verify", verifyToken, (req, res) => {
   res.status(200).json({
     id: req.user.id,
     userType: req.user.userType,
+    name: req.user.name,
+    surnames: req.user.surnames,
+    phone: req.user.phone, 
+    email: req.user.email, 
+    dui: req.user.dui, 
+    user: req.user.user, 
+    password: req.user.password
   });
 });
 

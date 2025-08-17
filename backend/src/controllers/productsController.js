@@ -42,6 +42,23 @@ productsController.getProductById = async (req, res) => {
   }
 };
 
+productsController.getProductsForOrders = async (req, res) => {
+  try {
+    const products = await productsModel.find(
+      { availability: true },
+      {
+        name: 1,
+        variant: 1,
+        images: { $slice: 1 }, // devuelve solo el primer elemento del array
+      }
+    ); // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    res.status(200).json(products); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
 // POST - Método para insertar un producto
 productsController.createProduct = async (req, res) => {
   console.log("Body", req.body); // cuerpo

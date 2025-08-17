@@ -57,7 +57,7 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
     <Form headerLabel={defaultValues ? "Editar Materia Prima" : "Agregar Materia Prima"} onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
       <FormInputs>
         <Input label="Nombre" name="name" register={register} errors={errors} />
-        <div className="flex gap-4 w-full">
+        <div className="flex flex-col xl:flex-row justify-center items-center gap-4 w-full">
           <Dropdown
             options={categories || []}
             label="Categoría"

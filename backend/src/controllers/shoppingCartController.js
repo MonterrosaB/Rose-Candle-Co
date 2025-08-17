@@ -3,6 +3,7 @@ import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Carrito de C
 import Product from "../models/Products.js"; // Modelo de Productos
 import ShoppingCart from "../models/ShoppingCart.js";
 
+
 // Controlador con métodos CRUD para Carrito de Compras
 const shoppingCartController = {};
 
@@ -103,58 +104,100 @@ shoppingCartController.createCart = async (req, res) => {
 };
 
 // POST - Agregar un producto al carrito del usuario
-shoppingCartController.addProduct = async (req, res) => {
-
+shoppingCartController.increaseProduct = async (req, res) => {
   const userId = req.user.id;
-  const { productId } = req.body;
+  const { cartId, productId, quantityVariant, indexVariant } = req.body;
 
-  const product = await Product.findById(productId);
-  if (!product) return res.status(404).json({ message: "Product not found" });
+  try {
+    // Buscar carrito activo del usuario
+    let cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    if (!cart) {
+      // Crear carrito si no existe
+      cart = new shoppingCartModel({
+        idUser: userId,
+        products: [],
+        total: 0,
+        status: "active"
+      });
+    }
 
-  let cart = await shoppingCartModel.findOne({ idUser: userId, status: "active" });
+    // Buscar producto en DB
+    const productDB = await Product.findById(productId);
+    if (!productDB) return res.status(404).json({ message: "Producto no encontrado" });
 
-  // Crear nuevo carrito si no existe
-  if (!cart) {
-    cart = new shoppingCartModel({
-      idUser: userId,
-      products: [],
-      total: 0,
-      status: "active"
-    });
+    // Obtener precio de la variante seleccionada
+    let price = 0;
+    if (productDB.variant && productDB.variant.length > 0) {
+      price = Number(productDB.variant[indexVariant]?.variantPrice || productDB.variant[0].variantPrice);
+    }
+
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ message: "Precio del producto inválido" });
+    }
+
+    // Buscar item en carrito considerando la variante
+    const item = cart.products.find(
+      p => p.idProduct.toString() === productId && p.selectedVariantIndex === indexVariant
+    );
+
+    if (item) {
+      // Ya existe → aumentar cantidad
+      item.quantity += quantityVariant || 1;
+      item.subtotal = item.quantity * price;
+    } else {
+      // Nuevo item con la variante seleccionada
+      cart.products.push({
+        idProduct: productId,
+        quantity: quantityVariant || 1,
+        selectedVariantIndex: indexVariant || 0,
+        subtotal: (quantityVariant || 1) * price
+      });
+    }
+
+    // Recalcular total
+    cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
+
+    await cart.save();
+
+    return res.status(200).json({ message: "Producto agregado", cart });
+  } catch (error) {
+    console.error("Error al agregar producto:", error);
+    return res.status(500).json({ message: "Error del servidor" });
   }
-
-  // Buscar si el producto ya está en el carrito
-  const existingProduct = cart.products.find(p => p.idProduct.toString() === productId);
-
-  // Obtener el precio del producto
-  let price = 0;
-  if (product.variant && product.variant.length > 0) {
-    price = Number(product.variant[0].variantPrice);
-  }
-
-  if (isNaN(price) || price <= 0) {
-    return res.status(400).json({ message: "Invalid product price" });
-  }
-
-  if (existingProduct) {
-    // Si ya existe, aumentar cantidad y subtotal
-    existingProduct.quantity += 1;
-    existingProduct.subtotal = existingProduct.quantity * price;
-  } else {
-    // Si no existe, agregarlo como nuevo
-    cart.products.push({
-      idProduct: productId,
-      quantity: 1,
-      subtotal: price
-    });
-  }
-
-  // Recalcular total del carrito
-  cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
-
-  await cart.save();
-  return res.status(200).json({ message: "Product added", cart });
 };
+
+
+shoppingCartController.decreaseProduct = async (req, res) => {
+  const userId = req.user.id;
+  const { cartId, index } = req.body;
+
+  try {
+    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    if (!cart) return res.status(404).json({ message: "Carrito no encontrado" });
+
+    const item = cart.products[index];
+    if (!item) return res.status(404).json({ message: "Producto no encontrado en el carrito" });
+
+    // Obtener precio desde la variante
+    const productDB = await Product.findById(item.idProduct);
+    const price = Number(productDB.variant[item.selectedVariantIndex]?.variantPrice || 0);
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      item.subtotal = item.quantity * price;
+    } else {
+      cart.products.splice(index, 1);
+    }
+
+    cart.total = cart.products.reduce((sum, p) => sum + p.subtotal, 0);
+    await cart.save();
+
+    res.status(200).json({ message: "Producto actualizado", cart });
+  } catch (error) {
+    console.error("Error al disminuir cantidad:", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
 
 // POST - Completar carrito y generar orden automáticamente
 shoppingCartController.completeCart = async (req, res) => {
@@ -168,7 +211,9 @@ shoppingCartController.completeCart = async (req, res) => {
       .populate("products");
 
     if (!cart || cart.products.length === 0) {
-      return res.status(404).json({ message: "Shopping cart is empty or not found" });
+      return res
+        .status(404)
+        .json({ message: "Shopping cart is empty or not found" });
     }
 
     // Marcar carrito como completado
@@ -183,9 +228,7 @@ shoppingCartController.completeCart = async (req, res) => {
       saleDate: new Date(),
       shippingTotal: req.body.shippingTotal || 5.75,
       total: cart.total + (req.body.shippingTotal || 5.75),
-      shippingState: [
-        { state: "Pedido recibido", fecha: new Date() }
-      ]
+      shippingState: [{ state: "Pedido recibido", fecha: new Date() }],
     });
 
     await newOrder.save();
@@ -195,16 +238,14 @@ shoppingCartController.completeCart = async (req, res) => {
       message: "Cart completed and order created",
       order: await newOrder.populate({
         path: "idShoppingCart",
-        populate: [{ path: "idUser" }, { path: "products" }]
-      })
+        populate: [{ path: "idUser" }, { path: "products" }],
+      }),
     });
-
   } catch (error) {
     console.error("Error completing cart:", error);
     res.status(500).json("Internal server error");
   }
 };
-
 
 // DELETE - Eliminar el carrito del usuario autenticado
 shoppingCartController.deleteCart = async (req, res) => {
@@ -270,12 +311,11 @@ shoppingCartController.removeProduct = async (req, res) => {
 shoppingCartController.emptyCart = async (req, res) => {
   try {
     const userId = req.user.id;
+    const cartId = req.params.idCart;
 
-    // Buscar carrito del usuario
-    const cart = await shoppingCartModel.findOne({ idUser: userId });
-
+    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
     if (!cart) {
-      return res.status(404).json({ message: "Shopping cart not found" });
+      return res.status(404).json({ message: "Carrito no encontrado" });
     }
 
     // Vaciar arreglo de productos y resetear total
@@ -339,6 +379,59 @@ shoppingCartController.getAbandonettedCars = async (req, res) => {
   ]);
 
   res.json(`${stats[0].abandonedCartRate.toFixed(2)}%`);
+};
+
+// REPORTES
+// Obtener productos más vendidos
+shoppingCartController.bestSellingProducts = async (req, res) => {
+  try {
+    const resultado = await shoppingCartModel.aggregate([
+      // Descomponer productos
+      { $unwind: "$products" },
+
+      // Agrupar por idProduct y sumar la cantidad
+      {
+        $group: {
+          _id: "$products.idProduct",
+          totalQuantity: { $sum: "$products.quantity" },
+        },
+      },
+
+      // Ordenar de mayor a menor
+      { $sort: { totalQuantity: -1 } },
+
+      // Limitar a los 3 más vendidos
+      { $limit: 3 },
+
+      // Hacer lookup en la colección Products
+      {
+        $lookup: {
+          from: "products", // nombre de la colección
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+
+      // Desenrollar el arreglo productInfo
+      { $unwind: "$productInfo" },
+
+      // Proyectar solo los campos deseados
+      {
+        $project: {
+          _id: 1,
+          totalQuantity: 1,
+          productName: "$productInfo.name",
+          productPrice: "$productInfo.price",
+        },
+      },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error("Error fetching best selling products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // Exportar controlador para usar en rutas

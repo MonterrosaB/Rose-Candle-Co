@@ -17,7 +17,7 @@ const Login = () => {
   }, []);
 
   const { login } = useAuth(); // login del authContext
-  const [email, setEmail] = useState("");
+  const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -27,13 +27,13 @@ const Login = () => {
     e.preventDefault();
 
     // Validaciones
-    if (email.trim() === "" || password.trim() === "") {
+    if (user.trim() === "" || password.trim() === "") {
       toast.error("Por favor completa todos los campos");
       return;
     }
 
     // Ejecutar login desde el contexto
-    const success = await login(email, password);
+    const success = await login(user, password);
 
     if (success) {
       toast.success("Inicio de sesión exitoso");
@@ -90,8 +90,8 @@ const Login = () => {
           label="Usuario"
           placeholder="Nombre de usuario"
           type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
         />
 
         {/* Campo de contraseña */}

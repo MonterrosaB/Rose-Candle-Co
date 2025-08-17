@@ -51,7 +51,7 @@ const RegisterSupplies = ({ onClose }) => {
           errors={errors}
           hideIcon={true}
         />
-        <div className="flex justify-center items-center gap-4 w-full">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
           <Input
             label={"Stock Agregado"}
             type="number"

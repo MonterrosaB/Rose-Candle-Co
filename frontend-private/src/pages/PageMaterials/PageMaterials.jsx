@@ -43,6 +43,9 @@ const PageMaterials = () => {
   return (
     <PrincipalDiv>
       {/* Tabla para md+ */}
+      <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[#F9F7F3] via-[#DFCCAC] to-[#BCA88E] bg-clip-text text-transparent mb-2 text-center">
+        Materia Prima
+      </h1>
       <div className="hidden md:block overflow-x-auto">
         <DataGrid
           title="Materia Prima"

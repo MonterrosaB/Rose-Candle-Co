@@ -14,13 +14,15 @@ router
   .get(productsController.getproducts)
   .post(upload.array("images"), productsController.createProduct);
 
-router.route("/:id")
-.get(productsController.getProductById)
-.put(upload.array("images"), productsController.updateProduct)
-.delete(productsController.deleteProduct)
+router.route("/productsOrders").get(productsController.getProductsForOrders);
+
+router
+  .route("/:id")
+  .get(productsController.getProductById)
+  .put(upload.array("images"), productsController.updateProduct)
+  .delete(productsController.deleteProduct);
 
 // Rutas específicas
-router.route("/restore/:id")
-  .put(productsController.restoreProduct); // restaurar por id
+router.route("/restore/:id").put(productsController.restoreProduct); // restaurar por id
 
 export default router;

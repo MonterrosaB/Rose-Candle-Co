@@ -20,6 +20,12 @@ const productSchema = new Schema({
   quantity: {
     type: Number,
     default: 1,
+    required: true
+  },
+  selectedVariantIndex: {
+    type: Number,
+    default: 0,
+    required: true
   },
   subtotal: {
     type: Number,

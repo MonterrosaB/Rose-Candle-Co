@@ -2,8 +2,15 @@ import { useState } from "react";
 import AddToCartButton from "./ButtonAddToCard.jsx";
 import GalleryImages from "./GalleryImages.jsx";
 
+
 const CardProductDetail = ({ product }) => {
+
+
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+
+  console.log(selectedVariantIndex);
+
 
   return (
     <div className="radial-gradient(circle, rgba(223, 204, 172, 0.63) 0%, rgba(223, 204, 172, 0) 40%) max-w-6xl w-full rounded-2xl p-8 flex gap-30 flex-col md:flex-row">
@@ -19,19 +26,17 @@ const CardProductDetail = ({ product }) => {
           {product.availability ? "Disponible" : "No disponible"}
         </p>
         {/* Variantes */}
-        {product.variant?.length > 0 && (
-          <div>
-            <h3 className="text-gray-400">Variantes</h3>
-            <ul className="list-disc list-inside text-sm">
-              {product.variant.map((v, i) => (
-                <li key={i}>
-                  {v.variant} - ${parseFloat(v.variantPrice).toFixed(2)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
+        <h3 className="text-gray-400">Variantes</h3>
+        <select className="list-disc list-inside text-"
+          value={selectedVariantIndex}
+          onChange={(e) => setSelectedVariantIndex(Number(e.target.value))}
+        >
+          {product.variant.map((v, idx) => (
+            <option key={idx} value={idx}>
+              {v.variant} - ${v.variantPrice}
+            </option>
+          ))}
+        </select>
         {/* Componentes */}
         {product.components?.length > 0 && (
           <div>
@@ -84,7 +89,7 @@ const CardProductDetail = ({ product }) => {
             </button>
           </div>
 
-          <AddToCartButton product={product} quantity={quantity} />
+          <AddToCartButton product={product} quantity={quantity} selectedVariantIndex={selectedVariantIndex} />
         </div>
       </div>
     </div>

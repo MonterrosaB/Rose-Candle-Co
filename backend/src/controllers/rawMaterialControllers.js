@@ -206,6 +206,7 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
   }
 };
 
+// Restaurar, update para marcar como no eliminado
 rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
   try {
     const restoreRawMaterials = await rawMaterialModel.findByIdAndUpdate(
@@ -220,10 +221,27 @@ rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
         .json({ message: "Restore Raw Materials not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "Restore Raw Materials restored" }); // Restauracion exitosa
+    res.status(200).json({ message: "Raw Material restored" }); // Restauracion exitosa
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// GET - Obtener materias primas con menor stock
+rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
+  try {
+    // Buscar materias primas no eliminadas, ordenar por stock ascendente, limitar resultados
+    const lowStockMaterials = await rawMaterialModel
+      .find({ deleted: false }) // Solo no eliminadas
+      .sort({ currentStock: 1 }) // Ordenar de menor a mayor stock
+      .limit(10) // Limitar a los 10 más bajos
+      .populate("idRawMaterialCategory", "name") // Poblar categoría
+
+    res.status(200).json(lowStockMaterials); // todo bien
+  } catch (error) {
+    console.error("error", error);
+    res.status(500).json("Internal server error");
   }
 };
 

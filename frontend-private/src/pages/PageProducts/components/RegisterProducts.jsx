@@ -11,6 +11,7 @@ import Textarea from "../../../global/components/TextArea";
 import TextAreaArray from "../../../global/components/TextAreaArray";
 import DoubleInput from "../../../global/components/DoubleInput";
 import DoubleInputDropDown from "../../../global/components/DobleInputDropdown";
+import ProductImagesUploader from "./ProductImagesUploader";
 
 import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
@@ -36,9 +37,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   const { opcionesCategorias, opcionesColecciones, opcionesMateria, opcionesEstado } = useProductOptions();
 
-  const { agregarInput, inputs, resetInputs } = AddComponent();
+  const { agregarInput, inputs, resetInputs, eliminarInput } = AddComponent();
 
-  const { register, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
+  const { register, unregister, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
   const {
     productImage,
@@ -97,6 +98,16 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     }
   };
 
+  const handleEliminarVariante = (grupo, id, index) => {
+    unregister([`variantes.${index}.variant`, `variantes.${index}.variantPrice`]);
+    eliminarInput(grupo, id);
+  };
+
+  const handleEliminarComponente = (grupo, id, index) => {
+    unregister([`componentes.${index}.idComponent`, `componentes.${index}.amount`]);
+    eliminarInput(grupo, id);
+  };
+
   return (
     <Form
       headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
@@ -112,63 +123,14 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           errors={errors}
         />
 
-        <div className="flex items-center justify-center gap-4 rounded-md w-lg mb-3">
-          <label
-            htmlFor="principal-image-product"
-            className="w-fit p-2.5 rounded-lg font-medium cursor-pointer flex items-center justify-center"
-          >
-            {productImage ? (
-              <img
-                src={productImage}
-                alt="Vista previa"
-                className="w-48 h-48 object-contain"
-              />
-            ) : (
-              <div className="bg-[#D9D9D9] w-48 h-48 flex items-center text-center">
-                Selecciona aquí la imagen principal
-              </div>
-            )}
-            <input
-              type="file"
-              id="principal-image-product"
-              className="hidden"
-              {...register("filee", { onChange: onImageChange })}
-            />
-          </label>
-          <label htmlFor="secondary-images-product" className="cursor-pointer">
-            {multipleFile.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {multipleFile.map((url, index) => (
-                  <div key={url} className="relative">
-                    <img
-                      src={url}
-                      alt={`Secundaria-${index}`}
-                      className="w-24 h-24 object-cover rounded"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-0 right-0 bg-red-500 text-white px-1 rounded"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-[#D9D9D9] w-48 h-48 flex items-center justify-center text-center">
-                Selecciona aquí las imágenes secundarias
-              </div>
-            )}
-            <input
-              type="file"
-              id="secondary-images-product"
-              className="hidden"
-              {...register("file", { onChange: uploadMultipleFiles })}
-              multiple
-            />
-          </label>
-        </div>
+        <ProductImagesUploader
+          register={register}
+          productImage={productImage}
+          multipleFile={multipleFile}
+          onImageChange={onImageChange}
+          uploadMultipleFiles={uploadMultipleFiles}
+          removeImage={removeImage}
+        />
 
         <Textarea
           label={"Descripción"}
@@ -177,7 +139,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           errors={errors}
         />
 
-        <div className="flex justify-center items-center gap-4 w-full">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
           <Dropdown
             name={"idProductCategory"}
             options={opcionesCategorias}
@@ -204,7 +166,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           />
         </div>
 
-        <div className="flex justify-center items-center gap-4 w-full">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
           <TextAreaArray
             control={control}
             name="instrucctions"
@@ -223,8 +185,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           />
         </div>
 
-        <div className="flex justify-center items-center gap-4 w-full">
-          <div className="flex flex-col items-center w-1/2 gap-4">
+        <div className="flex flex-col lg:flex-row justify-center items-start gap-6 w-full">
+          <div className="flex flex-col items-center w-full lg:w-1/2 gap-4">
             <Button
               buttonText={"Agregar Variante"}
               showIcon={true}
@@ -235,6 +197,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
             {inputs.variantes.map((input, index) => (
               <DoubleInput
                 key={input.id}
+                id={input.id}
+                eliminarInput={() => handleEliminarVariante("variantes", input.id, index)}
+                grupo="variantes"
                 placeholder1="Nombre Variante"
                 placeholder2="Precio Variante"
                 name1={`variantes.${index}.variant`}
@@ -255,7 +220,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
               />
             ))}
           </div>
-          <div className="flex flex-col items-center w-1/2 gap-4">
+          <div className="flex flex-col items-center w-full lg:w-1/2 gap-4">
             <Button
               buttonText={"Agregar Componente"}
               showIcon={true}
@@ -265,6 +230,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
             />
             {inputs.componentes.map((input, index) => (
               <DoubleInputDropDown
+                key={input.id}
+                id={input.id}
+                eliminarInput={() => handleEliminarComponente("componentes", input.id, index)}
                 name1={`componentes.${index}.idComponent`}
                 name2={`componentes.${index}.amount`}
                 placeholder1="Componente"

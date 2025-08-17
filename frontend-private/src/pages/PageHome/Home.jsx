@@ -1,112 +1,120 @@
-import { Boxes, DollarSign, User } from "lucide-react";
+// Lógica para la página de home
+import React, { useState, useEffect, useContext } from "react";
+import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
 import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
-import DataGrid from "../../global/components/DataGrid";
+import DataGrid from "./components/DataGrid.jsx";
+import { AuthContext } from "../../global/context/AuthContext"; // Para el nombre del usuario
+import useHome from "./hooks/useHome"; // Hook
+import { Link } from "react-router-dom";
 
 const Home = () => {
-    const columnsMaterial = {
-        "Materia": "Materia",
-        "Cantidad": "Cantidad"
-    };
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Home | Rosé Candle Co.";
+  }, []);
 
-    const rowsMaterial = [
-        { Materia: "Cera de Soja", Cantidad: "1500g" },
-        { Materia: "Fragancía Chocolate", Cantidad: "15ml" },
-        { Materia: "Fragancía Vainilla", Cantidad: "15ml" },
-        { Materia: "Mechas LX 24 6", Cantidad: "25u" }
-    ];
+  const { user } = useContext(AuthContext); // Nombre del usuario
 
-    const columnsOrders = {
-        "Nombre": "Nombre",
-        "Fecha Pedido": "Orders",
-        "Ubicación": "Ubicacion",
-        "Productos Totales": "Productos"
-    };
+  const {
+    customerCount,
+    latestCustomerCount,
+    totalOrders,
+    currentMonthOrders,
+    totalEarnings,
+    monthlyEarnings,
+    lowStockMaterials,
+    bestSellingProducts,
+    latestOrders,
+  } = useHome();
 
-    const rowsOrders = [
-        {
-            Nombre: "Rodrigo Monterrosa",
-            Orders: "1 May, 2025 : 15:12",
-            Ubicacion: "La Libertad",
-            Productos: "10",
-        },
-        {
-            Nombre: "Rodrigo Monterrosa",
-            Orders: "1 May, 2025 : 15:12",
-            Ubicacion: "La Libertad",
-            Productos: "10",
-        },
-        {
-            Nombre: "Rodrigo Monterrosa",
-            Orders: "1 May, 2025 : 15:12",
-            Ubicacion: "La Libertad",
-            Productos: "10",
-        },
-        {
-            Nombre: "Rodrigo Monterrosa",
-            Orders: "1 May, 2025 : 15:12",
-            Ubicacion: "La Libertad",
-            Productos: "10",
-        },
-    ];
+  // Columnas del stock
+  const columnsMaterial = {
+    Materia: "Materia",
+    Cantidad: "Cantidad",
+  };
 
-    return (
-        <PrincipalDiv>
-            <h1 className="text-2xl font-semibold mb-4 ml-15">Bienvenida de nuevo, Eli</h1>
+  // Contenido de la tabla del stock
+  const rowsMaterial = lowStockMaterials.map((material) => ({
+    Materia: material.name,
+    Cantidad: `${material.currentStock} ${material.unit}`,
+  }));
 
-            {/* Widgets */}
-            <div className="w-full flex flex-wrap justify-center gap-x-14 gap-y-8">
-                <CardWidgets
-                    bgColor={"#F7F5EE"}
-                    textColor={"#333"}
-                    tittle={"Pedidos Totales"}
-                    value={"100"}
-                    increment={"5"}
-                    icon={<Boxes size={32} strokeWidth={2.5} />}
-                />
-                <CardWidgets
-                    bgColor={"#C2A878"}
-                    textColor={"#FFFFFF"}
-                    tittle={"Ingresos Totales"}
-                    value={"$100"}
-                    increment={"5"}
-                    icon={<DollarSign size={32} strokeWidth={3} />}
-                />
-                <CardWidgets
-                    bgColor={"#F7F5EE"}
-                    textColor={"#333"}
-                    tittle={"Pedidos Totales"}
-                    value={"100"}
-                    increment={"5"}
-                    icon={<User size={32} strokeWidth={3} />}
-                />
-            </div>
+  // Columnas de ùltimos pedidos
+  const columnsOrders = {
+    Nombre: "Nombre",
+    "Fecha Pedido": "Fecha Pedido",
+    Ubicación: "Ubicación",
+    "Productos Totales": "Productos Totales",
+  };
 
-            {/* Grid responsive */}
-            <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center">
-                <div className="w-full lg:w-2/3">
-                    <DataGrid
-                        title={"Valores bajos de materia prima"}
-                        columns={columnsMaterial}
-                        rows={rowsMaterial}
-                        editable={false}
-                    />
-                </div>
-                <div className="w-full flex justify-center lg:w-1/3 lg:flex lg:justify-center">
-                    <PopularProducts />
-                </div>
-            </div>
+  return (
+    <PrincipalDiv>
+      <Link to="/profile">
+        <div className="flex flex-wrap mb-1 items-center">
+          <CircleUser strokeWidth={2.5} className="cursor-pointer" />
+          <h1 className="text-2xl font-semibold ml-2">
+            Hola de nuevo, {user?.name || "usuario"}
+          </h1>
+        </div>
+      </Link>
 
-            <div className="w-full">
-                <DataGrid
-                    title={"Últimos pedidos"}
-                    columns={columnsOrders}
-                    rows={rowsOrders}
-                    editable={false}
-                />
-            </div>
-        </PrincipalDiv>
-    );
+      {/* Widgets */}
+      <div className="w-full flex flex-wrap justify-left gap-x-14 gap-y-8 mb-1">
+        <CardWidgets
+          bgColor={"#F7F5EE"}
+          textColor={"#333"}
+          tittle={"Pedidos Totales"}
+          value={totalOrders.toString()}
+          increment={currentMonthOrders.toString()}
+          icon={<Boxes size={32} strokeWidth={2.5} />}
+        />
+        <CardWidgets
+          bgColor={"#C2A878"}
+          textColor={"#FFFFFF"}
+          tittle={"Ingresos Totales"}
+          value={`$${totalEarnings.toString()}`}
+          increment={`$${monthlyEarnings.toString()}`}
+          icon={<DollarSign size={32} strokeWidth={3} />}
+        />
+        <CardWidgets
+          bgColor={"#F7F5EE"}
+          textColor={"#333"}
+          tittle={"Usuarios Totales"}
+          value={customerCount.toString()}
+          increment={latestCustomerCount.toString()}
+          icon={<User size={32} strokeWidth={3} />}
+        />
+      </div>
+
+      {/* Grid responsive */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-1 items-center">
+        <div className="w-full lg:w-2/3">
+          <DataGrid
+            title={"Valores bajos de materia prima"}
+            columns={columnsMaterial}
+            rows={rowsMaterial}
+            editable={false}
+            rowsPerPage={3} // Se limita la cantidad de materia prima
+          />
+        </div>
+
+        <div className="w-full flex justify-center lg:w-1/3 lg:flex lg:justify-center">
+          <PopularProducts data={bestSellingProducts} />
+        </div>
+      </div>
+
+      <div className="w-full lg:w-14/15">
+        <DataGrid
+          title={"Últimos pedidos"}
+          columns={columnsOrders}
+          rows={latestOrders}
+          editable={false}
+          rowsPerPage={3} // Se limita la cantidad de pedidos
+        />
+      </div>
+    </PrincipalDiv>
+  );
 };
 export default Home;

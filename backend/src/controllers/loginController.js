@@ -13,30 +13,20 @@ const LOCK_TIME = 1 * 60 * 1000; // 1 minuto
 // Función para el login
 loginController.login = async (req, res) => {
   // Solicitar información del cuerpo de la solicitud
-  const { email, password } = req.body;
+  const { user, password } = req.body;
 
   try {
     // Posibles niveles de usuario:
-    // 1. Administrador (email y password definidos en config)
-    // 2. Empleado (almacenado en base de datos)
+    // 1. Administrador
+    // 2. Empleado
 
     let userFound; // Guardar el usuario encontrado
     let userType; // Guardar el tipo de usuario encontrado
 
-    // Verificar si es un administrador
-    if (
-      email === config.admin.emailAdmin &&
-      password === config.admin.passwordAdmin
-    ) {
-      userType = "admin"; // Tipo de usuario
-      userFound = { _id: "admin" }; // ID de referencia para el admin
-    } else {
-      // Si no es admin, buscar como empleado
-      userFound = await employeesModel.findOne({ email }); // Buscar empleado por email
-      userType = "employee"; // Tipo de usuario
-    }
+    // Verificar si existe un usuario
 
-    // Si no se encuentra el usuario
+    userFound = await employeesModel.findOne({ user }); // Buscar empleado por el usuario
+
     if (!userFound) {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
@@ -53,59 +43,51 @@ loginController.login = async (req, res) => {
       }
     }
 
-    // Validar la contraseña (solo si no es admin)
-      if (userType !== "admin") {
-      const isMatch = await bcryptjs.compare(password, userFound.password);
-
-      if (!isMatch) {
-        if (userType === "employee") {
-          // Incrementar intentos fallidos
-          userFound.loginAttempts = (userFound.loginAttempts || 0) + 1;
-
-          if (userFound.loginAttempts >= MAX_ATTEMPTS) {
-            userFound.lockUntil = Date.now() + LOCK_TIME;
-            await userFound.save();
-            return res.status(403).json({
-              message: `Cuenta bloqueada por ${LOCK_TIME / 60000} minuto(s)`,
-            });
-          }
-
-          await userFound.save();
-           return res.status(401).json({
-        message: `Contraseña incorrecta. Intentos restantes: ${MAX_ATTEMPTS - userFound.loginAttempts}`
-      });
-        }
-
-        // Si fuera admin pero contraseña incorrecta
-        return res.status(400).json({ message: "Invalid password" });
+    // Validar si la cuenta no está bloqueada
+    if (userType !== "admin") {
+      if (userFound.timeOut > Date.now()) {
+        const time = Math.ceil((userFound.timeOut - Date.now()) / 60000);
+        return res
+          .status(403)
+          .json({ message: "Cuenta bloqueada, faltan " + time + " minutos" });
       }
     }
 
-     //Si es empleado y pasa login se resetean los intentos
-    if (userType === "employee") {
-      userFound.loginAttempts = 0;
-      userFound.lockUntil = null;
-      await userFound.save();
+    // Verificar contraseña
+    const isMatch = await bcryptjs.compare(password, userFound.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Contraseña incorrecta" });
     }
+
+    // Verificar el rol del usuario
+    userType = userFound.role; // Ej: "admin" o "employee"
 
     // Generar y firmar el token JWT
-    JsonWebToken.sign(
-      { id: userFound._id, userType }, // Datos a incluir en el token
-      config.jwt.secret, // Clave secreta
-      { expiresIn: config.jwt.expiresIn }, // Tiempo de expiración
-      (error, token) => {
-        if (error) console.log("error" + error); // Log en caso de error al generar token
-
-        // Guardar token en cookie
-        res.cookie("authToken", token, {
-          httpOnly: true,
-          secure: true, // solo si estás en HTTPS
-          sameSite: "None", // o "Lax" si todo está en el mismo dominio
-          path: "/",
-        });
-        res.status(200).json({ message: "Login succesful" }); // Respuesta exitosa
-      }
+    const token = JsonWebToken.sign(
+      {
+        id: userFound._id,
+        userType,
+        name: userFound.name,
+        surnames: userFound.surnames,
+        phone: userFound.phone,
+        email: userFound.email,
+        dui: userFound.dui,
+        user: userFound.user,
+        password: userFound.password,
+      },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
     );
+
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      secure: false, // HTTPS no necesario en localhost
+      sameSite: "Lax", // funciona en localhost
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.log("error " + error); // Log de error general
   }

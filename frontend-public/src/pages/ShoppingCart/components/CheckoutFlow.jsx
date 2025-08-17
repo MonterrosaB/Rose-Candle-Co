@@ -1,22 +1,44 @@
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ArrowRight, Truck, CreditCard, CheckCircle, Star } from "lucide-react"
+import { useEffect, useState, useContext } from "react"
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "../../../global/context/AuthContext.jsx"
 
-import ShippingStep from "./ShippingStep"
-import PaymentStep from "./PaymentStep"
-import ReviewStep from "./ReviewStep"
-import ConfirmationStep from "./ConfirmationStep"
+import {
+  ArrowLeft,
+  ArrowRight,
+  Truck,
+  CreditCard,
+  CheckCircle,
+  Star,
+} from "lucide-react";
 
-const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) => {
-  const [currentStep, setCurrentStep] = useState(0)
+import ShippingStep from "./ShippingStep";
+import PaymentStep from "./PaymentStep";
+import ReviewStep from "./ReviewStep";
+import ConfirmationStep from "./ConfirmationStep";
+ 
+
+const CheckoutFlow = ({
+  cartItems = [],
+  total = "0.00",
+  onBack,
+  onClearCart,
+}) => {
+
+  const { user } = useContext(AuthContext)
+
+
+ 
+
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     shipping: {
       firstName: "",
       lastName: "",
-      email: "",
+      email: user.email || "",
       phone: "",
       address: "",
       city: "",
+      state: "",
       zipCode: "",
       country: "El Salvador",
     },
@@ -27,16 +49,16 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
       cardName: "",
       paymentMethod: "card",
     },
-  })
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [orderComplete, setOrderComplete] = useState(false)
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
 
   const steps = [
     { id: 0, title: "Información de Envío", icon: Truck },
     { id: 1, title: "Método de Pago", icon: CreditCard },
     { id: 2, title: "Revisión", icon: CheckCircle },
     { id: 3, title: "Confirmación", icon: Star },
-  ]
+  ];
 
   const handleInputChange = (section, field, value) => {
     setFormData((prev) => ({
@@ -45,24 +67,29 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
         ...prev[section],
         [field]: value,
       },
-    }))
-  }
+    }));
+  };
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1)
+      setCurrentStep((prev) => prev + 1);
     }
-  }
+  };
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1)
+      setCurrentStep((prev) => prev - 1);
     }
-  }
+  };
+
+
 
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
-  try {
+    console.log(formData);
+    
+  /*try {
+    
     setIsProcessing(true);
 
     // 1. Obtener token
@@ -85,8 +112,8 @@ const CheckoutFlow = ({ cartItems = [], total = "0.00", onBack, onClearCart }) =
   tokenTarjeta: "null", // simulado
 };
 
-// 🧪 Consola para verificar si el email está llegando
-console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
+//  Consola para verificar si el email está llegando
+console.log(" Email cliente (desde frontend):", formData.shipping.email);
 
 
     // 3. Enviar pago simulado
@@ -121,7 +148,7 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
     console.error("Error en el proceso de pago:", err);
     alert(`Error: ${err.message}`);
     setIsProcessing(false);
-  }
+  }*/
 };
 
 
@@ -129,7 +156,11 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
     <div className="min-h-screen bg-gray-50 p-6 pt-45">
       <div className="max-w-4xl mx-auto">
         {/* Encabezado */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
           <div className="flex items-center justify-between mb-6">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -149,7 +180,8 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
               <div key={step.id} className="flex items-center">
                 <motion.div
                   animate={{
-                    backgroundColor: currentStep >= index ? "#A3A380" : "#e5e7eb",
+                    backgroundColor:
+                      currentStep >= index ? "#A3A380" : "#e5e7eb",
                     scale: currentStep === index ? 1.1 : 1,
                   }}
                   className="flex items-center justify-center w-10 h-10 rounded-full text-white font-semibold"
@@ -161,14 +193,19 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
                   )}
                 </motion.div>
                 <div className="ml-3 hidden md:block">
-                  <p className={`text-sm font-medium ${currentStep >= index ? "text-[#A3A380]" : "text-gray-500"}`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      currentStep >= index ? "text-[#A3A380]" : "text-gray-500"
+                    }`}
+                  >
                     {step.title}
                   </p>
                 </div>
                 {index < steps.length - 1 && (
                   <motion.div
                     animate={{
-                      backgroundColor: currentStep > index ? "#A3A380" : "#e5e7eb",
+                      backgroundColor:
+                        currentStep > index ? "#A3A380" : "#e5e7eb",
                     }}
                     className="w-16 h-1 mx-4"
                   />
@@ -188,7 +225,10 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
               >
-                <ShippingStep formData={formData.shipping} handleInputChange={handleInputChange} />
+                <ShippingStep
+                  formData={formData.shipping}
+                  handleInputChange={handleInputChange}
+                />
               </motion.div>
             )}
             {currentStep === 1 && (
@@ -198,11 +238,19 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
               >
-                <PaymentStep formData={formData.payment} handleInputChange={handleInputChange} />
+                <PaymentStep
+                  formData={formData.payment}
+                  handleInputChange={handleInputChange}
+                />
               </motion.div>
             )}
             {currentStep === 2 && (
-              <ReviewStep key="review" formData={formData} cartItems={cartItems} total={total} />
+              <ReviewStep
+                key="review"
+                formData={formData}
+                cartItems={cartItems}
+                total={total}
+              />
             )}
             {currentStep === 3 && (
               <ConfirmationStep
@@ -250,7 +298,7 @@ console.log("📧 Email cliente (desde frontend):", formData.shipping.email);
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CheckoutFlow
+export default CheckoutFlow;
