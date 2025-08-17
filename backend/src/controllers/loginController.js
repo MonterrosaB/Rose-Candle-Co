@@ -7,9 +7,6 @@ import employeesModel from "../models/Employees.js"; // Modelo de empleados
 // Controlador de login
 const loginController = {};
 
-const MAX_ATTEMPTS = 5; // número máximo de intentos
-const LOCK_TIME = 1 * 60 * 1000; // 1 minuto
-
 // Función para el login
 loginController.login = async (req, res) => {
   // Solicitar información del cuerpo de la solicitud
@@ -31,18 +28,6 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
-    //Si es empleado, verificar bloqueo
-    if (userType === "employee") {
-      if (userFound.lockUntil && userFound.lockUntil > Date.now()) {
-        const remaining = Math.ceil(
-          (userFound.lockUntil - Date.now()) / 1000 / 60
-        );
-        return res.status(403).json({
-          message: `Cuenta bloqueada. Intente nuevamente en ${remaining} minuto(s)`,
-        });
-      }
-    }
-
     // Validar si la cuenta no está bloqueada
     if (userType !== "admin") {
       if (userFound.timeOut > Date.now()) {
@@ -60,7 +45,7 @@ loginController.login = async (req, res) => {
     }
 
     // Verificar el rol del usuario
-    userType = userFound.role; // Ej: "admin" o "employee"
+    userType = userFound.role; // "admin" o "employee"
 
     // Generar y firmar el token JWT
     const token = JsonWebToken.sign(
@@ -73,7 +58,6 @@ loginController.login = async (req, res) => {
         email: userFound.email,
         dui: userFound.dui,
         user: userFound.user,
-        password: userFound.password,
       },
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn }

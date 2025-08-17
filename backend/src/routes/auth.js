@@ -14,7 +14,6 @@ router.get("/verify", verifyToken, (req, res) => {
     email: req.user.email, 
     dui: req.user.dui, 
     user: req.user.user, 
-    password: req.user.password
   });
 });
 

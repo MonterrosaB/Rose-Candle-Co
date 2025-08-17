@@ -7,7 +7,7 @@ import ProfileForm from "../components/ProfileForm.jsx"
 const Profile = () => {
   // Cambiar el título de la página al montar el componente
   useEffect(() => {
-    document.title = "Profile | Rosé Candle Co.";
+    document.title = "Mi Perfil | Rosé Candle Co.";
   }, []);
 
   return (
