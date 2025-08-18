@@ -31,7 +31,6 @@ employeesController.getEmployeesById = async (req, res) => {
   }
 };
 
-
 // DELETE - eliminar un empleado por ID
 employeesController.deleteEmployees = async (req, res) => {
   try {

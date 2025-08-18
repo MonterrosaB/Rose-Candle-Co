@@ -13,6 +13,7 @@ router.route("/")
 router.route("/addresses").get(customersController.getCustomersAddress)
 
 router.route("/:id")
+.get(customersController.getCustomersById)
 .put(customersController.updateCustomers)
 .delete(customersController.deleteCustomers)
 

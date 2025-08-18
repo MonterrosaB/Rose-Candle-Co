@@ -1,8 +1,15 @@
-import { useState, useEffect } from "react";
-import { User, Mail, Phone, Calendar, Edit, Save, X } from "lucide-react";
-import { useAuth } from "../../../global/hooks/useAuth.js";
+import React, { useState } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  Edit,
+  Save,
+  X,
+} from "lucide-react";
+import { useUserInformation } from "../hooks/useUserInformation";
 
-// Custom components
+// Componentes reutilizables: Button, Input y Label
 const Button = ({
   children,
   className = "",
@@ -37,7 +44,10 @@ const Button = ({
 
 const Input = ({ className = "", ...props }) => (
   <input
-    className={`flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    className={`flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm ring-offset-background 
+      file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground 
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+      disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     {...props}
   />
 );
@@ -53,50 +63,38 @@ const Label = ({ children, className = "", htmlFor, ...props }) => (
 );
 
 export default function ProfileSection() {
-  const { user, setUser } = useAuth();
-  const [loading, setLoading] = useState(true);
+  // Hook personalizado para manejar el estado del perfil y la actualización
+  const { profile, setProfile, updateProfile, loading } = useUserInformation();
+
+  // Estados locales para controlar edición y envío
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    name: "",
-    surnames: "",
-    phone: "",
-    email: "",
-    addresses: "",
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      if (!user.phone) {
-        // Si phone está vacío, recarga la data completa
-        const fetchFullUser = async () => {
-          const res = await fetch("http://localhost:4000/api/loginCustomer/verifyCustomer", {
-            credentials: "include",
-          });
-          const data = await res.json();
-          setUser(data.customer);
-        };
-        fetchFullUser();
-      } else {
-        // Si sí hay phone, seteas el perfil
-        setProfile({
-          name: user.name || "",
-          surnames: user.surnames || "",
-          phone: user.phone || "",
-          email: user.email || "",
-          addresses: user.addresses || "",
-        });
-        setLoading(false);
-      }
-    }
-  }, [user]);
-
-  const handleSave = () => {
-    console.log("Guardar cambios:", profile);
-    setIsEditing(false);
+  // Maneja los cambios en los inputs
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setProfile((prev) => ({ ...prev, [id]: value }));
   };
+
+  // Guardar cambios en el backend
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    try {
+      await updateProfile();
+      setIsEditing(false); // Salir del modo edición
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Mostrar mensaje mientras se carga la información
+  if (loading) {
+    return <p className="text-center">Cargando perfil...</p>;
+  }
 
   return (
     <div className="space-y-8">
+      {/* Título de la sección */}
       <div className="text-center lg:text-left">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-2">
           Perfil
@@ -104,9 +102,10 @@ export default function ProfileSection() {
         <p className="text-gray-600">Gestiona tu información personal</p>
       </div>
 
-      {/* Profile Card */}
+      {/* Tarjeta del perfil */}
       <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-rose-100">
         <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
+          
           {/* Avatar */}
           <div className="relative">
             <div className="w-32 h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center shadow-2xl">
@@ -114,16 +113,19 @@ export default function ProfileSection() {
             </div>
           </div>
 
-          {/* Profile Info */}
+          {/* Información del perfil */}
           <div className="flex-1 w-full">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
                 Información Personal
               </h2>
+
+              {/* Botón Editar / Guardar */}
               <Button
                 onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
                 type="button"
                 variant={isEditing ? "secondary" : "primary"}
+                disabled={isSubmitting}
               >
                 {isEditing ? (
                   <Save className="w-4 h-4 mr-2" />
@@ -134,12 +136,11 @@ export default function ProfileSection() {
               </Button>
             </div>
 
+            {/* Campos del formulario */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Nombre */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                   Nombre
                 </Label>
                 <div className="relative">
@@ -147,41 +148,33 @@ export default function ProfileSection() {
                   <Input
                     id="name"
                     value={profile.name}
-                    onChange={(e) =>
-                      setProfile({ ...profile, name: e.target.value })
-                    }
+                    onChange={handleChange}
                     disabled={!isEditing}
                     className="pl-10 h-12 border-rose-200 focus:border-rose-400 rounded-xl"
                   />
                 </div>
               </div>
 
+              {/* Apellidos */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="surnames"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="surnames" className="text-sm font-medium text-gray-700">
                   Apellidos
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
-                    id="surname"
+                    id="surnames"
                     value={profile.surnames}
-                    onChange={(e) =>
-                      setProfile({ ...profile, surnames: e.target.value })
-                    }
+                    onChange={handleChange}
                     disabled={!isEditing}
                     className="pl-10 h-12 border-rose-200 focus:border-rose-400 rounded-xl"
                   />
                 </div>
               </div>
 
+              {/* Teléfono */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="phone"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
                   Teléfono
                 </Label>
                 <div className="relative">
@@ -189,20 +182,16 @@ export default function ProfileSection() {
                   <Input
                     id="phone"
                     value={profile.phone}
-                    onChange={(e) =>
-                      setProfile({ ...profile, phone: e.target.value })
-                    }
+                    onChange={handleChange}
                     disabled={!isEditing}
                     className="pl-10 h-12 border-rose-200 focus:border-rose-400 rounded-xl"
                   />
                 </div>
               </div>
 
+              {/* Email */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                   Email
                 </Label>
                 <div className="relative">
@@ -211,9 +200,7 @@ export default function ProfileSection() {
                     id="email"
                     type="email"
                     value={profile.email}
-                    onChange={(e) =>
-                      setProfile({ ...profile, email: e.target.value })
-                    }
+                    onChange={handleChange}
                     disabled={!isEditing}
                     className="pl-10 h-12 border-rose-200 focus:border-rose-400 rounded-xl"
                   />
@@ -221,12 +208,15 @@ export default function ProfileSection() {
               </div>
             </div>
 
+            {/* Botones Guardar / Cancelar (solo en edición) */}
             {isEditing && (
               <div className="mt-6 flex space-x-4">
                 <Button
                   onClick={handleSave}
                   type="button"
-                  variant="secondary"                >
+                  variant="secondary"
+                  disabled={isSubmitting}
+                >
                   <Save className="w-4 h-4 mr-2" />
                   Guardar Cambios
                 </Button>
@@ -234,6 +224,7 @@ export default function ProfileSection() {
                   onClick={() => setIsEditing(false)}
                   type="button"
                   variant="danger"
+                  disabled={isSubmitting}
                 >
                   <X className="w-4 h-4 mr-2" />
                   Cancelar
