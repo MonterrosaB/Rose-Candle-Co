@@ -15,7 +15,7 @@ import ShippingStep from "./ShippingStep";
 import PaymentStep from "./PaymentStep";
 import ReviewStep from "./ReviewStep";
 import ConfirmationStep from "./ConfirmationStep";
- 
+
 
 const CheckoutFlow = ({
   cartItems = [],
@@ -23,13 +23,12 @@ const CheckoutFlow = ({
   onBack,
   onClearCart,
 }) => {
+  const { user } = useContext(AuthContext);
 
-  const { user } = useContext(AuthContext)
-
-
- 
-
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [selectedAddress, setSelectedAddress] = useState("new"); // 👈 Mover aquí
   const [formData, setFormData] = useState({
     shipping: {
       firstName: "",
@@ -40,7 +39,7 @@ const CheckoutFlow = ({
       city: "",
       state: "",
       zipCode: "",
-      country: "El Salvador",
+      country: "El Salvador" || "",
     },
     payment: {
       cardNumber: "",
@@ -50,8 +49,6 @@ const CheckoutFlow = ({
       paymentMethod: "card",
     },
   });
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
 
   const steps = [
     { id: 0, title: "Información de Envío", icon: Truck },
@@ -87,69 +84,69 @@ const CheckoutFlow = ({
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
     console.log(formData);
-    
-  /*try {
-    
-    setIsProcessing(true);
 
-    // 1. Obtener token
-    const tokenResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    if (!tokenResponse.ok) throw new Error("Error al obtener token");
-
-    const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
-
-    // 2. Preparar datos de pago
-    const paymentData = {
-  monto: total,
-  emailCliente: formData.shipping.email,
-  nombreCliente: `${formData.shipping.firstName} ${formData.shipping.lastName}`,
-  tokenTarjeta: "null", // simulado
-};
-
-//  Consola para verificar si el email está llegando
-console.log(" Email cliente (desde frontend):", formData.shipping.email);
-
-
-    // 3. Enviar pago simulado
-    const paymentResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/testPayment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: accessToken, formData: paymentData }),
-    });
-
-    if (!paymentResponse.ok) {
-      const errorText = await paymentResponse.text();
-      throw new Error(`Error al procesar pago: ${errorText}`);
-    }
-
-    const paymentResult = await paymentResponse.json();
-    console.log("Respuesta del pago simulado:", paymentResult);
-
-    // ALERTA: pago realizado correctamente
-    alert("Pago realizado correctamente 🎉");
-
-    // Vaciar carrito
-    if (onClearCart) {
-      await onClearCart();
-      // ALERTA: carrito vaciado
-      alert("Carrito vaciado exitosamente");
-    }
-
-    setIsProcessing(false);
-    setOrderComplete(true);
-
-  } catch (err) {
-    console.error("Error en el proceso de pago:", err);
-    alert(`Error: ${err.message}`);
-    setIsProcessing(false);
-  }*/
-};
+    /*try {
+      
+      setIsProcessing(true);
+  
+      // 1. Obtener token
+      const tokenResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+  
+      if (!tokenResponse.ok) throw new Error("Error al obtener token");
+  
+      const tokenData = await tokenResponse.json();
+      const accessToken = tokenData.access_token;
+  
+      // 2. Preparar datos de pago
+      const paymentData = {
+    monto: total,
+    emailCliente: formData.shipping.email,
+    nombreCliente: `${formData.shipping.firstName} ${formData.shipping.lastName}`,
+    tokenTarjeta: "null", // simulado
+  };
+  
+  //  Consola para verificar si el email está llegando
+  console.log(" Email cliente (desde frontend):", formData.shipping.email);
+  
+  
+      // 3. Enviar pago simulado
+      const paymentResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/testPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: accessToken, formData: paymentData }),
+      });
+  
+      if (!paymentResponse.ok) {
+        const errorText = await paymentResponse.text();
+        throw new Error(`Error al procesar pago: ${errorText}`);
+      }
+  
+      const paymentResult = await paymentResponse.json();
+      console.log("Respuesta del pago simulado:", paymentResult);
+  
+      // ALERTA: pago realizado correctamente
+      alert("Pago realizado correctamente 🎉");
+  
+      // Vaciar carrito
+      if (onClearCart) {
+        await onClearCart();
+        // ALERTA: carrito vaciado
+        alert("Carrito vaciado exitosamente");
+      }
+  
+      setIsProcessing(false);
+      setOrderComplete(true);
+  
+    } catch (err) {
+      console.error("Error en el proceso de pago:", err);
+      alert(`Error: ${err.message}`);
+      setIsProcessing(false);
+    }*/
+  };
 
 
   return (
@@ -194,9 +191,8 @@ console.log(" Email cliente (desde frontend):", formData.shipping.email);
                 </motion.div>
                 <div className="ml-3 hidden md:block">
                   <p
-                    className={`text-sm font-medium ${
-                      currentStep >= index ? "text-[#A3A380]" : "text-gray-500"
-                    }`}
+                    className={`text-sm font-medium ${currentStep >= index ? "text-[#A3A380]" : "text-gray-500"
+                      }`}
                   >
                     {step.title}
                   </p>
@@ -228,6 +224,8 @@ console.log(" Email cliente (desde frontend):", formData.shipping.email);
                 <ShippingStep
                   formData={formData.shipping}
                   handleInputChange={handleInputChange}
+                  selectedAddress={selectedAddress} // 👈 le paso
+                  setSelectedAddress={setSelectedAddress} // 👈 le paso
                 />
               </motion.div>
             )}
@@ -274,11 +272,10 @@ console.log(" Email cliente (desde frontend):", formData.shipping.email);
                 whileTap={{ scale: 0.95 }}
                 onClick={prevStep}
                 disabled={currentStep === 0}
-                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all ${
-                  currentStep === 0
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
+                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all ${currentStep === 0
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Anterior

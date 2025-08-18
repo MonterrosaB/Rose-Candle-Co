@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
+import TitleH1 from "../../global/components/TitleH1"
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
+
 import { useForm } from "react-hook-form";
 import useCollections from "./hooks/useCollections";
 
@@ -73,10 +75,10 @@ const PageCollections = () => {
 
   return (
     <PrincipalDiv>
+      <TitleH1 title="Colecciones" />
       {/* Tabla para md+ */}
       <div className="hidden md:block overflow-x-auto">
         <DataGrid
-          title="Colecciones"
           columns={columns}
           rows={rows}
           primaryBtnText="Agregar Colección"

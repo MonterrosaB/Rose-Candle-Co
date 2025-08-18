@@ -31,7 +31,7 @@ const Login = () => {
 
     if (success) {
       toast.success("Inicio de sesión exitoso");
-      navigate("/home"); // Navegar al home después del login
+      navigate("/"); // Navegar al home después del login
     }
   };
 

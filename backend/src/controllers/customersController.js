@@ -1,7 +1,6 @@
 import customersModel from "../models/Customers.js"; // Modelo de Clientes
 import jwt from "jsonwebtoken";
 
-
 // Objeto que agrupa los métodos CRUD para clientes
 const customersController = {};
 
@@ -43,9 +42,6 @@ customersController.getCustomersAddress = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
-
-
 
 // DELETE - Eliminar un cliente por ID
 customersController.deleteCustomers = async (req, res) => {
@@ -180,7 +176,8 @@ customersController.getAddresses = async (req, res) => {
 
 // Agregar una dirección al cliente
 customersController.addAddress = async (req, res) => {
-  const { address, type, isDefault } = req.body;
+  const { firstName, lastName, state, city, zipCode, phone, address } =
+    req.body;
 
   try {
     const customer = await customersModel.findById(req.params.id);
@@ -189,15 +186,21 @@ customersController.addAddress = async (req, res) => {
       return res.status(404).json({ message: "Cliente no encontrado" });
     }
 
-    // Si es predeterminada, desmarcar otras
-    if (isDefault) {
-      customer.addresses.forEach((addr) => (addr.isDefault = false));
-    }
-
-    customer.addresses.push({ address, type, isDefault });
+    customer.addresses.push({
+      firstName,
+      lastName,
+      state,
+      city,
+      zipCode,
+      phone,
+      address,
+      type,
+    });
 
     await customer.save();
-    res.status(201).json({ message: "Dirección agregada", addresses: customer.addresses });
+    res
+      .status(201)
+      .json({ message: "Dirección agregada", addresses: customer.addresses });
   } catch (error) {
     console.error("Error al agregar dirección:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -214,10 +217,14 @@ customersController.deleteAddress = async (req, res) => {
       return res.status(404).json({ message: "Cliente no encontrado" });
     }
 
-    customer.addresses = customer.addresses.filter((addr) => addr._id.toString() !== addressId);
+    customer.addresses = customer.addresses.filter(
+      (addr) => addr._id.toString() !== addressId
+    );
 
     await customer.save();
-    res.status(200).json({ message: "Dirección eliminada", addresses: customer.addresses });
+    res
+      .status(200)
+      .json({ message: "Dirección eliminada", addresses: customer.addresses });
   } catch (error) {
     console.error("Error al eliminar dirección:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -227,7 +234,8 @@ customersController.deleteAddress = async (req, res) => {
 // Editar una dirección específica
 customersController.updateAddress = async (req, res) => {
   const { id, addressId } = req.params;
-  const { address, type, isDefault } = req.body;
+  const { firstName, lastName, state, city, zipCode, phone, address } =
+    req.body;
 
   try {
     const customer = await customersModel.findById(id);
@@ -240,17 +248,21 @@ customersController.updateAddress = async (req, res) => {
       return res.status(404).json({ message: "Dirección no encontrada" });
     }
 
-    // Si se define como predeterminada, desactivar las demás
-    if (isDefault) {
-      customer.addresses.forEach((a) => (a.isDefault = false));
-    }
-
-    addr.address = address || addr.address;
-    addr.type = type || addr.type;
-    addr.isDefault = isDefault ?? addr.isDefault;
+    // Actualizar todos los campos si vienen en el body
+    addr.firstName = firstName ?? addr.firstName;
+    addr.lastName = lastName ?? addr.lastName;
+    addr.state = state ?? addr.state;
+    addr.city = city ?? addr.city;
+    addr.zipCode = zipCode ?? addr.zipCode;
+    addr.phone = phone ?? addr.phone;
+    addr.address = address ?? addr.address;
 
     await customer.save();
-    res.status(200).json({ message: "Dirección actualizada", addresses: customer.addresses });
+
+    res.status(200).json({
+      message: "Dirección actualizada",
+      addresses: customer.addresses,
+    });
   } catch (error) {
     console.error("Error al actualizar dirección:", error);
     res.status(500).json({ message: "Error interno del servidor" });

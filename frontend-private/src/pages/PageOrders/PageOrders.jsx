@@ -2,6 +2,10 @@ import RegisterOrder from "./components/RegisterOrder";
 import { useState, useEffect } from "react";
 import Dialog from "../../global/components/Dialog";
 import DataGrid from "../../global/components/DataGrid";
+import TitleH1 from "../../global/components/TitleH1"
+
+
+
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 
 const PageOrders = () => {
@@ -15,10 +19,10 @@ const PageOrders = () => {
       .then(data => {
         const formatted = data.map(order => {
           const products = order.idShoppingCart?.products || [];
-  
+
           const totalQuantity = products.reduce((sum, p) => sum + (p.quantity || 0), 0);
           const totalPrice = products.reduce((sum, p) => sum + (p.subtotal || 0), 0);
-  
+
           return {
             _id: order._id,
             idShoppingCart: order.idShoppingCart?._id || "",
@@ -39,11 +43,11 @@ const PageOrders = () => {
         console.log(formatted);
 
         setSalesOrders(formatted);
-        
+
       })
       .catch(err => console.error("Error al traer órdenes:", err));
   }, []);
-  
+
 
   const columns = {
     Cliente: "name",
@@ -69,9 +73,9 @@ const PageOrders = () => {
   return (
     <>
       {/* Tabla desktop */}
+      <TitleH1 title="Órdenes" />
       <div className="hidden md:block">
         <DataGrid
-          title={"Órdenes"}
           columns={columns}
           rows={salesOrders}
           primaryBtnText={"Add Order"}

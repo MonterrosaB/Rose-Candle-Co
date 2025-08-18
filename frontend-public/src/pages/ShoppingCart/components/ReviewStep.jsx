@@ -33,8 +33,7 @@ const ReviewStep = ({ formData, cartItems, total }) => {
           <p>{formData.shipping.email}</p>
           <p>{formData.shipping.phone}</p>
           <p>{formData.shipping.address}</p>
-          <p>{formData.shipping.city}, {formData.shipping.zipCode}</p>
-          <p>{formData.shipping.country}</p>
+          <p>{formData.shipping.city}, {formData.shipping.state} {formData.shipping.zipCode}</p>
         </div>
       </div>
 
@@ -60,20 +59,24 @@ const ReviewStep = ({ formData, cartItems, total }) => {
         {groupedItems.length ? (
           groupedItems.map(({ product, quantity }) => {
             const key = product._id || product.id || product.name;
+            const selectedVariant = product.idProduct?.variant?.[product.selectedVariantIndex]?.variantPrice;
+            // 👈 obtener variante
+
+
             return (
               <div key={key} className="bg-white shadow-md rounded-xl p-4 flex items-center gap-4">
                 <img
-                  src={product.images?.[0]}
-                  alt={product.name}
+                  src={product.idProduct.images?.[0]}
+                  alt={product.idProduct?.name}
                   className="w-20 h-20 rounded-lg object-cover"
                 />
                 <div className="flex flex-col flex-grow">
-                  <h4 className="text-md font-semibold text-gray-800">{product.name}</h4>
+                  <h4 className="text-md font-semibold text-gray-800">{product.idProduct?.name} - {product.idProduct?.variant?.[product.selectedVariantIndex]?.variant}</h4>
                   <p className="text-sm text-gray-600 mt-1">
-                    Precio unitario: ${parseFloat(product.currentPrice || 0).toFixed(2)}
+                    Precio unitario: ${parseFloat(selectedVariant || 0).toFixed(2)}
                   </p>
                   <p className="font-semibold text-gray-900 mt-1">
-                    Total: ${(quantity * product.currentPrice).toFixed(2)}
+                    Total: ${(quantity * selectedVariant).toFixed(2)}
                   </p>
                 </div>
                 <div className="font-semibold text-gray-700 text-sm">x{quantity}</div>

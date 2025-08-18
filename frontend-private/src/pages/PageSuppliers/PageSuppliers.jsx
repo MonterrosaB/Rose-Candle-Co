@@ -5,6 +5,10 @@ import Dialog from "../../global/components/Dialog";
 import RegisterSuppliers from "./components/RegisterSuppliers";
 import { useForm } from "react-hook-form";
 import useSuppliers from "./hooks/useSuppliers";
+import TitleH1 from "../../global/components/TitleH1"
+
+
+
 
 const PageSuppliers = () => {
   const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false);
@@ -65,10 +69,10 @@ const PageSuppliers = () => {
 
   return (
     <PrincipalDiv>
+      <TitleH1 title="Proveedores" />
       {/* Tabla para md+ */}
       <div className="hidden md:block overflow-x-auto">
         <DataGrid
-          title="Proveedores"
           columns={columns}
           rows={rows}
           primaryBtnText="Agregar Proveedor"
