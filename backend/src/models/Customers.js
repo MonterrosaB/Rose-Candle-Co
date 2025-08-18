@@ -36,7 +36,7 @@ const addressSchema = new Schema(
       type: String,
       required : true,
       match: [
-        /^[a-zA-Z\s]+$/,
+        /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/,
         "lastname must contain only letters and spaces",
       ],
       trim: true,
