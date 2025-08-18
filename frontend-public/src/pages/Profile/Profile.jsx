@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import Sidebar from "./Components/sidebar";
-import OrdersSection from "./Components/orders-section";
-import ProfileSection from "./Components/profile-section";
+import OrdersSection from "./Components/OrdersSection";
+import ProfileSection from "./Components/ProfileSection";
 import AddressesSection from "./Components/AddressesSection";
-import CardsSection from "./Components/cards-section";
-import AuthSection from "./Components/auth-section";
+import CardsSection from "./Components/CardsSection";
+import AuthSection from "./Components/PasswordSection";
 
 export default function Profile() {
   // Cambiar el título de la página al montar el componente

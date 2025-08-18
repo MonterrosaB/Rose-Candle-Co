@@ -12,20 +12,22 @@ router.route("/")
 
 router.route("/addresses").get(customersController.getCustomersAddress)
 
-router.route("/:id")
-.put(customersController.updateCustomers)
-.delete(customersController.deleteCustomers)
-
-// Rutas específicas
-router.route("/restore/:id")
-.put(customersController.restoreCustomers); // restaurar por id
-
 router.route("/count") // contador de usuarios
 .get(customersController.countCustomers)
 
 router.route("/countByMonth") // contador de usuarios del último mes
 .get(customersController.countCustomersByMonth)
 
+router.route("/:id")
+.get(customersController.getCustomersById)
+.put(customersController.updateCustomers)
+.delete(customersController.deleteCustomers)
+router.route("/:id/password")
+  .put(customersController.updatePassword); // contraseña actualizar
+
+// Rutas específicas
+router.route("/restore/:id")
+.put(customersController.restoreCustomers); // restaurar por id
 
 // Direcciones
 // Obtener direcciones

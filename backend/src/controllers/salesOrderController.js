@@ -445,26 +445,28 @@ salesOrderController.getLatestOrders = async (req, res) => {
   }
 };
 
+import { ObjectId } from "mongodb";
+
 // GET - Obtener carrito activo de un usuario y sus productos
 salesOrderController.getUserCartWithProducts = async (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
 
   try {
-    // Buscamos la orden cuyo carrito activo corresponde al usuario
-    const order = await SalesOrderModel.find({
-      "idShoppingCart.idUser": userId,
-    }).populate({
-      path: "idShoppingCart",
-      populate: [
-        { path: "idUser", select: "name" },
-        {
-          path: "products.idProduct",
-          select: "name images",
-        },
-      ],
-    });
+    // Buscar todas las órdenes y poblar solo los carritos que pertenecen a este usuario
+    const order = await SalesOrderModel.find()
+      .populate({
+        path: "idShoppingCart",
+        match: { idUser: userId }, // filtra carritos por usuario
+        populate: [
+          { path: "idUser", select: "name" },
+          { path: "products.idProduct", select: "name images" },
+        ],
+      });
 
-    return res.status(200).json(order); // Aquí `shippingStates` ya va incluido
+    // Opcional: filtrar en el resultado los que no tengan carrito coincidente
+    const filteredOrder = order.filter(o => o.idShoppingCart !== null);
+
+    return res.status(200).json(filteredOrder);
   } catch (error) {
     console.error("Error al obtener la orden con carrito:", error);
     return res.status(500).json({ message: "Error interno del servidor" });

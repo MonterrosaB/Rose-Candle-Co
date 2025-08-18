@@ -1,6 +1,6 @@
 import { useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 
-import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { PrivateRoute } from "./PrivateRoute.jsx";
 import { StartRoute } from "./StartRoute";
@@ -21,38 +21,39 @@ import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesM
 import Reports from "../../pages/PagerReports/PageRepots.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
-import Profile from "../../pages/PageProfile/logic/PageProfile.jsx"
+import Profile from "../../pages/PageProfile/logic/PageProfile.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
-import { useNavigate } from "react-router-dom";
-
 function Navigation() {
-
   const navigate = useNavigate();
-
+  const location = useLocation(); // Se obtiene la ruta actual
 
   const { isAuthenticated, user } = useAuth();
   const { hasEmployees } = useHasEmployees();
 
-  // Redirección desde raíz si no hay empleados
+  // Determina la ruta de redirección inicial según si existen empleados
   const redirectPath = hasEmployees ? "/login" : "/start";
 
+  // Define las rutas donde no se muestra el sidebar ni el footer
   const noNavFooterRoutes = ["/login", "/start", "/recoveryPassword"];
   const hideNavFooter = noNavFooterRoutes.includes(location.pathname);
 
-
+  // Redirección automática si el usuario ya está autenticado
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate("/home");
+    const noRedirectPaths = ["/", "/login", "/start"]; // Solo redirige desde estas rutas
+    if (isAuthenticated && user && noRedirectPaths.includes(location.pathname)) {
+      navigate("/home", { replace: true }); // Redirige a home sin acumular historial
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, navigate, location.pathname]);
 
   return (
     <>
+      {/* Muestra el sidebar solo si la ruta no está en la lista de exclusión */}
       {!hideNavFooter && <Sidebar />}
+
       <main className={!hideNavFooter ? "transition-all duration-300 ml-0 lg:ml-60" : ""}>
         <Routes>
-          {/* Ruta para el primer usuario */}
+          {/* Ruta para crear el primer usuario */}
           <Route
             path="/start"
             element={
@@ -62,27 +63,16 @@ function Navigation() {
             }
           />
 
-          {/* Ruta para el primer usuario */}
-          <Route
-            path="/recoveryPassword"
-            element={
-              <PasswordRecovery />
-            }
-          />
+          {/* Ruta de recuperación de contraseña */}
+          <Route path="/recoveryPassword" element={<PasswordRecovery />} />
 
-          <Route
-            path="/login"
-            element={
-              <Login />
-            }
-          />
+          {/* Ruta de login */}
+          <Route path="/login" element={<Login />} />
 
-          {/* Ruta raíz */}
+          {/* Ruta raíz: redirige según autenticación */}
           <Route
             path="/"
-            element={
-              <Navigate to={isAuthenticated ? "/home" : redirectPath} replace />
-            }
+            element={<Navigate to={isAuthenticated ? "/home" : redirectPath} replace />}
           />
 
           {/* Rutas protegidas */}
@@ -99,13 +89,10 @@ function Navigation() {
             <Route path="/employees" element={<Employees />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/profile" element={<Profile />} />
-            <Route
-              path="/categories-materia"
-              element={<CategoriesMateria />}
-            />
+            <Route path="/categories-materia" element={<CategoriesMateria />} />
           </Route>
 
-          {/* Ruta comodín: para rutas no válidas */}
+          {/* Ruta comodín: redirige a home o login según autenticación */}
           <Route
             path="*"
             element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />}

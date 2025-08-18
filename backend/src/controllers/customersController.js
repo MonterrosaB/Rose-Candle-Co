@@ -1,5 +1,6 @@
 import customersModel from "../models/Customers.js"; // Modelo de Clientes
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 // Objeto que agrupa los métodos CRUD para clientes
 const customersController = {};
@@ -15,6 +16,23 @@ customersController.getCustomers = async (req, res) => {
   }
 };
 
+// GET - obtener un cliente por ID
+customersController.getCustomersById = async (req, res) => {
+  try {
+    const customer = await customersModel.findById(req.params.id);
+
+    if (!customer || customer.deleted) {
+      return res.status(404).json({ message: "Customer not found" }); // no encontrado
+    }
+
+    res.status(200).json(customer); // Responder con el cliente encontrado
+  } catch (error) {
+    console.error("Error al obtener cliente:", error);
+    res.status(500).json({ message: "Internal server error" }); // error
+  }
+};
+
+// Obtener direcciones del usuario
 customersController.getCustomersAddress = async (req, res) => {
   try {
     const token = req.cookies.authToken;
@@ -66,15 +84,14 @@ customersController.deleteCustomers = async (req, res) => {
 // PUT - Actualizar un cliente por ID
 customersController.updateCustomers = async (req, res) => {
   // Obtener datos del cuerpo de la solicitud
-  const { name, surnames, email, password, user, phone } = req.body;
+  const { name, surnames, email, phone } = req.body;
 
   try {
     // Validaciones de longitud mínima
     if (
       name.length < 3 ||
       surnames.length < 3 ||
-      phone.length < 9 ||
-      password.length < 8
+      phone.length < 9
     ) {
       return res.status(400).json({ message: "Too short" }); // Datos demasiado cortos
     }
@@ -85,9 +102,9 @@ customersController.updateCustomers = async (req, res) => {
     }
 
     // Actualizar cliente en base de datos
-    customerUpdated = await customersModel.findByIdAndUpdate(
+    const customerUpdated = await customersModel.findByIdAndUpdate(
       req.params.id,
-      { name, surnames, email, password, user, phone },
+      { name, surnames, email, phone },
       { new: true } // Retornar documento actualizado
     );
 
@@ -101,6 +118,8 @@ customersController.updateCustomers = async (req, res) => {
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
+
+// Restaurar cliente eliminado
 customersController.restoreCustomers = async (req, res) => {
   try {
     const restoredcustomers = await customersModel.findByIdAndUpdate(
@@ -265,6 +284,32 @@ customersController.updateAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al actualizar dirección:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Actualizar contraseña
+customersController.updatePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { id } = req.params;
+
+  try {
+    const customer = await customersModel.findById(id);
+    if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
+
+    // Comparar contraseña actual con la guardada (hashed)
+    const isMatch = await bcrypt.compare(currentPassword, customer.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Contraseña actual incorrecta" });
+    }
+
+    // Hashear la nueva contraseña
+    customer.password = await bcrypt.hash(newPassword, 10);
+    await customer.save();
+
+    res.status(200).json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
