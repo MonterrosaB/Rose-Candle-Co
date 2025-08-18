@@ -64,6 +64,9 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
         }
 
+        console.log(userData);
+
+
         return true;
       } else {
         if (

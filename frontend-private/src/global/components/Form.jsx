@@ -2,7 +2,21 @@ import { X } from "lucide-react";
 
 const FormDiv = ({ children, headerLabel, onClose, onSubmit }) => {
   return (
-    <div className="w-full max-w-3xl mx-auto shadow-2xl rounded-xl bg-white">
+    <div className="
+      bg-white
+      w-full
+      max-w-xs        /* móvil muy pequeño */
+      sm:max-w-sm     /* ≥640px */
+      md:max-w-md     /* ≥768px */
+      lg:max-w-3xl    /* ≥1024px */
+      xl:max-w-5xl    /* ≥1280px */
+      max-h-screen
+      sm:max-h-[90vh] /* deja margen superior/inferior */
+      overflow-y-auto
+      rounded-xl
+      shadow-2xl
+      relative
+    ">
       {/* Encabezado */}
       <div className="flex justify-between items-center bg-[#C2A878] text-white text-xl p-4 font-bold rounded-t-xl">
         <span>{headerLabel}</span>

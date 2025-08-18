@@ -60,6 +60,7 @@ const materialBalance = new Schema(
         validator: (value) => !isNaN(Date.parse(value)), // Verifica que la fecha sea válida
         message: "Fecha inválida",
       },
+      default: Date.now,
     },
 
     // Campo para eliminación lógica del movimiento

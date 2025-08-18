@@ -76,7 +76,17 @@ function Navigation() {
           />
 
           {/* Rutas protegidas */}
-          <Route element={<PrivateRoute />}>
+          <Route element={<PrivateRoute allowedRoles={["admin", "employee"]} />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/stock" element={<Stock />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/order" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/materials" element={<Materials />} />
+
+          </Route>
+
+          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             <Route path="/home" element={<Home />} />
             <Route path="/stock" element={<Stock />} />
             <Route path="/categories" element={<Categories />} />

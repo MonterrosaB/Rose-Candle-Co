@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { AuthContext } from "../../../global/context/AuthContext.jsx";
 
+import { Link } from "react-router"
+
 const Button = ({ children, className = "", onClick, ...props }) => (
   <button
     className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${className}`}
@@ -202,7 +204,10 @@ export default function OrdersSection() {
                     Intenta cambiar el filtro o buscar otro nombre.
                   </p>
                   <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    Explorar Productos
+                    <Link to={"/products"}>
+                      Explorar Productos
+
+                    </Link>
                   </Button>
                 </div>
               )}

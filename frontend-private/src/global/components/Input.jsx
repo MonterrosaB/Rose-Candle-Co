@@ -1,15 +1,18 @@
-const Input = ({ name, label, type = "text", error, register, options }) => {
+const Input = ({ name, label, type = "text", error, register, options, disabled = false, step, min }) => {
   return (
     <div className="mb-5 w-full">
       <div className="relative w-full">
         <input
           id={name}
           type={type}
-          {...register(name, { required: `${label} es requerido` })}{...register(name, options)}
+          {...register(name, { required: `${label} es requerido`, ...options })}
           className={`block px-2.5 pb-2.5 pt-4 w-full text-sm rounded-lg border 
             ${error ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-black"} 
             appearance-none focus:outline-none peer transition-colors duration-200`}
-          placeholder=" "
+          placeholder=""
+          disabled={disabled}
+          step={step}
+          min={min}
         />
         <label
           htmlFor={name}

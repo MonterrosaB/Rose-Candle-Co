@@ -37,17 +37,14 @@ const CardProductDetail = ({ product }) => {
             </option>
           ))}
         </select>
-        {/* Componentes */}
-        {product.components?.length > 0 && (
+        {/* Componentes por variante seleccionada */}
+        {product.variant[selectedVariantIndex]?.components?.length > 0 && (
           <div>
-            <h3 className="text-gray-400">Componentes</h3>
+            <h3 className="text-gray-400">Componentes de la variante {product.variant[selectedVariantIndex].variant}</h3>
             <ul className="list-disc list-inside text-sm">
-              {product.components.map((comp, i) => (
+              {product.variant[selectedVariantIndex].components.map((comp, i) => (
                 <li key={i}>
-                  Componente:{" "}
-                  {comp.idComponent && comp.idComponent?.name
-                    ? comp.idComponent.name
-                    : "Nombre no disponible"}{" "}
+                  {comp.idComponent?.name || "Nombre no disponible"}
                 </li>
               ))}
             </ul>

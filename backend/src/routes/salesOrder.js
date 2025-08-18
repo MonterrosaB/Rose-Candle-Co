@@ -14,7 +14,7 @@ router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total
 router.route("/latestOrders").get(salesOrderController.getLatestOrders); // ùltimos pedidos
 router.route("/salesEvolution").get(salesOrderController.getSalesEvolution); // ùltimos pedidos
 
-router.route("/createSalesOrder/:userId").post(salesOrderController.createSalesOrderPrivate)//
+router.route("/createSalesOrder").post(salesOrderController.createSalesOrderPrivate)//
 
 
 // Rutas específicas antes de rutas dinámicas

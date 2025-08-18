@@ -104,7 +104,7 @@ const DataGrid = ({
 
   return (
     <div className="flex flex-col relative overflow-x-auto sm:rounded-lg bg-stone-50 text-[#333] shadow-xl">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center p-4">
         <div className="relative">
           <input
             type="search"

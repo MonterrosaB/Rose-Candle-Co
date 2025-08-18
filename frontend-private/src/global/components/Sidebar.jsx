@@ -7,14 +7,15 @@ import { useAuth } from "../../global/hooks/useAuth.js";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const isAdmin = user?.isAdmin;
 
   const links = [
-    { to: "/", label: "Home" },
-    { to: "/stock", label: "Stock" },
-    { to: "/reports", label: "Reports" },
-    { to: "/employees", label: "Employees" },
-    { to: "/order", label: "Order" },
+    { to: "/", label: "Home", adminOnly: false },
+    { to: "/stock", label: "Stock", adminOnly: false },
+    { to: "/reports", label: "Reports", adminOnly: true },
+    { to: "/employees", label: "Employees", adminOnly: true },
+    { to: "/order", label: "Order", adminOnly: false },
   ];
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -26,23 +27,26 @@ const Sidebar = () => {
 
   const renderLinks = () => (
     <ul className="space-y-2 px-4">
-      {links.map(({ to, label }) => (
-        <li key={to}>
-          <Link
-            to={to}
-            onClick={() => setIsSidebarOpen(false)}
-            className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
-          >
-            {label}
-          </Link>
-        </li>
-      ))}
+      {links.map(({ to, label, adminOnly }) => {
+        if (adminOnly && !isAdmin) return null; // Oculta links de admin para usuarios normales
+        return (
+          <li key={to}>
+            <Link
+              to={to}
+              onClick={() => setIsSidebarOpen(false)}
+              className="block py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300"
+            >
+              {label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 
   return (
     <>
-      {/* Botón hamburguesa - visible solo en móviles/tablets */}
+      {/* Botón hamburguesa */}
       <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 w-12 h-12 bg-white shadow-lg z-50 flex lg:hidden items-center justify-center rounded-md"
@@ -51,7 +55,7 @@ const Sidebar = () => {
         {isSidebarOpen ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
       </button>
 
-      {/* Sidebar fijo para escritorio */}
+      {/* Sidebar fijo */}
       <aside className="hidden lg:flex fixed top-0 left-0 w-60 h-screen bg-white shadow-xl z-50 flex-col justify-between">
         <div>
           <div className="flex items-center justify-center py-6">
@@ -61,7 +65,7 @@ const Sidebar = () => {
         </div>
         <div className="text-base text-[#333] px-4 py-4">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300 cursor-pointer"
           >
             <LogOut size={18} />
@@ -70,11 +74,10 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      {/* Sidebar móvil con overlay y animación */}
+      {/* Sidebar móvil */}
       <AnimatePresence>
         {isSidebarOpen && (
           <>
-            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
@@ -83,8 +86,6 @@ const Sidebar = () => {
               onClick={() => setIsSidebarOpen(false)}
               className="fixed inset-0 bg-black z-40 lg:hidden"
             />
-
-            {/* Sidebar deslizable */}
             <motion.aside
               initial={{ x: -300 }}
               animate={{ x: 0 }}

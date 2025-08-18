@@ -101,29 +101,6 @@ const Footer = () => {
             Política de privacidad
           </a>
         </div>
-
-        {/* Novedades */}
-        <div className="flex flex-col items-start gap-7 max-w-xs w-full sm:w-auto">
-          <p className="text-lg text-[#B7B5B3]">Novedades</p>
-          <p className="leading-relaxed">
-            Suscríbete a nuestro boletín y disfruta promociones exclusivas.
-          </p>
-
-          {/* Input */}
-          <div className="relative w-full">
-            <input
-              type="email"
-              placeholder="Correo electrónico"
-              className="w-full pr-32 pl-4 py-2 rounded-full border border-[#F9F7F3] bg-transparent text-[#F9F7F3] placeholder-[#B7B5B3] focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="absolute right-1 top-1 bottom-1 px-4 rounded-full bg-[#F9F7F3] text-[#1C1C1C] font-semibold cursor-pointer border border-[#F9F7F3] hover:bg-[#e6e3de] transition"
-            >
-              REGISTRAR
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

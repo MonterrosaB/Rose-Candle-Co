@@ -1,9 +1,18 @@
 import { Link } from "react-router-dom";
 import { Package, Users, Layers, Tags } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../global/hooks/useAuth";
+
 
 const PageStock = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const { user } = useAuth();
+  const isAdmin = user?.isAdmin; // true o false
+
+
+
+
 
   useEffect(() => {
     setIsLoaded(true);
@@ -61,6 +70,15 @@ const PageStock = () => {
     },
   ];
 
+
+  const filteredMenuItems = menuItems.filter(item => {
+    // Por ejemplo: solo admin puede ver "Proveedores" y "Empleados"
+    if (!isAdmin && ["/record", "/supplies", "/categories", "/categories-materia", "/colections"].includes(item.path)) {
+      return false;
+    }
+    return true; // resto de items visibles para todos
+  });
+
   return (
     <div className="min-h-dvh bg-[#ffff] relative overflow-hidden">
       {/* Background circles */}
@@ -94,8 +112,7 @@ const PageStock = () => {
             className={`text-center mb-12 transform transition-all duration-1000 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
               }`}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#F9F7F3] via-[#DFCCAC] to-[#BCA88E] bg-clip-text text-transparent mb-4">
-              Panel de Control
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[#6B8E23] via-[#C0B283] to-[#4B5320] bg-clip-text text-transparent mb-2 text-center capitalize leading-snug">              Panel de Control
             </h1>
             <p className="text-base sm:text-lg text-[#D3CCBE] max-w-2xl mx-auto">
               Gestiona tu sistema
@@ -104,7 +121,7 @@ const PageStock = () => {
 
           {/* Grid menu */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-            {menuItems.map((item) => {
+            {filteredMenuItems.map((item) => {
               const IconComponent = item.icon;
               return (
                 <Link

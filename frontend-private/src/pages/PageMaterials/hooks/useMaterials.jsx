@@ -50,7 +50,10 @@ const useMaterials = (methods) => {
       const parsedData = {
         ...data,
         currentStock: Number(data.currentStock),
-        currentPrice: Number(data.currentPrice),
+        currentPrice:
+          Number(data.currentStock) > 0
+            ? Number(data.currentPrice) / Number(data.currentStock)
+            : 0,
       };
 
       const res = await fetch(ApiURL, {

@@ -19,6 +19,13 @@ const RawMaterial = new Schema(
       min: [0, "Current stock cannot be negative"], // No se permiten valores negativos
     },
 
+    // Minimun stock disponible de la materia prima
+    minimunStock: {
+      type: Number,
+      required: [true, "Minimun Stock is required"], // Campo obligatorio
+      min: [0, "Minimun stock cannot be negative"], // No se permiten valores negativos
+    },
+
     // Precio actual por unidad de la materia prima
     currentPrice: {
       type: Number,

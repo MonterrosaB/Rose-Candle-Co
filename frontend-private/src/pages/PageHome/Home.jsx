@@ -33,6 +33,7 @@ const Home = () => {
   const columnsMaterial = {
     Materia: "name",
     Cantidad: "stockWithUnit",
+    Cantidad: "stockWithUnit",
   };
 
   // Columnas de ùltimos pedidos
@@ -56,7 +57,7 @@ const Home = () => {
       </Link>
 
       {/* Widgets */}
-      <div className="w-full flex flex-wrap justify-left gap-x-14 gap-y-8 mb-1">
+      <div className="w-full flex flex-wrap justify-center gap-x-14 gap-y-8 mb-1">
         <CardWidgets
           bgColor={"#F7F5EE"}
           textColor={"#333"}

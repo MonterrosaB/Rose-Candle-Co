@@ -20,8 +20,6 @@ export default function Profile() {
         return <ProfileSection />;
       case "direcciones":
         return <AddressesSection />;
-      case "tarjetas":
-        return <CardsSection />;
       case "autenticacion":
         return <AuthSection />;
       case "pedidos":

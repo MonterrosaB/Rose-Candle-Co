@@ -18,7 +18,6 @@ loginController.login = async (req, res) => {
     // 2. Empleado
 
     let userFound; // Guardar el usuario encontrado
-    let userType; // Guardar el tipo de usuario encontrado
 
     // Verificar si existe un usuario
 
@@ -28,14 +27,14 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
+    const isAdmin = userFound.role === "admin";
+
     // Validar si la cuenta no está bloqueada
-    if (userType !== "admin") {
-      if (userFound.timeOut > Date.now()) {
-        const time = Math.ceil((userFound.timeOut - Date.now()) / 60000);
-        return res
-          .status(403)
-          .json({ message: "Cuenta bloqueada, faltan " + time + " minutos" });
-      }
+    if (!isAdmin && userFound.timeOut > Date.now()) {
+      const time = Math.ceil((userFound.timeOut - Date.now()) / 60000);
+      return res
+        .status(403)
+        .json({ message: `Cuenta bloqueada, faltan ${time} minutos` });
     }
 
     // Verificar contraseña
@@ -44,14 +43,11 @@ loginController.login = async (req, res) => {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
-    // Verificar el rol del usuario
-    userType = userFound.role; // "admin" o "employee"
-
     // Generar y firmar el token JWT
     const token = JsonWebToken.sign(
       {
         id: userFound._id,
-        userType,
+        isAdmin,
         name: userFound.name,
         surnames: userFound.surnames,
         phone: userFound.phone,
@@ -63,7 +59,7 @@ loginController.login = async (req, res) => {
       { expiresIn: config.jwt.expiresIn }
     );
 
-    res.cookie("authToken", token, {
+    res.cookie("authTokenR", token, {
       httpOnly: true,
       secure: false, // HTTPS no necesario en localhost
       sameSite: "Lax", // funciona en localhost
@@ -71,7 +67,9 @@ loginController.login = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({
+      message: "Login successful",
+    });
   } catch (error) {
     console.log("error " + error); // Log de error general
   }

@@ -61,104 +61,38 @@ const rawMaterialUsedSchema = new Schema(
   Sub-schema para productos incluidos en la producción.
   No genera _id automático.
 */
-const productsSchema = new Schema(
-  {
-    idProduct: {
-      type: Schema.Types.ObjectId,
-      ref: "Products", // Referencia al modelo Productos
-      required: true, // Producto obligatorio
-    },
-    amount: {
-      type: Number,
-      required: true,
-      min: [0.01, "La cantidad debe ser mayor que cero"], // Cantidad positiva
-      validate: {
-        validator: (value) => /^\d+(\.\d{1,2})?$/.test(value), // Max 2 decimales
-        message: "La cantidad debe tener como máximo dos decimales",
-      },
-    },
-    unitPrice: {
-      type: Number,
-      required: true,
-      min: [0, "El precio no puede ser negativo"], // Precio no negativo
-      validate: {
-        validator: (value) => /^\d+(\.\d{1,2})?$/.test(value), // Max 2 decimales
-        message: "El precio unitario debe tener como máximo dos decimales",
-      },
-    },
-    productionCost: {
-      type: Number,
-      required: true,
-      min: [0, "El costo de producción no puede ser negativo"], // Costo no negativo
-      validate: {
-        validator: (value) => /^\d+(\.\d{1,2})?$/.test(value), // Max 2 decimales
-        message: "El costo de producción debe tener como máximo dos decimales",
-      },
-    },
-    rawMaterialUsed: {
-      type: [rawMaterialUsedSchema], // Lista de materias primas usadas
-      required: true,
-      validate: {
-        validator: (arr) => Array.isArray(arr) && arr.length > 0, // Debe tener al menos una materia prima
-        message: "Debe haber al menos una materia prima utilizada",
-      },
-    },
+const productionCostHistorySchema = new Schema({
+  idProduct: {
+    type: Schema.Types.ObjectId,
+    ref: "Products",
+    required: true,
   },
-  { _id: false } // Evita generación automática de _id para subdocumentos
-);
-
-/* Schema principal para historial de costos de producción */
-const productionCostHistorySchema = new Schema(
-  {
-    idSalesOrder: {
-      type: Schema.Types.ObjectId,
-      ref: "SalesOrder", // Referencia a la orden de venta
-      require: true, // Obligatorio relacionar orden de venta
-    },
-    products: {
-      type: [productsSchema], // Lista de productos en la producción
-      required: true,
-      validate: {
-        validator: (arr) => Array.isArray(arr) && arr.length > 0, // Debe incluir al menos un producto
-        message: "Debe incluir al menos un producto",
+  variants: [
+    {
+      variantName: { type: String, required: true },
+      amount: {
+        type: Number,
+        required: true,
+        min: 0.01,
+      },
+      unitPrice: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      productionCost: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      rawMaterialUsed: {
+        type: [rawMaterialUsedSchema],
+        required: true,
       },
     },
-    date: {
-      type: Date,
-      required: true, // Fecha de la producción
-    },
-    total: {
-      type: Number,
-      min: 1,
-      max: 1000,
-      match: [
-        /^\d+(\.\d{1,2})?$/,
-        "El total debe ser un número válido, con hasta dos decimales",
-      ],
-      required: true, // Total del costo de producción
-    },
-    earning: {
-      type: Number,
-      min: 1,
-      max: 1000,
-      match: [
-        /^\d+(\.\d{1,2})?$/,
-        "La ganancia debe ser un número válido, con hasta dos decimales",
-      ],
-      required: true, // Ganancia obtenida en la producción
-    },
-
-    // Campo para eliminación lógica del historial
-    deleted: {
-      type: Boolean, // Campo lógico para soft delete
-      default: false, // Por defecto no eliminado
-    },
-  },
-  {
-    timestamps: true, // Campos createdAt y updatedAt automáticos
-    strict: false, // Permite guardar campos no definidos en esquema
-  }
-);
+  ],
+  date: { type: Date, default: Date.now },
+});
 
 // Exporto el modelo para usarlo en otros archivos
 export default model("ProductionCostHistory", productionCostHistorySchema);

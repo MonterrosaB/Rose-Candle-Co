@@ -1,39 +1,84 @@
 import { useState } from "react";
 
 const useInputGroups = () => {
-    const [inputs, setInputs] = useState({
-        variantes: [],
-        componentes: [],
-    });
+    const [inputs, setInputs] = useState({ variant: [] });
 
-    // Permite agregar inputs vacíos o con datos iniciales
-    const agregarInput = (grupo, valoresIniciales = []) => {
-        const nuevosInputs = valoresIniciales.length
-            ? valoresIniciales.map((item) => ({
-                id: Date.now() + Math.random(),
-                ...item,
-            }))
-            : [{ id: Date.now() + Math.random() }];
+    // Agregar una nueva variante
+    const agregarVariante = (valoresIniciales = {}) => {
+        const nuevaVariante = {
+            id: crypto.randomUUID(), // ID único
+            variant: "",
+            variantPrice: "",
+            components: [], // inicializa siempre
+            ...valoresIniciales,
+        };
 
         setInputs((prev) => ({
             ...prev,
-            [grupo]: [...prev[grupo], ...nuevosInputs],
+            variant: [...prev.variant, nuevaVariante], // 👈 consistente
         }));
     };
 
-    // Para resetear completamente (por ejemplo, cuando cambias de producto)
-    const resetInputs = () => {
-        setInputs({ variantes: [], componentes: [] });
+    // Agregar un componente a una variante específica
+    const agregarComponente = (varianteIndex, valoresIniciales = {}) => {
+        const nuevoComponente = {
+            id: crypto.randomUUID(),
+            idComponent: "",
+            amount: "",
+            ...valoresIniciales,
+        };
+
+        setInputs((prev) => {
+            const variants = [...prev.variant];
+            const variant = variants[varianteIndex];
+
+            // fallback: si no existen components, inicialízalos
+            const components = variant.components || [];
+
+            variants[varianteIndex] = {
+                ...variant,
+                components: [...components, nuevoComponente], // inmutable
+            };
+
+            return { ...prev, variant: variants };
+        });
     };
 
-    const eliminarInput = (grupo, id) => {
+    // Eliminar variante y sus componentes
+    const eliminarVariante = (varianteId) => {
         setInputs((prev) => ({
             ...prev,
-            [grupo]: prev[grupo].filter((item) => item.id !== id),
+            variant: prev.variant.filter((v) => v.id !== varianteId),
         }));
     };
 
-    return { agregarInput, inputs, resetInputs, eliminarInput };
+    // Eliminar componente de una variante
+    const eliminarComponente = (varianteIndex, componenteId) => {
+        setInputs((prev) => {
+            const variants = [...prev.variant];
+            const variant = variants[varianteIndex];
+
+            variants[varianteIndex] = {
+                ...variant,
+                components: variant.components.filter((c) => c.id !== componenteId),
+            };
+
+            return { ...prev, variant: variants };
+        });
+    };
+
+    // Resetear todo
+    const resetInputs = () => setInputs({ variant: [] });
+
+    return {
+        inputs,
+        agregarVariante,
+        agregarComponente,
+        eliminarVariante,
+        eliminarComponente,
+        resetInputs,
+        setInputs
+    };
 };
 
 export default useInputGroups;

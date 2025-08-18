@@ -46,7 +46,6 @@ const Button = ({
 const menuItems = [
   { id: "perfil", label: "Perfil", icon: User },
   { id: "direcciones", label: "Direcciones", icon: MapPin },
-  { id: "tarjetas", label: "Tarjetas de crédito", icon: CreditCard },
   { id: "autenticacion", label: "Autenticación", icon: Shield },
   { id: "pedidos", label: "Pedidos", icon: Package },
 ];
@@ -81,11 +80,10 @@ export default function Sidebar({ activeSection, setActiveSection }) {
       <aside
         className={`fixed top-0 left-0 h-full w-80 bg-white/90 backdrop-blur-xl border-r border-rose-100 
         shadow-2xl shadow-rose-100/50 z-40 transform transition-transform duration-300 ease-in-out
-        ${
-          isMobileMenuOpen
+        ${isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
-        }`}
+          }`}
       >
         <div className="p-6 lg:p-8">
           <div className="mb-8">
@@ -128,24 +126,21 @@ export default function Sidebar({ activeSection, setActiveSection }) {
                   }}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left
                     transition-all duration-300 ease-in-out group relative overflow-hidden
-                    ${
-                      isActive
-                        ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-200 transform scale-105"
-                        : "text-gray-700 hover:bg-rose-50 hover:text-rose-600 hover:transform hover:scale-105"
+                    ${isActive
+                      ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-200 transform scale-105"
+                      : "text-gray-700 hover:bg-rose-50 hover:text-rose-600 hover:transform hover:scale-105"
                     }`}
                 >
                   <div
                     className={`p-2 rounded-lg transition-all duration-300
-                    ${
-                      isActive
+                    ${isActive
                         ? "bg-white/20"
                         : "bg-rose-100 group-hover:bg-rose-200"
-                    }`}
+                      }`}
                   >
                     <Icon
-                      className={`w-5 h-5 ${
-                        isActive ? "text-white" : "text-rose-600"
-                      }`}
+                      className={`w-5 h-5 ${isActive ? "text-white" : "text-rose-600"
+                        }`}
                     />
                   </div>
                   <span className="font-medium">{item.label}</span>
@@ -160,8 +155,8 @@ export default function Sidebar({ activeSection, setActiveSection }) {
 
           <div className="mt-8 pt-6 border-t border-rose-100">
             <button
-            onClick={logout} 
-            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-300 group">
+              onClick={logout}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-300 group">
               <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">
                 <LogOut className="w-5 h-5" />
               </div>

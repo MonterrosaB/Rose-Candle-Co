@@ -5,18 +5,13 @@ import { useForm } from "react-hook-form";
 //
 const useOrders = (methods) => {
   // Inicializamos react-hook-form internamente
-  const { register, handleSubmit, reset, formState: { errors }, setValue, control, watch } = methods;
+  const { register, handleSubmit, formState: { errors }, setValue, control, watch, reset } = methods;
 
   const [products, setProducts] = useState([]);
-  const [quantities, setQuantities] = useState(() => {
-    if (initialData?.products) {
-      return initialData.products.reduce((acc, p) => {
-        acc[p.idProduct] = p.quantity;
-        return acc;
-      }, {});
-    }
-    return {};
-  });
+  const [salesOrders, setSalesOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [ordersError, setOrdersError] = useState(null);
+
   // Obtener productos desde el backend
   const getProductsForOrders = async () => {
     try {
@@ -28,6 +23,67 @@ const useOrders = (methods) => {
     } catch (error) {
       console.error("Error en getProductsForOrders:", error);
       alert("No se pudieron obtener los productos");
+    }
+  };
+
+  const getSalesOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const res = await fetch("http://localhost:4000/api/salesOrder");
+      if (!res.ok) throw new Error("Error al obtener órdenes");
+      const data = await res.json();
+
+      const formatted = data.map(order => {
+        const products = order.idShoppingCart?.products?.map(p => ({
+          idProduct: p.idProduct?._id,
+          name: p.idProduct?.name,
+          quantity: p.quantity,
+          subtotal: p.subtotal,
+          selectedVariantIndex: p.selectedVariantIndex
+        })) || [];
+
+        const totalPrice = products.reduce((sum, p) => sum + (isNaN(Number(p.subtotal)) ? 0 : Number(p.subtotal)), 0);
+        const totalProducts = products.reduce((sum, p) => sum + (isNaN(Number(p.quantity)) ? 0 : Number(p.quantity)), 0);
+
+        const ultimoEstado = (order) => {
+          const estados = order.shippingState || [];
+          return estados.length > 0 ? estados[estados.length - 1] : null;
+        };
+
+        const estadoFinal = ultimoEstado(order);
+
+        return {
+          _id: order._id,
+          idShoppingCart: order.idShoppingCart?._id || "",
+          name: order.idShoppingCart?.idUser?.name || "Sin cliente",
+          paymentMethod: order.paymentMethod || "No especificado",
+          email: order.idShoppingCart?.idUser?.email || "",
+          firstName: order.address?.firstName || "",
+          lastName: order.address?.lastName || "",
+          phone: order.address?.phone || "",
+          address: order.address?.address || "",
+          city: order.address?.city || "",
+          state: order.address?.state || "",
+          zipCode: order.address?.zipCode || "",
+          country: order.address?.country || "",
+          saleDate: order.saleDate,
+          shippingTotal: order.shippingTotal,
+          total: order.total,
+          shippingState: estadoFinal?.state || "",
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          products,
+          totalProducts,
+          totalPrice
+        };
+      });
+
+      setSalesOrders(formatted);
+    } catch (error) {
+      console.error("Error al traer órdenes:", error);
+      setOrdersError(error);
+    } finally {
+      setLoadingOrders(false);
     }
   };
 
@@ -43,45 +99,45 @@ const useOrders = (methods) => {
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Error al crear orden:", errorData);
-        alert(errorData.message || "Error al crear orden");
         return null;
       }
 
       const data = await res.json();
       console.log("Orden creada:", data);
-      alert("Orden creada con éxito");
       reset(); // limpiar formulario
+      getSalesOrders();
       return data; // retorna la orden creada
     } catch (error) {
       console.error("Error de red:", error);
-      alert("Error de conexión con el servidor");
       return null;
     }
   };
   //PUT
   const updateOrder = async (id, orderData) => {
     try {
+      console.log(orderData);
+
       const res = await fetch(`http://localhost:4000/api/salesOrder/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({ shippingState: orderData }), // Aquí va como objeto
+
       });
+
 
       if (!res.ok) throw new Error("Error al actualizar la orden");
 
       const data = await res.json();
-      alert("Orden actualizada con éxito");
-      reset();
-      setEditingOrderId(null);
+      getSalesOrders();
       return data;
     } catch (error) {
       console.error(error);
-      alert("No se pudo actualizar la orden");
     }
   };
 
   useEffect(() => {
     getProductsForOrders();
+    getSalesOrders();
   }, []);
 
   return {
@@ -92,9 +148,14 @@ const useOrders = (methods) => {
     control,
     watch,
     createSalesOrderPrivate,
+    updateOrder,
     products,
-    quantities,
-    setQuantities,
+    reset,
+    getProductsForOrders,
+    salesOrders,
+    loadingOrders,
+    ordersError,
+    getSalesOrders
   };
 };
 

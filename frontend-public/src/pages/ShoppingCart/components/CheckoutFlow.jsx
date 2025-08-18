@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../../global/context/AuthContext.jsx"
 import useCart from "../hooks/useShoppingCart.jsx";
+import toast from "react-hot-toast";
+
 
 import {
   ArrowLeft,
@@ -69,11 +71,48 @@ const CheckoutFlow = ({
     }));
   };
 
+  const isStepValid = () => {
+    if (currentStep === 0) {
+      // Validar shipping
+      const s = formData.shipping;
+      return (
+        s.firstName?.trim() &&
+        s.lastName?.trim() &&
+        s.email?.trim() &&
+        s.phone?.trim() &&
+        s.address?.trim() &&
+        s.city?.trim() &&
+        s.state?.trim() &&
+        s.zipCode?.trim() &&
+        s.country?.trim()
+      );
+    } else if (currentStep === 1) {
+      // Validar payment
+      const p = formData.payment;
+      if (p.paymentMethod === "card") {
+        return (
+          p.cardNumber?.trim() &&
+          p.cardName?.trim() &&
+          p.expiryDate?.trim() &&
+          p.cvv?.trim()
+        );
+      }
+      return true; // otros métodos de pago
+    }
+    return true; // pasos 2 y 3 no requieren validación
+  };
+
   const nextStep = () => {
+    if (!isStepValid()) {
+      toast.error("Por favor, llena todos los campos");
+      return;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     }
   };
+
 
   const prevStep = () => {
     if (currentStep > 0) {
@@ -161,6 +200,8 @@ const CheckoutFlow = ({
       setIsProcessing(false); // Siempre desactiva el loading
     }
   };
+
+
 
 
 

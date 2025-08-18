@@ -25,19 +25,23 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   const methods = useForm({
     defaultValues: {
       ...selectedProduct,
-      instrucctions: selectedProduct?.useForm || [],
-      receta: selectedProduct?.recipe || [],
-      variantes: selectedProduct?.variant || [],
-      componentes: selectedProduct?.components || [],
-      estado: selectedProduct?.availability, // para el dropdown
+      useForm: selectedProduct?.useForm || [],
+      recipe: selectedProduct?.recipe || [],
+      variant: selectedProduct?.variant || [],
+      availability: selectedProduct?.availability, // para el dropdown
       idProductCategory: selectedProduct?.idProductCategory._id,
-      collection: selectedProduct?.idCollection._id
+      idCollection: selectedProduct?.idCollection._id
     },
   });
 
   const { opcionesCategorias, opcionesColecciones, opcionesMateria, opcionesEstado } = useProductOptions();
 
-  const { agregarInput, inputs, resetInputs, eliminarInput } = AddComponent();
+  const { inputs,
+    agregarVariante,
+    agregarComponente,
+    eliminarVariante,
+    eliminarComponente,
+    resetInputs, } = AddComponent();
 
   const { register, unregister, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
 
@@ -54,9 +58,17 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   useEffect(() => {
     if (selectedProduct) {
-      resetInputs(); // opcional: limpia antes de volver a cargar
-      agregarInput("variantes", selectedProduct.variant || []);
-      agregarInput("componentes", selectedProduct.components || []);
+      resetInputs();
+
+      const normalizedVariants = selectedProduct.variant?.map(v => ({
+        ...v,
+        components: v.components?.map(c => ({
+          ...c,
+          idComponent: c.idComponent?._id || c.idComponent // solo el ID
+        })) || []
+      })) || [];
+
+      normalizedVariants.forEach(v => agregarVariante(v));
     }
   }, [selectedProduct]);
 
@@ -68,18 +80,18 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
-    formData.append("availability", data.estado);
-    formData.append("useForm", JSON.stringify(data.instrucctions));
-    formData.append("variant", JSON.stringify(data.variantes));
+    formData.append("availability", data.availability);
+    formData.append("useForm", JSON.stringify(data.useForm));
+    formData.append("variant", JSON.stringify(data.variant));
     formData.append("idProductCategory", data.idProductCategory);
-    formData.append("idCollection", data.collection); // si lo necesitas
+    formData.append("idCollection", data.idCollection); // si lo necesitas
+    formData.append("recipe", JSON.stringify(data.recipe));
+
 
     allImages.forEach((file) => {
       formData.append("images", file);
     });
 
-    formData.append("components", JSON.stringify(data.componentes));
-    formData.append("recipe", JSON.stringify(data.receta));
 
     try {
       if (selectedProduct) {
@@ -96,16 +108,6 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       console.error("Error al guardar el empleado:", error);
       // Aquí podrías usar toast.error o similar
     }
-  };
-
-  const handleEliminarVariante = (grupo, id, index) => {
-    unregister([`variantes.${index}.variant`, `variantes.${index}.variantPrice`]);
-    eliminarInput(grupo, id);
-  };
-
-  const handleEliminarComponente = (grupo, id, index) => {
-    unregister([`componentes.${index}.idComponent`, `componentes.${index}.amount`]);
-    eliminarInput(grupo, id);
   };
 
   return (
@@ -149,7 +151,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
             hideIcon={true}
           />
           <Dropdown
-            name={"collection"}
+            name={"idCollection"}
             options={opcionesColecciones}
             label={"Colección"}
             register={register}
@@ -157,9 +159,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
             hideIcon={true}
           />
           <Dropdown
-            name={"estado"}
+            name={"availability"}
             options={opcionesEstado}
-            label={"Estado"}
+            label={"availability"}
             register={register}
             errors={errors}
             hideIcon={true}
@@ -169,7 +171,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
           <TextAreaArray
             control={control}
-            name="instrucctions"
+            name="useForm"
             label="Recomendaciones"
             placeholder="Escribe y presiona coma o enter"
             error={errors.tags}
@@ -177,7 +179,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           />
           <TextAreaArray
             control={control}
-            name="receta"
+            name="recipe"
             label="Recetas"
             placeholder="Escribe y presiona coma o enter"
             error={errors.tags}
@@ -186,70 +188,71 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
 
         <div className="flex flex-col lg:flex-row justify-center items-start gap-6 w-full">
-          <div className="flex flex-col items-center w-full lg:w-1/2 gap-4">
+          <div className="flex flex-col items-center w-full gap-4">
             <Button
               buttonText={"Agregar Variante"}
               showIcon={true}
               style={"gray"}
-              onClick={() => agregarInput("variantes")}
+              onClick={() => agregarVariante()}
               type={"button"}
             />
-            {inputs.variantes.map((input, index) => (
-              <DoubleInput
-                key={input.id}
-                id={input.id}
-                eliminarInput={() => handleEliminarVariante("variantes", input.id, index)}
-                grupo="variantes"
-                placeholder1="Nombre Variante"
-                placeholder2="Precio Variante"
-                name1={`variantes.${index}.variant`}
-                name2={`variantes.${index}.variantPrice`}
-                register={register}
-                error1={errors?.variantes?.[index]?.variant?.message}
-                error2={errors?.variantes?.[index]?.variantPrice?.message}
-                options1={{
-                  required: "El nombre de la variante es requerido"
-                }}
-                options2={{
-                  required: "El precio de la variante es requerido",
-                  pattern: {
-                    value: /^\d+(\.\d{1,2})?$/,
-                    message: "El precio debe ser un número válido",
-                  },
-                }}
-              />
-            ))}
-          </div>
-          <div className="flex flex-col items-center w-full lg:w-1/2 gap-4">
-            <Button
-              buttonText={"Agregar Componente"}
-              showIcon={true}
-              style={"gray"}
-              onClick={() => agregarInput("componentes")}
-              type={"button"}
-            />
-            {inputs.componentes.map((input, index) => (
-              <DoubleInputDropDown
-                key={input.id}
-                id={input.id}
-                eliminarInput={() => handleEliminarComponente("componentes", input.id, index)}
-                name1={`componentes.${index}.idComponent`}
-                name2={`componentes.${index}.amount`}
-                placeholder1="Componente"
-                placeholder2="Cantidad"
-                register={register}
-                error1={errors?.componentes?.[index]?.idComponent?.message}
-                error2={errors?.componentes?.[index]?.amount?.message}
-                options={opcionesMateria} // por ejemplo: [{ _id: 'cpu', label: 'CPU' }]
-                options2={{
-                  required: "La cantidad es requerida",
-                  pattern: {
-                    value: /^[0-9]+$/,
-                    message: "Debe ser un número válido",
-                  },
-                }}
-              />
 
+            {inputs.variant.map((variante, vIndex) => (
+              <div
+                key={variante.id}
+                className="border p-4 rounded-2xl flex flex-col gap-4 w-full shadow-md bg-white"
+              >
+                {/* Título de la variante */}
+                <h3 className="text-lg font-semibold text-gray-700">
+                  Variante {vIndex + 1}
+                </h3>
+
+                <DoubleInput
+                  id={variante.id}
+                  eliminarInput={() => {
+                    unregister([`variant.${vIndex}.variant`, `variant.${vIndex}.variantPrice`]);
+                    eliminarVariante(variante.id);
+                  }}
+                  grupo="variant"
+                  placeholder1="Nombre Variante"
+                  placeholder2="Precio Variante"
+                  name1={`variant.${vIndex}.variant`}
+                  name2={`variant.${vIndex}.variantPrice`}
+                  register={register}
+                  error1={errors?.variant?.[vIndex]?.variant?.message}
+                  error2={errors?.variant?.[vIndex]?.variantPrice?.message}
+                />
+
+                {/* Componentes de esta variante */}
+                <div className="flex flex-col items-center gap-4">
+                  <Button
+                    buttonText={"Agregar Componente"}
+                    showIcon={true}
+                    style={"gray"}
+                    onClick={() => agregarComponente(vIndex)}
+                    type="button"
+                  />
+                  {variante.components.map((comp, cIndex) => (
+                    <DoubleInputDropDown
+                      key={comp.id}
+                      id={comp.id}
+                      eliminarInput={() => {
+                        unregister([
+                          `variant.${vIndex}.components.${cIndex}.idComponent`,
+                          `variant.${vIndex}.components.${cIndex}.amount`
+                        ]);
+                        eliminarComponente(vIndex, comp.id);
+                      }}
+                      name1={`variant.${vIndex}.components.${cIndex}.idComponent`}
+                      name2={`variant.${vIndex}.components.${cIndex}.amount`}
+                      placeholder1="Componente"
+                      placeholder2="Cantidad"
+                      register={register}
+                      options={opcionesMateria}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>

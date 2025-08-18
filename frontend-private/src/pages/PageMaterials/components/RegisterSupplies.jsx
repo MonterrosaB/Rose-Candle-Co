@@ -58,6 +58,7 @@ const RegisterSupplies = ({ onClose }) => {
             name={"amount"}
             register={register}
             errors={errors}
+            step={0.01} min={0.01}
           />
           <Input
             label={"Precio de compra"}
@@ -65,6 +66,7 @@ const RegisterSupplies = ({ onClose }) => {
             name={"unitPrice"}
             register={register}
             errors={errors}
+            step={0.01} min={0.01}
           />
         </div>
       </FormInputs>

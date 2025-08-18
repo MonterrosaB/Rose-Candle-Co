@@ -1,7 +1,9 @@
 import productsModel from "../models/Products.js"; // Modelo de productos
 import SalesOrder from "../models/SalesOrder.js";
+import ProductionCostHistory from "../models/ProductionCostHistory.js";
 import { config } from "../config.js"; // Archivo config
 import { v2 as cloudinary } from "cloudinary"; // Cloudinary
+import RawMaterials from "../models/RawMaterials.js";
 
 // Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
@@ -16,16 +18,37 @@ const productsController = {};
 // GET - Método para obtener todos los productos
 productsController.getproducts = async (req, res) => {
   try {
-    const product = await productsModel
-      .find({ availability: true }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const products = await productsModel
+      .find()
       .populate({
-        // Populate para mostrar la información que contiene el id de components
-        path: "components.idComponent",
-        select: "name", // traer solo el campo nombre del componente
+        path: "variant.components.idComponent", // populate componentes de cada variante
+        select: "name currentPrice",
+        strictPopulate: false, // evita errores si algo no coincide
       })
-      .populate("idProductCategory") // Populate para mostrar la información que contiene el id de ProductsCategory
-      .populate("idCollection"); // Populate para mostrar la información que contiene el id de Colection
-    res.status(200).json(product); // Todo bien
+      .populate("idProductCategory")
+      .populate("idCollection");
+
+    res.status(200).json(products); // Todo bien
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error"); // Error del servidor
+  }
+};
+
+// GET - Método para obtener los productos disponibles
+productsController.getAvailableProducts = async (req, res) => {
+  try {
+    const products = await productsModel
+      .find({ availability: true })
+      .populate({
+        path: "variant.components.idComponent", // populate componentes de cada variante
+        select: "name currentPrice",
+        strictPopulate: false, // evita errores si algo no coincide
+      })
+      .populate("idProductCategory")
+      .populate("idCollection");
+
+    res.status(200).json(products); // Todo bien
   } catch (error) {
     console.log("error " + error);
     res.status(500).json("Internal server error"); // Error del servidor
@@ -62,28 +85,26 @@ productsController.getProductsForOrders = async (req, res) => {
 
 // POST - Método para insertar un producto
 productsController.createProduct = async (req, res) => {
-  console.log("Body", req.body); // cuerpo
+  console.log("Body", req.body);
 
   let {
     name,
     description,
-    components,
     recipe,
     availability,
     useForm,
     variant,
     idProductCategory,
     idCollection,
-  } = req.body; // campos del schema
+  } = req.body;
 
   let imagesURL = [];
 
-  // Subir imágenes con Cloudinary
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: "public/products", // carpeta para products
-        allowed_formats: ["png", "jpg", "jpeg"], // archivos permitidos
+        folder: "public/products",
+        allowed_formats: ["png", "jpg", "jpeg"],
       });
       imagesURL.push(result.secure_url);
     }
@@ -91,7 +112,6 @@ productsController.createProduct = async (req, res) => {
 
   try {
     // Parsear campos
-    if (typeof components === "string") components = JSON.parse(components);
     if (typeof recipe === "string") recipe = JSON.parse(recipe);
     if (typeof useForm === "string") useForm = JSON.parse(useForm);
     if (typeof variant === "string") variant = JSON.parse(variant);
@@ -102,8 +122,6 @@ productsController.createProduct = async (req, res) => {
       !name ||
       !description ||
       imagesURL.length < 1 ||
-      !components ||
-      components.length < 1 ||
       !recipe ||
       recipe.length < 1 ||
       availability === undefined ||
@@ -115,11 +133,11 @@ productsController.createProduct = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" }); // error del usuario
+        .json({ message: "Please complete all the fields" });
     }
 
     if (imagesURL.length > 8) {
-      return res.status(400).json({ message: "Max 8 images allowed" }); // error del usuario
+      return res.status(400).json({ message: "Max 8 images allowed" });
     }
 
     // Crear producto
@@ -127,7 +145,6 @@ productsController.createProduct = async (req, res) => {
       name,
       description,
       images: imagesURL,
-      components,
       recipe,
       availability,
       useForm,
@@ -136,11 +153,59 @@ productsController.createProduct = async (req, res) => {
       idCollection,
     });
 
-    await newProduct.save();
-    res.status(200).json({ message: "Saved successfully" }); // se guarda
+    const savedProduct = await newProduct.save();
+
+    // Crear ProductionCostHistory
+    const variantsWithCost = [];
+
+    for (const v of variant) {
+      const rawMaterialsUsed = [];
+
+      for (const c of v.components) {
+        const material = await RawMaterials.findById(c.idComponent);
+        if (!material)
+          throw new Error(`Materia prima no encontrada: ${c.idComponent}`);
+        const amount = parseFloat(c.amount);
+        if (isNaN(amount))
+          throw new Error(`Cantidad inválida: ${c.idComponent}`);
+
+        rawMaterialsUsed.push({
+          idRawMaterial: material._id,
+          amount,
+          unit: material.unit,
+          unitPrice: material.currentPrice,
+          subtotal: +(amount * material.currentPrice).toFixed(2),
+        });
+      }
+
+      const totalProductionCost = rawMaterialsUsed.reduce(
+        (acc, rm) => acc + rm.subtotal,
+        0
+      );
+
+      variantsWithCost.push({
+        variantName: v.variant,
+        amount: 1, // puedes ajustar según producción
+        unitPrice: parseFloat(v.variantPrice),
+        productionCost: totalProductionCost,
+        rawMaterialUsed: rawMaterialsUsed,
+      });
+    }
+
+    // Crear registro en ProductionCostHistory
+    const productionRecord = new ProductionCostHistory({
+      idProduct: savedProduct._id,
+      variants: variantsWithCost,
+    });
+
+    await productionRecord.save();
+
+    res
+      .status(200)
+      .json({ message: "Product and cost history saved successfully" });
   } catch (error) {
     console.log("Error:", error);
-    res.status(500).json("Internal server error"); // error interno
+    res.status(500).json("Internal server error");
   }
 };
 

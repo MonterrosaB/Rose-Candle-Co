@@ -3,6 +3,9 @@ import React, { useEffect } from "react";
 
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import TitleH1 from "../../global/components/TitleH1"
+import DropDownFilter from "../../global/components/DropDownFilter";
+
+import InputsInLine from "../../global/components/InputsInline"
 
 
 
@@ -13,6 +16,7 @@ import Button from "../../global/components/Button";
 import UseProductsList from "./components/UseProductList";
 
 import useFetchProduct from "./components/UseFetchProduct";
+import useProductOptions from "./hooks/useProductOptions";
 
 const PageProducts = () => {
 
@@ -20,6 +24,10 @@ const PageProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { products, getProducts } = useFetchProduct();
+
+  const { opcionesCategorias, opcionesEstado, opcionesColecciones } = useProductOptions();
+
+
 
 
   const handleAdd = () => {
@@ -39,6 +47,28 @@ const PageProducts = () => {
     getProducts()   // o cerrar modal, si usas uno
   };
 
+  const [filtroCategoria, setFiltroCategoria] = useState(""); // estado del filtro
+  const [filtroEstado, setFiltroEstado] = useState("true"); // estado del filtro
+  const [filtroColeccion, setFiltroColeccion] = useState("");
+
+
+
+  const productosFiltrados = products.filter((p) => {
+    // filtro estado
+    const matchEstado =
+      filtroEstado === "" ? true : p.availability === (filtroEstado === "true");
+
+    // filtro categoría (ejemplo: p.category === filtroCategoria)
+    const matchCategoria =
+      filtroCategoria === "" ? true : p.idProductCategory?._id === filtroCategoria;
+
+    const matchColeccion =
+      filtroColeccion === "" ? true : p.idCollection?._id === filtroColeccion;
+
+
+    return matchEstado && matchCategoria && matchColeccion;
+  });
+
 
   return (
     <>
@@ -52,10 +82,34 @@ const PageProducts = () => {
             onClick={handleAdd}
           />
         </div>
+        <InputsInLine>
+          <DropDownFilter
+            value={filtroEstado}
+            onChange={(e) => setFiltroEstado(e.target.value)}
+            options={opcionesEstado}
+            label="Disponibilidad"
+          />
+
+          <DropDownFilter
+            value={filtroCategoria}
+            onChange={(e) => setFiltroCategoria(e.target.value)}
+            options={opcionesCategorias}
+            label="Categoría"
+          />
+
+          <DropDownFilter
+            value={filtroColeccion}
+            onChange={(e) => setFiltroColeccion(e.target.value)}
+            options={opcionesColecciones}
+            label="Colección"
+          />
+        </InputsInLine>
+
+
         <div className="flex items-center justify-center gap-4">
           <UseProductsList
             onEdit={handleEdit}
-            products={products}
+            products={productosFiltrados}
           />
         </div>
 

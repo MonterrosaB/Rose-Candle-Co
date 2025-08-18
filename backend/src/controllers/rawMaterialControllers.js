@@ -28,6 +28,7 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
   // Desestructurar campos del cuerpo de la petición
   const {
     currentStock,
+    minimunStock,
     currentPrice,
     idRawMaterialCategory,
     idSupplier,
@@ -77,6 +78,7 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
     // Crear nueva instancia del modelo con datos validados
     const newRawMaterial = new rawMaterialModel({
       currentStock,
+      minimunStock,
       currentPrice,
       idRawMaterialCategory,
       idSupplier,
@@ -231,10 +233,19 @@ rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
 // GET - Obtener materias primas con menor stock
 rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
   try {
-    // Buscar materias primas no eliminadas, ordenar por stock ascendente, limitar resultados
     const lowStockMaterials = await rawMaterialModel.aggregate([
       { $match: { deleted: false } },
-      { $sort: { currentStock: 1 } },
+      {
+        $addFields: {
+          diffToMinimum: {
+            $subtract: [
+              { $ifNull: ["$currentStock", 0] },
+              { $ifNull: ["$minimumStock", 0] },
+            ],
+          },
+        },
+      },
+      { $sort: { diffToMinimum: 1 } },
       { $limit: 10 },
       {
         $project: {
@@ -242,11 +253,13 @@ rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
           stockWithUnit: {
             $concat: [{ $toString: "$currentStock" }, " ", "$unit"],
           },
+          minimumStock: 1,
+          diffToMinimum: 1,
         },
       },
     ]);
 
-    res.status(200).json(lowStockMaterials); // todo bien
+    res.status(200).json(lowStockMaterials);
   } catch (error) {
     console.error("error", error);
     res.status(500).json("Internal server error");

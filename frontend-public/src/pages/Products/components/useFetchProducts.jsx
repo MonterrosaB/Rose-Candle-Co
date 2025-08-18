@@ -10,7 +10,7 @@ const useFetchProduct = () => {
   const getProducts = async () => {
 
     try {
-      const response = await fetch(ApiProducts)
+      const response = await fetch(ApiProducts + "/available")
 
       if (!response.ok) {
         throw new Error("Error fetching Products");

@@ -69,7 +69,6 @@ const ShippingStep = ({ formData, handleInputChange, selectedAddress, setSelecte
             onChange={(e) => handleAddressSelect(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A3A380] focus:border-transparent outline-none"
           >
-            <option value="new">+ Agregar nueva dirección</option>
             {addresses.map((addr) => (
               <option key={addr._id} value={addr._id}>
                 {addr.label || `${addr.firstName} ${addr.lastName} - ${addr.state}`}

@@ -20,6 +20,7 @@ const shippingStateSchema = new Schema(
     state: {
       type: String,
       required: true, // Estado del envío obligatorio (ej. "enviado", "entregado")
+      trim: true,
     },
     date: {
       type: Date,
@@ -33,7 +34,6 @@ const addressSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    email: { type: String, required: true },
     phone: { type: String },
     address: { type: String, required: true },
     city: { type: String },

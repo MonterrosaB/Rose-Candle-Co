@@ -21,7 +21,6 @@ const Home = () => {
             <MarqueeBanner />
             <FeaturedProductsSection />
             <ValuesSection />
-            <TestimonialSection />
         </div>
     );
 };

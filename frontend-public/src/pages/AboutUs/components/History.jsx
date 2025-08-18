@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import PersonasDeFondoHistory from "../../../assets/PersonasDeFondoHistory.png";
-import PersonaHistory from "../../../assets/PersonaHistory.svg";
+import ElisHistory from "../../../assets/Eli.svg";
 
 const History = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -77,7 +77,7 @@ const History = () => {
 
             <div className="relative z-10 lg:col-span-1 flex justify-center -mb-10 lg:-mb-32">
               <img
-                src={PersonaHistory}
+                src={ElisHistory}
                 alt="Persona"
                 className="h-[90vh] w-auto object-contain drop-shadow-2xl scale-[1.3] lg:h-[130vh] lg:scale-[1.55]"
               />
@@ -93,7 +93,7 @@ const History = () => {
                     necesitaba. Crear con mis manos se volvió sanador, una forma de volver a encontrar la luz.
                   </p>
                   <p>
-                    El nombre honra a mi historia y a las mujeres fuertes de mi familia, todas llamadas Rosa. Hoy, cada
+                    El nombre honra mi historia y las mujeres fuertes de mi familia, todas llamadas Rosa. Hoy, cada
                     vela que hacemos en Rosé es un recordatorio de que, incluso en los días más oscuros, siempre hay una
                     luz esperando encenderse.
                   </p>

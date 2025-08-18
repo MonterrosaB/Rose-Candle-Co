@@ -35,20 +35,6 @@ const componentSchema = new Schema(
   { _id: false } // No se genera _id para cada componente
 );
 
-// Subesquema: Pasos de elaboración (receta)
-const recipeSchema = new Schema(
-  {
-    step: {
-      type: String,
-      required: true,
-      minLength: 3,
-      maxLength: 200,
-      trim: true,
-    },
-  },
-  { _id: false }
-);
-
 // Subesquema: Variantes del producto (ej. tamaño, fragancia)
 const variantSchema = new Schema(
   {
@@ -63,6 +49,29 @@ const variantSchema = new Schema(
       required: true,
       min: 1,
       max: 100,
+    },
+    // cada variante puede tener sus propios componentes
+    components: {
+      type: [componentSchema],
+      required: true,
+      validate: {
+        validator: (arr) => arr.length >= 1 && arr.length <= 100,
+        message: "Cada variante debe tener entre 1 y 100 componentes",
+      },
+    },
+  },
+  { _id: false }
+);
+
+// Subesquema: Pasos de elaboración (receta)
+const recipeSchema = new Schema(
+  {
+    step: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 200,
+      trim: true,
     },
   },
   { _id: false }
@@ -120,16 +129,6 @@ const productsSchema = new Schema(
           return arr.length >= 1 && arr.length <= 8;
         },
         message: "Debes subir entre 1 y 8 imágenes",
-      },
-    },
-
-    // Materias primas usadas para producir este producto
-    components: {
-      type: [componentSchema],
-      required: true,
-      validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 100,
-        message: "Debes proporcionar entre 1 y 100 componentes",
       },
     },
 

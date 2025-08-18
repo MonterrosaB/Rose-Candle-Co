@@ -13,7 +13,7 @@ salesOrderController.getSalesOrders = async (req, res) => {
       .populate({
         path: "idShoppingCart",
         populate: [
-          { path: "idUser", select: "name" },
+          { path: "idUser", select: "name email" },
           { path: "products.idProduct", select: "name" },
         ],
       });
@@ -112,87 +112,100 @@ salesOrderController.createSalesOrder = async (req, res) => {
 
 // ---------------- POST - Crear nueva orden manual ----------------
 salesOrderController.createSalesOrderPrivate = async (req, res) => {
-  const { name, email, paymentMethod, address, products, total } = req.body;
-
-  if (!name || !email) {
-    return res.status(400).json({ message: "Name and email are required" });
-  }
-
   try {
-    // 1️Crear cliente mínimo
+    const { name, email, paymentMethod, products, total, addresses } = req.body;
 
-    const customer = await Customers.create({
-      name,
-      email,
-      addresses: [{ address: address, default: true }],
-    });
+    // 1️⃣ Validar campos requeridos
+    if (!name || !email) {
+      return res.status(400).json({
+        message: "Name and email are required",
+      });
+    }
 
-    console.log(req.body);
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({
+        message: "Products array is required and cannot be empty",
+      });
+    }
 
-    //  Crear carrito
+    if (!paymentMethod) {
+      return res.status(400).json({
+        message: "Payment method is required",
+      });
+    }
+
+    if (!addresses || !Array.isArray(addresses) || addresses.length === 0) {
+      return res.status(400).json({
+        message: "At least one address is required",
+      });
+    }
+
+    // 2️⃣ Verificar si el cliente ya existe o crearlo
+    let customer = await Customers.findOne({ email });
+
+    if (!customer) {
+      customer = await Customers.create({
+        name,
+        email,
+        addresses, // ✅ ahora guardamos el array completo
+      });
+    } else {
+      // Si el cliente existe, aseguramos que no pierda sus direcciones
+      customer.addresses.push(...addresses); // spread porque addresses es un array
+      await customer.save();
+    }
+
+    // 3️⃣ Crear carrito
     const cart = await ShoppingCart.create({
       idUser: customer._id,
       products,
-      total: total,
-      status: "active",
+      total,
+      status: "completed",
     });
 
-    // Crear orden
+    // 4️⃣ Crear orden (usa addresses array)
     const newOrder = await SalesOrderModel.create({
       idShoppingCart: cart._id,
       paymentMethod,
       shippingTotal: 0,
-      total: total,
+      total,
       shippingState: [{ state: "Pendiente" }],
+      address: addresses[0], //  guardamos array en SalesOrder
     });
 
-    res.status(200).json(newOrder);
+    return res.status(201).json({
+      message: "Sales order created successfully",
+      order: newOrder,
+      customerId: customer._id,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error creating sales order:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
 // PUT - Actualizar una orden de venta existente por ID
 salesOrderController.updateSalesOrder = async (req, res) => {
   // Obtener datos desde el cuerpo de la petición
-  const {
-    idShoppingCart,
-    paymentMethod,
-    address,
-    saleDate,
-    shippingTotal,
-    total,
-    shippingState,
-  } = req.body;
+  const { shippingState } = req.body;
 
   try {
     // Validaciones similares a la creación para evitar datos inválidos
-    if (address.length < 5) {
-      return res
-        .status(400)
-        .json({ message: "Please provide additional address information" }); // Dirección inválida
-    }
-
-    if (total < 0) {
-      return res
-        .status(400)
-        .json({ message: "The total can't be less than 0" }); // Total inválido
-    }
 
     // Actualizar la orden en la base de datos, buscando por ID de la URL (req.params.id)
     const orderUpdated = await SalesOrderModel.findByIdAndUpdate(
       req.params.id,
       {
-        idShoppingCart,
-        paymentMethod,
-        address,
-        saleDate,
-        shippingTotal,
-        total,
-        shippingState,
+        $push: {
+          shippingState: {
+            state: shippingState,
+          },
+        },
       },
-      { new: true } // Retornar el documento actualizado
+      { new: true } // Retorna el documento actualizado
     );
 
     // Validar si la orden existía
@@ -431,7 +444,7 @@ salesOrderController.getLatestOrders = async (req, res) => {
           _id: 1,
           customerName: "$user.name",
           purchaseDate: "$saleDate",
-          shippingAddress: "$address",
+          shippingAddress: "$address.address",
           itemsOrdered: 1,
           totalAmount: "$total",
         },
@@ -445,26 +458,23 @@ salesOrderController.getLatestOrders = async (req, res) => {
   }
 };
 
-import { ObjectId } from "mongodb";
-
 // GET - Obtener carrito activo de un usuario y sus productos
 salesOrderController.getUserCartWithProducts = async (req, res) => {
   const { userId } = req.params;
 
   try {
     // Buscar todas las órdenes y poblar solo los carritos que pertenecen a este usuario
-    const order = await SalesOrderModel.find()
-      .populate({
-        path: "idShoppingCart",
-        match: { idUser: userId }, // filtra carritos por usuario
-        populate: [
-          { path: "idUser", select: "name" },
-          { path: "products.idProduct", select: "name images" },
-        ],
-      });
+    const order = await SalesOrderModel.find().populate({
+      path: "idShoppingCart",
+      match: { idUser: userId }, // filtra carritos por usuario
+      populate: [
+        { path: "idUser", select: "name" },
+        { path: "products.idProduct", select: "name images" },
+      ],
+    });
 
     // Opcional: filtrar en el resultado los que no tengan carrito coincidente
-    const filteredOrder = order.filter(o => o.idShoppingCart !== null);
+    const filteredOrder = order.filter((o) => o.idShoppingCart !== null);
 
     return res.status(200).json(filteredOrder);
   } catch (error) {

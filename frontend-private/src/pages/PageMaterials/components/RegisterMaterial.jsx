@@ -29,11 +29,9 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
   const { categories } = useCategories(methods);
 
   const unidades = [
-    { _id: "kg", label: "Kilogramo" },
     { _id: "g", label: "Gramo" },
-    { _id: "l", label: "Litro" },
     { _id: "ml", label: "Mililitro" },
-    { _id: "piece", label: "Pieza" },
+    { _id: "unit", label: "Unidad" },
   ];
 
   useEffect(() => {
@@ -46,11 +44,15 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
 
   const onSubmit = (data) => {
     if (defaultValues?._id) {
-      updateMaterial(defaultValues._id, data);
+      console.log(data);
+
+      //updateMaterial(defaultValues._id, data);
     } else {
+      console.log(data);
+
       createMaterial(data);
     }
-    onClose();
+    //onClose();
   };
 
   return (
@@ -81,9 +83,10 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
           />
         </div>
         <div className="flex gap-4 w-full">
-          <Input label="Stock" type="number" name="currentStock" register={register} errors={errors} />
-          <Input label="Precio" type="number" name="currentPrice" register={register} errors={errors} />
+          <Input label="Stock" type="number" name="currentStock" step={0.01} min={0.01} register={register} errors={errors} />
+          <Input label="Stock Minimo" type="number" name="minimunStock" step={0.01} min={0.01} register={register} errors={errors} />
         </div>
+        <Input label="Precio" type="number" name="currentPrice" step={0.01} min={0.01} register={register} errors={errors} />
       </FormInputs>
       <FormButton>
         <Button buttonText={defaultValues ? "Actualizar" : "Guardar"} type="submit" showIcon />
