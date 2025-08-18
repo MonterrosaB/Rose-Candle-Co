@@ -142,7 +142,7 @@ const useHome = () => {
     try {
       const res = await fetch(ApiLatestOrders);
       if (!res.ok) throw new Error("Error al obtener últimos pedidos");
-  
+
       const data = await res.json();
       setLatestOrders(data || []);
     } catch (error) {

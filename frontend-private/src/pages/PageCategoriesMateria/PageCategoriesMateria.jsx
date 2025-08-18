@@ -2,6 +2,7 @@ import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
+import TitleH1 from "../../global/components/TitleH1";
 
 import useCategoriesMateria from "./hooks/useCategoriesMateria";
 import { useForm } from "react-hook-form";
@@ -73,10 +74,11 @@ const PageCategoriesMateria = () => {
 
   return (
     <PrincipalDiv>
+      <TitleH1 title="Categorías de Materia Prima" />
+
       {/* Tabla visible en md+ */}
       <div className="hidden md:block overflow-x-auto">
         <DataGrid
-          title="Categorías de Materia Prima"
           columns={columns}
           rows={rows}
           primaryBtnText="Agregar Categoría"

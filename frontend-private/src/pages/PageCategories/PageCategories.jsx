@@ -1,4 +1,5 @@
 import PrincipalDiv from "../../global/components/PrincipalDiv";
+import TitleH1 from "../../global/components/TitleH1";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
@@ -72,6 +73,8 @@ const PageCategories = () => {
 
   return (
     <PrincipalDiv>
+      <TitleH1 title={"categorias de productos"} />
+
       {/* Tabla solo visible en pantallas md en adelante */}
       <div className="hidden md:block">
         <DataGrid

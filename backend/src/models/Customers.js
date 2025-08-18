@@ -23,47 +23,44 @@ const addressSchema = new Schema(
     },
     firstName: {
       type: String,
-      required : true,
+      required: true,
       match: [
-        /^[a-zA-Z\s]+$/,
+        /^[a-zA-Z\u00C0-\u017F\s]+$/,
         "firstname must contain only letters and spaces",
       ],
-      trim: true
+      trim: true,
     },
     lastName: {
       type: String,
-      required : true,
+      required: true,
       match: [
-        /^[a-zA-Z\s]+$/,
+        /^[a-zA-Z\u00C0-\u017F\s]+$/,
         "lastname must contain only letters and spaces",
       ],
-      trim: true
+      trim: true,
     },
     state: {
       type: String,
       required: true,
       trim: true,
-      match: [
-        /^[a-zA-Z\s]+$/,
-        "City must contain only letters and spaces",
-      ],
+      match: [/^[a-zA-Z\s]+$/, "City must contain only letters and spaces"],
     },
     city: {
       type: String,
       required: true,
       trim: true,
-      match: [
-        /^[a-zA-Z\s]+$/,
-        "city must contain only letters and spaces",
-      ],
+      match: [/^[a-zA-Z\s]+$/, "city must contain only letters and spaces"],
     },
     zipCode: {
       type: String,
       required: true,
       trim: true,
-      match: [/^[a-zA-Z0-9\-]+$/, "Zip code must contain only letters, numbers, or hyphens"],
+      match: [
+        /^[a-zA-Z0-9\-]+$/,
+        "Zip code must contain only letters, numbers, or hyphens",
+      ],
     },
-    
+
     phone: {
       type: String,
       required: true, // Obligatorio
@@ -76,7 +73,6 @@ const addressSchema = new Schema(
     _id: true,
   }
 );
-
 
 // Esquema principal para clientes
 const customerSchema = new Schema(

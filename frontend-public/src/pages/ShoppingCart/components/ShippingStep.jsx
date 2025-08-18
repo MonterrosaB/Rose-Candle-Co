@@ -1,8 +1,7 @@
 import { User, Mail, Phone, MapPin, Home } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const ShippingStep = ({ formData, handleInputChange }) => {
-  const [selectedAddress, setSelectedAddress] = useState("new");
+const ShippingStep = ({ formData, handleInputChange, selectedAddress, setSelectedAddress }) => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,7 +43,7 @@ const ShippingStep = ({ formData, handleInputChange }) => {
         });
       }
     } else {
-      ["firstName", "lastName", "email", "phone", "address", "city", "zipCode", "country"].forEach((key) =>
+      ["firstName", "lastName", "email", "phone", "address", "city", "state", "zipCode", "country"].forEach((key) =>
         handleInputChange("shipping", key, "")
       );
     }
@@ -56,7 +55,7 @@ const ShippingStep = ({ formData, handleInputChange }) => {
     <div className="space-y-6">
       {/* Selector de direcciones guardadas */}
       <div>
-        <label className="block mb-2 font-medium text-gray-700 flex items-center gap-2">
+        <label className="mb-2 font-medium text-gray-700 flex items-center gap-2">
           <Home className="h-5 w-5 text-gray-500" />
           Dirección guardada
         </label>
@@ -73,7 +72,7 @@ const ShippingStep = ({ formData, handleInputChange }) => {
             <option value="new">+ Agregar nueva dirección</option>
             {addresses.map((addr) => (
               <option key={addr._id} value={addr._id}>
-                {addr.label || `${addr.address} - ${addr.city}`}
+                {addr.label || `${addr.firstName} ${addr.lastName} - ${addr.state}`}
               </option>
             ))}
           </select>

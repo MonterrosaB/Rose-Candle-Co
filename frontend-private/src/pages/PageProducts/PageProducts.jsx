@@ -2,6 +2,10 @@ import { useState } from "react";
 import React, { useEffect } from "react";
 
 import PrincipalDiv from "../../global/components/PrincipalDiv";
+import TitleH1 from "../../global/components/TitleH1"
+
+
+
 
 import Dialog from "../../global/components/Dialog";
 import RegisterProducts from "./components/RegisterProducts";
@@ -39,6 +43,7 @@ const PageProducts = () => {
   return (
     <>
       <PrincipalDiv>
+        <TitleH1 title="Productos" />
         <div className="flex justify-end gap-4 px-4">
           <Button
             buttonText={"Agregar Producto"}

@@ -43,7 +43,7 @@ const Home = () => {
 
   // Columnas de ùltimos pedidos
   const columnsOrders = {
-    Nombre: "Nombre",
+    Nombre: "name",
     "Fecha Pedido": "Fecha Pedido",
     Ubicación: "Ubicación",
     "Productos Totales": "Productos Totales",

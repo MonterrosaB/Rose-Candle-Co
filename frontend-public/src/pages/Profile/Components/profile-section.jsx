@@ -3,15 +3,37 @@ import { User, Mail, Phone, Calendar, Edit, Save, X } from "lucide-react";
 import { useAuth } from "../../../global/hooks/useAuth.js";
 
 // Custom components
-const Button = ({ children, className = "", onClick, ...props }) => (
-  <button
-    className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${className}`}
-    onClick={onClick}
-    {...props}
-  >
-    {children}
-  </button>
-);
+const Button = ({
+  children,
+  className = "",
+  onClick,
+  variant = "primary",
+  ...props
+}) => {
+  const baseStyles =
+    "inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none px-4 py-2";
+
+  const variants = {
+    primary:
+      "bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500",
+    secondary:
+      "bg-green-500 text-white hover:bg-green-600 focus-visible:ring-gray-400",
+    danger:
+      "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+    gradient:
+      "bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white shadow-lg hover:shadow-xl transform hover:scale-105",
+  };
+
+  return (
+    <button
+      className={`${baseStyles} ${variants[variant]} ${className}`}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
 
 const Input = ({ className = "", ...props }) => (
   <input
@@ -43,30 +65,30 @@ export default function ProfileSection() {
   });
 
   useEffect(() => {
-  if (user) {
-    if (!user.phone) {
-      // Si phone está vacío, recarga la data completa
-      const fetchFullUser = async () => {
-        const res = await fetch("http://localhost:4000/api/loginCustomer/verifyCustomer", {
-          credentials: "include",
+    if (user) {
+      if (!user.phone) {
+        // Si phone está vacío, recarga la data completa
+        const fetchFullUser = async () => {
+          const res = await fetch("http://localhost:4000/api/loginCustomer/verifyCustomer", {
+            credentials: "include",
+          });
+          const data = await res.json();
+          setUser(data.customer);
+        };
+        fetchFullUser();
+      } else {
+        // Si sí hay phone, seteas el perfil
+        setProfile({
+          name: user.name || "",
+          surnames: user.surnames || "",
+          phone: user.phone || "",
+          email: user.email || "",
+          addresses: user.addresses || "",
         });
-        const data = await res.json();
-        setUser(data.customer);
-      };
-      fetchFullUser();
-    } else {
-      // Si sí hay phone, seteas el perfil
-      setProfile({
-        name: user.name || "",
-        surnames: user.surnames || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        addresses: user.addresses || "",
-      });
-      setLoading(false);
+        setLoading(false);
+      }
     }
-  }
-}, [user]);
+  }, [user]);
 
   const handleSave = () => {
     console.log("Guardar cambios:", profile);
@@ -100,11 +122,8 @@ export default function ProfileSection() {
               </h2>
               <Button
                 onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-                className={`${
-                  isEditing
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
-                } text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
+                type="button"
+                variant={isEditing ? "secondary" : "primary"}
               >
                 {isEditing ? (
                   <Save className="w-4 h-4 mr-2" />
@@ -206,15 +225,15 @@ export default function ProfileSection() {
               <div className="mt-6 flex space-x-4">
                 <Button
                   onClick={handleSave}
-                  className="bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                >
+                  type="button"
+                  variant="secondary"                >
                   <Save className="w-4 h-4 mr-2" />
                   Guardar Cambios
                 </Button>
                 <Button
                   onClick={() => setIsEditing(false)}
-                  variant="outline"
-                  className="border-gray-300 hover:bg-gray-50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  type="button"
+                  variant="danger"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Cancelar

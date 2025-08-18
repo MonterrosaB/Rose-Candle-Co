@@ -4,6 +4,9 @@ import Dialog from "../../../global/components/Dialog";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
 import DataGrid from "../../../global/components/DataGrid";
 import useEmployeeAction from "../hooks/useEmployeeAction";
+import TitleH1 from "../../../global/components/TitleH1"
+
+
 import useDataEmployee from "../hooks/useEmployees";
 import useFetchEmployees from "../hooks/useFetchEmployees";
 
@@ -46,11 +49,12 @@ const PageEmployees = () => {
 
   return (
     <PrincipalDiv>
+      <TitleH1 title="Empleados" />
+
       <div className="pt-12 px-4 sm:px-6 lg:px-8 w-full">
         {/* Vista tabla para pantallas medianas en adelante */}
         <div className="hidden md:block overflow-x-auto">
           <DataGrid
-            title="Empleados"
             columns={columns}
             rows={employees}
             primaryBtnText="Agregar Empleado"

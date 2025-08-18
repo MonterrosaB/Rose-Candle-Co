@@ -31,7 +31,12 @@ const DataGrid = ({
         return acc?.[key];
       }, obj);
 
-      if (typeof value === "string" && !isNaN(Date.parse(value))) {
+      if (
+        typeof value === "string" &&
+        value.includes("-") &&
+        value.includes("T") &&
+        !isNaN(Date.parse(value))
+      ) {
         return new Date(value).toLocaleDateString("es-SV", {
           day: "2-digit",
           month: "2-digit",
@@ -78,14 +83,18 @@ const DataGrid = ({
       setCurrentPage(1);
       return;
     }
+
     const filtered = rows.filter((row) =>
-      Object.values(row).some(val =>
-        String(val).toLowerCase().includes(search.toLowerCase())
-      )
+      Object.values(columns).some((columnKey) => {
+        const value = getNestedValue(row, columnKey);
+        return String(value).toLowerCase().includes(search.toLowerCase());
+      })
     );
+
     setFilteredRows(filtered);
     setCurrentPage(1);
-  }, [search, rows]);
+  }, [search, rows, columns]); // 👈 añadimos columns
+
 
   const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
   const paginatedRows = filteredRows.slice(
