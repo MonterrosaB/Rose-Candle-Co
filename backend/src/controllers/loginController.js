@@ -45,7 +45,7 @@ loginController.login = async (req, res) => {
     }
 
     // Verificar el rol del usuario
-    userType = userFound.role; // Ej: "admin" o "employee"
+    userType = userFound.role; // "admin" o "employee"
 
     // Generar y firmar el token JWT
     const token = JsonWebToken.sign(
@@ -58,7 +58,6 @@ loginController.login = async (req, res) => {
         email: userFound.email,
         dui: userFound.dui,
         user: userFound.user,
-        password: userFound.password,
       },
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn }

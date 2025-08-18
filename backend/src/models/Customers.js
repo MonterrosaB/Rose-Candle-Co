@@ -20,6 +20,7 @@ const addressSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      default: null,
     },
     firstName: {
       type: String,
@@ -29,6 +30,7 @@ const addressSchema = new Schema(
         "firstname must contain only letters and spaces",
       ],
       trim: true,
+      default: null,
     },
     lastName: {
       type: String,
@@ -38,18 +40,21 @@ const addressSchema = new Schema(
         "lastname must contain only letters and spaces",
       ],
       trim: true,
+      default: null,
     },
     state: {
       type: String,
       required: true,
       trim: true,
       match: [/^[a-zA-Z\s]+$/, "City must contain only letters and spaces"],
+      default: null,
     },
     city: {
       type: String,
       required: true,
       trim: true,
       match: [/^[a-zA-Z\s]+$/, "city must contain only letters and spaces"],
+      default: null,
     },
     zipCode: {
       type: String,
@@ -59,6 +64,7 @@ const addressSchema = new Schema(
         /^[a-zA-Z0-9\-]+$/,
         "Zip code must contain only letters, numbers, or hyphens",
       ],
+      default: null,
     },
 
     phone: {
@@ -67,6 +73,7 @@ const addressSchema = new Schema(
       match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
       minLength: 9, // Incluye guion
       trim: true, // Limpia espacios
+      default: null,
     },
   },
   {
@@ -132,6 +139,8 @@ const customerSchema = new Schema(
       type: Boolean,
       default: false, // Opcional
     },
+    loginAttempts: { type: Number, default: 0 }, //incrementador de intentos de inicio de sesion
+    lockUntil: { type: Date, default: null }, //bloqueo hasta cierto tiempo
   },
   {
     timestamps: true, // Campos createdAt y updatedAt automáticos

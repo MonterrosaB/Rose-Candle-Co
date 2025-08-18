@@ -13,6 +13,7 @@ router.route("/")
 .get(employeesController.getEmployees)
 
 router.route("/:id")
+.get(employeesController.getEmployeesById)
 .put(employeesController.updateEmployees)
 .delete(employeesController.deleteEmployees)
 

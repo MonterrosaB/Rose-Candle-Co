@@ -1,4 +1,5 @@
 import employeesModel from "../models/Employees.js"; // Modelo de empleados
+import bcrypt from "bcryptjs"; // para encriptar
 
 // CRUD controller para empleados
 const employeesController = {};
@@ -13,6 +14,23 @@ employeesController.getEmployees = async (req, res) => {
     res.status(500).json({ message: "Internal server error" }); // Error del servidor
   }
 };
+
+// GET - obtener un empleado por ID
+employeesController.getEmployeesById = async (req, res) => {
+  try {
+    const employee = await employeesModel.findById(req.params.id);
+
+    if (!employee || employee.deleted) {
+      return res.status(404).json({ message: "Employee not found" }); // no encontrado
+    }
+
+    res.status(200).json(employee); // Responder con el empleado encontrado
+  } catch (error) {
+    console.error("Error al obtener empleado:", error);
+    res.status(500).json({ message: "Internal server error" }); // error
+  }
+};
+
 
 // DELETE - eliminar un empleado por ID
 employeesController.deleteEmployees = async (req, res) => {
@@ -36,13 +54,12 @@ employeesController.deleteEmployees = async (req, res) => {
 
 // PUT - actualizar un empleado por ID
 employeesController.updateEmployees = async (req, res) => {
-  // Extraer campos del cuerpo de la solicitud
-  const { name, surnames, email, phone, dui, user, role } = req.body;
+  const { name, surnames, email, phone, dui, user, role, password } = req.body;
 
-  console.log(req.body); // Mostrar contenido recibido
+  console.log(req.body);
 
   try {
-    // Validaciones básicas: campos requeridos y longitud mínima
+    // Validaciones básicas
     if (
       !name ||
       name.length < 2 ||
@@ -56,31 +73,40 @@ employeesController.updateEmployees = async (req, res) => {
       return res.status(400).json({ message: "Campos inválidos o muy cortos" });
     }
 
-    // Validaciones de longitud máxima
     if (name.length > 100 || surnames.length > 100) {
       return res.status(400).json({ message: "Campos demasiado largos" });
     }
 
-    // Actualizar el empleado en la base de datos
+    // Objeto con datos a actualizar
+    const updateData = { name, surnames, email, phone, dui, user, role };
+
+    // Si viene contraseña, encriptarla antes de guardar
+    if (password && password.trim() !== "") {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
     const employeeUpdated = await employeesModel.findByIdAndUpdate(
-      req.params.id, // ID del empleado
-      { name, surnames, email, phone, dui, user, role }, // Campos actualizados
-      { new: true } // Retornar el documento actualizado
+      req.params.id,
+      updateData,
+      { new: true }
     );
 
     if (!employeeUpdated) {
-      return res.status(404).json({ message: "Employee not found" }); // Empleado no encontrado
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Employee updated", employee: employeeUpdated }); // Actualización exitosa
+    res.status(200).json({
+      message: "Employee updated",
+      employee: employeeUpdated,
+    });
   } catch (error) {
-    console.error("Error al actualizar empleado:", error); // Log de error
-    res.status(500).json({ message: "Internal server error" }); // Error del servidor
+    console.error("Error al actualizar empleado:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Restaurar empleado "eliminado"
 employeesController.restoreEmployees = async (req, res) => {
   try {
     const restoreEmployees = await employeesModel.findByIdAndUpdate(

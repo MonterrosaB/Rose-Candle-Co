@@ -188,7 +188,7 @@ registerCustomersController.registerCustomers = async (req, res) => {
       type: addr.type && addr.type.trim() !== "" ? addr.type : undefined, // Si no hay tipo, usar default de Mongoose
     }));
 
-    // Logs para verificar la transformación de direcciones (opcional)
+    // Logs para verificar la transformación de direcciones
     console.log("Addresses recibidas:", addresses);
     console.log("Addresses final:", cleanAddresses);
 
@@ -200,7 +200,6 @@ registerCustomersController.registerCustomers = async (req, res) => {
       password: passwordHash,
       user,
       phone,
-      addresses: cleanAddresses,
     });
 
     // Guardar el nuevo cliente en la base de datos
