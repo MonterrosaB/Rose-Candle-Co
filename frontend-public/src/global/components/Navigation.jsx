@@ -1,8 +1,11 @@
+import { useEffect } from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 
 // Componentes
@@ -20,24 +23,44 @@ import Profile from "../../pages/Profile/Profile.jsx";
 import Cart from "../../pages/ShoppingCart/ShoppingCart.jsx";
 import LoginCustomer from "../../pages/LoginCustomer/LoginCustomer.jsx";
 import RegisterCustomer from "../../pages/RegisterCustomer/Register.jsx";
-import TermsAndConditions from "../../pages/TermsAndConditions/TermsAndConditions.jsx"
+import TermsAndConditions from "../../pages/TermsAndConditions/TermsAndConditions.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
 
 // Auth
-import { AuthProvider } from "../../global/context/AuthContext.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 import ProtectedRoutes from "../../pages/LoginCustomer/ProtectedRoute.jsx";
 
 function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
   // Donde mostrar el marquee
-  const showMarquee = ["/profile", "/loginCustomer", "/recoveryPassword", "/profile", "/register"].includes(
-    location.pathname
-  );
+  const showMarquee = [
+    "/profile",
+    "/loginCustomer",
+    "/recoveryPassword",
+    "/profile",
+    "/register",
+  ].includes(location.pathname);
 
   // Aqui no aparece el footer y el nav
-  const noNavFooterRoutes = ["/loginCustomer", "/recoveryPassword", "/profile", "/register"];
+  const noNavFooterRoutes = [
+    "/loginCustomer",
+    "/recoveryPassword",
+    "/profile",
+    "/register",
+  ];
   const hideNavFooter = noNavFooterRoutes.includes(location.pathname);
+
+  // Redirigir automáticamente si el usuario ya está logueado y entra a login o register
+  useEffect(() => {
+    const blockedWhenAuth = ["/loginCustomer", "/register"];
+    if (isAuthenticated && blockedWhenAuth.includes(location.pathname)) {
+      navigate("/home", { replace: true });
+    }
+  }, [isAuthenticated, location.pathname, navigate]);
+
   return (
     <div className="flex flex-col">
       {!showMarquee && <MarqueeBanner />}
@@ -47,6 +70,7 @@ function Navigation() {
       <div className=" min-h-dvh">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/loginCustomer" element={<LoginCustomer />} />
           <Route path="/register" element={<RegisterCustomer />} />
           <Route path="/recoveryPassword" element={<PasswordRecovery />} />
@@ -55,11 +79,14 @@ function Navigation() {
           <Route path="/TermsAndConditions" element={<TermsAndConditions />} />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/profile" element={
-            <ProtectedRoutes>
-              <Profile />
-            </ProtectedRoutes>
-          } />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoutes>
+                <Profile />
+              </ProtectedRoutes>
+            }
+          />
           <Route
             path="/cart"
             element={
@@ -71,9 +98,7 @@ function Navigation() {
         </Routes>
       </div>
       {!hideNavFooter && <Footer />}
-
     </div>
-
   );
 }
 

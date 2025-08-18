@@ -128,7 +128,7 @@ employeesController.restoreEmployees = async (req, res) => {
 // GET - contar número total de empleados
 employeesController.countEmployees = async (req, res) => {
   try {
-    const count = await employeesModel.countDocuments(); // Contar documentos en la colección
+    const count = await employeesModel.countDocuments({deleted: false}); // Contar documentos en la colección
     res.status(200).json({ count }); // Responder con la cantidad
   } catch (error) {
     console.error("Error al contar empleados:", error); // Log de error
