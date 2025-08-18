@@ -16,7 +16,7 @@ const DataGrid = ({
   checkboxText,
   checkboxChecked = false,
   rowsPerPage = 10,
-  onCheckboxChange = () => {},
+  onCheckboxChange = () => { },
   editable = true,
 }) => {
   //Obtener los valores anidados
@@ -34,8 +34,12 @@ const DataGrid = ({
         return acc?.[key];
       }, obj);
 
-      // Formatear si es fecha válida en string
-      if (typeof value === "string" && !isNaN(Date.parse(value))) {
+      if (
+        typeof value === "string" &&
+        value.includes("-") &&
+        value.includes("T") &&
+        !isNaN(Date.parse(value))
+      ) {
         return new Date(value).toLocaleDateString("es-SV", {
           day: "2-digit",
           month: "2-digit",

@@ -23,38 +23,42 @@ loginCustomerController.login = async (req, res) => {
       return res.status(404).json({ message: "Cliente no encontrado" }); // Si no existe el cliente
     }
 
-      //Verificar si está bloqueado
+    //Verificar si está bloqueado
     if (customer.lockUntil && customer.lockUntil > Date.now()) {
-      const remaining = Math.ceil((customer.lockUntil - Date.now()) / 1000 / 60);
+      const remaining = Math.ceil(
+        (customer.lockUntil - Date.now()) / 1000 / 60
+      );
       return res.status(403).json({
-        message: `Cuenta bloqueada. Intente nuevamente en ${remaining} minuto`
+        message: `Cuenta bloqueada. Intente nuevamente en ${remaining} minuto`,
       });
     }
 
     // Verificar que la contraseña sea válida
     const isValidPassword = await bcryptjs.compare(password, customer.password);
 
-     if (!isValidPassword) {
+    if (!isValidPassword) {
       customer.loginAttempts += 1;
 
       if (customer.loginAttempts >= MAX_ATTEMPTS) {
         customer.lockUntil = Date.now() + LOCK_TIME;
         await customer.save();
         return res.status(403).json({
-          message: `Cuenta bloqueada por ${LOCK_TIME / 60000} minutos`
+          message: `Cuenta bloqueada por ${LOCK_TIME / 60000} minutos`,
         });
       }
 
       await customer.save();
       return res.status(401).json({
-        message: `Contraseña incorrecta. Intentos restantes: ${MAX_ATTEMPTS - customer.loginAttempts}`
+        message: `Contraseña incorrecta. Intentos restantes: ${
+          MAX_ATTEMPTS - customer.loginAttempts
+        }`,
       });
     }
 
     //Si contraseña es correcta → resetear contador
     customer.loginAttempts = 0;
     customer.lockUntil = null;
-    await customer.save();
+    await customer.save({ validateBeforeSave: false });
 
     // Crear token JWT
     const token = JsonWebToken.sign(
@@ -63,9 +67,11 @@ loginCustomerController.login = async (req, res) => {
       { expiresIn: config.jwt.expiresIn }
     );
 
-
     // Verificar si el cliente ya tiene un carrito
-    let cart = await shoppingCartModel.findOne({ idUser: customer._id });
+    let cart = await shoppingCartModel.findOne({
+      idUser: customer._id,
+      status: "active",
+    });
 
     // Si no existe, se crea un nuevo carrito vacío
     if (!cart) {
@@ -73,7 +79,7 @@ loginCustomerController.login = async (req, res) => {
         idUser: customer._id,
         products: [],
         total: 0,
-        status: "active"
+        status: "active",
       });
       await cart.save(); // Guardar el nuevo carrito
     }

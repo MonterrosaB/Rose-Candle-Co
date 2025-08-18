@@ -1,4 +1,5 @@
 import productsModel from "../models/Products.js"; // Modelo de productos
+import SalesOrder from "../models/SalesOrder.js";
 import { config } from "../config.js"; // Archivo config
 import { v2 as cloudinary } from "cloudinary"; // Cloudinary
 
@@ -285,5 +286,269 @@ productsController.restoreProduct = async (req, res) => {
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
+
+// -- Reportes --
+
+// GET POR CATEGORÍAS
+productsController.getProductByCategory = async (req, res) => {
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), 1)
+    );
+    const startOfNextMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth() + 1, 1)
+    );
+
+    const result = await SalesOrderModel.aggregate([
+      // 1. Lookup al carrito de compras
+      {
+        $lookup: {
+          from: "shoppingcarts",
+          localField: "idShoppingCart",
+          foreignField: "_id",
+          as: "shoppingCart",
+        },
+      },
+      { $unwind: "$shoppingCart" },
+
+      // 2. Lookup a los productos del carrito
+      {
+        $lookup: {
+          from: "products",
+          localField: "shoppingCart.products",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+
+      // 3. Lookup a las categorías de los productos
+      {
+        $lookup: {
+          from: "productcategories",
+          localField: "products.idProductCategory",
+          foreignField: "_id",
+          as: "categories",
+        },
+      },
+
+      // 4. Extraer solo los nombres de categoría únicos por orden
+      {
+        $project: {
+          categorias: {
+            $setUnion: "$categories.name",
+          },
+        },
+      },
+
+      // 5. Descomponer por categoría
+      {
+        $unwind: "$categorias",
+      },
+
+      // 6. Agrupar por categoría y contar órdenes
+      {
+        $group: {
+          _id: "$categorias",
+          totalVentas: { $sum: 1 },
+        },
+      },
+
+      // 7. Calcular total global de órdenes
+      {
+        $group: {
+          _id: null,
+          categorias: {
+            $push: {
+              nombre: "$_id",
+              totalVentas: "$totalVentas",
+            },
+          },
+          totalGlobal: { $sum: "$totalVentas" },
+        },
+      },
+
+      // 8. Calcular porcentaje
+      {
+        $unwind: "$categorias",
+      },
+      {
+        $project: {
+          _id: 0,
+          categoria: "$categorias.nombre",
+          totalVentas: "$categorias.totalVentas",
+          porcentaje: {
+            $round: [
+              {
+                $multiply: [
+                  { $divide: ["$categorias.totalVentas", "$totalGlobal"] },
+                  100,
+                ],
+              },
+              2,
+            ],
+          },
+        },
+      },
+    ]);
+    return res.json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+//GET - Producto más vendido
+productsController.getBestSellers = async (req, res) => {
+  try {
+    const topProducts = await SalesOrder.aggregate([
+      // Unir con shoppingcarts
+      {
+        $lookup: {
+          from: "shoppingcarts",
+          localField: "idShoppingCart",
+          foreignField: "_id",
+          as: "cart",
+        },
+      },
+      { $unwind: "$cart" },
+
+      // Desglosar productos del carrito
+      { $unwind: "$cart.products" },
+
+      // Agrupar por producto + variante
+      {
+        $group: {
+          _id: {
+            productId: "$cart.products.idProduct",
+            variantIndex: "$cart.products.selectedVariantIndex",
+          },
+          totalQuantity: { $sum: "$cart.products.quantity" },
+        },
+      },
+
+      // Traer info del producto
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+
+      // Calcular el precio de la variante seleccionada
+      {
+        $addFields: {
+          variant: { $arrayElemAt: ["$product.variant", "$_id.variantIndex"] },
+        },
+      },
+
+      // Proyectar solo lo necesario
+      {
+        $project: {
+          _id: 0,
+          productId: "$product._id",
+          name: "$product.name",
+          variant: "$variant.variant",
+          variantPrice: "$variant.variantPrice",
+          totalQuantity: 1,
+          totalRevenue: {
+            $multiply: ["$variant.variantPrice", "$totalQuantity"],
+          },
+        },
+      },
+
+      // Ordenar por más vendidos
+      { $sort: { totalQuantity: -1 } },
+
+      // Limitar al top 10
+      { $limit: 10 },
+    ]);
+
+    return res.status(200).json(topProducts);
+  } catch (error) {
+    console.error("Error al obtener los más vendidos:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+//GET - Producto menos vendido
+productsController.geWorstSellers = async (req, res) => {
+  try {
+    const topProducts = await SalesOrder.aggregate([
+      // Unir con shoppingcarts
+      {
+        $lookup: {
+          from: "shoppingcarts",
+          localField: "idShoppingCart",
+          foreignField: "_id",
+          as: "cart",
+        },
+      },
+      { $unwind: "$cart" },
+
+      // Desglosar productos del carrito
+      { $unwind: "$cart.products" },
+
+      // Agrupar por producto + variante
+      {
+        $group: {
+          _id: {
+            productId: "$cart.products.idProduct",
+            variantIndex: "$cart.products.selectedVariantIndex",
+          },
+          totalQuantity: { $sum: "$cart.products.quantity" },
+        },
+      },
+
+      // Traer info del producto
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+
+      // Calcular el precio de la variante seleccionada
+      {
+        $addFields: {
+          variant: { $arrayElemAt: ["$product.variant", "$_id.variantIndex"] },
+        },
+      },
+
+      // Proyectar solo lo necesario
+      {
+        $project: {
+          _id: 0,
+          productId: "$product._id",
+          name: "$product.name",
+          variant: "$variant.variant",
+          variantPrice: "$variant.variantPrice",
+          totalQuantity: 1,
+          totalRevenue: {
+            $multiply: ["$variant.variantPrice", "$totalQuantity"],
+          },
+        },
+      },
+
+      // Ordenar por menos vendidos
+      { $sort: { totalQuantity: 1 } },
+
+      // Limitar al top 10
+      { $limit: 10 },
+    ]);
+
+    return res.status(200).json(topProducts);
+  } catch (error) {
+    console.error("Error al obtener los más vendidos:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 // Exportar
 export default productsController;

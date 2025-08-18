@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../../global/context/AuthContext.jsx"
+import useCart from "../hooks/useShoppingCart.jsx";
 
 import {
   ArrowLeft,
@@ -24,6 +25,7 @@ const CheckoutFlow = ({
   onClearCart,
 }) => {
   const { user } = useContext(AuthContext);
+  const { idCart, createSalesOrder } = useCart();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
@@ -83,70 +85,84 @@ const CheckoutFlow = ({
 
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
-    console.log(formData);
-
-    /*try {
-      
+    try {
       setIsProcessing(true);
-  
-      // 1. Obtener token
-      const tokenResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-  
+
+      // Validar que haya datos de envío
+      if (!formData?.shipping) {
+        throw new Error("Faltan los datos de envío");
+      }
+
+      const { shipping, payment } = formData;
+
+      // 1️⃣ Obtener token de pago
+      const tokenResponse = await fetch(
+        "https://rose-candle-co.onrender.com/api/payments/token",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
       if (!tokenResponse.ok) throw new Error("Error al obtener token");
-  
+
       const tokenData = await tokenResponse.json();
       const accessToken = tokenData.access_token;
-  
-      // 2. Preparar datos de pago
+
+      // 2️⃣ Preparar datos de pago
       const paymentData = {
-    monto: total,
-    emailCliente: formData.shipping.email,
-    nombreCliente: `${formData.shipping.firstName} ${formData.shipping.lastName}`,
-    tokenTarjeta: "null", // simulado
-  };
-  
-  //  Consola para verificar si el email está llegando
-  console.log(" Email cliente (desde frontend):", formData.shipping.email);
-  
-  
-      // 3. Enviar pago simulado
-      const paymentResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/testPayment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: accessToken, formData: paymentData }),
-      });
-  
+        monto: total,
+        emailCliente: shipping.email,
+        nombreCliente: payment.cardName,
+        tokenTarjeta: "null", // simulado
+      };
+
+      console.log("Email cliente (desde frontend):", shipping.email);
+
+      // 3️⃣ Enviar pago simulado
+      const paymentResponse = await fetch(
+        "https://rose-candle-co.onrender.com/api/payments/testPayment",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: accessToken, formData: paymentData }),
+        }
+      );
+
       if (!paymentResponse.ok) {
         const errorText = await paymentResponse.text();
         throw new Error(`Error al procesar pago: ${errorText}`);
       }
-  
+
       const paymentResult = await paymentResponse.json();
       console.log("Respuesta del pago simulado:", paymentResult);
-  
-      // ALERTA: pago realizado correctamente
-      alert("Pago realizado correctamente 🎉");
-  
-      // Vaciar carrito
-      if (onClearCart) {
-        await onClearCart();
-        // ALERTA: carrito vaciado
-        alert("Carrito vaciado exitosamente");
-      }
-  
-      setIsProcessing(false);
+
+      // 4️⃣ Crear la orden solo si el pago se completó
+      const orderData = {
+        idShoppingCart: idCart,
+        paymentMethod: "credit card",
+        address: shipping,
+        saleDate: new Date(),
+        total: total,
+        shippingState: [{ state: "Pendiente" }],
+      };
+
+      const orderResult = await createSalesOrder(orderData);
+      if (!orderResult) throw new Error("Error al crear la orden");
+
+      console.log("Orden creada correctamente:", orderResult);
       setOrderComplete(true);
-  
+
     } catch (err) {
-      console.error("Error en el proceso de pago:", err);
+      console.error("Error en el proceso de pago/orden:", err);
       alert(`Error: ${err.message}`);
-      setIsProcessing(false);
-    }*/
+    } finally {
+      setIsProcessing(false); // Siempre desactiva el loading
+    }
   };
+
+
 
 
   return (
@@ -224,7 +240,7 @@ const CheckoutFlow = ({
                 <ShippingStep
                   formData={formData.shipping}
                   handleInputChange={handleInputChange}
-                  selectedAddress={selectedAddress} // 👈 le paso
+                  selectedAddress={selectedAddress} // le paso
                   setSelectedAddress={setSelectedAddress} // 👈 le paso
                 />
               </motion.div>

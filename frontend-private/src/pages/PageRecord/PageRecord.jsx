@@ -2,6 +2,8 @@ import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import Widget from "../../global/components/Widget";
 
+import useRecord from "./hooks/useRecord";
+
 import {
   LineChart,
   Line,
@@ -16,6 +18,9 @@ import {
 } from "recharts";
 
 const PageRecord = () => {
+
+  const { bestSellers, worstSellers } = useRecord();
+
   // 📊 Datos demo
   const chartData = [
     { name: "Ene", value: 200 },
@@ -62,9 +67,9 @@ const PageRecord = () => {
   };
 
   const productTableColumns = {
-    Producto: "producto",
-    Unidades: "unidades",
-    "Ingresos Generados": "ingresos",
+    Producto: "name",
+    Unidades: "totalQuantity",
+    "Ingresos Generados": "totalRevenue",
   };
 
   return (
@@ -204,11 +209,7 @@ const PageRecord = () => {
           </h3>
           <DataGrid
             columns={productTableColumns}
-            rows={[
-              { producto: "Calmness", unidades: 250, ingresos: "$5000" },
-              { producto: "Vela Aromática", unidades: 200, ingresos: "$4000" },
-              { producto: "Difusor", unidades: 150, ingresos: "$3000" },
-            ]}
+            rows={bestSellers}
             editable={false}
           />
         </div>
@@ -218,11 +219,7 @@ const PageRecord = () => {
           </h3>
           <DataGrid
             columns={productTableColumns}
-            rows={[
-              { producto: "Gorra", unidades: 50, ingresos: "$500" },
-              { producto: "Bufanda", unidades: 30, ingresos: "$300" },
-              { producto: "Guantes", unidades: 20, ingresos: "$200" },
-            ]}
+            rows={worstSellers}
             editable={false}
           />
         </div>

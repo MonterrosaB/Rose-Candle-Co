@@ -232,11 +232,19 @@ rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
 rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
   try {
     // Buscar materias primas no eliminadas, ordenar por stock ascendente, limitar resultados
-    const lowStockMaterials = await rawMaterialModel
-      .find({ deleted: false }) // Solo no eliminadas
-      .sort({ currentStock: 1 }) // Ordenar de menor a mayor stock
-      .limit(10) // Limitar a los 10 más bajos
-      .populate("idRawMaterialCategory", "name") // Poblar categoría
+    const lowStockMaterials = await rawMaterialModel.aggregate([
+      { $match: { deleted: false } },
+      { $sort: { currentStock: 1 } },
+      { $limit: 10 },
+      {
+        $project: {
+          name: 1,
+          stockWithUnit: {
+            $concat: [{ $toString: "$currentStock" }, " ", "$unit"],
+          },
+        },
+      },
+    ]);
 
     res.status(200).json(lowStockMaterials); // todo bien
   } catch (error) {

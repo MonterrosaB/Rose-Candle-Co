@@ -11,6 +11,10 @@ const useCart = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showCheckout, setShowCheckout] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+
     const navigate = useNavigate();
 
 
@@ -37,6 +41,41 @@ const useCart = () => {
             setIsLoading(false);
         }
     };
+
+
+    const createSalesOrder = async (orderData) => {
+        setLoading(true);
+        setError(null);
+        setSuccess(false);
+
+        console.log("Datos de la orden:", orderData);
+
+        try {
+            const res = await fetch(API + "/api/salesOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+                credentials: "include", // si usas cookies httpOnly para auth
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || "Error creating sales order");
+            }
+
+            const data = await res.json(); // ✅ Aquí sí obtenemos la respuesta JSON
+            setSuccess(true);
+            return data; // devuelve { message, order, cart }
+        } catch (err) {
+            setError(err.message || "Error creating sales order");
+            return null; // para que el frontend sepa que falló
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     const updateCartBackend = async (newProducts) => {
         try {
@@ -201,6 +240,7 @@ const useCart = () => {
         handleClear,
         decreaseProduct,
         increaseProduct,
+        createSalesOrder,
         total,
         moreInfo
     };

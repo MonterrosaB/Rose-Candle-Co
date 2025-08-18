@@ -43,67 +43,70 @@ salesOrderController.getSalesOrders = async (req, res) => {
 
 // POST - Crear una nueva orden de venta
 salesOrderController.createSalesOrder = async (req, res) => {
-  // Obtener datos desde el cuerpo de la petición
   const {
     idShoppingCart,
     paymentMethod,
     address,
     saleDate,
-    shippingTotal,
     total,
     shippingState,
   } = req.body;
 
   try {
-    // Validaciones básicas para evitar datos incompletos
+    // Validaciones básicas
     if (
       !idShoppingCart ||
       !paymentMethod ||
       !address ||
       !saleDate ||
-      !shippingTotal ||
       !total ||
       !shippingState
     ) {
       return res
         .status(400)
-        .json({ message: "Please complete all the fields" }); // Campos vacíos
+        .json({ message: "Please complete all the fields" });
     }
 
-    // Validar que la dirección tenga información mínima
-    if (address.length < 5) {
-      return res
-        .status(400)
-        .json({ message: "Please provide additional address information" }); // Dirección inválida
+    if (!address.firstName || !address.lastName || !address.address) {
+      return res.status(400).json({
+        message: "Please provide first name, last name, and address",
+      });
     }
 
-    // Validar que el total sea positivo o cero
     if (total < 0) {
       return res
         .status(400)
-        .json({ message: "The total can't be less than 0" }); // Total inválido
+        .json({ message: "The total can't be less than 0" });
     }
 
-    // Crear nueva instancia del modelo con los datos recibidos
+    // 1️⃣ Crear la orden
     const newOrder = new SalesOrderModel({
       idShoppingCart,
       paymentMethod,
       address,
       saleDate,
-      shippingTotal,
       total,
       shippingState,
     });
 
-    // Guardar la nueva orden en la base de datos
     await newOrder.save();
 
-    // Responder con mensaje de éxito
-    res.status(200).json({ message: "Order saved" }); // Todo bien
+    // 2️⃣ Actualizar el carrito como completed
+    const updatedCart = await ShoppingCart.findByIdAndUpdate(
+      idShoppingCart,
+      { status: "completed" },
+      { new: true }
+    );
+
+    // 3️⃣ Responder con éxito y detalles de la orden y carrito
+    res.status(200).json({
+      message: "Order saved and cart updated",
+      order: newOrder,
+      cart: updatedCart,
+    });
   } catch (error) {
-    console.log("error " + error);
-    // Responder con error de servidor en caso de fallo inesperado
-    return res.status(500).json("Internal server error"); // Error del servidor
+    console.log("Error creating order:", error);
+    return res.status(500).json("Internal server error");
   }
 };
 
@@ -305,115 +308,6 @@ salesOrderController.countSalesOrderAndTotal = async (req, res) => {
   }
 };
 
-// GET POR CATEGORÍAS
-salesOrderController.getProductByCategory = async (req, res) => {
-  try {
-    const now = new Date();
-    const startOfMonth = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth(), 1)
-    );
-    const startOfNextMonth = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth() + 1, 1)
-    );
-
-    const result = await SalesOrderModel.aggregate([
-      // 1. Lookup al carrito de compras
-      {
-        $lookup: {
-          from: "shoppingcarts",
-          localField: "idShoppingCart",
-          foreignField: "_id",
-          as: "shoppingCart",
-        },
-      },
-      { $unwind: "$shoppingCart" },
-
-      // 2. Lookup a los productos del carrito
-      {
-        $lookup: {
-          from: "products",
-          localField: "shoppingCart.products",
-          foreignField: "_id",
-          as: "products",
-        },
-      },
-
-      // 3. Lookup a las categorías de los productos
-      {
-        $lookup: {
-          from: "productcategories",
-          localField: "products.idProductCategory",
-          foreignField: "_id",
-          as: "categories",
-        },
-      },
-
-      // 4. Extraer solo los nombres de categoría únicos por orden
-      {
-        $project: {
-          categorias: {
-            $setUnion: "$categories.name",
-          },
-        },
-      },
-
-      // 5. Descomponer por categoría
-      {
-        $unwind: "$categorias",
-      },
-
-      // 6. Agrupar por categoría y contar órdenes
-      {
-        $group: {
-          _id: "$categorias",
-          totalVentas: { $sum: 1 },
-        },
-      },
-
-      // 7. Calcular total global de órdenes
-      {
-        $group: {
-          _id: null,
-          categorias: {
-            $push: {
-              nombre: "$_id",
-              totalVentas: "$totalVentas",
-            },
-          },
-          totalGlobal: { $sum: "$totalVentas" },
-        },
-      },
-
-      // 8. Calcular porcentaje
-      {
-        $unwind: "$categorias",
-      },
-      {
-        $project: {
-          _id: 0,
-          categoria: "$categorias.nombre",
-          totalVentas: "$categorias.totalVentas",
-          porcentaje: {
-            $round: [
-              {
-                $multiply: [
-                  { $divide: ["$categorias.totalVentas", "$totalGlobal"] },
-                  100,
-                ],
-              },
-              2,
-            ],
-          },
-        },
-      },
-    ]);
-    return res.json(result);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error interno del servidor" });
-  }
-};
-
 // Cantidad de pedidos en general, y del mes actual
 salesOrderController.countOrdersGeneralAndMonthly = async (req, res) => {
   try {
@@ -520,7 +414,7 @@ salesOrderController.getLatestOrders = async (req, res) => {
       { $unwind: "$cart" },
       {
         $lookup: {
-          from: "employees",
+          from: "customers",
           localField: "cart.idUser",
           foreignField: "_id",
           as: "user",
@@ -529,16 +423,17 @@ salesOrderController.getLatestOrders = async (req, res) => {
       { $unwind: "$user" },
       {
         $addFields: {
-          productosTotales: { $sum: "$cart.products.quantity" },
+          itemsOrdered: { $sum: "$cart.products.quantity" },
         },
       },
       {
         $project: {
           _id: 1,
-          name: "$user.name",
-          fechaPedido: "$saleDate",
-          ubicacion: "$address",
-          productosTotales: 1,
+          customerName: "$user.name",
+          purchaseDate: "$saleDate",
+          shippingAddress: "$address",
+          itemsOrdered: 1,
+          totalAmount: "$total",
         },
       },
     ]);
@@ -574,6 +469,49 @@ salesOrderController.getUserCartWithProducts = async (req, res) => {
     console.error("Error al obtener la orden con carrito:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
+};
+
+salesOrderController.getSalesEvolution = async (req, res) => {
+  const salesEvolution = await SalesOrderModel.aggregate([
+    // Traer el carrito asociado
+    {
+      $lookup: {
+        from: "shoppingcarts",
+        localField: "idShoppingCart",
+        foreignField: "_id",
+        as: "cart",
+      },
+    },
+    { $unwind: "$cart" },
+
+    // Desglosar productos del carrito
+    { $unwind: "$cart.products" },
+
+    {
+      $group: {
+        _id: {
+          year: { $year: "$saleDate" },
+          month: { $month: "$saleDate" },
+        },
+        totalSales: { $sum: "$total" }, // total en $
+        totalOrders: { $addToSet: "$_id" }, // evitar duplicados de orden
+        totalProducts: { $sum: "$cart.products.quantity" }, // productos vendidos
+      },
+    },
+    {
+      $project: {
+        year: "$_id.year",
+        month: "$_id.month",
+        totalSales: 1,
+        totalOrders: { $size: "$totalOrders" },
+        totalProducts: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { year: 1, month: 1 } },
+  ]);
+
+  return res.status(200).json(salesEvolution); // Aquí `shippingStates` ya va incluido
 };
 
 // Exportar controlador para usarlo en rutas

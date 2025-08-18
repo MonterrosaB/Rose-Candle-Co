@@ -29,6 +29,21 @@ const shippingStateSchema = new Schema(
   { _id: false }
 ); // No crea _id para subdocumento
 
+const addressSchema = new Schema(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String },
+    address: { type: String, required: true },
+    city: { type: String },
+    state: { type: String },
+    zipCode: { type: String },
+    country: { type: String, default: "El Salvador" },
+  },
+  { _id: false }
+);
+
 const SalesOrderSchema = new Schema(
   {
     idShoppingCart: {
@@ -48,10 +63,9 @@ const SalesOrderSchema = new Schema(
       trim: true, // (No afecta fechas, pero por consistencia)
       default: Date.now,
     },
-    shippingTotal: {
-      type: Number,
-      required: true, // Costo de envío obligatorio
-      trim: true,
+    address: {
+      type: addressSchema,
+      required: true,
     },
     total: {
       type: Number,

@@ -3,7 +3,6 @@ import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Carrito de C
 import Product from "../models/Products.js"; // Modelo de Productos
 import ShoppingCart from "../models/ShoppingCart.js";
 
-
 // Controlador con métodos CRUD para Carrito de Compras
 const shoppingCartController = {};
 
@@ -110,25 +109,33 @@ shoppingCartController.increaseProduct = async (req, res) => {
 
   try {
     // Buscar carrito activo del usuario
-    let cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    let cart = await shoppingCartModel.findOne({
+      _id: cartId,
+      idUser: userId,
+      status: "active",
+    });
     if (!cart) {
       // Crear carrito si no existe
       cart = new shoppingCartModel({
         idUser: userId,
         products: [],
         total: 0,
-        status: "active"
+        status: "active",
       });
     }
 
     // Buscar producto en DB
     const productDB = await Product.findById(productId);
-    if (!productDB) return res.status(404).json({ message: "Producto no encontrado" });
+    if (!productDB)
+      return res.status(404).json({ message: "Producto no encontrado" });
 
     // Obtener precio de la variante seleccionada
     let price = 0;
     if (productDB.variant && productDB.variant.length > 0) {
-      price = Number(productDB.variant[indexVariant]?.variantPrice || productDB.variant[0].variantPrice);
+      price = Number(
+        productDB.variant[indexVariant]?.variantPrice ||
+          productDB.variant[0].variantPrice
+      );
     }
 
     if (isNaN(price) || price <= 0) {
@@ -137,7 +144,9 @@ shoppingCartController.increaseProduct = async (req, res) => {
 
     // Buscar item en carrito considerando la variante
     const item = cart.products.find(
-      p => p.idProduct.toString() === productId && p.selectedVariantIndex === indexVariant
+      (p) =>
+        p.idProduct.toString() === productId &&
+        p.selectedVariantIndex === indexVariant
     );
 
     if (item) {
@@ -150,7 +159,7 @@ shoppingCartController.increaseProduct = async (req, res) => {
         idProduct: productId,
         quantity: quantityVariant || 1,
         selectedVariantIndex: indexVariant || 0,
-        subtotal: (quantityVariant || 1) * price
+        subtotal: (quantityVariant || 1) * price,
       });
     }
 
@@ -166,21 +175,30 @@ shoppingCartController.increaseProduct = async (req, res) => {
   }
 };
 
-
 shoppingCartController.decreaseProduct = async (req, res) => {
   const userId = req.user.id;
   const { cartId, index } = req.body;
 
   try {
-    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
-    if (!cart) return res.status(404).json({ message: "Carrito no encontrado" });
+    const cart = await shoppingCartModel.findOne({
+      _id: cartId,
+      idUser: userId,
+      status: "active",
+    });
+    if (!cart)
+      return res.status(404).json({ message: "Carrito no encontrado" });
 
     const item = cart.products[index];
-    if (!item) return res.status(404).json({ message: "Producto no encontrado en el carrito" });
+    if (!item)
+      return res
+        .status(404)
+        .json({ message: "Producto no encontrado en el carrito" });
 
     // Obtener precio desde la variante
     const productDB = await Product.findById(item.idProduct);
-    const price = Number(productDB.variant[item.selectedVariantIndex]?.variantPrice || 0);
+    const price = Number(
+      productDB.variant[item.selectedVariantIndex]?.variantPrice || 0
+    );
     if (item.quantity > 1) {
       item.quantity -= 1;
       item.subtotal = item.quantity * price;
@@ -197,7 +215,6 @@ shoppingCartController.decreaseProduct = async (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 };
-
 
 // POST - Completar carrito y generar orden automáticamente
 shoppingCartController.completeCart = async (req, res) => {
@@ -247,29 +264,6 @@ shoppingCartController.completeCart = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar el carrito del usuario autenticado
-shoppingCartController.deleteCart = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    //Buscar y eliminar carrito del usuario
-    const deletedCart = await shoppingCartModel.findOneAndDelete({
-      idUser: userId,
-    });
-
-    if (!deletedCart) {
-      // No existía carrito para ese usuario
-      return res.status(404).json({ message: "Shopping cart not found" });
-    }
-
-    // Confirmar eliminación
-    res.status(200).json({ message: "Shopping cart deleted" });
-  } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error");
-  }
-};
-
 // DELETE - Remover un producto específico del carrito
 shoppingCartController.removeProduct = async (req, res) => {
   try {
@@ -313,7 +307,11 @@ shoppingCartController.emptyCart = async (req, res) => {
     const userId = req.user.id;
     const cartId = req.params.idCart;
 
-    const cart = await shoppingCartModel.findOne({ _id: cartId, idUser: userId, status: "active" });
+    const cart = await shoppingCartModel.findOne({
+      _id: cartId,
+      idUser: userId,
+      status: "active",
+    });
     if (!cart) {
       return res.status(404).json({ message: "Carrito no encontrado" });
     }

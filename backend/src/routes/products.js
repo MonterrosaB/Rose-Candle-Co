@@ -15,6 +15,9 @@ router
   .post(upload.array("images"), productsController.createProduct);
 
 router.route("/productsOrders").get(productsController.getProductsForOrders);
+router.route("/bestSellers").get(productsController.getBestSellers); // productos mas vendidos
+router.route("/worstSellers").get(productsController.geWorstSellers); // productos mas vendidos
+router.route("/salesByCategory").get(productsController.getProductByCategory); //ventas por categoria
 
 router
   .route("/:id")

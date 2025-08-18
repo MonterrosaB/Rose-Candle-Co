@@ -9,10 +9,10 @@ router
   .post(salesOrderController.createSalesOrder);
 
 router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
-router.route("/salesByCategory").get(salesOrderController.getProductByCategory);
 router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthly); // cantidad de pedidos por mes
 router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total de ingresos
 router.route("/latestOrders").get(salesOrderController.getLatestOrders); // ùltimos pedidos
+router.route("/salesEvolution").get(salesOrderController.getSalesEvolution); // ùltimos pedidos
 
 router.route("/createSalesOrder").post(salesOrderController.createSalesOrderPrivate)//
 

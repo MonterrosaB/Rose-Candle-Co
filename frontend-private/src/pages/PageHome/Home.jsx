@@ -31,22 +31,17 @@ const Home = () => {
 
   // Columnas del stock
   const columnsMaterial = {
-    Materia: "Materia",
-    Cantidad: "Cantidad",
+    Materia: "name",
+    Cantidad: "stockWithUnit",
   };
-
-  // Contenido de la tabla del stock
-  const rowsMaterial = lowStockMaterials.map((material) => ({
-    Materia: material.name,
-    Cantidad: `${material.currentStock} ${material.unit}`,
-  }));
 
   // Columnas de ùltimos pedidos
   const columnsOrders = {
-    Nombre: "name",
-    "Fecha Pedido": "Fecha Pedido",
-    Ubicación: "Ubicación",
-    "Productos Totales": "Productos Totales",
+    Nombre: "customerName",
+    "Fecha Pedido": "purchaseDate",
+    Ubicación: "shippingAddress",
+    Total: "totalAmount",
+    "Productos Totales": "itemsOrdered",
   };
 
   return (
@@ -94,7 +89,7 @@ const Home = () => {
           <DataGrid
             title={"Valores bajos de materia prima"}
             columns={columnsMaterial}
-            rows={rowsMaterial}
+            rows={lowStockMaterials}
             editable={false}
             rowsPerPage={3} // Se limita la cantidad de materia prima
           />
