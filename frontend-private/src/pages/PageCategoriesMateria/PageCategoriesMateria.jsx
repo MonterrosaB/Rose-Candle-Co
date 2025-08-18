@@ -7,6 +7,7 @@ import TitleH1 from "../../global/components/TitleH1";
 import useCategoriesMateria from "./hooks/useCategoriesMateria";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import Swal from 'sweetalert2';
 
 const PageCategoriesMateria = () => {
   const [openDialogCategories, setOpenDialogCategories] = useState(false);
@@ -51,8 +52,26 @@ const PageCategoriesMateria = () => {
 
   // Confirmar y eliminar categoría seleccionada
   const handleDelete = async (category) => {
-    if (confirm(`¿Eliminar categoría "${category.name}"?`)) {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Eliminar categoría "${category.name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
       await deleteCategory(category._id);
+      Swal.fire({
+        title: '¡Eliminado!',
+        text: 'La categoría ha sido eliminada.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
     }
   };
 

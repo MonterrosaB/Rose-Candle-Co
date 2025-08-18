@@ -12,6 +12,7 @@ const DataGrid = ({
   secondaryBtnText,
   onClickPrimaryBtn,
   onClickSecondaryBtn,
+  showDelete = true,
   checkbox = false,
   checkboxText,
   checkboxChecked = false,
@@ -56,9 +57,9 @@ const DataGrid = ({
   const StatusBadge = ({ status }) => {
     const map = {
       pendiente: ["bg-yellow-100", "text-yellow-600"],
-      processing: ["bg-orange-100", "text-orange-600"],
-      transito: ["bg-blue-100", "text-blue-600"],
-      entregado: ["bg-green-100", "text-green-600"],
+      "en Proceso": ["bg-orange-100", "text-orange-600"],
+      enviado: ["bg-blue-100", "text-blue-600"],
+      completado: ["bg-green-100", "text-green-600"],
       cancelado: ["bg-red-100", "text-red-600"],
     };
     const [bg, text] = map[status?.toLowerCase()] || ["bg-gray-100", "text-gray-600"];
@@ -181,7 +182,10 @@ const DataGrid = ({
                 {editable && (
                   <td className="px-6 py-4">
                     <div className="flex justify-center items-center gap-4">
-                      <Trash onClick={() => deleteRow(row)} className="cursor-pointer" />
+                      {showDelete &&
+                        <Trash onClick={() => deleteRow(row)} className="cursor-pointer" />
+
+                      }
                       <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
                     </div>
                   </td>

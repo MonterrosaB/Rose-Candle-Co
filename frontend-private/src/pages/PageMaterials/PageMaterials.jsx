@@ -7,6 +7,7 @@ import RegisterSupplies from "./components/RegisterSupplies";
 import useMaterials from "./hooks/useMaterials";
 import { useForm } from "react-hook-form";
 import TitleH1 from "../../global/components/TitleH1";
+import Swal from "sweetalert2"
 
 const PageMaterials = () => {
   const [openDialogMaterial, setOpenDialogMaterial] = useState(false);
@@ -22,6 +23,30 @@ const PageMaterials = () => {
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   }
+
+  const handleDelete = async (item, deleteFunction, itemType = "elemento") => {
+    const result = await Swal.fire({
+      title: `¿Eliminar "${item.name}"?`,
+      text: `Esta acción eliminará el ${itemType} permanentemente.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      await deleteFunction(item._id);
+      Swal.fire({
+        title: "Eliminado",
+        text: `"${item.name}" ha sido eliminado correctamente.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
   const columns = isChecked
     ? {
       Nombre: "idMaterial.name",
@@ -35,6 +60,7 @@ const PageMaterials = () => {
     : {
       Nombre: "name",
       Stock: "currentStock",
+      "Stock Minimo": "minimunStock",
       Unidad: "unit",
       Precio: "currentPrice",
       Categoria: "idRawMaterialCategory.name",
@@ -67,11 +93,7 @@ const PageMaterials = () => {
             setRegistroActual(row);
             setOpenDialogMaterial(true);
           }}
-          deleteRow={(row) => {
-            if (confirm(`¿Eliminar "${row.name}"?`)) {
-              deleteMaterial(row._id);
-            }
-          }}
+          deleteRow={(row) => handleDelete(row, deleteMaterial, "material")}
         />
       </div>
 

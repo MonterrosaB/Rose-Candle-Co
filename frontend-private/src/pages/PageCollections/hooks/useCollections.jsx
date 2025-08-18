@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiCollections = "http://localhost:4000/api/collections"; // Ajustar endpoint
+const ApiCollections = "https://rose-candle-co.onrender.com/api/collections"; // Ajustar endpoint
 
 const useCollections = (methods) => {
   const {

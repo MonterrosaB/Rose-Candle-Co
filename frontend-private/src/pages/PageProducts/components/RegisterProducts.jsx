@@ -18,6 +18,7 @@ import changeImages from "../logic/changeImages";
 import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
+import toast from "react-hot-toast";
 
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
@@ -43,7 +44,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     eliminarComponente,
     resetInputs, } = AddComponent();
 
-  const { register, unregister, handleSubmit, errors, reset, control, createProduct, handleUpdate } = useProducts(methods);
+  const { register, unregister, handleSubmit, errors, reset, control, createProduct, handleUpdate, loading } = useProducts(methods);
 
   const {
     productImage,
@@ -94,19 +95,24 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
 
     try {
-      if (selectedProduct) {
-        // ACTUALIZAR producto existente si recibe datos
-        await handleUpdate(selectedProduct._id, formData);
+      const action = selectedProduct
+        ? handleUpdate(selectedProduct._id, formData)
+        : createProduct(formData);
 
-      } else {
-        // CREAR nuevo producto sino recibe datos
-        await createProduct(formData);
-      }
+      await toast.promise(action, {
+        loading: selectedProduct ? "Actualizando..." : "Guardando...",
+        success: selectedProduct
+          ? <b>¡Producto actualizado exitosamente!</b>
+          : <b>¡Producto guardado exitosamente!</b>,
+        error: selectedProduct
+          ? <b>No se pudo actualizar el producto.</b>
+          : <b>No se pudo guardar el producto.</b>,
+      });
 
       onClose(); // cerrar y limpiar solo si todo sale bien
     } catch (error) {
-      console.error("Error al guardar el empleado:", error);
-      // Aquí podrías usar toast.error o similar
+      console.error("Error al guardar el producto:", error);
+      toast.error("Ocurrió un error inesperado al guardar el producto.");
     }
   };
 
@@ -161,7 +167,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <Dropdown
             name={"availability"}
             options={opcionesEstado}
-            label={"availability"}
+            label={"Estado"}
             register={register}
             errors={errors}
             hideIcon={true}
@@ -258,7 +264,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} />
+        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} disable={loading} />
       </FormButton>
     </Form>
   );

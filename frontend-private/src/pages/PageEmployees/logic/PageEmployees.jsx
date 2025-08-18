@@ -59,6 +59,7 @@ const PageEmployees = () => {
           primaryBtnText="Agregar Empleado"
           onClickPrimaryBtn={handleAdd}
           updateRow={handleUpdate}
+          showDelete={false}
         />
       </div>
 

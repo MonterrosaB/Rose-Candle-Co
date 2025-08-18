@@ -2,23 +2,23 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 // Clientes
-const ApiCustomers = "http://localhost:4000/api/customers/count";
-const ApiCustomersByMonth = "http://localhost:4000/api/customers/countByMonth";
+const ApiCustomers = "https://rose-candle-co.onrender.com/api/customers/count";
+const ApiCustomersByMonth = "https://rose-candle-co.onrender.com/api/customers/countByMonth";
 
 // Pedidos
-const ApiOrders = "http://localhost:4000/api/salesOrder/countTotal";
+const ApiOrders = "https://rose-candle-co.onrender.com/api/salesOrder/countTotal";
 
 // Ingresos
-const ApiEarnings = "http://localhost:4000/api/salesOrder/totalEarnings";
+const ApiEarnings = "https://rose-candle-co.onrender.com/api/salesOrder/totalEarnings";
 
 // Stock
-const ApiLowStock = "http://localhost:4000/api/rawMaterials/lowStock";
+const ApiLowStock = "https://rose-candle-co.onrender.com/api/rawMaterials/lowStock";
 
 // Productos
-const ApiBestSellingProducts = "http://localhost:4000/api/cart/bestSellingProducts";
+const ApiBestSellingProducts = "https://rose-candle-co.onrender.com/api/cart/bestSellingProducts";
 
 // Últimos pedidos
-const ApiLatestOrders = "http://localhost:4000/api/salesOrder/latestOrders";
+const ApiLatestOrders = "https://rose-candle-co.onrender.com/api/salesOrder/latestOrders";
 
 const useHome = () => {
   // Clientes

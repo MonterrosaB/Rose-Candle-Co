@@ -86,9 +86,11 @@ loginCustomerController.login = async (req, res) => {
 
     // Guardar token en cookie
     res.cookie("authToken", token, {
-      httpOnly: true, // Solo accesible desde el servidor
-      secure: false,
-      sameSite: "lax", // Protección CSRF
+      httpOnly: true,
+      secure: true, // en producción debe ser true (usa HTTPS)
+      sameSite: "None", //para que funcione entre dominios distintos (Vercel <-> Render)
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
     });
 
     // Responder con token, datos del cliente y carrito

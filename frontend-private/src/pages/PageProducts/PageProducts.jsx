@@ -44,7 +44,9 @@ const PageProducts = () => {
   const handleCloseModal = () => {
     setSelectedProduct(null); // esto limpia defaultValues
     setOpenDialogProduct(false);
-    getProducts()   // o cerrar modal, si usas uno
+    useEffect(() => {
+      getProducts();
+    }, []);  // o cerrar modal, si usas uno
   };
 
   const [filtroCategoria, setFiltroCategoria] = useState(""); // estado del filtro

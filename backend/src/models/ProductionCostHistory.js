@@ -5,8 +5,6 @@
         products       - Lista de productos involucrados en la producción
         date           - Fecha del registro de costos
         total          - Total del costo de producción
-        earning        - Ganancia obtenida
-        idSalesOrder   - Referencia a la orden de venta relacionada
 */
 
 import { Schema, model } from "mongoose";

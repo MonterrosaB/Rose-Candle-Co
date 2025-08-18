@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth.js"; // auth para el id del usuario logueado
 
-const ApiCustomers = "http://localhost:4000/api/customers"; // api para editar
+const ApiCustomers = "https://rose-candle-co.onrender.com/api/customers"; // api para editar
 
 export const useUserInformation = () => {
   const { user, setUser } = useAuth();

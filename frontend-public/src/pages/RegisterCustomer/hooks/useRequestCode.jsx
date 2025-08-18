@@ -15,7 +15,7 @@ export const useRequestCode = () => {
     try {
       // Realiza una solicitud POST al backend con el correo electrónico
       const res = await fetch(
-        "http://localhost:4000/api/registerCustomer/requestCode",
+        "https://rose-candle-co.onrender.com/api/registerCustomer/requestCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

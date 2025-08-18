@@ -32,8 +32,8 @@ const Home = () => {
   // Columnas del stock
   const columnsMaterial = {
     Materia: "name",
-    Cantidad: "stockWithUnit",
-    Cantidad: "stockWithUnit",
+    "Stock Actual": "stockWithUnit",
+    Diferencia: "diffToMinimum",
   };
 
   // Columnas de ùltimos pedidos

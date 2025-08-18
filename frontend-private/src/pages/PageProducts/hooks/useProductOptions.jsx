@@ -11,7 +11,7 @@ const useProductOptions = () => {
       try {
         // Categorías
         const resCategories = await fetch(
-          "http://localhost:4000/api/productcategories"
+          "https://rose-candle-co.onrender.com/api/productcategories"
         );
         if (!resCategories.ok) throw new Error("Error al traer categorías");
         const categories = await resCategories.json();
@@ -23,7 +23,7 @@ const useProductOptions = () => {
 
         //  Colecciones
         const resCollections = await fetch(
-          "http://localhost:4000/api/collections"
+          "https://rose-candle-co.onrender.com/api/collections"
         );
         if (!resCollections.ok) throw new Error("Error al traer colecciones");
         const collections = await resCollections.json();
@@ -35,7 +35,7 @@ const useProductOptions = () => {
 
         //  Componentes (Materia Prima)
         const resMaterials = await fetch(
-          "http://localhost:4000/api/rawMaterials"
+          "https://rose-candle-co.onrender.com/api/rawMaterials"
         );
         if (!resMaterials.ok) throw new Error("Error al traer materiales");
         const materials = await resMaterials.json();

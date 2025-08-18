@@ -35,10 +35,10 @@ employeesController.getEmployeesById = async (req, res) => {
 employeesController.deleteEmployees = async (req, res) => {
   try {
     const deletedEmployee = await employeesModel.findByIdAndUpdate(
-          req.params.id,
-          { deleted: true }, // Se marca como "eliminada"
-          { new: true }
-        ); // Eliminar por ID
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     if (!deletedEmployee) {
       return res.status(404).json({ message: "Employee not found" }); // Empleado no encontrado
@@ -53,7 +53,8 @@ employeesController.deleteEmployees = async (req, res) => {
 
 // PUT - actualizar un empleado por ID
 employeesController.updateEmployees = async (req, res) => {
-  const { name, surnames, email, phone, dui, user, role, password } = req.body;
+  const { name, surnames, email, phone, dui, user, role, password, isActive } =
+    req.body;
 
   console.log(req.body);
 
@@ -77,7 +78,16 @@ employeesController.updateEmployees = async (req, res) => {
     }
 
     // Objeto con datos a actualizar
-    const updateData = { name, surnames, email, phone, dui, user, role };
+    const updateData = {
+      name,
+      surnames,
+      email,
+      phone,
+      dui,
+      user,
+      role,
+      isActive,
+    };
 
     // Si viene contraseña, encriptarla antes de guardar
     if (password && password.trim() !== "") {
@@ -128,7 +138,7 @@ employeesController.restoreEmployees = async (req, res) => {
 // GET - contar número total de empleados
 employeesController.countEmployees = async (req, res) => {
   try {
-    const count = await employeesModel.countDocuments({deleted: false}); // Contar documentos en la colección
+    const count = await employeesModel.countDocuments({ deleted: false }); // Contar documentos en la colección
     res.status(200).json({ count }); // Responder con la cantidad
   } catch (error) {
     console.error("Error al contar empleados:", error); // Log de error

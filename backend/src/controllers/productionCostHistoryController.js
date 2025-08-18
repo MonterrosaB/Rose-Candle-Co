@@ -1,12 +1,13 @@
 import productionCostHistoryModel from "../models/ProductionCostHistory.js"; // Importar modelo de historial de costos de producción
-
+import Product from "../models/Products.js";
 const productionCostHistoryController = {};
 
 // GET - Obtener todo el historial de costos de producción
 productionCostHistoryController.getProductionCostHistory = async (req, res) => {
   try {
     // Buscar todos los registros y popular referencias a otras colecciones
-    const productionCostHistory = await productionCostHistoryModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const productionCostHistory = await productionCostHistoryModel
+      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate({
         path: "idSalesOrder", // Popular detalles del pedido de venta
       })
@@ -82,13 +83,16 @@ productionCostHistoryController.createProductionCostHistory = async (
 };
 
 // DELETE - Eliminar un registro del historial por ID
-productionCostHistoryController.deleteProductionCostHistory = async ( req,res) => {
- try {
-       const deleted = await productionCostHistoryModel.findByIdAndUpdate(
-             req.params.id,
-             { deleted: true }, // Se marca como "eliminada"
-             { new: true }
-           ); // Eliminar por ID
+productionCostHistoryController.deleteProductionCostHistory = async (
+  req,
+  res
+) => {
+  try {
+    const deleted = await productionCostHistoryModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
     // Validar que el registro exista para eliminar
     if (!deleted) {
       return res.status(400).json({ message: "Historial not found" }); // No encontrado
@@ -159,7 +163,10 @@ productionCostHistoryController.updateproductionCostHistory = async (
   }
 };
 
-productionCostHistoryController.restoreProductionCostHistory = async (req, res) => {
+productionCostHistoryController.restoreProductionCostHistory = async (
+  req,
+  res
+) => {
   try {
     const productionCostHistory = await productCategories.findByIdAndUpdate(
       req.params.id,
@@ -168,7 +175,9 @@ productionCostHistoryController.restoreProductionCostHistory = async (req, res) 
     ); // Se actualiza por ID
 
     if (!productionCostHistory) {
-      return res.status(400).json({ message: "production Cos tHistory not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "production Cos tHistory not found" }); // No encontrada
     }
 
     res.status(200).json({ message: "production Cost Historyt restored" }); // Restauracion exitosa
@@ -177,4 +186,97 @@ productionCostHistoryController.restoreProductionCostHistory = async (req, res) 
     return res.status(500).json("Internal server error"); // Error del servidor
   }
 };
+
+//reportes
+
+productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
+  try {
+    const result = await Product.aggregate([
+      { $match: { deleted: false } }, // solo productos activos
+
+      // 1️⃣ Lookup para traer historial de producción
+      {
+        $lookup: {
+          from: "productioncosthistories",
+          let: { productId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$idProduct", "$$productId"] } } },
+            { $sort: { date: -1 } }, // último registro
+            { $limit: 1 },
+          ],
+          as: "costHistory",
+        },
+      },
+      { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
+
+      // 2️⃣ Desanidar variantes del producto
+      { $unwind: "$variant" },
+
+      // 3️⃣ Tomar el costo de producción correspondiente a la variante
+      {
+        $addFields: {
+          variantCost: {
+            $arrayElemAt: [
+              {
+                $filter: {
+                  input: { $ifNull: ["$costHistory.variants", []] },
+                  cond: { $eq: ["$$this.variantName", "$variant.variant"] },
+                },
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      // 4️⃣ Calcular costo y % ganancia
+      {
+        $addFields: {
+          productionCost: { $ifNull: ["$variantCost.productionCost", 0] },
+          profitPercent: {
+            $cond: [
+              { $gt: ["$variant.variantPrice", 0] },
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      {
+                        $subtract: [
+                          "$variant.variantPrice",
+                          { $ifNull: ["$variantCost.productionCost", 0] },
+                        ],
+                      },
+                      "$variant.variantPrice",
+                    ],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      // 5️⃣ Dar formato final
+      {
+        $project: {
+          _id: 0,
+          Product: {
+            $concat: ["$name", " - ", "$variant.variant"],
+          },
+          salePrice: "$variant.variantPrice",
+          productionCost: "$productionCost",
+          Earnigs: { $round: ["$profitPercent", 2] },
+        },
+      },
+    ]);
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener resumen de productos" });
+  }
+};
+
 export default productionCostHistoryController; // Exportar controlador

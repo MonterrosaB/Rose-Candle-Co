@@ -164,9 +164,8 @@ const RegisterOrder = ({ onClose, initialData }) => {
   const opcionesEstadoEnvio = [
     { _id: "Pendiente", label: "Pendiente" },
     { _id: "En Proceso", label: "En Proceso" },
-    { _id: "Completado", label: "Completado" },
     { _id: "Enviado", label: "Enviado" },
-    { _id: "Entregado", label: "Entregado" },
+    { _id: "Completado", label: "Completado" },
     { _id: "Cancelado", label: "Cancelado" },
   ];
 
@@ -174,8 +173,6 @@ const RegisterOrder = ({ onClose, initialData }) => {
     try {
       if (initialData && initialData._id) {
         //  Actualizar
-        console.log(data);
-
         await updateOrder(initialData._id, data.shippingState);
         onClose();
       } else {
@@ -196,7 +193,7 @@ const RegisterOrder = ({ onClose, initialData }) => {
         };
         //Crear
         await createSalesOrderPrivate(payload);
-        //onClose();
+        onClose();
 
       }
     } catch (err) {

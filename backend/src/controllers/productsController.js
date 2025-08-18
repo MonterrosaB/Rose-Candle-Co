@@ -4,6 +4,7 @@ import ProductionCostHistory from "../models/ProductionCostHistory.js";
 import { config } from "../config.js"; // Archivo config
 import { v2 as cloudinary } from "cloudinary"; // Cloudinary
 import RawMaterials from "../models/RawMaterials.js";
+import Products from "../models/Products.js";
 
 // Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
@@ -357,15 +358,7 @@ productsController.restoreProduct = async (req, res) => {
 // GET POR CATEGORÍAS
 productsController.getProductByCategory = async (req, res) => {
   try {
-    const now = new Date();
-    const startOfMonth = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth(), 1)
-    );
-    const startOfNextMonth = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth() + 1, 1)
-    );
-
-    const result = await SalesOrderModel.aggregate([
+    const result = await SalesOrder.aggregate([
       // 1. Lookup al carrito de compras
       {
         $lookup: {
@@ -377,11 +370,11 @@ productsController.getProductByCategory = async (req, res) => {
       },
       { $unwind: "$shoppingCart" },
 
-      // 2. Lookup a los productos del carrito
+      // 2. Lookup a los productos del carrito (por idProduct)
       {
         $lookup: {
           from: "products",
-          localField: "shoppingCart.products",
+          localField: "shoppingCart.products.idProduct",
           foreignField: "_id",
           as: "products",
         },
@@ -400,16 +393,12 @@ productsController.getProductByCategory = async (req, res) => {
       // 4. Extraer solo los nombres de categoría únicos por orden
       {
         $project: {
-          categorias: {
-            $setUnion: "$categories.name",
-          },
+          categorias: { $setUnion: "$categories.name" },
         },
       },
 
       // 5. Descomponer por categoría
-      {
-        $unwind: "$categorias",
-      },
+      { $unwind: "$categorias" },
 
       // 6. Agrupar por categoría y contar órdenes
       {
@@ -434,9 +423,7 @@ productsController.getProductByCategory = async (req, res) => {
       },
 
       // 8. Calcular porcentaje
-      {
-        $unwind: "$categorias",
-      },
+      { $unwind: "$categorias" },
       {
         $project: {
           _id: 0,
@@ -456,6 +443,7 @@ productsController.getProductByCategory = async (req, res) => {
         },
       },
     ]);
+
     return res.json(result);
   } catch (error) {
     console.error(error);
@@ -540,64 +528,92 @@ productsController.getBestSellers = async (req, res) => {
 };
 
 //GET - Producto menos vendido
-productsController.geWorstSellers = async (req, res) => {
+productsController.getWorstSellers = async (req, res) => {
   try {
-    const topProducts = await SalesOrder.aggregate([
-      // Unir con shoppingcarts
+    const worstSellers = await Products.aggregate([
+      // Unir cada producto con los carritos que lo contienen
       {
         $lookup: {
           from: "shoppingcarts",
-          localField: "idShoppingCart",
-          foreignField: "_id",
-          as: "cart",
-        },
-      },
-      { $unwind: "$cart" },
-
-      // Desglosar productos del carrito
-      { $unwind: "$cart.products" },
-
-      // Agrupar por producto + variante
-      {
-        $group: {
-          _id: {
-            productId: "$cart.products.idProduct",
-            variantIndex: "$cart.products.selectedVariantIndex",
-          },
-          totalQuantity: { $sum: "$cart.products.quantity" },
+          localField: "_id",
+          foreignField: "products.idProduct",
+          as: "carts",
         },
       },
 
-      // Traer info del producto
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id.productId",
-          foreignField: "_id",
-          as: "product",
-        },
-      },
-      { $unwind: "$product" },
-
-      // Calcular el precio de la variante seleccionada
+      // Calcular cantidad total vendida por producto/variante
       {
         $addFields: {
-          variant: { $arrayElemAt: ["$product.variant", "$_id.variantIndex"] },
+          variants: {
+            $map: {
+              input: { $range: [0, { $size: "$variant" }] },
+              as: "idx",
+              in: {
+                variant: { $arrayElemAt: ["$variant.variant", "$$idx"] },
+                variantPrice: {
+                  $arrayElemAt: ["$variant.variantPrice", "$$idx"],
+                },
+                totalQuantity: {
+                  $sum: {
+                    $map: {
+                      input: "$carts",
+                      as: "cart",
+                      in: {
+                        $sum: {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input: "$$cart.products",
+                                as: "p",
+                                cond: {
+                                  $and: [
+                                    { $eq: ["$$p.idProduct", "$_id"] },
+                                    {
+                                      $eq: [
+                                        "$$p.selectedVariantIndex",
+                                        "$$idx",
+                                      ],
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                            as: "filtered",
+                            in: "$$filtered.quantity",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
 
-      // Proyectar solo lo necesario
+      // Desglosar por variante
+      { $unwind: "$variants" },
+
+      // Calcular revenue
+      {
+        $addFields: {
+          totalRevenue: {
+            $multiply: ["$variants.totalQuantity", "$variants.variantPrice"],
+          },
+        },
+      },
+
+      // Proyectar
       {
         $project: {
           _id: 0,
-          productId: "$product._id",
-          name: "$product.name",
-          variant: "$variant.variant",
-          variantPrice: "$variant.variantPrice",
-          totalQuantity: 1,
-          totalRevenue: {
-            $multiply: ["$variant.variantPrice", "$totalQuantity"],
-          },
+          productId: "$_id",
+          name: "$name",
+          variant: "$variants.variant",
+          variantPrice: "$variants.variantPrice",
+          totalQuantity: "$variants.totalQuantity",
+          totalRevenue: 1,
         },
       },
 
@@ -608,9 +624,9 @@ productsController.geWorstSellers = async (req, res) => {
       { $limit: 10 },
     ]);
 
-    return res.status(200).json(topProducts);
+    return res.status(200).json(worstSellers);
   } catch (error) {
-    console.error("Error al obtener los más vendidos:", error);
+    console.error("Error al obtener los menos vendidos:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };

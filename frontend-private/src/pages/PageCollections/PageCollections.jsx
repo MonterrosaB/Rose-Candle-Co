@@ -4,6 +4,7 @@ import TitleH1 from "../../global/components/TitleH1"
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
+import Swal from "sweetalert2";
 
 import { useForm } from "react-hook-form";
 import useCollections from "./hooks/useCollections";
@@ -51,8 +52,28 @@ const PageCollections = () => {
 
   // Confirmar y eliminar colección seleccionada
   const handleDelete = async (collection) => {
-    if (confirm(`¿Eliminar la colección "${collection.name}"?`)) {
+    if (!collection?._id) return;
+
+    const result = await Swal.fire({
+      title: `¿Eliminar la colección "${collection.name}"?`,
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
       await deleteCollection(collection._id);
+      Swal.fire({
+        title: "Eliminado",
+        text: `La colección "${collection.name}" ha sido eliminada.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
 

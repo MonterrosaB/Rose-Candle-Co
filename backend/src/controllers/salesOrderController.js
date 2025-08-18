@@ -1,6 +1,10 @@
 import SalesOrderModel from "../models/SalesOrder.js"; // Modelo de Orden de Venta
 import Customers from "../models/Customers.js";
 import ShoppingCart from "../models/ShoppingCart.js";
+import ProductsModel from "../models/Products.js";
+import RawMaterialModel from "../models/RawMaterials.js";
+import MaterialBalanceModel from "../models/MaterialBalance.js";
+import ProductionCostHistory from "../models/ProductionCostHistory.js";
 
 // Controlador con métodos CRUD para Ordenes de Venta
 const salesOrderController = {};
@@ -16,7 +20,8 @@ salesOrderController.getSalesOrders = async (req, res) => {
           { path: "idUser", select: "name email" },
           { path: "products.idProduct", select: "name" },
         ],
-      });
+      })
+      .sort({ saleDate: -1 }); // Ordenar por fecha descendente (más nuevo primero)
 
     // Calcular el total de productos y precio total por cada orden
     const ordersWithTotals = orders.map((order) => {
@@ -189,34 +194,60 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
 
 // PUT - Actualizar una orden de venta existente por ID
 salesOrderController.updateSalesOrder = async (req, res) => {
-  // Obtener datos desde el cuerpo de la petición
   const { shippingState } = req.body;
 
   try {
-    // Validaciones similares a la creación para evitar datos inválidos
-
-    // Actualizar la orden en la base de datos, buscando por ID de la URL (req.params.id)
+    // Actualizar la orden agregando el nuevo estado
     const orderUpdated = await SalesOrderModel.findByIdAndUpdate(
       req.params.id,
       {
         $push: {
-          shippingState: {
-            state: shippingState,
-          },
+          shippingState: { state: shippingState },
         },
       },
-      { new: true } // Retorna el documento actualizado
+      { new: true }
     );
 
-    // Validar si la orden existía
     if (!orderUpdated) {
-      return res.status(400).json({ message: "Order not found" }); // Orden no encontrada
+      return res.status(400).json({ message: "Order not found" });
     }
 
-    // Responder con mensaje de éxito
-    res.status(200).json({ message: "Order updated" }); // Todo bien
+    // Si el estado es "completado", descontar materias primas y registrar balance
+    if (shippingState.toLowerCase() === "completado") {
+      const cart = await ShoppingCart.findById(orderUpdated.idShoppingCart);
+      if (!cart)
+        return res.status(400).json({ message: "Shopping cart not found" });
+
+      for (const cartItem of cart.products) {
+        const product = await ProductsModel.findById(cartItem.idProduct);
+        if (!product) continue;
+
+        const variant = product.variant[cartItem.selectedVariantIndex];
+
+        for (const comp of variant.components) {
+          // Descontar stock de materia prima
+          const material = await RawMaterialModel.findByIdAndUpdate(
+            comp.idComponent,
+            { $inc: { currentStock: -comp.amount * cartItem.quantity } },
+            { new: true }
+          );
+
+          if (material) {
+            // Registrar movimiento en MaterialBalance
+            await MaterialBalanceModel.create({
+              idMaterial: material._id,
+              movement: "salida",
+              amount: comp.amount * cartItem.quantity,
+              unitPrice: material.unitPrice || 0, // tomar precio unitario actual
+              reference: `Orden de venta ${orderUpdated._id}`,
+            });
+          }
+        }
+      }
+    }
+
+    res.status(200).json({ message: "Order updated" });
   } catch (error) {
-    // Capturar error y responder con mensaje y detalle
     res.status(400).json({ message: "Error updating sales order", error });
   }
 };
@@ -524,6 +555,241 @@ salesOrderController.getSalesEvolution = async (req, res) => {
   ]);
 
   return res.status(200).json(salesEvolution); // Aquí `shippingStates` ya va incluido
+};
+
+salesOrderController.getTotalSalesAndProfit = async (req, res) => {
+  try {
+    const result = await SalesOrderModel.aggregate([
+      // 1️⃣ Filtrar órdenes válidas
+      {
+        $match: {
+          "shippingState.state": { $ne: "cancelado" },
+        },
+      },
+      // 2️⃣ Traer carrito
+      {
+        $lookup: {
+          from: "shoppingcarts",
+          localField: "idShoppingCart",
+          foreignField: "_id",
+          as: "cart",
+        },
+      },
+      { $unwind: "$cart" },
+      { $unwind: "$cart.products" }, // Cada producto por fila
+
+      // 3️⃣ Traer historial de costos de producción
+      {
+        $lookup: {
+          from: "productioncosthistories",
+          let: { productId: "$cart.products.idProduct" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$idProduct", "$$productId"] } } },
+            { $sort: { date: -1 } }, // Último costo
+            { $limit: 1 },
+          ],
+          as: "costHistory",
+        },
+      },
+      { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
+
+      // 4️⃣ Tomar la variante correspondiente
+      {
+        $addFields: {
+          variantCost: {
+            $arrayElemAt: [
+              { $ifNull: ["$costHistory.variants", []] },
+              "$cart.products.selectedVariantIndex",
+            ],
+          },
+        },
+      },
+
+      // 5️⃣ Calcular costo y ganancia
+      {
+        $addFields: {
+          productCost: { $ifNull: ["$variantCost.productionCost", 0] },
+          quantity: "$cart.products.quantity",
+          productSubtotal: "$cart.products.subtotal",
+          profit: {
+            $subtract: [
+              "$cart.products.subtotal",
+              {
+                $multiply: [
+                  { $ifNull: ["$variantCost.productionCost", 0] },
+                  "$cart.products.quantity",
+                ],
+              },
+            ],
+          },
+        },
+      },
+
+      // 6️⃣ Sumarizar ventas y ganancias totales
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$productSubtotal" },
+          totalProfit: { $sum: "$profit" },
+        },
+      },
+    ]);
+
+    res.json(result[0] || { totalSales: 0, totalProfit: 0 });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al calcular ventas y ganancias" });
+  }
+};
+
+salesOrderController.getSalesAndProfitSummary = async (req, res) => {
+  try {
+    const now = new Date();
+    const monthsArray = Array.from({ length: 6 }).map((_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthStr = d.toISOString().slice(0, 7); // YYYY-MM
+      return { month: monthStr, totalSales: 0, totalProfit: 0 };
+    });
+
+    const result = await SalesOrderModel.aggregate([
+      // 1️⃣ Filtrar órdenes válidas
+      {
+        $match: {
+          "shippingState.state": { $ne: "cancelado" },
+        },
+      },
+      // 2️⃣ Traer carrito
+      {
+        $lookup: {
+          from: "shoppingcarts",
+          localField: "idShoppingCart",
+          foreignField: "_id",
+          as: "cart",
+        },
+      },
+      { $unwind: "$cart" },
+      { $unwind: "$cart.products" },
+
+      // 3️⃣ Traer historial de costos de producción
+      {
+        $lookup: {
+          from: "productioncosthistories",
+          let: { productId: "$cart.products.idProduct" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$idProduct", "$$productId"] } } },
+            { $sort: { date: -1 } }, // último costo
+            { $limit: 1 },
+          ],
+          as: "costHistory",
+        },
+      },
+      { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
+
+      // 4️⃣ Tomar la variante correspondiente
+      {
+        $addFields: {
+          variantCost: {
+            $arrayElemAt: [
+              { $ifNull: ["$costHistory.variants", []] },
+              "$cart.products.selectedVariantIndex",
+            ],
+          },
+        },
+      },
+
+      // 5️⃣ Calcular costo y ganancia
+      {
+        $addFields: {
+          productCost: { $ifNull: ["$variantCost.productionCost", 0] },
+          quantity: "$cart.products.quantity",
+          productSubtotal: "$cart.products.subtotal",
+          profit: {
+            $subtract: [
+              "$cart.products.subtotal",
+              {
+                $multiply: [
+                  { $ifNull: ["$variantCost.productionCost", 0] },
+                  "$cart.products.quantity",
+                ],
+              },
+            ],
+          },
+          saleDate: "$saleDate",
+        },
+      },
+
+      // 6️⃣ Agrupar por periodos
+      {
+        $facet: {
+          daily: [
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: "%Y-%m-%d", date: "$saleDate" },
+                },
+                totalSales: { $sum: "$productSubtotal" },
+                totalProfit: { $sum: "$profit" },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+          monthly: [
+            {
+              $group: {
+                _id: { $dateToString: { format: "%Y-%m", date: "$saleDate" } },
+                totalSales: { $sum: "$productSubtotal" },
+                totalProfit: { $sum: "$profit" },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+          last6Months: [
+            {
+              $match: {
+                saleDate: {
+                  $gte: new Date(now.getFullYear(), now.getMonth() - 5, 1),
+                },
+              },
+            },
+            {
+              $group: {
+                _id: { $dateToString: { format: "%Y-%m", date: "$saleDate" } },
+                totalSales: { $sum: "$productSubtotal" },
+                totalProfit: { $sum: "$profit" },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+        },
+      },
+    ]);
+
+    // Mapear meses con datos reales
+    const fillMonths = (data) => {
+      return monthsArray
+        .map((m) => {
+          const found = data.find((d) => d._id === m.month);
+          return found
+            ? {
+                _id: m.month,
+                totalSales: found.totalSales,
+                totalProfit: found.totalProfit,
+              }
+            : { _id: m.month, totalSales: 0, totalProfit: 0 };
+        })
+        .reverse(); // Para ordenar cronológicamente del más antiguo al más reciente
+    };
+
+    const stats = result[0] || { daily: [], monthly: [], last6Months: [] };
+    stats.last6Months = fillMonths(stats.last6Months);
+
+    res.json(stats);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al calcular estadísticas de ventas y ganancias" });
+  }
 };
 
 // Exportar controlador para usarlo en rutas

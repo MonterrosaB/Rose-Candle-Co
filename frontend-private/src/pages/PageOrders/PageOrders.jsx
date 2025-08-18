@@ -14,7 +14,7 @@ import PrincipalDiv from "../../global/components/PrincipalDiv";
 const PageOrders = () => {
 
   const methods = useForm();
-  const { salesOrders } = useOrders(methods);
+  const { salesOrders, getSalesOrders } = useOrders(methods);
 
   const [openDialogOrders, setOpenDialogOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null); //  Para editar
@@ -33,12 +33,14 @@ const PageOrders = () => {
   const handleAddOrder = () => {
     setSelectedOrder(null);
     setOpenDialogOrders(true);
+    getSalesOrders();
   };
 
   // Abrir modal para editar
   const handleEditOrder = (order) => {
     setSelectedOrder(order);
     setOpenDialogOrders(true);
+    getSalesOrders();
   };
 
   return (
@@ -52,7 +54,7 @@ const PageOrders = () => {
             primaryBtnText={"Add Order"}
             onClickPrimaryBtn={handleAddOrder}
             updateRow={handleEditOrder} //  Aquí pasamos la función
-            deleteRow={(order) => console.log("Eliminar", order)}
+            showDelete={false}
           />
         </div>
         {openDialogOrders && (

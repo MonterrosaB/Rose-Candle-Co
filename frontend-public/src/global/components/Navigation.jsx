@@ -25,6 +25,7 @@ import LoginCustomer from "../../pages/LoginCustomer/LoginCustomer.jsx";
 import RegisterCustomer from "../../pages/RegisterCustomer/Register.jsx";
 import TermsAndConditions from "../../pages/TermsAndConditions/TermsAndConditions.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
+import Page404 from "./Page404.jsx";
 
 // Auth
 import { useAuth } from "../hooks/useAuth.js";
@@ -33,7 +34,7 @@ import ProtectedRoutes from "../../pages/LoginCustomer/ProtectedRoute.jsx";
 function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Donde mostrar el marquee
   const showMarquee = [
@@ -95,6 +96,7 @@ function Navigation() {
               </ProtectedRoutes>
             }
           />
+          <Route path="*" element={<Page404 />} />
         </Routes>
       </div>
       {!hideNavFooter && <Footer />}

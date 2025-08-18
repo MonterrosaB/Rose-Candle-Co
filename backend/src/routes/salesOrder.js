@@ -13,6 +13,8 @@ router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthl
 router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total de ingresos
 router.route("/latestOrders").get(salesOrderController.getLatestOrders); // ùltimos pedidos
 router.route("/salesEvolution").get(salesOrderController.getSalesEvolution); // ùltimos pedidos
+router.route("/salesProfit").get(salesOrderController.getTotalSalesAndProfit); // ùltimos pedidos
+router.route("/summary").get(salesOrderController.getSalesAndProfitSummary); // ùltimos pedidos
 
 router.route("/createSalesOrder").post(salesOrderController.createSalesOrderPrivate)//
 

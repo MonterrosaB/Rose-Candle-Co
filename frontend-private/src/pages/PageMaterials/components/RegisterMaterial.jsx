@@ -8,25 +8,17 @@ import Dropdown from "../../../global/components/Dropdown";
 import Button from "../../../global/components/Button";
 
 import useSuppliers from "../../PageSuppliers/hooks/useSuppliers";
-import useCategories from "../../PageCategories/hooks/useCategories";
+import useCategories from "../../PageCategoriesMateria/hooks/useCategoriesMateria";
 import useMaterials from "../hooks/useMaterials";
 
 const RegisterMaterial = ({ onClose, defaultValues }) => {
 
   const methods = useForm({
-    defaultValues: {
-      ...defaultValues,
-      idRawMaterialCategory:
-        defaultValues?.idRawMaterialCategory?._id || defaultValues?.idRawMaterialCategory,
-      idSupplier:
-        defaultValues?.idSupplier?._id || defaultValues?.idSupplier,
-      unit: defaultValues?.unit,
-    },
+    defaultValues
   });
 
-  const { register, handleSubmit, errors, reset, createMaterial, updateMaterial } = useMaterials(methods);
+  const { register, handleSubmit, errors, reset, createMaterial, updateMaterial, categories } = useMaterials(methods);
   const { suppliers } = useSuppliers(methods);
-  const { categories } = useCategories(methods);
 
   const unidades = [
     { _id: "g", label: "Gramo" },
@@ -34,9 +26,14 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
     { _id: "unit", label: "Unidad" },
   ];
 
+
   useEffect(() => {
     if (defaultValues) {
-      reset(defaultValues);
+      reset({
+        ...defaultValues,
+        idRawMaterialCategory: defaultValues.idRawMaterialCategory?._id,
+        idSupplier: defaultValues.idSupplier?._id,
+      });
     } else {
       reset({});
     }
@@ -44,15 +41,11 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
 
   const onSubmit = (data) => {
     if (defaultValues?._id) {
-      console.log(data);
-
-      //updateMaterial(defaultValues._id, data);
+      updateMaterial(defaultValues._id, data);
     } else {
-      console.log(data);
-
       createMaterial(data);
     }
-    //onClose();
+    onClose();
   };
 
   return (
@@ -83,10 +76,10 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
           />
         </div>
         <div className="flex gap-4 w-full">
-          <Input label="Stock" type="number" name="currentStock" step={0.01} min={0.01} register={register} errors={errors} />
+          <Input label="Stock" type="number" name="currentStock" step={0.01} min={0} register={register} errors={errors} />
           <Input label="Stock Minimo" type="number" name="minimunStock" step={0.01} min={0.01} register={register} errors={errors} />
         </div>
-        <Input label="Precio" type="number" name="currentPrice" step={0.01} min={0.01} register={register} errors={errors} />
+        <Input label="Precio" type="number" name="currentPrice" step={0.01} min={0} register={register} errors={errors} />
       </FormInputs>
       <FormButton>
         <Button buttonText={defaultValues ? "Actualizar" : "Guardar"} type="submit" showIcon />

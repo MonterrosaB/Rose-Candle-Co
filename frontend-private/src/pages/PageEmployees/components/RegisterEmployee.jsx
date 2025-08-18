@@ -5,7 +5,7 @@ import InputsInline from "../../../global/components/InputsInline";
 import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 import Dropdown from "../../../global/components/Dropdown";
-import useDataEmployee from "../hooks/useEmployees";
+import useDataEmployee from "../hooks/useEmployees";  
 import useDropDown from "../hooks/useDropDowns";
 
 import { useForm } from "react-hook-form";
@@ -129,7 +129,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
             }}
           />
 
-          {!defaultValues && (
+          {defaultValues && (
             <Dropdown
               name="isActive"
               label="Estado"

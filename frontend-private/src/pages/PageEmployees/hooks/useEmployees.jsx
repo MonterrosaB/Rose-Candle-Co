@@ -3,8 +3,8 @@ import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetchEmployees from "./useFetchEmployees";
 
-const ApiEmployeesRegister = "http://localhost:4000/api/registerEmployees";
-const ApiEmployees = "http://localhost:4000/api/employees";
+const ApiEmployeesRegister = "https://rose-candle-co.onrender.com/api/registerEmployees";
+const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
 
 const useEmployees = (methods) => {
   const { getEmployeeById, getEmployees } = useFetchEmployees();

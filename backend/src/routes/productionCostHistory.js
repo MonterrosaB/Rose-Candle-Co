@@ -7,16 +7,22 @@ import productionCostHistoryController from "../controllers/productionCostHistor
 // Router() para colocar los métodos de la ruta
 const router = express.Router();
 
-router.route("/")
-.get(productionCostHistoryController.getProductionCostHistory)
-.post(productionCostHistoryController.createProductionCostHistory) 
+router
+  .route("/")
+  .get(productionCostHistoryController.getProductionCostHistory)
+  .post(productionCostHistoryController.createProductionCostHistory);
 
-router.route("/:id")
-.put(productionCostHistoryController.updateproductionCostHistory)
-.delete(productionCostHistoryController.deleteProductionCostHistory)
+router.route("/profitSummary").get(productionCostHistoryController.getProductsCostAndProfit);
+
+
+router
+  .route("/:id")
+  .put(productionCostHistoryController.updateproductionCostHistory)
+  .delete(productionCostHistoryController.deleteProductionCostHistory);
 
 // Rutas específicas
-router.route("/restore/:id")
+router
+  .route("/restore/:id")
   .put(productionCostHistoryController.restoreProductionCostHistory); // restaurar por id
 
 export default router;

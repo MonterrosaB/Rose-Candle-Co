@@ -11,14 +11,15 @@ const useSupplies = (methods) => {
     } = methods;
 
     const [materialsBalance, setMaterialsBalanceBalance] = useState([]);
+    const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const ApiURL = "http://localhost:4000/api/materialBalance";
+    const API = "https://rose-candle-co.onrender.com/api";
 
-    const getMaterials = async () => {
+    const getMaterialsBalance = async () => {
         setLoading(true);
         try {
-            const res = await fetch(ApiURL);
+            const res = await fetch(API + "/materialBalance");
             if (!res.ok) throw new Error("No se pudo obtener materias primas");
             const data = await res.json();
             setMaterialsBalanceBalance(data);
@@ -29,24 +30,39 @@ const useSupplies = (methods) => {
         }
     };
 
-    const createMaterial = async (data) => {
+    const getMaterials = async () => {
+        setLoading(true);
         try {
-            console.log(data);
+            const res = await fetch(API + "/rawMaterials");
+            if (!res.ok) throw new Error("No se pudo obtener materias primas");
+            const data = await res.json();
+            // Formatea para el dropdown
+            const formatted = data.map(cat => ({
+                _id: cat._id,
+                label: cat.name
+            }));
+            setMaterials(formatted);
+        } catch (error) {
+            console.error("Error al cargar categorías:", error);
+        }
+    };
 
+    const createMaterial = async (data) => {
+        setLoading(true)
+        try {
             // Convertimos a número antes de enviar
             const parsedData = {
                 ...data,
-                idMaterial: (data.idMaterial),
+                idMaterial: data.idMaterial,
                 movement: "entrada",
                 amount: Number(data.amount),
-                unitPrice: Number(data.unitPrice),
-                date: new Date().toISOString() // ejemplo: "2025-08-02T21:15:00.000Z"
+                unitPrice: Number(data.amount) > 0
+                    ? (Number(data.unitPrice) / Number(data.amount)).toFixed(2)
+                    : "0.00",
+                date: new Date().toISOString()
             };
 
-            console.log(parsedData);
-
-
-            const res = await fetch(ApiURL, {
+            const res = await fetch(API + "/materialBalance", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(parsedData),
@@ -57,6 +73,8 @@ const useSupplies = (methods) => {
             getMaterials();
         } catch (err) {
             toast.error(err.message);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -68,7 +86,7 @@ const useSupplies = (methods) => {
                 currentPrice: Number(data.currentPrice),
             };
 
-            const res = await fetch(`${ApiURL}/${id}`, {
+            const res = await fetch(API + `/materialBalance/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(parsedData),
@@ -85,7 +103,7 @@ const useSupplies = (methods) => {
 
     const deleteMaterial = async (id) => {
         try {
-            const res = await fetch(`${ApiURL}/${id}`, {
+            const res = await fetch(API + `/materialBalance/${id}`, {
                 method: "DELETE",
             });
 
@@ -99,11 +117,12 @@ const useSupplies = (methods) => {
     };
 
     useEffect(() => {
+        getMaterialsBalance();
         getMaterials();
     }, []);
 
     return {
-        materialsBalance, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
+        materialsBalance, materials, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
     };
 };
 

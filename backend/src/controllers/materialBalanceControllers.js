@@ -10,7 +10,8 @@ materialBalanceControllers.getMaterialBalance = async (req, res) => {
     // Buscar todos los documentos en la colección
     const MaterialBalance = await materialBalanceModel
       .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
-      .populate("idMaterial", "name");
+      .populate("idMaterial", "name")
+      .sort({ date: -1 }); // Ordenar por fecha descendente (más nuevo primero)
     // Enviar respuesta con datos encontrados
     res.status(200).json(MaterialBalance); // Respuesta exitosa
   } catch (error) {
@@ -52,7 +53,9 @@ materialBalanceControllers.createMaterialBalance = async (req, res) => {
     const totalValorNuevo = amount * unitPrice;
     const newTotalStock = rawMaterialNewBalance.currentStock + amount;
 
-    const newPrice = (totalValorExistente + totalValorNuevo) / newTotalStock;
+    const newPrice = Number(
+      ((totalValorExistente + totalValorNuevo) / newTotalStock).toFixed(2)
+    );
 
     // 4. Actualizar el documento de materia prima
     rawMaterialNewBalance.currentStock = newStock;

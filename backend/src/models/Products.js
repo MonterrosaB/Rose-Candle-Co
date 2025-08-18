@@ -28,7 +28,7 @@ const componentSchema = new Schema(
       type: Number,
       required: true,
       min: 1, // Al menos 1 unidad
-      max: 100, // Máximo 100 unidades por componente
+      max: 500, // Máximo 100 unidades por componente
       trim: true,
     },
   },
@@ -112,7 +112,7 @@ const productsSchema = new Schema(
       type: String,
       required: true,
       match: [
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.,;]+$/,
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.,;!?'"()-]+$/,
         "La descripción solo puede contener letras, espacios y signos de puntuación básicos",
       ],
       minLength: 3,

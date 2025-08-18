@@ -6,6 +6,7 @@ import RegisterSuppliers from "./components/RegisterSuppliers";
 import { useForm } from "react-hook-form";
 import useSuppliers from "./hooks/useSuppliers";
 import TitleH1 from "../../global/components/TitleH1"
+import Swal from "sweetalert2";
 
 
 
@@ -46,8 +47,26 @@ const PageSuppliers = () => {
   };
 
   const handleDelete = async (supplier) => {
-    if (confirm(`¿Eliminar proveedor "${supplier.name}"?`)) {
+    const result = await Swal.fire({
+      title: `¿Eliminar proveedor "${supplier.name}"?`,
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
       await deleteSupplier(supplier._id);
+      Swal.fire({
+        title: "Eliminado",
+        text: `Proveedor "${supplier.name}" ha sido eliminado.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
 

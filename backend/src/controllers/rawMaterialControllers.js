@@ -79,7 +79,7 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
     const newRawMaterial = new rawMaterialModel({
       currentStock,
       minimunStock,
-      currentPrice,
+      currentPrice: Number(currentPrice.toFixed(2)), // ✅ stays a number
       idRawMaterialCategory,
       idSupplier,
       name,
@@ -94,7 +94,7 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
       idMaterial: insertedIdMaterial,
       movement: "entrada",
       amount: currentStock,
-      unitPrice: currentPrice,
+      unitPrice: Number(currentPrice.toFixed(2)), // ✅ stays a number
       reference: "Balance inicial",
       date: new Date().toISOString(),
     });
@@ -196,7 +196,7 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
 
     // Validar que exista el registro a actualizar
     if (!updated) {
-      return res.status(400).json({ message: "rRawMaterial not found" });
+      return res.status(400).json({ message: "RawMaterial not found" });
     }
 
     // Responder con éxito
@@ -240,21 +240,34 @@ rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
           diffToMinimum: {
             $subtract: [
               { $ifNull: ["$currentStock", 0] },
-              { $ifNull: ["$minimumStock", 0] },
+              { $ifNull: ["$minimunStock", 0] },
+            ],
+          },
+          isBelowMinimum: {
+            $lt: [
+              { $ifNull: ["$currentStock", 0] },
+              { $ifNull: ["$minimunStock", 0] },
             ],
           },
         },
       },
-      { $sort: { diffToMinimum: 1 } },
-      { $limit: 10 },
+      {
+        $sort: { diffToMinimum: 1 }, // Ordena por los más críticos primero
+      },
+      {
+        $limit: 20, // Puedes ajustar el límite según lo que necesites
+      },
       {
         $project: {
           name: 1,
+          currentStock: 1,
+          minimunStock: 1,
+          unit: 1,
+          diffToMinimum: 1,
+          isBelowMinimum: 1,
           stockWithUnit: {
             $concat: [{ $toString: "$currentStock" }, " ", "$unit"],
           },
-          minimumStock: 1,
-          diffToMinimum: 1,
         },
       },
     ]);

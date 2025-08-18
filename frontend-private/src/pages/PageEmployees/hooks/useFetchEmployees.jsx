@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-const ApiEmployees = "http://localhost:4000/api/employees";
+const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
 
 const useFetchEmployees = () => {
   const [employees, setEmployees] = useState([]);

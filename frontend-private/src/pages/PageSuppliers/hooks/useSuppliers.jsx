@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiSuppliers = "http://localhost:4000/api/suppliers";
+const ApiSuppliers = "https://rose-candle-co.onrender.com/api/suppliers";
 
 const useSuppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -25,27 +25,27 @@ const useSuppliers = () => {
       toast.error("No se pudo cargar proveedores");
     }
   };
-const createSupplier = async (newSupplier) => {
-  try {
-    const res = await fetch(ApiSuppliers, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSupplier),
-    });
 
-    const data = await res.json();
-    console.log("Respuesta backend:", data);
+  const createSupplier = async (newSupplier) => {
+    try {
+      const res = await fetch(ApiSuppliers, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSupplier),
+      });
 
-    if (!res.ok) throw new Error(data.message || "Error al crear proveedor");
+      const data = await res.json();
+      console.log("Respuesta backend:", data);
 
-    toast.success("Proveedor agregado");
-    getSuppliers();
-  } catch (error) {
-    console.error("Error en createSupplier:", error.message);
-    toast.error(error.message || "No se pudo agregar proveedor");
-  }
-};
+      if (!res.ok) throw new Error(data.message || "Error al crear proveedor");
 
+      toast.success("Proveedor agregado");
+      getSuppliers();
+    } catch (error) {
+      console.error("Error en createSupplier:", error.message);
+      toast.error(error.message || "No se pudo agregar proveedor");
+    }
+  };
 
   const updateSupplier = async (id, updatedSupplier) => {
     try {

@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import Widget from "../../global/components/Widget";
+
+import DropDownFilter from "../../global/components/DropDownFilter"
 
 import useRecord from "./hooks/useRecord";
 
@@ -19,7 +22,24 @@ import {
 
 const PageRecord = () => {
 
-  const { bestSellers, worstSellers } = useRecord();
+  const { bestSellers, worstSellers, dataM, materialsBalance, materials } = useRecord();
+
+  const [selectedMaterial, setSelectedMaterial] = useState(
+    materials?.[0]?.idMaterial?._id || ""
+  );
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    if (materials?.length) {
+      const data = materials
+        .filter((item) => item.idMaterial._id === selectedMaterial)
+        .sort((a, b) => new Date(a.date) - new Date(b.date)); // orden por fecha
+      setFilteredData(data);
+    }
+  }, [selectedMaterial, materials]);
+
+
+
 
   // 📊 Datos demo
   const chartData = [
@@ -82,13 +102,37 @@ const PageRecord = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-md font-semibold mb-2">Precio de Compra</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={chartData}>
+          <DropDownFilter
+            options={materials.map((m) => ({
+              _id: m.idMaterial._id,
+              name: m.idMaterial.name,
+            }))}
+            value={selectedMaterial}
+            onChange={(e) => setSelectedMaterial(e.target.value)}
+            label="Material"
+            all={false} // ya no hay opción "Todos"
+          />
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={filteredData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(tick) =>
+                  new Date(tick).toLocaleDateString("es-ES")
+                }
+              />
               <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#C2A878" />
+              <Tooltip
+                labelFormatter={(label) =>
+                  `Fecha: ${new Date(label).toLocaleString()}`
+                }
+              />
+              <Line
+                type="monotone"
+                dataKey="unitPrice"
+                stroke="#C2A878"
+                name="Precio Unitario"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -155,48 +199,18 @@ const PageRecord = () => {
 
 
       {/* 📊 Evolución de Ventas + Stock vs Mínimo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+      <div className="w-full gap-4 my-6">
         {/* Evolución de Ventas */}
         <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="text-md font-semibold mb-2">Evolución de Ventas</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
+            <LineChart data={dataM}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#C2A878" />
+              <Line type="monotone" dataKey="ingresos" stroke="#C2A878" />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Stock vs Mínimo al lado */}
-        <div className="bg-white p-4 rounded-xl shadow h-80 overflow-x-auto">
-          <h3 className="text-md font-semibold mb-2">Stock vs Mínimo</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={stockMinData} barCategoryGap={20} barSize={30}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis dataKey="name" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#fff",
-                  borderRadius: "8px",
-                  borderColor: "#e5e7eb",
-                }}
-                labelStyle={{ color: "#374151" }}
-              />
-              <Legend
-                wrapperStyle={{
-                  top: 0,
-                  right: 0,
-                  fontSize: "14px",
-                  color: "#374151",
-                }}
-              />
-              <Bar dataKey="stock" fill="#C2A878" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="minimo" fill="#9E9E9E" radius={[4, 4, 0, 0]} />
-            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>

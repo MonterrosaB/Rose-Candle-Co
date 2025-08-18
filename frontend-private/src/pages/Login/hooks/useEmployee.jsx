@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 const useEmployees = () => {
-    const ApiRegister = "http://localhost:4000/api/registerEmployees";
-    const ApiEmployees = "http://localhost:4000/api/employees";
+    const ApiRegister = "https://rose-candle-co.onrender.com/api/registerEmployees";
+    const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
 
     const [activeTab, setActiveTab] = useState("list");
     const [id, setId] = useState("");

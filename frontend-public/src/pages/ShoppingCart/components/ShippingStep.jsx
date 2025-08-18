@@ -11,7 +11,7 @@ const ShippingStep = ({ formData, handleInputChange, selectedAddress, setSelecte
     const fetchAddresses = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:4000/api/customers/addresses", {
+        const res = await fetch("https://rose-candle-co.onrender.com/api/customers/addresses", {
           method: "GET",
           credentials: "include", // envía cookies httpOnly
           headers: { "Content-Type": "application/json" },

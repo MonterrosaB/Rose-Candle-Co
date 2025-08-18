@@ -61,10 +61,10 @@ loginController.login = async (req, res) => {
 
     res.cookie("authTokenR", token, {
       httpOnly: true,
-      secure: false, // HTTPS no necesario en localhost
-      sameSite: "Lax", // funciona en localhost
+      secure: true, // ✅ en producción debe ser true (usa HTTPS)
+      sameSite: "None", // ✅ para que funcione entre dominios distintos (Vercel <-> Render)
       path: "/",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
     });
 
     res.status(200).json({

@@ -9,24 +9,14 @@ const registerEmployeesController = {};
 // POST - Registrar nuevo empleado
 registerEmployeesController.registerEmployees = async (req, res) => {
   // Obtener datos enviados en el cuerpo de la petición
-  const { name, surnames, email, phone, dui, password, user, role, isActive } =
-    req.body;
+  const { name, surnames, email, phone, dui, password, user, role } = req.body;
 
   // Log para revisar los datos recibidos (útil para debugging)
   console.log(req.body);
 
   try {
     // Validar que todos los campos requeridos estén presentes
-    if (
-      !name ||
-      !surnames ||
-      !email ||
-      !phone ||
-      !dui ||
-      !password ||
-      !user ||
-      !isActive
-    ) {
+    if (!name || !surnames || !email || !phone || !dui || !password || !user) {
       // Responder con error si algún campo está vacío o no existe
       return res
         .status(400)
@@ -68,7 +58,6 @@ registerEmployeesController.registerEmployees = async (req, res) => {
       password: passwordHash, // Guardar contraseña encriptada
       user,
       role,
-      isActive,
     });
 
     // Guardar el nuevo empleado en la base de datos

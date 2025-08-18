@@ -3,6 +3,7 @@ import TitleH1 from "../../global/components/TitleH1";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
+import Swal from "sweetalert2";
 
 import useCategories from "./hooks/useCategories";
 import { useForm } from "react-hook-form";
@@ -54,11 +55,27 @@ const PageCategories = () => {
 
   const handleDelete = async (category) => {
     if (!category?._id) return;
-    const confirmDelete = window.confirm(
-      `¿Eliminar la categoría "${category.name}"?`
-    );
-    if (confirmDelete) {
+
+    const result = await Swal.fire({
+      title: `¿Eliminar la categoría "${category.name}"?`,
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
       await deleteCategory(category._id);
+      Swal.fire({
+        title: "Eliminado",
+        text: `La categoría "${category.name}" ha sido eliminada.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
 

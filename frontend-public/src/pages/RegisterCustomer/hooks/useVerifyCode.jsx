@@ -15,7 +15,7 @@ export const useVerifyCode = () => {
     try {
       // Realiza una solicitud POST al backend con el código ingresado
       const res = await fetch(
-        "http://localhost:4000/api/registerCustomer/verifyCode",
+        "https://rose-candle-co.onrender.com/api/registerCustomer/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

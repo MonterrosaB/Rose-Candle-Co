@@ -15,7 +15,7 @@ const useOrders = (methods) => {
   // Obtener productos desde el backend
   const getProductsForOrders = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/products/productsOrders");
+      const res = await fetch("https://rose-candle-co.onrender.com/api/products/productsOrders");
       if (!res.ok) throw new Error("Error al obtener los productos");
       const data = await res.json();
       setProducts(data);
@@ -29,7 +29,7 @@ const useOrders = (methods) => {
   const getSalesOrders = async () => {
     setLoadingOrders(true);
     try {
-      const res = await fetch("http://localhost:4000/api/salesOrder");
+      const res = await fetch("https://rose-candle-co.onrender.com/api/salesOrder");
       if (!res.ok) throw new Error("Error al obtener órdenes");
       const data = await res.json();
 
@@ -90,7 +90,7 @@ const useOrders = (methods) => {
   // Crear orden en 
   const createSalesOrderPrivate = async (orderData) => {
     try {
-      const res = await fetch("http://localhost:4000/api/salesOrder/createSalesOrder", {
+      const res = await fetch("https://rose-candle-co.onrender.com/api/salesOrder/createSalesOrder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
@@ -117,7 +117,7 @@ const useOrders = (methods) => {
     try {
       console.log(orderData);
 
-      const res = await fetch(`http://localhost:4000/api/salesOrder/${id}`, {
+      const res = await fetch(`https://rose-candle-co.onrender.com/api/salesOrder/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shippingState: orderData }), // Aquí va como objeto

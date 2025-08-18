@@ -27,13 +27,6 @@ const PageStock = () => {
       delay: "delay-500",
     },
     {
-      title: "Historial",
-      path: "/record",
-      icon: Package,
-      gradient: "from-[#BCA88E] via-[#A78A5E] to-[#7D7954]",
-      delay: "delay-600",
-    },
-    {
       title: "Proveedores",
       path: "/supplies",
       icon: Users,

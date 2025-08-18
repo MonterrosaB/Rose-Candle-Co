@@ -12,39 +12,19 @@ import useSupplies from "../hooks/useSupplies";
 const RegisterSupplies = ({ onClose }) => {
 
   const methods = useForm();
-  const { createMaterial, register, handleSubmit, errors } = useSupplies(methods);
+  const { createMaterial, materials, register, handleSubmit, errors } = useSupplies(methods);
 
-  const [categories, setCategories] = useState([]);
-
-  // 🧠 useEffect con fetch para traer categorías reales
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch("http://localhost:4000/api/rawMaterials");
-        const data = await res.json();
-        // Formatea para el dropdown
-        const formatted = data.map(cat => ({
-          _id: cat._id,
-          label: cat.name
-        }));
-        setCategories(formatted);
-      } catch (error) {
-        console.error("Error al cargar categorías:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   const onSubmit = (data) => {
     createMaterial(data)
+    onClose();
   };
 
   return (
     <Form headerLabel={"Agregar Suministros"} onSubmit={handleSubmit(onSubmit)} onClose={onClose}>
       <FormInputs>
         <Dropdown
-          options={categories}
+          options={materials}
           label={"Materia Prima"}
           name={"idMaterial"}
           register={register}

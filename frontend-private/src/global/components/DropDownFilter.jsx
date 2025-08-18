@@ -1,4 +1,4 @@
-const DropDownFilter = ({ value, onChange, options, label }) => {
+const DropDownFilter = ({ value, onChange, options, label, all = true }) => {
     return (
         <div className="flex justify-center items-baseline gap-4 mb-4 w-full">
             <div className="relative w-full overflow-visible">
@@ -8,14 +8,16 @@ const DropDownFilter = ({ value, onChange, options, label }) => {
                     onChange={onChange}
                 >
                     {/* opción "todos" */}
-                    <option value="">Todos</option>
+                    {all &&
+                        <option value="">Todos</option>
+                    }
                     {options.map((opt) => (
                         <option
                             key={opt._id}
                             value={String(opt._id)} // asegura que sea string
                             className="text-gray-700 text-sm"
                         >
-                            {opt.label}
+                            {opt.label || opt.name}
                         </option>
                     ))}
                 </select>

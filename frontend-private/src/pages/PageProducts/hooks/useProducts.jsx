@@ -12,7 +12,7 @@ const useProducts = (methods) => {
   } = methods;
 
   // Api de productos
-  const ApiProducts = "http://localhost:4000/api/products";
+  const ApiProducts = "https://rose-candle-co.onrender.com/api/products";
 
   const [activeTab, setActiveTab] = useState("list");
   const [id, setId] = useState("");
@@ -45,8 +45,8 @@ const useProducts = (methods) => {
 
   // Guardar datos
   const createProduct = async (formData) => {
+    setLoading(true);
     try {
-      setLoading(true);
 
       const response = await fetch(ApiProducts, {
         method: "POST",
@@ -132,7 +132,7 @@ const useProducts = (methods) => {
 
       toast.success("Producto actualizado");
       setSuccess("Producto actualizado correctamente");
-      reset();
+      //reset();
       fetchData();
     } catch (error) {
       setError(error.message);

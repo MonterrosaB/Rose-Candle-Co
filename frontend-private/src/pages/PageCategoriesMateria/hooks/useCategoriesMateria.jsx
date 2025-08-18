@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiRawMaterialCategories = "http://localhost:4000/api/rawmaterialcategories";
+const ApiRawMaterialCategories = "https://rose-candle-co.onrender.com/api/rawmaterialcategories";
 
 const useRawMaterialCategories = (methods) => {
   const {
