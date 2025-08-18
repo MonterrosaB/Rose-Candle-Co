@@ -20,6 +20,7 @@ const addressSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      default: null
     },
     firstName: {
       type: String,
@@ -28,7 +29,8 @@ const addressSchema = new Schema(
         /^[a-zA-Z\s]+$/,
         "firstname must contain only letters and spaces",
       ],
-      trim: true
+      trim: true,
+      default: null
     },
     lastName: {
       type: String,
@@ -37,7 +39,8 @@ const addressSchema = new Schema(
         /^[a-zA-Z\s]+$/,
         "lastname must contain only letters and spaces",
       ],
-      trim: true
+      trim: true,
+      default: null
     },
     state: {
       type: String,
@@ -47,6 +50,7 @@ const addressSchema = new Schema(
         /^[a-zA-Z\s]+$/,
         "City must contain only letters and spaces",
       ],
+      default: null
     },
     city: {
       type: String,
@@ -56,12 +60,14 @@ const addressSchema = new Schema(
         /^[a-zA-Z\s]+$/,
         "city must contain only letters and spaces",
       ],
+      default: null
     },
     zipCode: {
       type: String,
       required: true,
       trim: true,
       match: [/^[a-zA-Z0-9\-]+$/, "Zip code must contain only letters, numbers, or hyphens"],
+      default: null
     },
     
     phone: {
@@ -70,6 +76,7 @@ const addressSchema = new Schema(
       match: [/^\d{4}-\d{4}$/, "Número de teléfono inválido"], // Formato ####-####
       minLength: 9, // Incluye guion
       trim: true, // Limpia espacios
+      default: null
     },
   },
   {
