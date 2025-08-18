@@ -1,9 +1,39 @@
-// Libreria de express
+// Librerias
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-// Routes
+// Swagger
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import path from "path";
+
+// Constante para la librería de express
+const app = express(); // <-- Inicializar app primero
+
+// Middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: [
+      "https://rose-candle-co-t1as.vercel.app",
+      "https://rose-candle-co-imt9.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+    credentials: true,
+  })
+);
+
+// Cargar Swagger después de inicializar app
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.resolve("./rose-67d-Rose-1.0.0-resolved.json"), "utf-8")
+);
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Rutas
 import loginRoutes from "./src/routes/login.js";
 import customersRoutes from "./src/routes/customers.js";
 import employeesRoutes from "./src/routes/employees.js";
@@ -28,22 +58,7 @@ import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 import paymentsRoutes from "./src/routes/payments.js";
 import authRoutes from "./src/routes/auth.js";
 
-// Constante para la libreria de express
-const app = express();
-
-// Que acepte datos json
-app.use(express.json());
-
-app.use(cookieParser());
-
-app.use(
-  cors({
-    origin: ["https://rose-candle-co-t1as.vercel.app","https://rose-candle-co-imt9.vercel.app","http://localhost:5173", "http://localhost:5174"], // frontend
-    credentials: true, // permitir cookies
-  })
-);
-
-// Rutas de las funciones
+// Montar rutas
 app.use("/api/customers", customersRoutes);
 app.use("/api/employees", employeesRoutes);
 app.use("/api/suppliers", suppliers);
@@ -68,5 +83,5 @@ app.use("/api/recoveryPassword", recoveryPasswordRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/auth", authRoutes);
 
-// Exportar
+// Exportar app
 export default app;

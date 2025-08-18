@@ -1,0 +1,4140 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API para gestión de Rosé Candle Co",
+    "description": "Documentación de la API para gestionar clientes, productos, materias primas, empleados, pedidos y más.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/rose-67d/Rose/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "paths": {
+    "/register/employee": {
+      "post": {
+        "tags": [
+          "registerEmployeesController"
+        ],
+        "summary": "Registrar nuevo empleado",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/register_employee_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Empleado registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o empleado ya existe"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/register/customer/request-code": {
+      "post": {
+        "tags": [
+          "registerCustomersController"
+        ],
+        "summary": "Solicitar código de verificación por correo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/customer_requestcode_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código enviado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/register/customer/verify-code": {
+      "post": {
+        "tags": [
+          "registerCustomersController"
+        ],
+        "summary": "Verificar código recibido por correo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/customer_verifycode_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código verificado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/register/customer": {
+      "post": {
+        "tags": [
+          "registerCustomersController"
+        ],
+        "summary": "Registrar nuevo cliente (después de verificar correo)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/register_customer_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o cliente ya existe"
+          },
+          "401": {
+            "description": "Email no verificado o token inválido"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/logout/customer": {
+      "post": {
+        "tags": [
+          "logoutCustomer"
+        ],
+        "summary": "Cerrar sesión de clientes",
+        "responses": {
+          "200": {
+            "description": "Sesión cerrada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_4"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Logout"
+        ],
+        "summary": "Cerrar sesión de empleados",
+        "responses": {
+          "200": {
+            "description": "Sesión cerrada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_4"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/login/customer": {
+      "post": {
+        "tags": [
+          "loginCustomer"
+        ],
+        "summary": "Login de clientes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/login_customer_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Contraseña incorrecta"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/login/customer/verify": {
+      "get": {
+        "tags": [
+          "loginCustomer"
+        ],
+        "summary": "Verificar cliente autenticado mediante token",
+        "responses": {
+          "200": {
+            "description": "Cliente autenticado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "summary": "Login de empleados",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/login_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_7"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Contraseña incorrecta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Cuenta bloqueada temporalmente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refrescar token de autenticación",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/auth_refreshtoken_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Token renovado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_8"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o expirado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/suppliers": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Obtener todos los proveedores",
+        "responses": {
+          "200": {
+            "description": "Lista de proveedores"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Crear un nuevo proveedor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/suppliers_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Proveedor creado"
+          },
+          "400": {
+            "description": "Datos inválidos"
+          }
+        }
+      }
+    },
+    "/suppliers/{id}": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Obtener un proveedor por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos del proveedor"
+          },
+          "404": {
+            "description": "Proveedor no encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Actualizar un proveedor por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/suppliers_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Proveedor actualizado"
+          },
+          "400": {
+            "description": "Error al actualizar"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Eliminar un proveedor por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proveedor eliminado"
+          },
+          "400": {
+            "description": "Proveedor no encontrado"
+          }
+        }
+      }
+    },
+    "/suppliers/restore/{id}": {
+      "put": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Restaurar un proveedor eliminado",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proveedor restaurado"
+          },
+          "400": {
+            "description": "Proveedor no encontrado"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "get": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Obtener el carrito del usuario autenticado",
+        "responses": {
+          "200": {
+            "description": "Carrito obtenido exitosamente"
+          },
+          "404": {
+            "description": "Carrito no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/by-id/{id}": {
+      "get": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Obtener carrito por ID (sólo si pertenece al usuario autenticado)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del carrito",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrito obtenido exitosamente"
+          },
+          "403": {
+            "description": "No autorizado"
+          },
+          "404": {
+            "description": "Carrito no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/add": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Agregar un producto al carrito",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/cart_add_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto agregado correctamente"
+          },
+          "404": {
+            "description": "Carrito o producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/decrease": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Disminuir la cantidad de un producto en el carrito",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/cart_decrease_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado"
+          },
+          "404": {
+            "description": "Carrito o producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/complete": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Completar carrito y generar orden de venta",
+        "responses": {
+          "201": {
+            "description": "Orden creada exitosamente"
+          },
+          "404": {
+            "description": "Carrito vacío o no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Eliminar el carrito del usuario autenticado",
+        "responses": {
+          "200": {
+            "description": "Carrito eliminado"
+          },
+          "404": {
+            "description": "Carrito no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/product/{productId}": {
+      "delete": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Remover un producto específico del carrito",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID del producto a eliminar",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto eliminado del carrito"
+          },
+          "404": {
+            "description": "Carrito o producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/empty/{idCart}": {
+      "put": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Vaciar todos los productos del carrito",
+        "parameters": [
+          {
+            "name": "idCart",
+            "in": "path",
+            "description": "ID del carrito",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrito vaciado"
+          },
+          "404": {
+            "description": "Carrito no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/restore/{id}": {
+      "put": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Restaurar un carrito previamente eliminado",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del carrito",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrito restaurado"
+          },
+          "400": {
+            "description": "Carrito no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/cart/abandoned": {
+      "get": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Obtener porcentaje de carritos abandonados",
+        "responses": {
+          "200": {
+            "description": "Porcentaje de carritos abandonados"
+          }
+        }
+      }
+    },
+    "/cart/best-selling-products": {
+      "get": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Obtener los 3 productos más vendidos",
+        "responses": {
+          "200": {
+            "description": "Lista de productos más vendidos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/sales-orders": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Obtener todas las órdenes de venta",
+        "responses": {
+          "200": {
+            "description": "Lista de órdenes con totale"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Crear una nueva orden de venta",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/salesorders_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Orden guardada"
+          },
+          "400": {
+            "description": "Campos incompletos"
+          }
+        }
+      }
+    },
+    "/sales-orders/private": {
+      "post": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Crear orden de forma manual",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/salesorders_private_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Orden creada manualmente"
+          }
+        }
+      }
+    },
+    "/sales-orders/{id}": {
+      "put": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Actualizar una orden por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/salesorders_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Orden actualizada"
+          },
+          "400": {
+            "description": "Error al actualizar"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Eliminar una orden por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orden eliminada"
+          }
+        }
+      }
+    },
+    "/sales-orders/restore/{id}": {
+      "put": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Restaurar orden eliminada",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orden restaurada"
+          }
+        }
+      }
+    },
+    "/sales-orders/count": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Contar cantidad de pedidos y total",
+        "responses": {
+          "200": {
+            "description": "Conteo de pedidos y total"
+          }
+        }
+      }
+    },
+    "/sales-orders/categories": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Obtener ventas por categoría",
+        "responses": {
+          "200": {
+            "description": "Lista de categorías con total y porcentaje"
+          }
+        }
+      }
+    },
+    "/sales-orders/count/general-monthly": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Cantidad total de pedidos y del mes actual",
+        "responses": {
+          "200": {
+            "description": "Conteo de pedidos"
+          }
+        }
+      }
+    },
+    "/sales-orders/earnings": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Obtener ingresos totales y del mes actual",
+        "responses": {
+          "200": {
+            "description": "Total de ingresos"
+          }
+        }
+      }
+    },
+    "/sales-orders/latest": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Obtener los últimos pedidos",
+        "responses": {
+          "200": {
+            "description": "Últimos 10 pedidos"
+          }
+        }
+      }
+    },
+    "/sales-orders/user-cart/{userId}": {
+      "get": {
+        "tags": [
+          "Sales Order"
+        ],
+        "summary": "Obtener carrito activo de un usuario y sus productos",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrito y productos del usuario"
+          }
+        }
+      }
+    },
+    "/password-recovery/request-code": {
+      "post": {
+        "tags": [
+          "PasswordRecovery"
+        ],
+        "summary": "Solicitar código de recuperación de contraseña",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordrecovery_requestcode_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código enviado exitosamente"
+          },
+          "400": {
+            "description": "Usuario no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/password-recovery/verify-code": {
+      "post": {
+        "tags": [
+          "PasswordRecovery"
+        ],
+        "summary": "Verificar código de recuperación",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordrecovery_verifycode_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código verificado correctamente"
+          },
+          "400": {
+            "description": "Código incorrecto"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/password-recovery/new-password": {
+      "post": {
+        "tags": [
+          "PasswordRecovery"
+        ],
+        "summary": "Cambiar contraseña tras verificación del código",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordrecovery_newpassword_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña actualizada correctamente"
+          },
+          "400": {
+            "description": "Código no verificado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/raw-materials": {
+      "get": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Obtener todas las materias primas",
+        "responses": {
+          "200": {
+            "description": "Lista de materias primas obtenida correctamente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Crear una nueva materia prima",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/rawmaterials_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Materia prima creada exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/raw-materials/{id}": {
+      "get": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Obtener materia prima por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Materia prima encontrada"
+          },
+          "404": {
+            "description": "Materia prima no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Actualizar una materia prima por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/rawmaterials_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Materia prima actualizada exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada o materia prima no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Eliminar una materia prima por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Materia prima eliminada exitosamente"
+          },
+          "400": {
+            "description": "Materia prima no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Restaurar una materia prima eliminada",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Materia prima restaurada exitosamente"
+          },
+          "400": {
+            "description": "Materia prima no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/raw-materials/lowest-stock": {
+      "get": {
+        "tags": [
+          "RawMaterials"
+        ],
+        "summary": "Obtener las materias primas con menor stock",
+        "responses": {
+          "200": {
+            "description": "Lista de materias primas con menor stock obtenida"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/raw-material-categories": {
+      "get": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Obtener todas las categorías de materia prima",
+        "responses": {
+          "200": {
+            "description": "Lista de categorías obtenida correctamente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Crear una nueva categoría de materia prima",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/rawmaterialcategories_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Categoría creada exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/raw-material-categories/{id}": {
+      "get": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Obtener una categoría por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoría encontrada"
+          },
+          "404": {
+            "description": "Categoría no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Actualizar una categoría por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/rawmaterialcategories_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Categoría actualizada exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada o categoría no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Eliminar una categoría por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoría eliminada exitosamente"
+          },
+          "400": {
+            "description": "Categoría no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "RawMaterialCategories"
+        ],
+        "summary": "Restaurar una categoría eliminada",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoría restaurada exitosamente"
+          },
+          "400": {
+            "description": "Categoría no encontrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Obtener todos los productos",
+        "responses": {
+          "200": {
+            "description": "Lista de productos obtenida correctamente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Crear un nuevo producto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/products_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto creado exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Obtener un producto por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto encontrado"
+          },
+          "404": {
+            "description": "Producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Actualizar un producto por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/products_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "404": {
+            "description": "Producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Eliminar un producto por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto eliminado exitosamente"
+          },
+          "404": {
+            "description": "Producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Restaurar un producto eliminado",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto restaurado exitosamente"
+          },
+          "404": {
+            "description": "Producto no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/product-price-history": {
+      "get": {
+        "tags": [
+          "ProductPriceHistory"
+        ],
+        "summary": "Obtener todo el historial de precios de productos",
+        "responses": {
+          "200": {
+            "description": "Lista de registros obtenida correctamente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ProductPriceHistory"
+        ],
+        "summary": "Crear un nuevo registro en el historial de precios de productos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/productpricehistory_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registro creado exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/product-price-history/{id}": {
+      "put": {
+        "tags": [
+          "ProductPriceHistory"
+        ],
+        "summary": "Actualizar un registro existente en el historial por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/productpricehistory_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registro actualizado exitosamente"
+          },
+          "400": {
+            "description": "No encontrado o error en los datos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ProductPriceHistory"
+        ],
+        "summary": "Eliminar un registro del historial de precios por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro eliminado exitosamente"
+          },
+          "400": {
+            "description": "No encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/product-price-history/{id}/restore": {
+      "put": {
+        "tags": [
+          "ProductPriceHistory"
+        ],
+        "summary": "Restaurar un registro eliminado del historial de precios",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro restaurado exitosamente"
+          },
+          "400": {
+            "description": "No encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/production-cost-history": {
+      "get": {
+        "tags": [
+          "ProductionCostHistory"
+        ],
+        "summary": "Obtener todos los registros del historial de costos de producción",
+        "responses": {
+          "200": {
+            "description": "Lista de registros obtenida correctamente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ProductionCostHistory"
+        ],
+        "summary": "Crear un nuevo registro en el historial de costos de producción",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/productioncosthistory_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registro creado exitosamente"
+          },
+          "400": {
+            "description": "Error en los datos de entrada"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/production-cost-history/{id}": {
+      "put": {
+        "tags": [
+          "ProductionCostHistory"
+        ],
+        "summary": "Actualizar un registro existente en el historial por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/productioncosthistory_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registro actualizado exitosamente"
+          },
+          "400": {
+            "description": "No encontrado o error en los datos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/production-cost-history/{id}/restore": {
+      "put": {
+        "tags": [
+          "ProductionCostHistory"
+        ],
+        "summary": "Restaurar un registro eliminado del historial de costos de producción",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro restaurado exitosamente"
+          },
+          "400": {
+            "description": "No encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/accessories": {
+      "get": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Obtener todos los accesorios",
+        "responses": {
+          "200": {
+            "description": "Lista de accesorios"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Crear un accesorio",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/accessories_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Accesorio creado"
+          }
+        }
+      }
+    },
+    "/accessories/{id}": {
+      "get": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Obtener accesorio por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accesorio encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Actualizar accesorio",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/accessories_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Accesorio actualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Eliminar accesorio",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accesorio eliminado"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/restore": {
+      "put": {
+        "tags": [
+          "ProductCategories"
+        ],
+        "summary": "Restaurar accesorio eliminado",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accesorio restaurado"
+          }
+        }
+      }
+    },
+    "/payments/wompi/token": {
+      "post": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "summary": "Obtener token de autenticación de Wompi",
+        "responses": {
+          "200": {
+            "description": "Token generado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_9"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la solicitud"
+          },
+          "500": {
+            "description": "Error interno al obtener token"
+          }
+        }
+      }
+    },
+    "/payments/wompi/test": {
+      "post": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "summary": "Pago de prueba con Wompi (Tokenizada sin 3Ds)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/wompi_test_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Pago procesado exitosamente"
+          },
+          "400": {
+            "description": "Datos de pago incompletos"
+          },
+          "500": {
+            "description": "Error interno al procesar pago"
+          }
+        }
+      }
+    },
+    "/payments/wompi/3ds": {
+      "post": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "summary": "Pago real con Wompi usando 3Ds",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/wompi_3ds_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Pago procesado con 3Ds exitosamente"
+          },
+          "400": {
+            "description": "Datos de pago incompletos"
+          },
+          "500": {
+            "description": "Error interno al procesar pago"
+          }
+        }
+      }
+    },
+    "/payments/stripe/test": {
+      "post": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "summary": "Pago de prueba con Stripe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/stripe_test_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Pago procesado exitosamente con Stripe"
+          },
+          "400": {
+            "description": "Datos de pago incompletos"
+          },
+          "500": {
+            "description": "Error interno al procesar pago"
+          }
+        }
+      }
+    },
+    "/collections": {
+      "get": {
+        "tags": [
+          "collections"
+        ],
+        "summary": "Obtener todas las colecciones",
+        "responses": {
+          "200": {
+            "description": "Lista de colecciones obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Collection"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "collections"
+        ],
+        "summary": "Crear una nueva colección",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectionInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Colección creada exitosamente"
+          }
+        }
+      }
+    },
+    "/collections/{id}": {
+      "get": {
+        "tags": [
+          "collections"
+        ],
+        "summary": "Obtener una colección por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Colección obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Collection"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "collections"
+        ],
+        "summary": "Actualizar una colección",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectionInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Colección actualizada exitosamente"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "collections"
+        ],
+        "summary": "Eliminar (marcar como eliminada) una colección",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Colección eliminada exitosamente"
+          }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Obtener todos los clientes",
+        "responses": {
+          "200": {
+            "description": "Lista de clientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}": {
+      "get": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Obtener un cliente por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Actualizar un cliente por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente actualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Eliminar un cliente por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente eliminado"
+          }
+        }
+      }
+    },
+    "/customers/register": {
+      "post": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Registrar nuevo cliente",
+        "description": "Crea un nuevo cliente, encripta la contraseña, guarda direcciones y devuelve un JWT en cookie.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente registrado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en validación de campos o datos ya existentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_1"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Obtener todos los empleados",
+        "responses": {
+          "200": {
+            "description": "Lista de empleados obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Employee"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/employees/login": {
+      "post": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Login de empleado",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/employees_login_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso"
+          },
+          "400": {
+            "description": "Usuario no encontrado"
+          },
+          "401": {
+            "description": "Contraseña incorrecta"
+          },
+          "403": {
+            "description": "Cuenta bloqueada temporalmente"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/employees/count": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Contar empleados",
+        "responses": {
+          "200": {
+            "description": "Cantidad total de empleados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_10"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "put": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Actualizar un empleado por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeUpdateInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Empleado actualizado exitosamente"
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "404": {
+            "description": "Empleado no encontrado"
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Eliminar un empleado por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empleado eliminado"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      }
+    },
+    "/employees/register": {
+      "post": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Registrar nuevo empleado",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeRegisterInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Empleado registrado"
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "500": {
+            "description": "Error del servidor"
+          }
+        }
+      }
+    },
+    "/history-raw-materials": {
+      "get": {
+        "tags": [
+          "historyRawMaterials"
+        ],
+        "summary": "Obtener todos los historiales de precios",
+        "responses": {
+          "200": {
+            "description": "Lista de historiales",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NewHistoryRawMaterial"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "historyRawMaterials"
+        ],
+        "summary": "Crear un nuevo historial de precio",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewHistoryRawMaterial"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Historial guardado"
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      }
+    },
+    "/history-raw-materials/{id}": {
+      "get": {
+        "tags": [
+          "historyRawMaterials"
+        ],
+        "summary": "Obtener historial por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historial encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewHistoryRawMaterial"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "historyRawMaterials"
+        ],
+        "summary": "Actualizar historial por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewHistoryRawMaterial"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Actualizado correctamente"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "historyRawMaterials"
+        ],
+        "summary": "Eliminar historial por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eliminado correctamente"
+          }
+        }
+      }
+    },
+    "/material-balances": {
+      "get": {
+        "tags": [
+          "materialBalances"
+        ],
+        "summary": "Obtener todos los balances",
+        "responses": {
+          "200": {
+            "description": "Lista de balances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialBalance"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "materialBalances"
+        ],
+        "summary": "Crear balance de material",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialBalance"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Balance creado"
+          },
+          "400": {
+            "description": "Error en datos"
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      }
+    },
+    "/material-balances/{id}": {
+      "get": {
+        "tags": [
+          "materialBalances"
+        ],
+        "summary": "Obtener un balance por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Balance encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialBalance"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "materialBalances"
+        ],
+        "summary": "Actualizar balance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialBalance"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Balance actualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "materialBalances"
+        ],
+        "summary": "Eliminar balance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Eliminado correctamente"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Address": {
+        "required": [
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "default": "casa",
+            "enum": [
+              "casa",
+              "trabajo",
+              "otro"
+            ]
+          },
+          "isDefault": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "Customer": {
+        "required": [
+          "addresses",
+          "email",
+          "name",
+          "password",
+          "phone",
+          "surnames",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "phone": {
+            "pattern": "^\\d{4}-\\d{4}$",
+            "type": "string"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          }
+        }
+      },
+      "CustomerInput": {
+        "required": [
+          "email",
+          "name",
+          "password",
+          "phone",
+          "surnames",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          }
+        }
+      },
+      "Collection": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CollectionInput": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "pattern": "^\\d{4}-\\d{4}$",
+            "type": "string"
+          },
+          "dui": {
+            "pattern": "^\\d{8}-\\d{1}$",
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "employee"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "EmployeeUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "dui": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "employee"
+            ]
+          }
+        }
+      },
+      "EmployeeRegisterInput": {
+        "required": [
+          "dui",
+          "email",
+          "isActive",
+          "name",
+          "password",
+          "phone",
+          "role",
+          "surnames",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "dui": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "employee"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "NewHistoryRawMaterial": {
+        "required": [
+          "date",
+          "idRawMaterial",
+          "price"
+        ],
+        "type": "object",
+        "properties": {
+          "idRawMaterial": {
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "MaterialBalance": {
+        "required": [
+          "idRawMaterial",
+          "quantity",
+          "unit"
+        ],
+        "type": "object",
+        "properties": {
+          "idRawMaterial": {
+            "type": "string"
+          },
+          "quantity": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "example": "kg"
+          }
+        }
+      },
+      "register_employee_body": {
+        "required": [
+          "dui",
+          "email",
+          "isActive",
+          "name",
+          "password",
+          "phone",
+          "role",
+          "surnames",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del empleado"
+          },
+          "surnames": {
+            "type": "string",
+            "description": "Apellidos del empleado"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono"
+          },
+          "dui": {
+            "type": "string",
+            "description": "DUI del empleado"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña segura"
+          },
+          "user": {
+            "type": "string",
+            "description": "Nombre de usuario"
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del empleado (ej: admin, employee)"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del empleado"
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Employee saved"
+          }
+        }
+      },
+      "customer_requestcode_body": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico del cliente"
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Code sent successfully"
+          }
+        }
+      },
+      "customer_verifycode_body": {
+        "required": [
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código de verificación recibido por correo"
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Code verified successfully"
+          }
+        }
+      },
+      "registercustomer_addresses": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "register_customer_body": {
+        "required": [
+          "addresses",
+          "name",
+          "password",
+          "phone",
+          "surnames",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del cliente"
+          },
+          "surnames": {
+            "type": "string",
+            "description": "Apellidos del cliente"
+          },
+          "user": {
+            "type": "string",
+            "description": "Nombre de usuario"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña segura"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono en formato"
+          },
+          "addresses": {
+            "type": "array",
+            "description": "Lista de direcciones del cliente",
+            "items": {
+              "$ref": "#/components/schemas/registercustomer_addresses"
+            }
+          }
+        }
+      },
+      "inline_response_200_3": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Customer saved"
+          }
+        }
+      },
+      "inline_response_200_4": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Session closed"
+          }
+        }
+      },
+      "login_customer_body": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico del cliente"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del cliente"
+          }
+        }
+      },
+      "inline_response_200_5": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Login successfull"
+          },
+          "token": {
+            "type": "string"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/inline_response_200_5_customer"
+          },
+          "cart": {
+            "$ref": "#/components/schemas/inline_response_200_5_cart"
+          }
+        }
+      },
+      "inline_response_200_6": {
+        "type": "object",
+        "properties": {
+          "customer": {
+            "$ref": "#/components/schemas/inline_response_200_6_customer"
+          }
+        }
+      },
+      "login_body": {
+        "required": [
+          "password",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "Nombre de usuario del empleado"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del empleado"
+          }
+        }
+      },
+      "inline_response_200_7": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          }
+        }
+      },
+      "inline_response_400": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "User not found"
+          }
+        }
+      },
+      "inline_response_401": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Contraseña incorrecta"
+          }
+        }
+      },
+      "inline_response_403": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Cuenta bloqueada, faltan 5 minutos"
+          }
+        }
+      },
+      "auth_refreshtoken_body": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Token de refresco del usuario"
+          }
+        }
+      },
+      "inline_response_200_8": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Nuevo token de acceso"
+          }
+        }
+      },
+      "suppliers_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          }
+        }
+      },
+      "suppliers_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          }
+        }
+      },
+      "cart_add_body": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "quantityVariant": {
+            "type": "integer"
+          },
+          "indexVariant": {
+            "type": "integer"
+          }
+        }
+      },
+      "cart_decrease_body": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          }
+        }
+      },
+      "salesorders_shippingState": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          }
+        }
+      },
+      "salesorders_body": {
+        "type": "object",
+        "properties": {
+          "idShoppingCart": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shippingTotal": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "shippingState": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/salesorders_shippingState"
+            }
+          }
+        }
+      },
+      "salesordersprivate_products": {
+        "type": "object",
+        "properties": {
+          "idProduct": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "currentPrice": {
+            "type": "number"
+          },
+          "discount": {
+            "type": "number"
+          }
+        }
+      },
+      "salesorders_private_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/salesordersprivate_products"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "salesorders_id_body": {
+        "type": "object",
+        "properties": {
+          "idShoppingCart": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shippingTotal": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "shippingState": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/salesorders_shippingState"
+            }
+          }
+        }
+      },
+      "passwordrecovery_requestcode_body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          }
+        }
+      },
+      "passwordrecovery_verifycode_body": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "12345"
+          }
+        }
+      },
+      "passwordrecovery_newpassword_body": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "example": "NuevaContraseña123"
+          }
+        }
+      },
+      "rawmaterials_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Harina de trigo"
+          },
+          "currentStock": {
+            "type": "number",
+            "example": 100
+          },
+          "currentPrice": {
+            "type": "number",
+            "example": 12.5
+          },
+          "idRawMaterialCategory": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "idSupplier": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "unit": {
+            "type": "string",
+            "example": "kg"
+          }
+        }
+      },
+      "rawmaterials_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Harina de trigo refinada"
+          },
+          "currentStock": {
+            "type": "number",
+            "example": 120
+          },
+          "currentPrice": {
+            "type": "number",
+            "example": 13
+          },
+          "idRawMaterialCategory": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "idSupplier": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "unit": {
+            "type": "string",
+            "example": "kg"
+          }
+        }
+      },
+      "rawmaterialcategories_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Categoria A"
+          }
+        }
+      },
+      "rawmaterialcategories_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Categoria B"
+          }
+        }
+      },
+      "products_components": {
+        "type": "object",
+        "properties": {
+          "idComponent": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      },
+      "products_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Producto A"
+          },
+          "description": {
+            "type": "string",
+            "example": "Descripción del producto"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/products_components"
+            }
+          },
+          "recipe": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availability": {
+            "type": "boolean",
+            "example": true
+          },
+          "useForm": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "variant": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "idProductCategory": {
+            "type": "string"
+          },
+          "idCollection": {
+            "type": "string"
+          }
+        }
+      },
+      "products_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/products_components"
+            }
+          },
+          "recipe": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availability": {
+            "type": "boolean"
+          },
+          "useForm": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "variant": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "idProductCategory": {
+            "type": "string"
+          },
+          "idCollection": {
+            "type": "string"
+          }
+        }
+      },
+      "productpricehistory_body": {
+        "type": "object",
+        "properties": {
+          "idProduct": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Ajuste de precio por temporada"
+          },
+          "amountSold": {
+            "type": "number",
+            "example": 200.5
+          }
+        }
+      },
+      "productpricehistory_id_body": {
+        "type": "object",
+        "properties": {
+          "idProduct": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Ajuste de precio por promoción"
+          },
+          "amountSold": {
+            "type": "number",
+            "example": 250.75
+          }
+        }
+      },
+      "productioncosthistory_rawMaterialUsed": {
+        "type": "object",
+        "properties": {
+          "idRawMaterial": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 10
+          }
+        }
+      },
+      "productioncosthistory_products": {
+        "type": "object",
+        "properties": {
+          "idProduct": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "rawMaterialUsed": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/productioncosthistory_rawMaterialUsed"
+            }
+          }
+        }
+      },
+      "productioncosthistory_body": {
+        "type": "object",
+        "properties": {
+          "idSalesOrder": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/productioncosthistory_products"
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-08-18"
+          },
+          "total": {
+            "type": "number",
+            "example": 1500.5
+          },
+          "earning": {
+            "type": "number",
+            "example": 300.25
+          }
+        }
+      },
+      "productioncosthistoryid_rawMaterialUsed": {
+        "type": "object",
+        "properties": {
+          "idRawMaterial": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 5
+          }
+        }
+      },
+      "productioncosthistoryid_products": {
+        "type": "object",
+        "properties": {
+          "idProduct": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "rawMaterialUsed": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/productioncosthistoryid_rawMaterialUsed"
+            }
+          }
+        }
+      },
+      "productioncosthistory_id_body": {
+        "type": "object",
+        "properties": {
+          "idSalesOrder": {
+            "type": "string",
+            "example": "64b21f09dcb56b1234567890"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/productioncosthistoryid_products"
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-08-18"
+          },
+          "total": {
+            "type": "number",
+            "example": 1800.75
+          },
+          "earning": {
+            "type": "number",
+            "example": 350.4
+          }
+        }
+      },
+      "accessories_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Funda protectora"
+          }
+        }
+      },
+      "accessories_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Adaptador USB"
+          }
+        }
+      },
+      "inline_response_200_9": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          }
+        }
+      },
+      "wompi_test_body": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOi..."
+          },
+          "formData": {
+            "type": "object",
+            "example": {
+              "monto": 1000,
+              "moneda": "USD",
+              "numeroTarjeta": "4111111111111111",
+              "fechaExpiracion": "12/26",
+              "cvc": "123",
+              "emailCliente": "cliente@correo.com"
+            }
+          }
+        }
+      },
+      "wompi_3ds_body": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOi..."
+          },
+          "formData": {
+            "type": "object",
+            "example": {
+              "monto": 1000,
+              "moneda": "USD",
+              "numeroTarjeta": "4111111111111111",
+              "fechaExpiracion": "12/26",
+              "cvc": "123",
+              "emailCliente": "cliente@correo.com"
+            }
+          }
+        }
+      },
+      "stripe_test_body": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "example": 1000
+          },
+          "currency": {
+            "type": "string",
+            "example": "usd"
+          },
+          "paymentMethodId": {
+            "type": "string",
+            "example": "pm_card_visa"
+          }
+        }
+      },
+      "inline_response_400_1": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Customer already exists"
+          }
+        }
+      },
+      "inline_response_500": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Internal server error"
+          }
+        }
+      },
+      "employees_login_body": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "example": "juan_perez"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "P@ssw0rd!"
+          }
+        }
+      },
+      "inline_response_200_10": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "inline_response_200_5_customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "inline_response_200_5_cart": {
+        "type": "object",
+        "properties": {
+          "idUser": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "inline_response_200_6_customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surnames": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
