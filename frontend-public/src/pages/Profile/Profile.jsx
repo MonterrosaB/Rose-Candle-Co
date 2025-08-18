@@ -4,7 +4,7 @@ import OrdersSection from "./Components/OrdersSection";
 import ProfileSection from "./Components/ProfileSection";
 import AddressesSection from "./Components/AddressesSection";
 import CardsSection from "./Components/CardsSection";
-import AuthSection from "./Components/AuthSection";
+import AuthSection from "./Components/PasswordSection";
 
 export default function Profile() {
   // Cambiar el título de la página al montar el componente

@@ -1,5 +1,6 @@
 import customersModel from "../models/Customers.js"; // Modelo de Clientes
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 // Objeto que agrupa los métodos CRUD para clientes
 const customersController = {};
@@ -283,6 +284,32 @@ customersController.updateAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al actualizar dirección:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+// Actualizar contraseña
+customersController.updatePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { id } = req.params;
+
+  try {
+    const customer = await customersModel.findById(id);
+    if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
+
+    // Comparar contraseña actual con la guardada (hashed)
+    const isMatch = await bcrypt.compare(currentPassword, customer.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Contraseña actual incorrecta" });
+    }
+
+    // Hashear la nueva contraseña
+    customer.password = await bcrypt.hash(newPassword, 10);
+    await customer.save();
+
+    res.status(200).json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };

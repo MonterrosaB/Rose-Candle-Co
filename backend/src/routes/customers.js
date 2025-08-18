@@ -22,6 +22,8 @@ router.route("/:id")
 .get(customersController.getCustomersById)
 .put(customersController.updateCustomers)
 .delete(customersController.deleteCustomers)
+router.route("/:id/password")
+  .put(customersController.updatePassword); // contraseña actualizar
 
 // Rutas específicas
 router.route("/restore/:id")
