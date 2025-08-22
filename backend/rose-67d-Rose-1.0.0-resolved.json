@@ -1277,6 +1277,7 @@
           "RawMaterials"
         ],
         "summary": "Restaurar una materia prima eliminada",
+        "description": "Restaura una materia prima que fue previamente eliminada.",
         "parameters": [
           {
             "name": "id",
@@ -1306,6 +1307,7 @@
           "RawMaterials"
         ],
         "summary": "Obtener las materias primas con menor stock",
+        "description": "Devuelve una lista de las materias primas con los niveles de stock más bajos.",
         "responses": {
           "200": {
             "description": "Lista de materias primas con menor stock obtenida"
@@ -1322,6 +1324,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Obtener todas las categorías de materia prima",
+        "description": "Recupera todas las categorías registradas para materias primas.",
         "responses": {
           "200": {
             "description": "Lista de categorías obtenida correctamente"
@@ -1336,6 +1339,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Crear una nueva categoría de materia prima",
+        "description": "Registra una nueva categoría para clasificar materias primas.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1365,6 +1369,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Obtener una categoría por ID",
+        "description": "Devuelve los detalles de una categoría específica de materia prima.",
         "parameters": [
           {
             "name": "id",
@@ -1392,6 +1397,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Actualizar una categoría por ID",
+        "description": "Actualiza una categoría existente con nuevos datos.",
         "parameters": [
           {
             "name": "id",
@@ -1429,6 +1435,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Eliminar una categoría por ID",
+        "description": "Elimina lógicamente una categoría de materia prima.",
         "parameters": [
           {
             "name": "id",
@@ -1456,6 +1463,7 @@
           "RawMaterialCategories"
         ],
         "summary": "Restaurar una categoría eliminada",
+        "description": "Restaura una categoría de materia prima previamente eliminada.",
         "parameters": [
           {
             "name": "id",
@@ -1485,6 +1493,7 @@
           "Products"
         ],
         "summary": "Obtener todos los productos",
+         "description": "Recupera la lista completa de productos disponibles.",
         "responses": {
           "200": {
             "description": "Lista de productos obtenida correctamente"
@@ -1499,6 +1508,7 @@
           "Products"
         ],
         "summary": "Crear un nuevo producto",
+        "description": "Agrega un nuevo producto con los datos proporcionados.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -1528,6 +1538,7 @@
           "Products"
         ],
         "summary": "Obtener un producto por ID",
+        "description": "Recupera la información de un producto específico usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1555,6 +1566,7 @@
           "Products"
         ],
         "summary": "Actualizar un producto por ID",
+        "description": "Modifica los datos de un producto existente identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1595,6 +1607,7 @@
           "Products"
         ],
         "summary": "Eliminar un producto por ID",
+        "description": "Elimina el producto identificado por el ID especificado.",
         "parameters": [
           {
             "name": "id",
@@ -1622,6 +1635,7 @@
           "Products"
         ],
         "summary": "Restaurar un producto eliminado",
+        "description": "Restaura un producto que fue eliminado previamente usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1651,6 +1665,7 @@
           "ProductPriceHistory"
         ],
         "summary": "Obtener todo el historial de precios de productos",
+        "description": "Recupera todos los registros históricos de precios de productos.",
         "responses": {
           "200": {
             "description": "Lista de registros obtenida correctamente"
@@ -1665,6 +1680,7 @@
           "ProductPriceHistory"
         ],
         "summary": "Crear un nuevo registro en el historial de precios de productos",
+        "description": "Agrega un nuevo registro al historial de precios de un producto.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1694,6 +1710,7 @@
           "ProductPriceHistory"
         ],
         "summary": "Actualizar un registro existente en el historial por ID",
+        "description": "Modifica un registro del historial de precios identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1731,6 +1748,7 @@
           "ProductPriceHistory"
         ],
         "summary": "Eliminar un registro del historial de precios por ID",
+        "description": "Elimina un registro del historial de precios usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1760,6 +1778,7 @@
           "ProductPriceHistory"
         ],
         "summary": "Restaurar un registro eliminado del historial de precios",
+        "description": "Restaura un registro eliminado del historial de precios usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1789,6 +1808,7 @@
           "ProductionCostHistory"
         ],
         "summary": "Obtener todos los registros del historial de costos de producción",
+        "description": "Recupera todos los registros del historial de costos de producción.",
         "responses": {
           "200": {
             "description": "Lista de registros obtenida correctamente"
@@ -1803,6 +1823,7 @@
           "ProductionCostHistory"
         ],
         "summary": "Crear un nuevo registro en el historial de costos de producción",
+        "description": "Agrega un nuevo registro al historial de costos de producción.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1832,6 +1853,7 @@
           "ProductionCostHistory"
         ],
         "summary": "Actualizar un registro existente en el historial por ID",
+        "description": "Modifica un registro del historial de costos identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1871,6 +1893,7 @@
           "ProductionCostHistory"
         ],
         "summary": "Restaurar un registro eliminado del historial de costos de producción",
+        "description": "Restaura un registro eliminado del historial de costos usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1900,6 +1923,7 @@
           "ProductCategories"
         ],
         "summary": "Obtener todos los accesorios",
+        "description": "Recupera la lista completa de accesorios.",
         "responses": {
           "200": {
             "description": "Lista de accesorios"
@@ -1934,6 +1958,7 @@
           "ProductCategories"
         ],
         "summary": "Obtener accesorio por ID",
+        "description": "Recupera los detalles de un accesorio específico usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1955,6 +1980,7 @@
           "ProductCategories"
         ],
         "summary": "Actualizar accesorio",
+        "description": "Modifica la información de un accesorio existente identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1986,6 +2012,7 @@
           "ProductCategories"
         ],
         "summary": "Eliminar accesorio",
+        "description": "Elimina un accesorio identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2009,6 +2036,7 @@
           "ProductCategories"
         ],
         "summary": "Restaurar accesorio eliminado",
+        "description": "Restaura un accesorio que fue eliminado usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2032,6 +2060,7 @@
           "PaymentMethod"
         ],
         "summary": "Obtener token de autenticación de Wompi",
+        "description": "Solicita y obtiene un token para autenticarse con Wompi.",
         "responses": {
           "200": {
             "description": "Token generado exitosamente",
@@ -2058,6 +2087,7 @@
           "PaymentMethod"
         ],
         "summary": "Pago de prueba con Wompi (Tokenizada sin 3Ds)",
+        "description": "Procesa un pago de prueba usando Wompi sin autenticación 3Ds.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2087,6 +2117,7 @@
           "PaymentMethod"
         ],
         "summary": "Pago real con Wompi usando 3Ds",
+        "description": "Procesa un pago real con autenticación 3Ds usando Wompi.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2116,6 +2147,7 @@
           "PaymentMethod"
         ],
         "summary": "Pago de prueba con Stripe",
+        "description": "Procesa un pago de prueba usando Stripe como método de pago.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2145,6 +2177,7 @@
           "collections"
         ],
         "summary": "Obtener todas las colecciones",
+        "description": "Devuelve una lista con todas las colecciones existentes.",
         "responses": {
           "200": {
             "description": "Lista de colecciones obtenida exitosamente",
@@ -2166,6 +2199,7 @@
           "collections"
         ],
         "summary": "Crear una nueva colección",
+        "description": "Crea una nueva colección a partir de los datos proporcionados.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2189,6 +2223,7 @@
           "collections"
         ],
         "summary": "Obtener una colección por ID",
+        "description": "Devuelve los datos de una colección específica según su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2217,6 +2252,7 @@
           "collections"
         ],
         "summary": "Actualizar una colección",
+        "description": "Actualiza los datos de una colección existente por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2248,6 +2284,7 @@
           "collections"
         ],
         "summary": "Eliminar (marcar como eliminada) una colección",
+        "description": "Marca una colección como eliminada mediante su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2271,6 +2308,7 @@
           "customers"
         ],
         "summary": "Obtener todos los clientes",
+        "description": "Devuelve una lista de todos los clientes registrados.",
         "responses": {
           "200": {
             "description": "Lista de clientes",
@@ -2294,6 +2332,7 @@
           "customers"
         ],
         "summary": "Obtener un cliente por ID",
+        "description": "Recupera los datos de un cliente específico usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2315,6 +2354,7 @@
           "customers"
         ],
         "summary": "Actualizar un cliente por ID",
+        "description": "Modifica la información de un cliente específico identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2346,6 +2386,7 @@
           "customers"
         ],
         "summary": "Eliminar un cliente por ID",
+        "description": "Elimina un cliente del sistema usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2420,6 +2461,7 @@
           "employees"
         ],
         "summary": "Obtener todos los empleados",
+        "description": "Devuelve una lista de todos los empleados registrados en el sistema.",
         "responses": {
           "200": {
             "description": "Lista de empleados obtenida exitosamente",
@@ -2446,6 +2488,7 @@
           "employees"
         ],
         "summary": "Login de empleado",
+        "description": "Permite iniciar sesión a un empleado mediante sus credenciales.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2481,6 +2524,7 @@
           "employees"
         ],
         "summary": "Contar empleados",
+        "description": "Devuelve el número total de empleados registrados.",
         "responses": {
           "200": {
             "description": "Cantidad total de empleados",
@@ -2504,6 +2548,7 @@
           "employees"
         ],
         "summary": "Actualizar un empleado por ID",
+        "description": "Actualiza los datos de un empleado usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2544,6 +2589,7 @@
           "employees"
         ],
         "summary": "Eliminar un empleado por ID",
+        "description": "Elimina un empleado del sistema usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2573,6 +2619,7 @@
           "employees"
         ],
         "summary": "Registrar nuevo empleado",
+        "description": "Registra un nuevo empleado en el sistema con los datos proporcionados.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2602,6 +2649,7 @@
           "historyRawMaterials"
         ],
         "summary": "Obtener todos los historiales de precios",
+        "description": "Devuelve una lista de todos los historiales de precios de materias primas.",
         "responses": {
           "200": {
             "description": "Lista de historiales",
@@ -2626,6 +2674,7 @@
           "historyRawMaterials"
         ],
         "summary": "Crear un nuevo historial de precio",
+        "description": "Registra un nuevo historial de precio para una materia prima.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2655,6 +2704,7 @@
           "historyRawMaterials"
         ],
         "summary": "Obtener historial por ID",
+        "description": "Devuelve el historial de precio de materia prima correspondiente al ID indicado.",
         "parameters": [
           {
             "name": "id",
@@ -2686,6 +2736,7 @@
           "historyRawMaterials"
         ],
         "summary": "Actualizar historial por ID",
+        "description": "Actualiza los datos de un historial de precio existente por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2717,6 +2768,7 @@
           "historyRawMaterials"
         ],
         "summary": "Eliminar historial por ID",
+        "description": "Elimina un historial de precio de materia prima usando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2740,6 +2792,7 @@
           "materialBalances"
         ],
         "summary": "Obtener todos los balances",
+        "description": "Devuelve una lista con todos los balances de materiales registrados.",
         "responses": {
           "200": {
             "description": "Lista de balances",
@@ -2764,6 +2817,7 @@
           "materialBalances"
         ],
         "summary": "Crear balance de material",
+        "description": "Registra un nuevo balance de material en el sistema.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2793,6 +2847,7 @@
           "materialBalances"
         ],
         "summary": "Obtener un balance por ID",
+        "description": "Devuelve los datos de un balance de material específico según su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2824,6 +2879,7 @@
           "materialBalances"
         ],
         "summary": "Actualizar balance",
+        "description": "Actualiza los datos de un balance de material existente identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -2855,6 +2911,7 @@
           "materialBalances"
         ],
         "summary": "Eliminar balance",
+        "description": "Elimina un balance de material existente según su ID.",
         "parameters": [
           {
             "name": "id",
