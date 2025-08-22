@@ -18,6 +18,7 @@
           "registerEmployeesController"
         ],
         "summary": "Registrar nuevo empleado",
+        "description": "Permite registrar un nuevo empleado en el sistema con la información proporcionada.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -54,6 +55,7 @@
           "registerCustomersController"
         ],
         "summary": "Solicitar código de verificación por correo",
+        "description": "Envía un código de verificación al correo electrónico del cliente como parte del proceso de registro.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -87,6 +89,7 @@
           "registerCustomersController"
         ],
         "summary": "Verificar código recibido por correo",
+        "description": "Verifica el código de validación enviado al correo del cliente para confirmar su identidad.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -120,6 +123,7 @@
           "registerCustomersController"
         ],
         "summary": "Registrar nuevo cliente (después de verificar correo)",
+        "description": "Permite registrar un nuevo cliente en el sistema, una vez verificado su correo electrónico.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -159,6 +163,7 @@
           "logoutCustomer"
         ],
         "summary": "Cerrar sesión de clientes",
+        "description": "Cierra la sesión activa de un cliente autenticado.",
         "responses": {
           "200": {
             "description": "Sesión cerrada exitosamente",
@@ -182,6 +187,7 @@
           "Logout"
         ],
         "summary": "Cerrar sesión de empleados",
+        "description": "Cierra la sesión activa de un empleado autenticado.",
         "responses": {
           "200": {
             "description": "Sesión cerrada exitosamente",
@@ -205,6 +211,7 @@
           "loginCustomer"
         ],
         "summary": "Login de clientes",
+        "description": "Permite que un cliente inicie sesión proporcionando sus credenciales.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -244,6 +251,7 @@
           "loginCustomer"
         ],
         "summary": "Verificar cliente autenticado mediante token",
+        "description": "Verifica si un cliente está autenticado correctamente usando el token enviado en la cabecera.",
         "responses": {
           "200": {
             "description": "Cliente autenticado correctamente",
@@ -273,6 +281,7 @@
           "Login"
         ],
         "summary": "Login de empleados",
+        "description": "Permite que un empleado inicie sesión proporcionando sus credenciales.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -336,6 +345,7 @@
           "Auth"
         ],
         "summary": "Refrescar token de autenticación",
+        "description": "Renueva el token de autenticación válido para mantener la sesión activa sin necesidad de login.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -372,6 +382,7 @@
           "Suppliers"
         ],
         "summary": "Obtener todos los proveedores",
+        "description": "Recupera una lista con todos los proveedores registrados en el sistema.",
         "responses": {
           "200": {
             "description": "Lista de proveedores"
@@ -409,6 +420,7 @@
           "Suppliers"
         ],
         "summary": "Obtener un proveedor por ID",
+        "description": "Recupera los detalles de un proveedor específico identificado por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -493,6 +505,7 @@
           "Suppliers"
         ],
         "summary": "Restaurar un proveedor eliminado",
+        "description": "Restaura un proveedor que fue previamente eliminado o desactivado.",
         "parameters": [
           {
             "name": "id",
@@ -519,6 +532,7 @@
           "ShoppingCart"
         ],
         "summary": "Obtener el carrito del usuario autenticado",
+        "description": "Recupera el carrito de compras del usuario actualmente autenticado.",
         "responses": {
           "200": {
             "description": "Carrito obtenido exitosamente"
@@ -538,6 +552,7 @@
           "ShoppingCart"
         ],
         "summary": "Obtener carrito por ID (sólo si pertenece al usuario autenticado)",
+        "description": "Obtiene un carrito específico por su ID, siempre que pertenezca al usuario autenticado.",
         "parameters": [
           {
             "name": "id",
@@ -571,6 +586,7 @@
           "ShoppingCart"
         ],
         "summary": "Agregar un producto al carrito",
+        "description": "Añade un producto específico al carrito del usuario autenticado.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -600,6 +616,7 @@
           "ShoppingCart"
         ],
         "summary": "Disminuir la cantidad de un producto en el carrito",
+        "description": "Reduce la cantidad de un producto existente en el carrito del usuario.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -629,6 +646,7 @@
           "ShoppingCart"
         ],
         "summary": "Completar carrito y generar orden de venta",
+        "description": "Finaliza el proceso de compra y genera una orden a partir del carrito.",
         "responses": {
           "201": {
             "description": "Orden creada exitosamente"
@@ -646,6 +664,7 @@
           "ShoppingCart"
         ],
         "summary": "Eliminar el carrito del usuario autenticado",
+        "description": "Elimina por completo el carrito del usuario autenticado.",
         "responses": {
           "200": {
             "description": "Carrito eliminado"
@@ -665,6 +684,7 @@
           "ShoppingCart"
         ],
         "summary": "Remover un producto específico del carrito",
+        "description": "Elimina un producto en particular del carrito del usuario.",
         "parameters": [
           {
             "name": "productId",
@@ -695,6 +715,7 @@
           "ShoppingCart"
         ],
         "summary": "Vaciar todos los productos del carrito",
+        "description": "Elimina todos los productos del carrito especificado.",
         "parameters": [
           {
             "name": "idCart",
@@ -725,6 +746,7 @@
           "ShoppingCart"
         ],
         "summary": "Restaurar un carrito previamente eliminado",
+        "description": "Recupera un carrito eliminado anteriormente por el usuario.",
         "parameters": [
           {
             "name": "id",
@@ -755,6 +777,7 @@
           "ShoppingCart"
         ],
         "summary": "Obtener porcentaje de carritos abandonados",
+        "description": "Calcula y devuelve el porcentaje de carritos que no fueron completados.",
         "responses": {
           "200": {
             "description": "Porcentaje de carritos abandonados"
@@ -768,6 +791,7 @@
           "ShoppingCart"
         ],
         "summary": "Obtener los 3 productos más vendidos",
+        "description": "Devuelve una lista con los tres productos más vendidos a través del sistema de carrito.",
         "responses": {
           "200": {
             "description": "Lista de productos más vendidos"
@@ -784,6 +808,7 @@
           "Sales Order"
         ],
         "summary": "Obtener todas las órdenes de venta",
+        "description": "Devuelve una lista de todas las órdenes de venta registradas en el sistema, junto con sus totales.",
         "responses": {
           "200": {
             "description": "Lista de órdenes con totale"
@@ -795,6 +820,7 @@
           "Sales Order"
         ],
         "summary": "Crear una nueva orden de venta",
+        "description": "Registra una nueva orden de venta basada en la información proporcionada por el cliente.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -821,6 +847,7 @@
           "Sales Order"
         ],
         "summary": "Crear orden de forma manual",
+        "description": "Permite registrar una orden de venta ingresada manualmente por un empleado (venta privada).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -844,6 +871,7 @@
           "Sales Order"
         ],
         "summary": "Actualizar una orden por ID",
+        "description": "Actualiza los datos de una orden de venta existente identificada por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -878,6 +906,7 @@
           "Sales Order"
         ],
         "summary": "Eliminar una orden por ID",
+        "description": "Elimina una orden de venta existente mediante su ID.",
         "parameters": [
           {
             "name": "id",
@@ -901,6 +930,7 @@
           "Sales Order"
         ],
         "summary": "Restaurar orden eliminada",
+        "description": "Restaura una orden de venta que fue eliminada previamente.",
         "parameters": [
           {
             "name": "id",
@@ -924,6 +954,7 @@
           "Sales Order"
         ],
         "summary": "Contar cantidad de pedidos y total",
+        "description": "Devuelve el número total de órdenes de venta y el monto acumulado.",
         "responses": {
           "200": {
             "description": "Conteo de pedidos y total"
@@ -937,6 +968,7 @@
           "Sales Order"
         ],
         "summary": "Obtener ventas por categoría",
+        "description": "Devuelve el total de ventas agrupado por categoría de productos, incluyendo el porcentaje sobre el total.",
         "responses": {
           "200": {
             "description": "Lista de categorías con total y porcentaje"
@@ -950,6 +982,7 @@
           "Sales Order"
         ],
         "summary": "Cantidad total de pedidos y del mes actual",
+        "description": "Devuelve la cantidad total de pedidos históricos y los realizados durante el mes actual.",
         "responses": {
           "200": {
             "description": "Conteo de pedidos"
@@ -963,6 +996,7 @@
           "Sales Order"
         ],
         "summary": "Obtener ingresos totales y del mes actual",
+        "description": "Devuelve los ingresos totales generados por ventas y los del mes actual.",
         "responses": {
           "200": {
             "description": "Total de ingresos"
@@ -976,6 +1010,7 @@
           "Sales Order"
         ],
         "summary": "Obtener los últimos pedidos",
+        "description": "Recupera las últimas 10 órdenes de venta más recientes.",
         "responses": {
           "200": {
             "description": "Últimos 10 pedidos"
@@ -989,6 +1024,7 @@
           "Sales Order"
         ],
         "summary": "Obtener carrito activo de un usuario y sus productos",
+        "description": "Devuelve el carrito de compras activo junto con sus productos, basado en el ID del usuario.",
         "parameters": [
           {
             "name": "userId",
@@ -1012,6 +1048,7 @@
           "PasswordRecovery"
         ],
         "summary": "Solicitar código de recuperación de contraseña",
+        "description": "Envía un código de verificación al correo electrónico del usuario para iniciar el proceso de recuperación de contraseña.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1041,6 +1078,7 @@
           "PasswordRecovery"
         ],
         "summary": "Verificar código de recuperación",
+        "description": "Verifica que el código ingresado por el usuario sea válido y haya sido enviado previamente a su correo.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1070,6 +1108,7 @@
           "PasswordRecovery"
         ],
         "summary": "Cambiar contraseña tras verificación del código",
+        "description": "Permite al usuario establecer una nueva contraseña después de haber verificado correctamente el código de recuperación.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1099,6 +1138,7 @@
           "RawMaterials"
         ],
         "summary": "Obtener todas las materias primas",
+        "description": "Recupera la lista completa de todas las materias primas registradas en el sistema.",
         "responses": {
           "200": {
             "description": "Lista de materias primas obtenida correctamente"
@@ -1113,6 +1153,7 @@
           "RawMaterials"
         ],
         "summary": "Crear una nueva materia prima",
+        "description": "Crea una nueva materia prima con los datos proporcionados.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1142,6 +1183,7 @@
           "RawMaterials"
         ],
         "summary": "Obtener materia prima por ID",
+        "description": "Obtiene los detalles de una materia prima específica utilizando su ID.",
         "parameters": [
           {
             "name": "id",
@@ -1169,6 +1211,7 @@
           "RawMaterials"
         ],
         "summary": "Actualizar una materia prima por ID",
+        "description": "Actualiza los datos de una materia prima específica.",
         "parameters": [
           {
             "name": "id",
@@ -1206,6 +1249,7 @@
           "RawMaterials"
         ],
         "summary": "Eliminar una materia prima por ID",
+        "description": "Elimina lógicamente una materia prima del sistema.",
         "parameters": [
           {
             "name": "id",
