@@ -209,7 +209,7 @@ const RegisterOrder = ({ onClose, initialData }) => {
     >
       <FormInputs>
         <InputsInline>
-          <Input name="name" label="Nombre" type="text" register={register} errors={errors} disabled={initialData} />
+          <Input name="name" label="Nombre de Usuario" type="text" register={register} errors={errors} disabled={initialData} />
           <Dropdown name="paymentMethod" label="Método de pago" options={metodosPago} register={register} disabled={initialData} />
           {initialData &&
             <Dropdown name="shippingState" label="Estado de Orden" options={opcionesEstadoEnvio} register={register} />
@@ -313,7 +313,7 @@ const RegisterOrder = ({ onClose, initialData }) => {
               return (
                 <div
                   key={key}
-                  className="flex items-center justify-between border rounded-lg p-3 mb-3 bg-yellow-50 shadow-sm border-pink-200 gap-5"
+                  className="flex items-center justify-between border rounded-lg p-3 mb-3 bg-pink-50 shadow-sm border-pink-200 gap-2 mb-12"
                 >
                   <div className="flex items-center gap-4">
                     <img
@@ -357,18 +357,11 @@ const RegisterOrder = ({ onClose, initialData }) => {
           </div>
         </div>
         <Input name="address" label="Dirección" type="text" register={register} errors={errors} disabled={initialData} />
-        <div className="space-y-6">
-          {/* Formulario de envío */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input name="firstName" label="Nombre" type="text" register={register} errors={errors} disabled={initialData} />
-            <Input name="lastName" label="Apellido" type="text" register={register} errors={errors} disabled={initialData} />
-            <Input name="phone" label="Teléfono" type="text" register={register} errors={errors} disabled={initialData} />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input name="state" label="Departamento" type="text" register={register} errors={errors} disabled={initialData} />
+        <Input name="Waypoint" label="Lugar de Referencia" type="text" register={register} errors={errors} disabled={initialData} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Input name="state" label="Departamento" type="text" register={register} errors={errors} disabled={initialData} />
             <Input name="city" label="Municipio" type="text" register={register} errors={errors} disabled={initialData} />
-            <Input name="zipCode" label="Código Postal" type="text" register={register} errors={errors} disabled={initialData} />
-          </div>
+            <Input name="phone" label="Teléfono" type="text" register={register} errors={errors} disabled={initialData} />
         </div>
 
         <h2 className="font-bold text-2xl mt-6">Total: ${total.toFixed(2)}</h2>
