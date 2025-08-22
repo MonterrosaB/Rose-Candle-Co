@@ -1,0 +1,21 @@
+{
+  "document_title": "Home",
+  "welcome_back": "Welcome back,",
+  "total_orders": "Total Orders",
+  "last_month_orders": "Last Month",
+  "total_earnings": "Total Earnings",
+  "monthly_earnings": "Last Month",
+  "total_users": "Total Users",
+  "latest_users": "Last Month",
+  "low_stock_title": "Low Stock Raw Materials",
+  "recent_orders_title": "Latest Orders",
+  "column_material_name": "Material",
+  "column_stock_current": "Current Stock",
+  "column_diff_to_minimum": "Difference",
+  "column_customer_name": "Name",
+  "column_order_date": "Order Date",
+  "column_shipping_address": "Location",
+  "column_total_amount": "Total",
+  "column_items_ordered": "Total Products",
+  "popular": "Best Sellers Products"
+}

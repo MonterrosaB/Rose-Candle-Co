@@ -1,0 +1,16 @@
+{
+  "page_title": "Inventory | Rosé Candle Co.",
+  "dashboard_title": "Dashboard",
+  "dashboard_subtitle": "Manage your system",
+  "footer_message": "Select an option to continue",
+  "menu": {
+    "products": "Products",
+    "suppliers": "Suppliers",
+    "raw_materials": "Raw Materials",
+    "categories": "Categories",
+    "material_categories": "Material Categories",
+    "collections": "Collections"
+  },
+  "manage": "Manage",
+  "document_title": "Stock"
+}

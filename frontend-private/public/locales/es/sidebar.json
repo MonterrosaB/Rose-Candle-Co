@@ -1,0 +1,9 @@
+{
+  "home": "Inicio",
+  "inventory": "Inventario",
+  "reports": "Reportes",
+  "employees": "Empleados",
+  "orders": "Pedidos",
+  "logout": "Cerrar Sesión",
+  "change_language": "Cambiar idioma"
+}

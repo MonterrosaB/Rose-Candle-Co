@@ -1,19 +1,20 @@
-// Lógica para la página de perfil
-import React, { useState, useEffect, useContext } from "react";
-import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
+import React, { useEffect } from "react";
 import PrincipalDiv from "../../../global/components/PrincipalDiv";
-import ProfileForm from "../components/ProfileForm.jsx"
+import ProfileForm from "../components/ProfileForm.jsx";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
-  // Cambiar el título de la página al montar el componente
+  const { t, i18n } = useTranslation("profile");
+
   useEffect(() => {
-    document.title = "Mi Perfil | Rosé Candle Co.";
-  }, []);
+    document.title = `${t("document_title")} | Rosé Candle Co.`;
+  }, [t, i18n.language]); // Ejecuta cada vez que cambia el idioma
 
   return (
     <PrincipalDiv>
-        <ProfileForm/>
+      <ProfileForm />
     </PrincipalDiv>
   );
 };
+
 export default Profile;

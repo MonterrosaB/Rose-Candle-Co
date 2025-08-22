@@ -4,18 +4,20 @@ import { Link } from "react-router-dom";
 import { LogOut, Menu as MenuIcon, X as CloseIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../global/hooks/useAuth.js";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { t } = useTranslation("sidebar"); // namespace recomendado: "sidebar"
   const isAdmin = user?.isAdmin;
 
   const links = [
-    { to: "/", label: "Home", adminOnly: false },
-    { to: "/stock", label: "Stock", adminOnly: false },
-    { to: "/reports", label: "Reports", adminOnly: true },
-    { to: "/employees", label: "Employees", adminOnly: true },
-    { to: "/order", label: "Order", adminOnly: false },
+    { to: "/", label: t("home"), adminOnly: false },
+    { to: "/stock", label: t("inventory"), adminOnly: false },
+    { to: "/reports", label: t("reports"), adminOnly: true },
+    { to: "/employees", label: t("employees"), adminOnly: true },
+    { to: "/order", label: t("orders"), adminOnly: false },
   ];
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -28,7 +30,7 @@ const Sidebar = () => {
   const renderLinks = () => (
     <ul className="space-y-2 px-4">
       {links.map(({ to, label, adminOnly }) => {
-        if (adminOnly && !isAdmin) return null; // Oculta links de admin para usuarios normales
+        if (adminOnly && !isAdmin) return null;
         return (
           <li key={to}>
             <Link
@@ -50,7 +52,7 @@ const Sidebar = () => {
       <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 w-12 h-12 bg-white shadow-lg z-50 flex lg:hidden items-center justify-center rounded-md"
-        aria-label="Toggle menu"
+        aria-label={t("toggle_menu")}
       >
         {isSidebarOpen ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
       </button>
@@ -69,7 +71,7 @@ const Sidebar = () => {
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300 cursor-pointer"
           >
             <LogOut size={18} />
-            Log Out
+            {t("logout")}
           </button>
         </div>
       </aside>
@@ -105,7 +107,7 @@ const Sidebar = () => {
                   className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md hover:bg-[#A3A380]/20 transition-colors duration-300 cursor-pointer"
                 >
                   <LogOut size={18} />
-                  Log Out
+                  {t("logout")}
                 </button>
               </div>
             </motion.aside>

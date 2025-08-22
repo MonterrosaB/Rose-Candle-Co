@@ -1,21 +1,18 @@
 // Lógica para la página de home
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
 import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
 import DataGrid from "./components/DataGrid.jsx";
-import { AuthContext } from "../../global/context/AuthContext"; // Para el nombre del usuario
-import useHome from "./hooks/useHome"; // Hook
+import { AuthContext } from "../../global/context/AuthContext";
+import useHome from "./hooks/useHome";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Soporte para i18n
 
 const Home = () => {
-  // Cambiar el título de la página al montar el componente
-  useEffect(() => {
-    document.title = "Home | Rosé Candle Co.";
-  }, []);
-
-  const { user } = useContext(AuthContext); // Nombre del usuario
+  const { t } = useTranslation("home"); // Namespace del archivo home.json
+  const { user } = useContext(AuthContext);
 
   const {
     customerCount,
@@ -29,88 +26,98 @@ const Home = () => {
     latestOrders,
   } = useHome();
 
-  // Columnas del stock
+  // Cambiar título del documento dinámicamente según el idioma
+  useEffect(() => {
+    document.title = `${t("document_title")} | Rosé Candle Co.`;
+  }, [t]);
+
+  // Columnas para la tabla de materia prima
   const columnsMaterial = {
-    Materia: "name",
-    "Stock Actual": "stockWithUnit",
-    Diferencia: "diffToMinimum",
+    [t("column_material_name")]: "name",
+    [t("column_stock_current")]: "stockWithUnit",
+    [t("column_diff_to_minimum")]: "diffToMinimum",
   };
 
-  // Columnas de ùltimos pedidos
+  // Columnas para la tabla de últimos pedidos
   const columnsOrders = {
-    Nombre: "customerName",
-    "Fecha Pedido": "purchaseDate",
-    Ubicación: "shippingAddress",
-    Total: "totalAmount",
-    "Productos Totales": "itemsOrdered",
+    [t("column_customer_name")]: "customerName",
+    [t("column_order_date")]: "purchaseDate",
+    [t("column_shipping_address")]: "shippingAddress",
+    [t("column_total_amount")]: "totalAmount",
+    [t("column_items_ordered")]: "itemsOrdered",
   };
 
   return (
     <PrincipalDiv>
+      {/* Encabezado con enlace al perfil */}
       <Link to="/profile">
         <div className="flex flex-wrap mb-1 items-center">
           <CircleUser strokeWidth={2.5} className="cursor-pointer" />
           <h1 className="text-2xl font-semibold ml-2">
-            Hola de nuevo, {user?.name || "usuario"}
+            {t("welcome_back")} {user?.name || "usuario"}
           </h1>
         </div>
       </Link>
 
-      {/* Widgets */}
+      {/* Tarjetas de widgets */}
       <div className="w-full flex flex-wrap justify-center gap-x-14 gap-y-8 mb-1">
         <CardWidgets
           bgColor={"#F7F5EE"}
           textColor={"#333"}
-          tittle={"Pedidos Totales"}
+          tittle={t("total_orders")}
           value={totalOrders.toString()}
-          increment={currentMonthOrders.toString()}
+          increment={`${currentMonthOrders} ${t("last_month_orders")}`}
           icon={<Boxes size={32} strokeWidth={2.5} />}
         />
         <CardWidgets
           bgColor={"#C2A878"}
           textColor={"#FFFFFF"}
-          tittle={"Ingresos Totales"}
-          value={`$${totalEarnings.toString()}`}
-          increment={`$${monthlyEarnings.toString()}`}
+          tittle={t("total_earnings")}
+          value={`$${totalEarnings}`}
+          increment={`$${monthlyEarnings} ${t("monthly_earnings")}`}
           icon={<DollarSign size={32} strokeWidth={3} />}
         />
         <CardWidgets
           bgColor={"#F7F5EE"}
           textColor={"#333"}
-          tittle={"Usuarios Totales"}
+          tittle={t("total_users")}
           value={customerCount.toString()}
-          increment={latestCustomerCount.toString()}
+          increment={`${latestCustomerCount} ${t("latest_users")}`}
           icon={<User size={32} strokeWidth={3} />}
         />
       </div>
 
-      {/* Grid responsive */}
+      {/* Tablas responsivas */}
       <div className="flex flex-col lg:flex-row gap-4 mb-1 items-center">
+        {/* Tabla de materiales */}
         <div className="w-full lg:w-2/3">
           <DataGrid
-            title={"Valores bajos de materia prima"}
+            title={t("low_stock_title")}
             columns={columnsMaterial}
             rows={lowStockMaterials}
             editable={false}
-            rowsPerPage={3} // Se limita la cantidad de materia prima
+            rowsPerPage={3}
           />
         </div>
 
+        {/* Productos más vendidos */}
         <div className="w-full flex justify-center lg:w-1/3 lg:flex lg:justify-center">
           <PopularProducts data={bestSellingProducts} />
         </div>
       </div>
 
+      {/* Últimos pedidos */}
       <div className="w-full lg:w-14/15">
         <DataGrid
-          title={"Últimos pedidos"}
+          title={t("recent_orders_title")}
           columns={columnsOrders}
           rows={latestOrders}
           editable={false}
-          rowsPerPage={3} // Se limita la cantidad de pedidos
+          rowsPerPage={3}
         />
       </div>
     </PrincipalDiv>
   );
 };
+
 export default Home;

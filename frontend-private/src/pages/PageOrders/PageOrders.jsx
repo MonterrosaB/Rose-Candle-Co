@@ -12,6 +12,10 @@ import { useForm } from "react-hook-form";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 
 const PageOrders = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Pedidos | Rosé Candle Co.";
+  }, []);
 
   const methods = useForm();
   const { salesOrders, getSalesOrders } = useOrders(methods);
@@ -24,7 +28,6 @@ const PageOrders = () => {
     Productos: "totalProducts",
     Fecha: "saleDate",
     Monto: "total",
-    Método: "paymentMethod",
     Método: "paymentMethod",
     Estado: "shippingState"
   };

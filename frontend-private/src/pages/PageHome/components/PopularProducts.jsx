@@ -1,16 +1,17 @@
 import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { useTranslation } from "react-i18next"; // Soporte para i18n (Cambiar idioma)
 
 // Componente que muestra un gráfico circular de los productos más populares
 const PopularProducts = ({ data }) => {
   // Colores definidos para las secciones del gráfico
   const COLORS = ["#E8DCC3", "#C2A878", "#A3A380"];
-
+  const { t } = useTranslation("home"); // Para las traducciones
   return (
     // Contenedor principal con estilos de tarjeta
     <div className="w-80 h-64 shadow-xl rounded-2xl p-4 flex flex-col justify-center min-w-80 ">
       {/* Título del gráfico */}
       <h2 className="text-md font-semibold text-center pt-5">
-        Productos Populares
+        {t("popular")}
       </h2>
 
       {/* Contenedor del gráfico y la leyenda */}

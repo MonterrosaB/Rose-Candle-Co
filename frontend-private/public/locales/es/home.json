@@ -1,0 +1,21 @@
+{
+  "document_title": "Inicio",
+  "welcome_back": "Hola de nuevo,",
+  "total_orders": "Pedidos Totales",
+  "last_month_orders": "Último Mes",
+  "total_earnings": "Ingresos Totales",
+  "monthly_earnings": "Último Mes",
+  "total_users": "Usuarios Totales",
+  "latest_users": "Último Mes",
+  "low_stock_title": "Valores Bajos de Materia Prima",
+  "recent_orders_title": "Últimos Pedidos",
+  "column_material_name": "Materia",
+  "column_stock_current": "Stock Actual",
+  "column_diff_to_minimum": "Diferencia",
+  "column_customer_name": "Nombre",
+  "column_order_date": "Fecha Pedido",
+  "column_shipping_address": "Ubicación",
+  "column_total_amount": "Total",
+  "column_items_ordered": "Productos Totales",
+  "popular": "Productos Populares"
+}

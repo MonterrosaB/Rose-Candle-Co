@@ -1,0 +1,21 @@
+{
+  "personal_info": "Información Personal",
+  "my_profile": "Mi Perfil",
+  "manage_info": "Gestiona tu información personal",
+  "app_manual": "Manual de la aplicación",
+  "edit": "Editar",
+  "save": "Guardar",
+  "save_changes": "Guardar Cambios",
+  "cancel": "Cancelar",
+  "change_language": "Cambiar idioma",
+  "recover_password": "Recuperar contraseña",
+  "loading": "Cargando perfil...",
+  "name": "Nombre",
+  "surnames": "Apellidos",
+  "phone": "Teléfono",
+  "email": "Correo Electrónico",
+  "dui": "DUI",
+  "user": "Usuario",
+  "password": "Contraseña",
+  "document_title": "Mi Perfil"
+}

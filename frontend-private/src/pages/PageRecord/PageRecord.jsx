@@ -21,6 +21,10 @@ import {
 } from "recharts";
 
 const PageRecord = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Historial | Rosé Candle Co.";
+  }, []);
 
   const { bestSellers, worstSellers, dataM, materialsBalance, materials } = useRecord();
 

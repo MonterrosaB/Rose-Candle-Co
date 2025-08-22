@@ -10,6 +10,11 @@ import { useForm } from "react-hook-form";
 import useCollections from "./hooks/useCollections";
 
 const PageCollections = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Colecciones | Rosé Candle Co.";
+  }, []);
+
   const [openDialogCollections, setOpenDialogCollections] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
 

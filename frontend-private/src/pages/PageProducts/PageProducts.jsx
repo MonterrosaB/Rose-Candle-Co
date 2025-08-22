@@ -6,10 +6,6 @@ import TitleH1 from "../../global/components/TitleH1"
 import DropDownFilter from "../../global/components/DropDownFilter";
 
 import InputsInLine from "../../global/components/InputsInline"
-
-
-
-
 import Dialog from "../../global/components/Dialog";
 import RegisterProducts from "./components/RegisterProducts";
 import Button from "../../global/components/Button";
@@ -19,6 +15,10 @@ import useFetchProduct from "./components/UseFetchProduct";
 import useProductOptions from "./hooks/useProductOptions";
 
 const PageProducts = () => {
+// Cambiar el título de la página al montar el componente
+  useEffect(() => { 
+    document.title = "Productos | Rosé Candle Co.";
+  }, []);
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -26,9 +26,6 @@ const PageProducts = () => {
   const { products, getProducts } = useFetchProduct();
 
   const { opcionesCategorias, opcionesEstado, opcionesColecciones } = useProductOptions();
-
-
-
 
   const handleAdd = () => {
     setSelectedProduct(null);

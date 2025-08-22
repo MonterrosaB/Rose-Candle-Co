@@ -8,10 +8,12 @@ import useSuppliers from "./hooks/useSuppliers";
 import TitleH1 from "../../global/components/TitleH1"
 import Swal from "sweetalert2";
 
-
-
-
 const PageSuppliers = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Proveedores | Rosé Candle Co.";
+  }, []);
+
   const [openDialogSuppliers, setOpenDialogSuppliers] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 

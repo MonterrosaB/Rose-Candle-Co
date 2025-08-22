@@ -10,9 +10,14 @@ import TitleH1 from "../../global/components/TitleH1";
 import Swal from "sweetalert2"
 
 const PageMaterials = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Materia Prima | Rosé Candle Co.";
+  }, []);
+
   const [openDialogMaterial, setOpenDialogMaterial] = useState(false);
   const [openDialogSupplies, setOpenDialogSupplies] = useState(false);
-  const [registroActual, setRegistroActual] = useState(null); // 🟡 Para editar
+  const [registroActual, setRegistroActual] = useState(null); // Para editar
 
   const methods = useForm();
 

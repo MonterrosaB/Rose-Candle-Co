@@ -1,0 +1,21 @@
+{
+  "personal_info": "Personal Information",
+  "my_profile": "My Profile",
+  "manage_info": "Manage your personal information",
+  "app_manual": "App Manual",
+  "edit": "Edit",
+  "save": "Save",
+  "save_changes": "Save Changes",
+  "cancel": "Cancel",
+  "change_language": "Change Language",
+  "recover_password": "Recover Password",
+  "loading": "Loading profile...",
+  "name": "Name",
+  "surnames": "Surnames",
+  "phone": "Phone",
+  "email": "Email",
+  "dui": "DUI",
+  "user": "Username",
+  "password": "Password",
+  "document_title": "My Profile"
+}

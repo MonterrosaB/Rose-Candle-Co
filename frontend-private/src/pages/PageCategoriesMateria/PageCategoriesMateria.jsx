@@ -10,6 +10,11 @@ import { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 
 const PageCategoriesMateria = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Categorías de Materia Prima | Rosé Candle Co.";
+  }, []);
+
   const [openDialogCategories, setOpenDialogCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 

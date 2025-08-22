@@ -10,6 +10,11 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 const PageCategories = () => {
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Categorías de Productos | Rosé Candle Co.";
+  }, []);
+
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -90,7 +95,7 @@ const PageCategories = () => {
 
   return (
     <PrincipalDiv>
-      <TitleH1 title={"categorias de productos"} />
+      <TitleH1 title={"Categorías de Productos"} />
 
       {/* Tabla solo visible en pantallas md en adelante */}
       <div className="hidden md:block">
