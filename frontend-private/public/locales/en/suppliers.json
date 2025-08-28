@@ -1,0 +1,16 @@
+{
+    "title": "Suppliers",
+    "add": "Add Supplier",
+    "add_short": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "name": "Name",
+    "contact": "Contact",
+    "confirm_delete_title": "Delete supplier \"{{name}}\"?",
+    "confirm_delete_text": "This action cannot be undone.",
+    "confirm_delete_confirm": "Yes, delete",
+    "confirm_delete_cancel": "Cancel",
+    "deleted_title": "Deleted",
+    "deleted_text": "Supplier \"{{name}}\" has been deleted.",
+    "document_title": "Suppliers"
+}

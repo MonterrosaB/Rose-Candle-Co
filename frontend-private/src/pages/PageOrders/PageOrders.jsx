@@ -7,15 +7,17 @@ import TitleH1 from "../../global/components/TitleH1"
 import useOrders from "./hooks/useOrders";
 import { useForm } from "react-hook-form";
 
-
+import { useTranslation } from "react-i18next"; // Soporte para i18n
 
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 
 const PageOrders = () => {
+  const { t } = useTranslation("orders"); // Namespace del archivo orders.json
+
   // Cambiar el título de la página al montar el componente
   useEffect(() => {
-    document.title = "Pedidos | Rosé Candle Co.";
-  }, []);
+    document.title = `${t("title")} | Rosé Candle Co.`;
+  }, [t]);
 
   const methods = useForm();
   const { salesOrders, getSalesOrders } = useOrders(methods);
@@ -24,12 +26,12 @@ const PageOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null); //  Para editar
 
   const columns = {
-    Cliente: "name",
-    Productos: "totalProducts",
-    Fecha: "saleDate",
-    Monto: "total",
-    Método: "paymentMethod",
-    Estado: "shippingState"
+    [t("client")]: "name",
+    [t("products")]: "totalProducts",
+    [t("date")]: "saleDate",
+    [t("amount")]: "total",
+    [t("payment_method")]: "paymentMethod",
+    [t("status")]: "shippingState",
   };
 
   //  Abrir modal para agregar
@@ -49,12 +51,12 @@ const PageOrders = () => {
   return (
     <>
       <PrincipalDiv>
-        <TitleH1 title="Órdenes" />
+        <TitleH1 title={t("title")} />
         <div className="hidden sm:block">
           <DataGrid
             columns={columns}
             rows={salesOrders}
-            primaryBtnText={"Add Order"}
+            primaryBtnText={t("add_order")}
             onClickPrimaryBtn={handleAddOrder}
             updateRow={handleEditOrder} //  Aquí pasamos la función
             showDelete={false}
@@ -81,22 +83,22 @@ const PageOrders = () => {
               className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
             >
               <p className="text-sm text-gray-600 mb-1">
-                <strong>ID Orden:</strong> {order.idShoppingCart}
+                <strong>{t("order_id")}:</strong> {order.idShoppingCart}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Fecha:</strong> {new Date(order.createdAt).toLocaleString()}
+                <strong>{t("date")}:</strong> {new Date(order.createdAt).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Monto:</strong> ${order.total?.toFixed(2)}
+                <strong>{t("amount")}:</strong> ${order.total?.toFixed(2)}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Método de pago:</strong> {order.paymentMethod}
+                <strong>{t("payment_method")}:</strong> {order.paymentMethod}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Estado:</strong> {order.shippingState[0]?.state || "Sin estado"}
+                <strong>{t("status")}:</strong> {order.shippingState[0]?.state || "Sin estado"}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Dirección:</strong> {order.address?.address}
+                <strong>{t("address")}:</strong> {order.address?.address}
               </p>
             </div>
           ))}
