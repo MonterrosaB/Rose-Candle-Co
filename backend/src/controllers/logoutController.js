@@ -6,6 +6,14 @@ logoutController.logout = async (req, res) => {
   // Eliminar la cookie que contiene el token de autenticación
   res.clearCookie("authToken");
 
+  // Eliminar segunda cookie
+  res.clearCookie("authTokenR", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict",
+    path: "/",
+  });
+
   // Responder con mensaje de confirmación
   return res.json({ message: "Session closed" });
 };

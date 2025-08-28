@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { t } = useTranslation("sidebar"); // namespace recomendado: "sidebar"
+  const { t } = useTranslation("sidebar");
   const isAdmin = user?.isAdmin;
 
   const links = [
@@ -52,7 +52,7 @@ const Sidebar = () => {
       <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 w-12 h-12 bg-white shadow-lg z-50 flex lg:hidden items-center justify-center rounded-md"
-        aria-label={t("toggle_menu")}
+        aria-label={"Toggle Menu"}
       >
         {isSidebarOpen ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
       </button>
