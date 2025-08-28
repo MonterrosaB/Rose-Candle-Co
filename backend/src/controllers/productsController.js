@@ -59,7 +59,15 @@ productsController.getAvailableProducts = async (req, res) => {
 // GET (POR ID) - Método para traer un producto por su id
 productsController.getProductById = async (req, res) => {
   try {
-    const product = await productsModel.findById(req.params.id);
+    const product = await productsModel.findById(req.params.id).populate({
+      path: "variant.components.idComponent",
+      select: "name idRawMaterialCategory",
+      populate: {
+        path: "idRawMaterialCategory",
+        select: "name",
+      },
+      strictPopulate: false,
+    });
     if (!product) return res.status(404).json({ error: "Producto not found" }); // si el producto no se encuentra
     res.status(200).json(product); // todo bien
   } catch (error) {
