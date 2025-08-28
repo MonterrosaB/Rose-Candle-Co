@@ -1,0 +1,16 @@
+{
+    "title": "Proveedores",
+    "add": "Agregar Proveedor",
+    "add_short": "Agregar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "name": "Nombre",
+    "contact": "Contacto",
+    "confirm_delete_title": "¿Eliminar proveedor \"{{name}}\"?",
+    "confirm_delete_text": "Esta acción no se puede deshacer.",
+    "confirm_delete_confirm": "Sí, eliminar",
+    "confirm_delete_cancel": "Cancelar",
+    "deleted_title": "Eliminado",
+    "deleted_text": "Proveedor \"{{name}}\" ha sido eliminado.",
+    "document_title": "Proveedores"
+}

@@ -60,8 +60,8 @@ const useSales = () => {
             // Preparar datos para el gráfico (últimos 6 meses)
             const chartData = (stats.last6Months || []).map((item) => ({
                 name: item._id,
-                ingresos: Number(item.totalSales).toFixed(2),
-                ganancias: Number(item.totalProfit).toFixed(2),
+                Ingresos: Number(item.totalSales).toFixed(2),
+                Ganancias: Number(item.totalProfit).toFixed(2),
             }));
 
             // Ganancias diarias

@@ -2,6 +2,7 @@ import PrincipalDiv from "../../global/components/PrincipalDiv";
 import { Link } from "react-router";
 import { useEffect } from "react";
 import useSales from "./hooks/useSales";
+import { useTranslation } from "react-i18next"; // Soporte para i18n
 
 import {
   BarChart,
@@ -22,10 +23,11 @@ import AverageSellByOrders from "./components/AverageSellByOrders";
 import DataGrid from "../../global/components/DataGrid";
 
 const PageReports = () => {
+  const { t } = useTranslation("reports"); // Namespace del archivo reports.json
   // Cambiar el título de la página al montar el componente
   useEffect(() => {
-    document.title = "Reportes | Rosé Candle Co.";
-  }, []);
+    document.title = `${t("document_title")} | Rosé Candle Co.`;
+  }, [t]);
 
   const {
     loading,
@@ -41,23 +43,23 @@ const PageReports = () => {
   } = useSales();
 
   const columns = {
-    Producto: "Product",
-    "Precio de Venta": "salePrice",
-    "Costo de Producción": "productionCost",
-    "%": "Earnigs",
+    [t("product")]: "Product",
+    [t("sale_price")]: "salePrice",
+    [t("production_cost")]: "productionCost",
+    [t("earnings")]: "Earnigs"
   };
 
   const productTableColumns = {
-    Producto: "name",
-    Unidades: "totalQuantity",
-    "Ingresos Generados": "totalRevenue",
+    [t("product")]: "name",
+    [t("units")]: "totalQuantity",
+    [t("total_revenue")]: "totalRevenue"
   };
 
   return (
     <PrincipalDiv>
       {loading ? (
         <p className="text-center text-gray-400">
-          No hay movimientos para esta materia
+          {t("no_data")}
         </p>
       ) : (
         <div className="pt-15">
@@ -65,28 +67,28 @@ const PageReports = () => {
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
               <Widget
-                title="Pedidos del Mes"
+                title={t("orders_this_month")}
                 value={orders.cantidadPedidos}
                 bgColor="#F7F5EE"
                 textColor="#333"
                 variant="compact"
               />
               <Widget
-                title="Tasa de Carritos Abandonados"
+                title={t("abandoned_carts")}
                 value={carts}
                 bgColor="#F7F5EE"
                 textColor="#333"
                 variant="compact"
               />
               <Widget
-                title="Ingresos del Mes"
+                title={t("revenue_this_month")}
                 value={`$${orders.totalVentas}`}
                 bgColor="#F7F5EE"
                 textColor="#333"
                 variant="compact"
               />
               <Widget
-                title="Ganancias del Mes"
+                title={t("earnings_this_month")}
                 value={`$${dataM.ganancias}`}
                 bgColor="#F7F5EE"
                 textColor="#333"
@@ -102,7 +104,7 @@ const PageReports = () => {
             <div className="w-full">
               <div className="bg-[#C2A878] h-full rounded-2xl p-6 flex flex-col justify-between text-white shadow-lg">
                 <h2 className="text-2xl font-semibold mb-2">
-                  Ganancia del Día
+                  {t("daily_earnings")}
                 </h2>
                 <p className="text-6xl font-bold text-center">
                   ${dataD.ganancias}
@@ -112,14 +114,14 @@ const PageReports = () => {
                     to="/order"
                     className="border border-white rounded-md px-4 py-2 hover:bg-white hover:text-[#C2A878] transition"
                   >
-                    Ver Ventas
+                    {t("view_sales")}
                   </Link>
                 </div>
               </div>
             </div>
             <div className="w-full lg:w-1/2 mb-4 xl:mb-0">
               <AverageSellByOrders
-                tittle="Tamaño Promedio de Compras"
+                tittle={t("avg_order_value")}
                 value={`$${parseFloat(orders.averageOrderValue).toFixed(2)}`}
                 bgColor="#F7F5EE"
                 textColor="#333"
@@ -132,7 +134,7 @@ const PageReports = () => {
           <div className="flex flex-col xl:flex-row gap-6 mb-6">
             <div className="w-full  bg-white rounded-2xl shadow-md p-6 h-80 ">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Ingresos vs Ganancias
+                {t("revenue_vs_earnings")}
               </h2>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data6M} barCategoryGap={10} barSize={20}>
@@ -156,12 +158,12 @@ const PageReports = () => {
                     }}
                   />
                   <Bar
-                    dataKey="ingresos"
+                    dataKey="Ingresos"
                     fill="#C2A878"
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
-                    dataKey="ganancias"
+                    dataKey="Ganancias"
                     fill="#9E9E9E"
                     radius={[4, 4, 0, 0]}
                   />
@@ -172,7 +174,7 @@ const PageReports = () => {
 
           <div className="w-full overflow-x-auto">
             <DataGrid
-              title="Ganancias por producto"
+              title={t("earnings_by_product")}
               columns={columns}
               rows={productProfit}
               editable={false}
@@ -182,7 +184,7 @@ const PageReports = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div className="bg-white p-4 rounded-xl shadow">
               <h3 className="text-lg font-semibold mb-4 text-center">
-                Productos Más Vendidos
+                {t("best_sellers")}
               </h3>
               <DataGrid
                 columns={productTableColumns}
@@ -192,7 +194,7 @@ const PageReports = () => {
             </div>
             <div className="bg-white p-4 rounded-xl shadow">
               <h3 className="text-lg font-semibold mb-4 text-center">
-                Productos Menos Vendidos
+                {t("worst_sellers")}
               </h3>
               <DataGrid
                 columns={productTableColumns}
