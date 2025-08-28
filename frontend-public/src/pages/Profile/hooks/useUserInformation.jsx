@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth.js"; // auth para el id del usuario logueado
 
-const ApiCustomers = "https://rose-candle-co.onrender.com/api/customers"; // api para editar
 
 export const useUserInformation = () => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, API} = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: "",
@@ -13,6 +12,9 @@ export const useUserInformation = () => {
     phone: "",
     email: "",
   });
+
+const ApiCustomers = API + "/customers"; // api para el cliente
+
 
   // Obtener perfil desde backend
   const fetchProfile = async () => {
@@ -70,7 +72,6 @@ export const useUserInformation = () => {
     profile,
     setProfile,
     loading,
-    fetchProfile,
     updateProfile,
   };
 };

@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
+
+
 
 const useFetchEmployees = () => {
+
+  const { API } = useAuth()
+
+  const ApiEmployees = API + "/employees";
+
   const [employees, setEmployees] = useState([]);
 
   // Función para todos los empleados

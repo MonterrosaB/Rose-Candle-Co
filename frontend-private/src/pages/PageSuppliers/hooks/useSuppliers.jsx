@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const ApiSuppliers = "https://rose-candle-co.onrender.com/api/suppliers";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 const useSuppliers = () => {
+
+  const { API } = useAuth()
+
+  const ApiSuppliers = API + "/suppliers";
+
   const [suppliers, setSuppliers] = useState([]);
 
   const getSuppliers = async () => {

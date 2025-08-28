@@ -98,11 +98,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${API_URL}/loginCustomer/verifyCustomer`, 
+        const response = await fetch(`${API_URL}/loginCustomer/verifyCustomer`,
           {
-          method: "GET",
-          credentials: "include", // <--- manda la cookie automáticamente
-        });
+            method: "GET",
+            credentials: "include", // <--- manda la cookie automáticamente
+          });
 
         if (response.ok) {
           const data = await response.json();

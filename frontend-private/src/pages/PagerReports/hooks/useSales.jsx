@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 const useSales = () => {
 
-    const API = "https://rose-candle-co.onrender.com/api"
+    const { API } = useAuth()
 
     const [orders, setOrders] = useState([]);
     const [carts, setCarts] = useState([]);
@@ -16,8 +18,6 @@ const useSales = () => {
     const [productProfit, setProductProfit] = useState([]);
     const [soldByCategory, setSoldByCategory] = useState([]);
     const [error, setError] = useState(null);
-
-    //https://rose-candle-co.onrender.com/api/
 
 
     const getTotalOrders = async () => {

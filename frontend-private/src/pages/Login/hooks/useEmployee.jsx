@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 const useEmployees = () => {
-    const ApiRegister = "https://rose-candle-co.onrender.com/api/registerEmployees";
-    const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
+
+    const { API } = useAuth()
+
+    const ApiRegister = API + "/registerEmployees";
+    const ApiEmployees = API + "/employees";
 
     const [activeTab, setActiveTab] = useState("list");
     const [id, setId] = useState("");

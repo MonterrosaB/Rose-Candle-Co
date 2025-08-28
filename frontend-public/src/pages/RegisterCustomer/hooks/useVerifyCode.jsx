@@ -1,7 +1,12 @@
 // Hook para verificar el código de verificación enviado al correo
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 export const useVerifyCode = () => {
+
+  const { API } = useAuth()
+
   // Función asíncrona que envía el código al backend y valida su autenticidad
   const verifyCode = async ({ code }) => {
     if (!code) {
@@ -15,7 +20,7 @@ export const useVerifyCode = () => {
     try {
       // Realiza una solicitud POST al backend con el código ingresado
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/registerCustomer/verifyCode",
+        API + "/registerCustomer/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

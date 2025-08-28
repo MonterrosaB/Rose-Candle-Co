@@ -1,8 +1,13 @@
 // hooks/useMaterials.js
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
+
 
 const useSupplies = (methods) => {
+
+    const { API } = useAuth()
+
     const {
         register,
         handleSubmit,
@@ -13,8 +18,6 @@ const useSupplies = (methods) => {
     const [materialsBalance, setMaterialsBalanceBalance] = useState([]);
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const API = "https://rose-candle-co.onrender.com/api";
 
     const getMaterialsBalance = async () => {
         setLoading(true);

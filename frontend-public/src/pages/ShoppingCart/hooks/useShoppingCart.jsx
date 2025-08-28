@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2"; // suponiendo que usas SweetAlert para alertas
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 import { useNavigate } from "react-router";
 
 
 const useCart = () => {
+
+    const { API } = useAuth();
+
     const [idCart, setIdCart] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState([]);
@@ -16,14 +21,11 @@ const useCart = () => {
     const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
-
-
-    const API = "https://rose-candle-co.onrender.com"
     //https://rose-candle-co.onrender.com
 
     const fetchCart = async () => {
         try {
-            const res = await fetch(API + "/api/cart", {
+            const res = await fetch(API + "/cart", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await res.json();
@@ -51,7 +53,7 @@ const useCart = () => {
         console.log("Datos de la orden:", orderData);
 
         try {
-            const res = await fetch(API + "/api/salesOrder", {
+            const res = await fetch(API + "/salesOrder", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -65,7 +67,7 @@ const useCart = () => {
                 throw new Error(errorText || "Error creating sales order");
             }
 
-            const data = await res.json(); // ✅ Aquí sí obtenemos la respuesta JSON
+            const data = await res.json(); //  Aquí sí obtenemos la respuesta JSON
             setSuccess(true);
             return data; // devuelve { message, order, cart }
         } catch (err) {
@@ -79,7 +81,7 @@ const useCart = () => {
 
     const updateCartBackend = async (newProducts) => {
         try {
-            const res = await fetch(API + `/api/cart/${idCart}`, {
+            const res = await fetch(API + `/cart/${idCart}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -97,7 +99,7 @@ const useCart = () => {
         if (!idCart) return;
 
         try {
-            const res = await fetch(API + `/api/cart/empty/${idCart}`, {
+            const res = await fetch(API + `/cart/empty/${idCart}`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -161,7 +163,7 @@ const useCart = () => {
             console.log("Variant index a usar:", variantIndexToUse);
             console.log("Cantidad a usar:", quantityToUse);
 
-            const res = await fetch(API + "/api/cart/increase", {
+            const res = await fetch(API + "/cart/increase", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -187,7 +189,7 @@ const useCart = () => {
 
     const decreaseProduct = async (cartIndex) => {
         try {
-            const res = await fetch(API + "/api/cart/decrease", {
+            const res = await fetch(API + "/cart/decrease", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

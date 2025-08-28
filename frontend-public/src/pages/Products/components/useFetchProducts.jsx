@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 const useFetchProduct = () => {
 
-  const ApiProducts = "https://rose-candle-co.onrender.com/api/products";
-  //https://rose-candle-co.onrender.com
+  const { API } = useAuth()
+
+  const ApiProducts = API + "/products";
 
   const [products, setProducts] = useState([]);
 

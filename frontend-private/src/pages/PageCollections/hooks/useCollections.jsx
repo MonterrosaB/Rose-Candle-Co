@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-const ApiCollections = "https://rose-candle-co.onrender.com/api/collections"; // Ajustar endpoint
+
+
 
 const useCollections = (methods) => {
+
+  const { API } = useAuth();
+
+  const ApiCollections = API + "/collections"; // Ajustar endpoint  
+
   const {
     register,
     handleSubmit,

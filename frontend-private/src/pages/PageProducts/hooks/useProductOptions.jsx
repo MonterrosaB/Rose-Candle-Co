@@ -1,7 +1,13 @@
 //Para traer categorias, colecciones y raw materials
 import { useState, useEffect } from "react";
+import { useAuth } from "../../../global/hooks/useAuth";
+
 
 const useProductOptions = () => {
+
+  const { API } = useAuth()
+
+
   const [opcionesCategorias, setOpcionesCategorias] = useState([]);
   const [opcionesColecciones, setOpcionesColecciones] = useState([]);
   const [opcionesMateria, setOpcionesMateria] = useState([]);
@@ -11,7 +17,7 @@ const useProductOptions = () => {
       try {
         // Categorías
         const resCategories = await fetch(
-          "https://rose-candle-co.onrender.com/api/productcategories"
+          API + "/productcategories"
         );
         if (!resCategories.ok) throw new Error("Error al traer categorías");
         const categories = await resCategories.json();
@@ -23,7 +29,7 @@ const useProductOptions = () => {
 
         //  Colecciones
         const resCollections = await fetch(
-          "https://rose-candle-co.onrender.com/api/collections"
+          API + "/collections"
         );
         if (!resCollections.ok) throw new Error("Error al traer colecciones");
         const collections = await resCollections.json();
@@ -35,7 +41,7 @@ const useProductOptions = () => {
 
         //  Componentes (Materia Prima)
         const resMaterials = await fetch(
-          "https://rose-candle-co.onrender.com/api/rawMaterials"
+          API + "/rawMaterials"
         );
         if (!resMaterials.ok) throw new Error("Error al traer materiales");
         const materials = await resMaterials.json();
