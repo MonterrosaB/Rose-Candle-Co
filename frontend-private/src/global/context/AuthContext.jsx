@@ -12,13 +12,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_URL = "http:localhost:4000/api";
+  const API_URL = "https://rose-candle-co.onrender.com/api";
 
   const navigate = useNavigate();
 
   // Eliminar sesión: token local, cookie, y estado
   const clearSession = () => {
     Cookies.remove("authToken", { path: "/" });
+    Cookies.remove("authTokenR", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
   };

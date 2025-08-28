@@ -10,7 +10,7 @@ logoutController.logout = async (req, res) => {
   res.clearCookie("authTokenR", {
     httpOnly: true,
     secure: true,
-    sameSite: "Strict",
+    sameSite: "None",
     path: "/",
   });
 
