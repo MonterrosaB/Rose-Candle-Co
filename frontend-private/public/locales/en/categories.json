@@ -1,0 +1,18 @@
+{
+    "title": "Product Categories",
+    "tableTitle": "Categories",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "saveChanges": "Save Changes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirmDeleteTitle": "Delete category \"{{name}}\"?",
+    "confirmDeleteText": "This action cannot be undone.",
+    "confirmDeleteButton": "Yes, delete",
+    "cancelButton": "Cancel",
+    "deletedTitle": "Deleted",
+    "deletedText": "Category \"{{name}}\" has been deleted.",
+    "nameLabel": "Category Name",
+    "mobileTitle": "Categories",
+    "add": "Add"
+}

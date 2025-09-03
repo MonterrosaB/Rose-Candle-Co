@@ -1,0 +1,18 @@
+{
+    "title": "Categorías de Productos",
+    "tableTitle": "Categorías",
+    "addCategory": "Agregar Categoría",
+    "editCategory": "Editar Categoría",
+    "saveChanges": "Guardar Cambios",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "confirmDeleteTitle": "¿Eliminar la categoría \"{{name}}\"?",
+    "confirmDeleteText": "Esta acción no se puede deshacer.",
+    "confirmDeleteButton": "Sí, eliminar",
+    "cancelButton": "Cancelar",
+    "deletedTitle": "Eliminado",
+    "deletedText": "La categoría \"{{name}}\" ha sido eliminada.",
+    "nameLabel": "Nombre de Categoría",
+    "mobileTitle": "Categorías",
+    "add": "Agregar"
+}

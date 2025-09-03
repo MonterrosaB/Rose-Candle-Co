@@ -1,19 +1,22 @@
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
+
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import TitleH1 from "../../global/components/TitleH1";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
 import Dialog from "../../global/components/Dialog";
-import Swal from "sweetalert2";
-
 import useCategories from "./hooks/useCategories";
-import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
 
 const PageCategories = () => {
-  // Cambiar el título de la página al montar el componente
+  const { t } = useTranslation("categories"); // Hook de traducción
+
+  // Cambiar título del documento al montar
   useEffect(() => {
-    document.title = "Categorías de Productos | Rosé Candle Co.";
-  }, []);
+    document.title = `${t("title")} | Rosé Candle Co.`;
+  }, [t]);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -33,6 +36,7 @@ const PageCategories = () => {
     deleteCategory,
   } = useCategories(methods);
 
+  // Sincronizar el formulario con la categoría seleccionada
   useEffect(() => {
     if (selectedCategory) {
       reset(selectedCategory);
@@ -42,7 +46,7 @@ const PageCategories = () => {
   }, [selectedCategory, reset]);
 
   const columns = {
-    Nombre: "name",
+    [t("nameLabel")]: "name",
   };
 
   const rows = categories;
@@ -62,21 +66,21 @@ const PageCategories = () => {
     if (!category?._id) return;
 
     const result = await Swal.fire({
-      title: `¿Eliminar la categoría "${category.name}"?`,
-      text: "Esta acción no se puede deshacer.",
+      title: t("confirmDeleteTitle", { name: category.name }),
+      text: t("confirmDeleteText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("confirmDeleteButton"),
+      cancelButtonText: t("cancelButton"),
     });
 
     if (result.isConfirmed) {
       await deleteCategory(category._id);
       Swal.fire({
-        title: "Eliminado",
-        text: `La categoría "${category.name}" ha sido eliminada.`,
+        title: t("deletedTitle"),
+        text: t("deletedText", { name: category.name }),
         icon: "success",
         timer: 2000,
         showConfirmButton: false,
@@ -95,30 +99,30 @@ const PageCategories = () => {
 
   return (
     <PrincipalDiv>
-      <TitleH1 title={"Categorías de Productos"} />
+      <TitleH1 title={t("title")} />
 
-      {/* Tabla solo visible en pantallas md en adelante */}
+      {/* Tabla para pantallas medianas en adelante */}
       <div className="hidden md:block">
         <DataGrid
-          title="Categorías"
+          title={t("tableTitle")}
           columns={columns}
           rows={rows}
-          primaryBtnText="Agregar Categoría"
+          primaryBtnText={t("addCategory")}
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
         />
       </div>
 
-      {/* Vista tipo cards para móviles */}
+      {/* Vista tipo tarjetas para móviles */}
       <div className="md:hidden pt-13 space-y-4 px-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Categorías</h2>
+          <h2 className="text-xl font-semibold text-gray-800">{t("mobileTitle")}</h2>
           <button
             onClick={handleAdd}
             className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
           >
-            Agregar
+            {t("add")}
           </button>
         </div>
 
@@ -133,33 +137,31 @@ const PageCategories = () => {
                 onClick={() => handleEdit(cat)}
                 className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
               >
-                Editar
+                {t("edit")}
               </button>
               <button
                 onClick={() => handleDelete(cat)}
                 className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
               >
-                Eliminar
+                {t("delete")}
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal para agregar/editar categoría */}
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
           <FormOneInput
-            headerLabel={
-              selectedCategory ? "Editar Categoría" : "Agregar Categoría"
-            }
+            headerLabel={selectedCategory ? t("editCategory") : t("addCategory")}
             onSubmit={handleSubmit(onSubmit)}
             name="name"
-            label="Nombre de Categoría"
+            label={t("nameLabel")}
             register={register}
             onClose={() => setOpenDialog(false)}
             error={errors.name?.message}
-            btnTxt={selectedCategory ? "Guardar Cambios" : "Agregar Categoría"}
+            btnTxt={selectedCategory ? t("saveChanges") : t("addCategory")}
           />
         </Dialog>
       )}

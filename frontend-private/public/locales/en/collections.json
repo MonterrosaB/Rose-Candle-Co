@@ -1,0 +1,17 @@
+{
+    "title": "Collections",
+    "addCollection": "Add Collection",
+    "editCollection": "Edit Collection",
+    "saveChanges": "Save Changes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirmDeleteTitle": "Delete collection \"{{name}}\"?",
+    "confirmDeleteText": "This action cannot be undone.",
+    "confirmDeleteButton": "Yes, delete",
+    "cancelButton": "Cancel",
+    "deletedTitle": "Deleted",
+    "deletedText": "Collection \"{{name}}\" has been deleted.",
+    "nameLabel": "Collection",
+    "mobileTitle": "Collections",
+    "add": "Add"
+}
