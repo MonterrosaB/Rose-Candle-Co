@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export function useHasEmployees() {
   const [hasEmployees, setHasEmployees] = useState(null);
+  const [loadingEmployee, setLoadingEmployee] = useState(true);
 
   // Función para consultar si hay empleados
   const fetchHasEmployees = async () => {
@@ -13,6 +14,8 @@ export function useHasEmployees() {
     } catch (error) {
       console.error("Error al verificar empleados:", error);
       setHasEmployees(true);
+    } finally {
+      setLoadingEmployee(false);
     }
   };
 
@@ -23,5 +26,6 @@ export function useHasEmployees() {
   return {
     hasEmployees,
     refetchHasEmployees: fetchHasEmployees,
+    loadingEmployee
   };
 }

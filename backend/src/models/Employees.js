@@ -110,12 +110,6 @@ const employeeSchema = new Schema(
       type: Date,
       default: null,
     },
-
-    // Eliminación lógica del empleado
-    deleted: {
-      type: Boolean, // Campo lógico para indicar si el registro está eliminado
-      default: false, // Por defecto no está eliminado
-    },
   },
   {
     timestamps: true, // Campos automáticos createdAt y updatedAt

@@ -18,7 +18,7 @@ import Collections from "../../pages/PageCollections/PageCollections.jsx";
 import Categories from "../../pages/PageCategories/PageCategories.jsx";
 import Suppliers from "../../pages/PageSuppliers/PageSuppliers.jsx";
 import CategoriesMateria from "../../pages/PageCategoriesMateria/PageCategoriesMateria.jsx";
-import Reports from "../../pages/PagerReports/PageRepots.jsx";
+import Reports from "../../pages/PagerReports/PageReports.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
 import Profile from "../../pages/PageProfile/logic/PageProfile.jsx";
@@ -75,33 +75,37 @@ function Navigation() {
             element={<Navigate to={isAuthenticated ? "/home" : redirectPath} replace />}
           />
 
-          {/* Rutas protegidas */}
-          <Route element={<PrivateRoute allowedRoles={["admin", "employee"]} />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/stock" element={<Stock />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/order" element={<Orders />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/materials" element={<Materials />} />
+          <Route>
+            {/* Rutas protegidas || Rutas de Empleados */}
+            <Route
+              element={<PrivateRoute allowedRoles={["admin", "employee"]}
+              />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/stock" element={<Stock />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/order" element={<Orders />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/materials" element={<Materials />} />
 
+            </Route>
+
+            {/*Rutas Protegidas || Rutas de Admin */}
+            <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/stock" element={<Stock />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/supplies" element={<Suppliers />} />
+              <Route path="/colections" element={<Collections />} />
+              <Route path="/materials" element={<Materials />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/order" element={<Orders />} />
+              <Route path="/record" element={<Record />} />
+              <Route path="/employees" element={<Employees />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/categories-materia" element={<CategoriesMateria />} />
+            </Route>
           </Route>
-
-          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/stock" element={<Stock />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/supplies" element={<Suppliers />} />
-            <Route path="/colections" element={<Collections />} />
-            <Route path="/materials" element={<Materials />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/order" element={<Orders />} />
-            <Route path="/record" element={<Record />} />
-            <Route path="/employees" element={<Employees />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/categories-materia" element={<CategoriesMateria />} />
-          </Route>
-
           {/* Ruta comodín: redirige a home o login según autenticación */}
           <Route
             path="*"

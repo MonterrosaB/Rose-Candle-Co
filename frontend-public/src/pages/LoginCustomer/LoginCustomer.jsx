@@ -25,11 +25,10 @@ const Login = () => {
       toast.error("Por favor completa todos los campos");
       return;
     }
-
     // Ejecutar login desde el contexto
-    const success = await login(email, password);
+    const loginSuccess = await login(email, password);
 
-    if (success) {
+    if (loginSuccess) {
       toast.success("Inicio de sesión exitoso");
       navigate("/"); // Navegar al home después del login
     }
@@ -126,4 +125,3 @@ const Login = () => {
 };
 
 export default Login;
-  

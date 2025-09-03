@@ -38,8 +38,8 @@ loginController.login = async (req, res) => {
     }
 
     // Verificar contraseña
-    const isMatch = await bcryptjs.compare(password, userFound.password);
-    if (!isMatch) {
+    const isValidPassword = await bcryptjs.compare(password, userFound.password);
+    if (!isValidPassword) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 

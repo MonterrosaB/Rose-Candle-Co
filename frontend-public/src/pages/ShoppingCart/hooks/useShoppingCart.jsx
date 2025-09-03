@@ -18,7 +18,7 @@ const useCart = () => {
     const navigate = useNavigate();
 
 
-    const API = "https://rose-candle-co.onrender.com"
+    const API = "http://localhost:4000"
     //https://rose-candle-co.onrender.com
 
     const fetchCart = async () => {
@@ -28,8 +28,8 @@ const useCart = () => {
             });
             const data = await res.json();
 
-            if (data._id) {
-                setIdCart(data._id);
+            if (data.idCart) {
+                setIdCart(data.idCart);
             }
 
             if (Array.isArray(data.products)) {
@@ -174,6 +174,9 @@ const useCart = () => {
                     quantityVariant: quantityToUse,
                 }),
             });
+
+            console.log(idCart);
+
 
             if (!res.ok) throw new Error("Error al incrementar el producto");
 

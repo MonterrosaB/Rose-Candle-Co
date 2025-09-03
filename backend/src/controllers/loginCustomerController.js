@@ -96,14 +96,6 @@ loginCustomerController.login = async (req, res) => {
     // Responder con token, datos del cliente y carrito
     res.status(200).json({
       message: "Login successfull",
-      token,
-      customer: {
-        id: customer._id,
-        name: customer.name,
-        surnames: customer.surnames,
-        email: customer.email,
-      },
-      cart,
     });
   } catch (error) {
     console.error("Error en login cliente:", error); // Log de error
@@ -131,16 +123,20 @@ loginCustomerController.verifyCustomer = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" }); // Cliente no existe
     }
 
+    const customerCart = await shoppingCartModel.findOne({
+      idUser: decoded.id,
+      status: "active", // o el valor que necesites
+    });
+
     // Responder con los datos del cliente
     return res.json({
-      customer: {
-        id: customer._id,
-        name: customer.name,
-        surnames: customer.surnames,
-        email: customer.email,
-        phone: customer.phone,
-        addresses: customer.addresses, // Lista de direcciones si existen
-      },
+      id: customer._id,
+      name: customer.name,
+      surnames: customer.surnames,
+      email: customer.email,
+      phone: customer.phone,
+      addresses: customer.addresses,
+      idCart: customerCart._id,
     });
   } catch (error) {
     console.error("Error en verifyCustomer:", error); // Log de error

@@ -12,13 +12,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_URL = "https://rose-candle-co.onrender.com/api";
+  const API_URL = "http://localhost:4000/api";
+
 
   const navigate = useNavigate();
 
   // Eliminar sesión: token local, cookie, y estado
   const clearSession = () => {
-    Cookies.remove("authToken", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -56,17 +56,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setIsAuthenticated(true);
-
-        // Obtener usuario desde el endpoint protegido
-        const userData = await verifySession();
-        if (userData) {
-          setUser(userData);
-        }
-
-        console.log(userData);
-
-
+        await verifySession();
         return true;
       } else {
         if (
@@ -86,9 +76,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
-  const verifySession = async () => {
+  const verifySession = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/auth/verify`, {
         method: "GET",
@@ -100,6 +88,8 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await res.json();
+      setUser(data);
+      setIsAuthenticated(true);
       console.log("Sesión válida:", data);
 
       // Aquí podrías setear el usuario al contexto
@@ -107,28 +97,21 @@ export const AuthProvider = ({ children }) => {
 
     } catch (error) {
       console.error("Error al verificar sesión:", error.message);
+      setUser(null);
+      setIsAuthenticated(false);
       return null;
     }
-  };
+  }, [API_URL]);
 
   // Verificar sesión automáticamente al cargar la app
   useEffect(() => {
     const checkSession = async () => {
-
-      try {
-        const data = await verifySession();
-        setUser(data);
-        setIsAuthenticated(true);
-      } catch {
-        setUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
+      await verifySession();
+      setLoading(false);
     };
 
     checkSession();
-  }, []);
+  }, [verifySession]);
 
   // Valor global del contexto
   const contextValue = {
