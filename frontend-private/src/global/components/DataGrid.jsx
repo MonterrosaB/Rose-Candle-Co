@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash, X } from "lucide-react";
 import Button from "./Button";
+import { useTranslation } from "react-i18next";
 
 const DataGrid = ({
   columns,
@@ -19,6 +20,8 @@ const DataGrid = ({
   onCheckboxChange = () => { },
   editable = true
 }) => {
+
+  const { t } = useTranslation("datagrid");
 
   const getNestedValue = (obj, path) => {
     try {
@@ -94,7 +97,7 @@ const DataGrid = ({
 
     setFilteredRows(filtered);
     setCurrentPage(1);
-  }, [search, rows, columns]); // 👈 añadimos columns
+  }, [search, rows, columns]); // añadimos columns
 
 
   const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
@@ -109,7 +112,7 @@ const DataGrid = ({
         <div className="relative">
           <input
             type="search"
-            placeholder="Buscar..."
+            placeholder={t("buscar")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded border pl-2 text-sm"
@@ -156,7 +159,7 @@ const DataGrid = ({
                 {columnName}
               </th>
             ))}
-            {editable && <th className="px-6 py-3">Acciones</th>}
+            {editable && <th className="px-6 py-3">{t("acciones")}</th>}
           </tr>
         </thead>
 
@@ -164,7 +167,7 @@ const DataGrid = ({
           {loading ? (
             <tr>
               <td colSpan={Object.keys(columns).length + (editable ? 1 : 0)} className="text-center py-4">
-                Cargando...
+              {t("cargando")}
               </td>
             </tr>
           ) : (
@@ -202,15 +205,15 @@ const DataGrid = ({
           onClick={() => setCurrentPage(prev => prev - 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          Anterior
+          {t("anterior")}
         </button>
-        <span>Página {currentPage} de {totalPages}</span>
+        <span>{t("pagina")} {currentPage} {t("de")} {totalPages}</span>
         <button
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage(prev => prev + 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          Siguiente
+          {t("siguiente")}
         </button>
       </div>
     </div>

@@ -1,0 +1,16 @@
+{
+    "buscar": "Search...",
+    "anterior": "Previous",
+    "siguiente": "Next",
+    "pagina": "Page",
+    "de": "of",
+    "acciones": "Actions",
+    "cargando": "Loading...",
+    "estado": {
+        "pendiente": "Pending",
+        "enProceso": "In Progress",
+        "enviado": "Shipped",
+        "completado": "Completed",
+        "cancelado": "Cancelled"
+    }
+}

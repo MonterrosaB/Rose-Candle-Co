@@ -12,5 +12,16 @@
     "confirm_delete_cancel": "Cancelar",
     "deleted_title": "Eliminado",
     "deleted_text": "Proveedor \"{{name}}\" ha sido eliminado.",
-    "document_title": "Proveedores"
+    "document_title": "Proveedores",
+    "form": {
+        "add_title": "Agregar Proveedor",
+        "edit_title": "Editar Proveedor",
+        "submit_add": "Agregar Proveedor",
+        "submit_edit": "Guardar Cambios",
+        "validation": {
+            "name_required": "El nombre es requerido",
+            "contact_required": "El contacto es requerido",
+            "contact_format": "El formato debe ser 0000-0000"
+        }
+    }
 }

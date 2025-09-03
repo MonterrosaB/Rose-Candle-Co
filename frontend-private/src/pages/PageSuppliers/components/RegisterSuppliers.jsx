@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
+// Componentes globales
 import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
 import FormButton from "../../../global/components/FormButton";
@@ -7,6 +10,8 @@ import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 
 const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
+  const { t } = useTranslation("suppliers"); // Namespace: suppliers
+
   const {
     register,
     handleSubmit,
@@ -14,6 +19,7 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
     reset,
   } = methods;
 
+  // Al montar o actualizar el modal, establecer valores por defecto
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
@@ -24,27 +30,11 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
 
   const isEditMode = !!defaultValues;
 
-  const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 8) value = value.slice(0, 8);
-    if (value.length > 4) {
-      value = value.slice(0, 4) + "-" + value.slice(4);
-    }
-    setPhone(value);
-  };
-
-  const handleDuiChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 9) value = value.slice(0, 9);
-    if (value.length > 8) {
-      value = value.slice(0, 8) + "-" + value.slice(8);
-    }
-    setDui(value);
-  };
-
   return (
     <Form
-      headerLabel={isEditMode ? "Editar Proveedor" : "Agregar Proveedor"}
+      headerLabel={
+        isEditMode ? t("form.edit_title") : t("form.add_title")
+      }
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -52,22 +42,22 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
         <InputsInline>
           <Input
             name="name"
-            label="Proveedor"
+            label={t("name")}
             type="text"
             register={register}
-            options={{ required: "El nombre es requerido" }}
+            options={{ required: t("form.validation.name_required") }}
             error={errors.name?.message}
           />
           <Input
             name="contact"
-            label="Contacto"
+            label={t("contact")}
             type="text"
             register={register}
             options={{
-              required: "El contacto es requerido",
+              required: t("form.validation.contact_required"),
               pattern: {
                 value: /^\d{4}-\d{4}$/,
-                message: "El formato debe ser 0000-0000",
+                message: t("form.validation.contact_format"),
               },
             }}
             error={errors.contact?.message}
@@ -77,7 +67,9 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
 
       <FormButton>
         <Button
-          buttonText={isEditMode ? "Guardar Cambios" : "Agregar Proveedor"}
+          buttonText={
+            isEditMode ? t("form.submit_edit") : t("form.submit_add")
+          }
           type="submit"
         />
       </FormButton>

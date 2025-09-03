@@ -1,0 +1,23 @@
+{
+    "title": "Employees | Rosé Candle Co.",
+    "pageTitle": "Employees",
+    "columns": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "dui": "DUI",
+        "role": "Role"
+    },
+    "buttons": {
+        "addEmployee": "Add Employee",
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete"
+    },
+    "modal": {
+        "addTitle": "Add Employee",
+        "editTitle": "Edit Employee",
+        "close": "Close"
+    }
+}
