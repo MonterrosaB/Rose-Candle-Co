@@ -1,0 +1,14 @@
+{
+    "title": "Órdenes",
+    "add_order": "Agregar Orden",
+    "edit_order": "Editar Orden",
+    "error_fetching_orders": "Error al obtener las órdenes",
+    "client": "Cliente",
+    "products": "Productos",
+    "date": "Fecha",
+    "amount": "Monto",
+    "payment_method": "Método",
+    "status": "Estado",
+    "shipping_state": "Estado de envío",
+    "address": "Dirección"
+}

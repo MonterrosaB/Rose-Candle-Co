@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-
+import { useAuth } from "../../../global/hooks/useAuth";
 
 
 const useRecord = () => {
 
-    const ApiProducts = "https://rose-candle-co.onrender.com/api/products";
-    const API = "https://rose-candle-co.onrender.com/api";
+    const { API } = useAuth();
 
-    //https://rose-candle-co.onrender.com/api/materialBalance
+    const ApiProducts = API + "/products";
 
     const [bestSellers, setBestSellers] = useState([]);
     const [worstSellers, setWorstSellers] = useState([]);

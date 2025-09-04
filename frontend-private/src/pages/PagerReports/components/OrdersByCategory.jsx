@@ -1,13 +1,15 @@
 import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { useTranslation } from "react-i18next"; // Soporte para i18n    
 
 const OrdersByCategory = ({ data }) => {
+    const { t } = useTranslation("reports");
 
     // Colores suaves como en la imagen
     const COLORS = ['#E8DCC3', '#C2A878', '#A3A380'];
 
     return (
         <div className="w-80 h-64 shadow-xl rounded-2xl p-4 flex flex-col justify-center min-w-80">
-            <h2 className="text-md font-semibold text-center pt-5">Porcentaje de Ventas por Categoría</h2>
+            <h2 className="text-md font-semibold text-center pt-5">{t("sales_by_category")}</h2>
             <div className="flex items-center justify-center h-full">
                 <ResponsiveContainer width="50%" height="100%">
                     <PieChart>

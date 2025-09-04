@@ -1,0 +1,16 @@
+{
+    "title": "Raw Material Categories",
+    "categoryLabel": "Category",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "saveChanges": "Save Changes",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDeleteTitle": "Are you sure?",
+    "confirmDeleteText": "Delete category \"{{name}}\"?",
+    "confirmDeleteButton": "Yes, delete",
+    "cancelButton": "Cancel",
+    "deletedTitle": "Deleted!",
+    "deletedText": "The category has been deleted."
+}

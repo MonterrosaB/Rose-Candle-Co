@@ -20,6 +20,7 @@ shoppingCartController.getCart = async (req, res) => {
         populate: [
           {
             path: "idProduct",
+            select : "name images variant"
           },
         ],
       }); // Popular info de productos dentro del carrito
@@ -106,6 +107,8 @@ shoppingCartController.createCart = async (req, res) => {
 shoppingCartController.increaseProduct = async (req, res) => {
   const userId = req.user.id;
   const { cartId, productId, quantityVariant, indexVariant } = req.body;
+
+  console.log(userId);
 
   try {
     // Buscar carrito activo del usuario

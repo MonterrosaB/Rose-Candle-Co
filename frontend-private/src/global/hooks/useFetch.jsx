@@ -1,9 +1,13 @@
+import { useAuth } from "./useAuth";
+
+
 const useFetch = () => {
-  const SERVER_URL = 'https://rose-candle-co.onrender.com/api/';
+
+  const { API } = useAuth()
 
   const useLogin = async (email, password) => {
 
-    const response = await fetch(`${SERVER_URL}/login`, {
+    const response = await fetch(`${API}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

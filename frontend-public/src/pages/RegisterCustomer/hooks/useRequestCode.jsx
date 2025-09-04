@@ -1,7 +1,12 @@
 // Hook para solicitar el envío de un código de verificación al correo
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 export const useRequestCode = () => {
+
+  const { API } = useAuth()
+
   // Función asíncrona que solicita al backend el envío del código
   const requestCode = async ({ email }) => {
     if (!email) {
@@ -15,7 +20,7 @@ export const useRequestCode = () => {
     try {
       // Realiza una solicitud POST al backend con el correo electrónico
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/registerCustomer/requestCode",
+        API + "/registerCustomer/requestCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

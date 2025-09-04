@@ -39,6 +39,7 @@ const Cart = () => {
     );
   }
 
+
   //  Si no, muestra el carrito
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-8 mt-40">

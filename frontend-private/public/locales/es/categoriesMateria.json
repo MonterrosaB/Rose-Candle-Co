@@ -1,0 +1,16 @@
+{
+    "title": "Categorías de Materia Prima",
+    "categoryLabel": "Categoría",
+    "addCategory": "Agregar Categoría",
+    "editCategory": "Editar Categoría",
+    "saveChanges": "Guardar Cambios",
+    "add": "Agregar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDeleteTitle": "¿Estás seguro?",
+    "confirmDeleteText": "¿Eliminar categoría \"{{name}}\"?",
+    "confirmDeleteButton": "Sí, eliminar",
+    "cancelButton": "Cancelar",
+    "deletedTitle": "¡Eliminado!",
+    "deletedText": "La categoría ha sido eliminada."
+}

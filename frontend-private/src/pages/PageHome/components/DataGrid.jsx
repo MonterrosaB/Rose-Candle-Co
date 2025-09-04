@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "../../../global/components/Button";
+import { useTranslation } from "react-i18next";
 
 const DataGrid = ({
   title,
@@ -55,6 +56,8 @@ const DataGrid = ({
       return "-";
     }
   };
+
+  const { t } = useTranslation("datagrid"); // idioma
 
   const StatusBadge = ({ status }) => {
     const map = {
@@ -142,7 +145,7 @@ const DataGrid = ({
                 {columnName}
               </th>
             ))}
-            {editable && <th className="px-6 py-3">Acciones</th>}
+            {editable && <th className="px-6 py-3">{t("acciones")}</th>}
           </tr>
         </thead>
 
@@ -153,7 +156,7 @@ const DataGrid = ({
                 colSpan={Object.keys(columns).length + (editable ? 1 : 0)}
                 className="text-center py-4"
               >
-                Cargando...
+                {t("cargando")}
               </td>
             </tr>
           ) : (
@@ -206,17 +209,17 @@ const DataGrid = ({
           onClick={() => setCurrentPage((prev) => prev - 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          Anterior
+          {t("anterior")}
         </button>
         <span>
-          Página {currentPage} de {totalPages}
+          {t("pagina")} {currentPage} {t("de")} {totalPages}
         </span>
         <button
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage((prev) => prev + 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          Siguiente
+          {t("siguiente")}
         </button>
       </div>
     </div>

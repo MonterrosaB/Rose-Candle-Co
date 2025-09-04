@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
+
 
 const useProducts = (methods) => {
+
+  const { API } = useAuth()
+
   const {
     register,
     handleSubmit,
@@ -12,7 +17,7 @@ const useProducts = (methods) => {
   } = methods;
 
   // Api de productos
-  const ApiProducts = "https://rose-candle-co.onrender.com/api/products";
+  const ApiProducts = API + "/products";
 
   const [activeTab, setActiveTab] = useState("list");
   const [id, setId] = useState("");

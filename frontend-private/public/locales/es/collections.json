@@ -1,0 +1,17 @@
+{
+    "title": "Colecciones",
+    "addCollection": "Agregar Colección",
+    "editCollection": "Editar Colección",
+    "saveChanges": "Guardar Cambios",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "confirmDeleteTitle": "¿Eliminar la colección \"{{name}}\"?",
+    "confirmDeleteText": "Esta acción no se puede deshacer.",
+    "confirmDeleteButton": "Sí, eliminar",
+    "cancelButton": "Cancelar",
+    "deletedTitle": "Eliminado",
+    "deletedText": "La colección \"{{name}}\" ha sido eliminada.",
+    "nameLabel": "Colección",
+    "mobileTitle": "Colecciones",
+    "add": "Agregar"
+}

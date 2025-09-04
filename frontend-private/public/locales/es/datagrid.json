@@ -1,0 +1,16 @@
+{
+    "buscar": "Buscar...",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente",
+    "pagina": "Página",
+    "de": "de",
+    "acciones": "Acciones",
+    "cargando": "Cargando...",
+    "estado": {
+        "pendiente": "Pendiente",
+        "enProceso": "En Proceso",
+        "enviado": "Enviado",
+        "completado": "Completado",
+        "cancelado": "Cancelado"
+    }
+}

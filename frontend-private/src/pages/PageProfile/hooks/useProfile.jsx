@@ -3,10 +3,12 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../../global/context/AuthContext"; // se obtiene el id del usuario logueado
 
-const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees"; // api de empleados
+
 
 export const useProfile = () => {
-  const { user } = useContext(AuthContext);
+  const { user, API } = useContext(AuthContext);
+
+  const ApiEmployees = API + "/employees"; // api de empleados
 
   const {
     register,

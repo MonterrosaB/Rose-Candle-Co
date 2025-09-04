@@ -1,0 +1,31 @@
+{
+    "title": "Materia Prima",
+    "addMaterial": "Agregar Materia Prima",
+    "addSupplies": "Agregar Insumos",
+    "showMovements": "Mostrar movimientos",
+    "stock": "Stock",
+    "unit": "Unidad",
+    "price": "Precio",
+    "category": "Categoría",
+    "supplier": "Proveedor",
+    "edit": "Editar",
+    "confirmDeleteTitle": "¿Eliminar \"{{name}}\"?",
+    "confirmDeleteText": "Esta acción eliminará el {{itemType}} permanentemente.",
+    "confirmDeleteButton": "Sí, eliminar",
+    "cancelButton": "Cancelar",
+    "deletedTitle": "Eliminado",
+    "deletedText": "\"{{name}}\" ha sido eliminado correctamente.",
+    "columns": {
+        "name": "Nombre",
+        "stock": "Stock",
+        "minStock": "Stock Mínimo",
+        "unit": "Unidad",
+        "price": "Precio",
+        "category": "Categoría",
+        "supplier": "Proveedor",
+        "movement": "Movimiento",
+        "amount": "Cantidad",
+        "reference": "Referencia",
+        "date": "Fecha"
+    }
+}

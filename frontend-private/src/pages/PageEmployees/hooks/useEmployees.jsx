@@ -2,11 +2,18 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetchEmployees from "./useFetchEmployees";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-const ApiEmployeesRegister = "https://rose-candle-co.onrender.com/api/registerEmployees";
-const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees";
+
+
 
 const useEmployees = (methods) => {
+
+  const { API } = useAuth()
+
+  const ApiEmployeesRegister = API + "/registerEmployees";
+  const ApiEmployees = API + "/employees";
+
   const { getEmployeeById, getEmployees } = useFetchEmployees();
   const { id } = useParams();
   const navigate = useNavigate();

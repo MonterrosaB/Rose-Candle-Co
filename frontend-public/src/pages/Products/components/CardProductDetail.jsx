@@ -42,9 +42,11 @@ const CardProductDetail = ({ product }) => {
           <div>
             <h3 className="text-gray-400">Componentes de la variante {product.variant[selectedVariantIndex].variant}</h3>
             <ul className="list-disc list-inside text-sm">
-              {product.variant[selectedVariantIndex].components.map((comp, i) => (
+              {product.variant[selectedVariantIndex]?.components.map((comp, i) => (
                 <li key={i}>
                   {comp.idComponent?.name || "Nombre no disponible"}
+                  {console.log(comp)
+                  }
                 </li>
               ))}
             </ul>

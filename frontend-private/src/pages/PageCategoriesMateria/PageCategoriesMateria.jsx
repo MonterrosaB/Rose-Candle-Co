@@ -1,3 +1,8 @@
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import Swal from 'sweetalert2';
+
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import FormOneInput from "../../global/components/FormOneInput";
@@ -5,24 +10,27 @@ import Dialog from "../../global/components/Dialog";
 import TitleH1 from "../../global/components/TitleH1";
 
 import useCategoriesMateria from "./hooks/useCategoriesMateria";
-import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import Swal from 'sweetalert2';
 
 const PageCategoriesMateria = () => {
-  // Cambiar el título de la página al montar el componente
-  useEffect(() => {
-    document.title = "Categorías de Materia Prima | Rosé Candle Co.";
-  }, []);
+  const { t } = useTranslation("categoriesMateria"); // Hook de traducción i18next con namespace
 
+  // Establecer el título del documento al cargar el componente
+  useEffect(() => {
+    document.title = `${t("title")} | Rosé Candle Co.`;
+  }, [t]);
+
+  // Estado para controlar la visibilidad del modal
   const [openDialogCategories, setOpenDialogCategories] = useState(false);
+
+  // Estado para almacenar la categoría seleccionada (al editar)
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Inicializar formulario con valores por defecto o vacíos
+  // Inicialización del formulario con react-hook-form
   const methods = useForm({
-    defaultValues: selectedCategory || {},
+    defaultValues: selectedCategory || {}, // Si se selecciona una categoría, se rellenan sus datos
   });
 
+  // Custom hook para manejar lógica de categorías
   const {
     register,
     handleSubmit,
@@ -34,45 +42,45 @@ const PageCategoriesMateria = () => {
     deleteCategory,
   } = useCategoriesMateria(methods);
 
-  // Sincroniza el formulario con la categoría seleccionada para editar o limpiar para nueva
+  // Actualiza el formulario cuando cambia la categoría seleccionada
   useEffect(() => {
     if (selectedCategory) {
-      reset(selectedCategory);
+      reset(selectedCategory); // Editar: rellenar el formulario con los datos existentes
     } else {
-      reset({ name: "" });
+      reset({ name: "" }); // Nuevo: limpiar el formulario
     }
   }, [selectedCategory, reset]);
 
-  // Abrir diálogo para agregar categoría nueva
+  // Abrir el diálogo para crear una nueva categoría
   const handleAdd = () => {
     setSelectedCategory(null);
     setOpenDialogCategories(true);
   };
 
-  // Abrir diálogo para editar categoría existente
+  // Abrir el diálogo para editar una categoría existente
   const handleEdit = (category) => {
     setSelectedCategory(category);
     setOpenDialogCategories(true);
   };
 
-  // Confirmar y eliminar categoría seleccionada
+  // Eliminar una categoría con confirmación de usuario
   const handleDelete = async (category) => {
     const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: `¿Eliminar categoría "${category.name}"?`,
+      title: t("confirmDeleteTitle"),
+      text: t("confirmDeleteText", { name: category.name }),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: t("confirmDeleteButton"),
+      cancelButtonText: t("cancelButton")
     });
 
     if (result.isConfirmed) {
       await deleteCategory(category._id);
       Swal.fire({
-        title: '¡Eliminado!',
-        text: 'La categoría ha sido eliminada.',
+        title: t("deletedTitle"),
+        text: t("deletedText"),
         icon: 'success',
         timer: 2000,
         showConfirmButton: false
@@ -80,50 +88,52 @@ const PageCategoriesMateria = () => {
     }
   };
 
-  // Enviar formulario para crear o actualizar categoría
+  // Enviar el formulario para crear o actualizar una categoría
   const onSubmit = async (data) => {
     if (selectedCategory) {
-      await updateCategory(selectedCategory._id, data);
+      await updateCategory(selectedCategory._id, data); // Actualización
     } else {
-      await createCategory(data);
+      await createCategory(data); // Creación
     }
     setOpenDialogCategories(false);
+    setSelectedCategory(null); // Resetear selección
   };
 
+  // Definición de columnas para la tabla de escritorio
   const columns = {
-    Categoría: "name",
+    [t("categoryLabel")]: "name",
   };
-
-  const rows = categories;
 
   return (
     <PrincipalDiv>
-      <TitleH1 title="Categorías de Materia Prima" />
+      {/* Título principal de la página */}
+      <TitleH1 title={t("title")} />
 
-      {/* Tabla visible en md+ */}
+      {/* Vista de tabla para dispositivos de escritorio */}
       <div className="hidden md:block overflow-x-auto">
         <DataGrid
           columns={columns}
-          rows={rows}
-          primaryBtnText="Agregar Categoría"
+          rows={categories}
+          primaryBtnText={t("addCategory")}
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
         />
       </div>
 
-      {/* Cards para móviles */}
+      {/* Vista de tarjetas para dispositivos móviles */}
       <div className="md:hidden pt-13 space-y-4 px-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Categorías de Materia Prima</h2>
+          <h2 className="text-xl font-semibold text-gray-800">{t("title")}</h2>
           <button
             onClick={handleAdd}
             className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
           >
-            Agregar
+            {t("add")}
           </button>
         </div>
 
+        {/* Renderizado de las tarjetas de categorías */}
         {categories.map((category) => (
           <div
             key={category._id}
@@ -135,31 +145,34 @@ const PageCategoriesMateria = () => {
                 onClick={() => handleEdit(category)}
                 className="text-sm px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition"
               >
-                Editar
+                {t("edit")}
               </button>
               <button
                 onClick={() => handleDelete(category)}
                 className="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
               >
-                Eliminar
+                {t("delete")}
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal para crear o editar categoría */}
       {openDialogCategories && (
         <Dialog open={openDialogCategories} onClose={() => setOpenDialogCategories(false)}>
           <FormOneInput
-            headerLabel={selectedCategory ? "Editar Categoría" : "Agregar Categoría"}
+            headerLabel={selectedCategory ? t("editCategory") : t("addCategory")}
             onSubmit={handleSubmit(onSubmit)}
             name="name"
-            label="Categoría"
+            label={t("categoryLabel")}
             register={register}
             error={errors.name?.message}
-            btnTxt={selectedCategory ? "Guardar Cambios" : "Agregar Categoría"}
-            onClose={() => setOpenDialogCategories(false)}
+            btnTxt={selectedCategory ? t("saveChanges") : t("addCategory")}
+            onClose={() => {
+              setOpenDialogCategories(false);
+              setSelectedCategory(null);
+            }}
           />
         </Dialog>
       )}

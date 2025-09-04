@@ -1,26 +1,33 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-// Clientes
-const ApiCustomers = "https://rose-candle-co.onrender.com/api/customers/count";
-const ApiCustomersByMonth = "https://rose-candle-co.onrender.com/api/customers/countByMonth";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-// Pedidos
-const ApiOrders = "https://rose-candle-co.onrender.com/api/salesOrder/countTotal";
 
-// Ingresos
-const ApiEarnings = "https://rose-candle-co.onrender.com/api/salesOrder/totalEarnings";
-
-// Stock
-const ApiLowStock = "https://rose-candle-co.onrender.com/api/rawMaterials/lowStock";
-
-// Productos
-const ApiBestSellingProducts = "https://rose-candle-co.onrender.com/api/cart/bestSellingProducts";
-
-// Últimos pedidos
-const ApiLatestOrders = "https://rose-candle-co.onrender.com/api/salesOrder/latestOrders";
 
 const useHome = () => {
+  const { API } = useAuth()
+
+  // Clientes
+  const ApiCustomers = API + "/customers/count";
+  const ApiCustomersByMonth = API + "/customers/countByMonth";
+
+  // Pedidos
+  const ApiOrders = API + "/salesOrder/countTotal";
+
+  // Ingresos
+  const ApiEarnings = API + "/salesOrder/totalEarnings";
+
+  // Stock
+  const ApiLowStock = API + "/rawMaterials/lowStock";
+
+  // Productos
+  const ApiBestSellingProducts = API + "/cart/bestSellingProducts";
+
+  // Últimos pedidos
+  const ApiLatestOrders = API + "/salesOrder/latestOrders";
+
+
   // Clientes
   const [customerCount, setCustomerCount] = useState(0);
   const [latestCustomerCount, setLatestCustomerCount] = useState(0);

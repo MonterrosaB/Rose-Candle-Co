@@ -1,7 +1,12 @@
 // Hook para cambiar la contraseña
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js"; // auth para el id del usuario logueado
+
 
 export const useNewPassword = () => {
+
+  const {API} = useAuth()
+
   // Función para actualizar la contraseña del usuario
   const updatePassword = async ({ newPassword }) => {
     // Muestra mensaje de carga
@@ -10,7 +15,7 @@ export const useNewPassword = () => {
     try {
       // Envía solicitud al backend con la nueva contraseña
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/recoveryPassword/newPassword",
+        API + "/recoveryPassword/newPassword",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -1,9 +1,17 @@
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const ApiEmployees = "https://rose-candle-co.onrender.com/api/employees"; // API endpoint para empleados
+import { useAuth } from "../../../global/hooks/useAuth";
+
+
+
 
 const useEmployeeAction = (getEmployees) => {
+
+  const { API } = useAuth()
+
+  const ApiEmployees = API + "/employees"; // API endpoint para empleados
+
   const navigate = useNavigate();
 
   // funcion para eliminar un usuario por su id

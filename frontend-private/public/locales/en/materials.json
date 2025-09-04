@@ -1,0 +1,31 @@
+{
+    "title": "Raw Materials",
+    "addMaterial": "Add Raw Material",
+    "addSupplies": "Add Supplies",
+    "showMovements": "Show movements",
+    "stock": "Stock",
+    "unit": "Unit",
+    "price": "Price",
+    "category": "Category",
+    "supplier": "Supplier",
+    "edit": "Edit",
+    "confirmDeleteTitle": "Delete \"{{name}}\"?",
+    "confirmDeleteText": "This action will permanently delete the {{itemType}}.",
+    "confirmDeleteButton": "Yes, delete",
+    "cancelButton": "Cancel",
+    "deletedTitle": "Deleted",
+    "deletedText": "\"{{name}}\" has been successfully deleted.",
+    "columns": {
+        "name": "Name",
+        "stock": "Stock",
+        "minStock": "Minimum Stock",
+        "unit": "Unit",
+        "price": "Price",
+        "category": "Category",
+        "supplier": "Supplier",
+        "movement": "Movement",
+        "amount": "Amount",
+        "reference": "Reference",
+        "date": "Date"
+    }
+}

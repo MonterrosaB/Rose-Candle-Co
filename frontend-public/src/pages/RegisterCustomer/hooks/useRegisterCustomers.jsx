@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 // Hook personalizado para registrar un nuevo cliente
 const useRegisterCustomer = () => {
+
+  const { API } = useAuth();
+
   // Estados para controlar la carga, éxito y errores del proceso
   const [loading, setLoading] = useState(false); // Indica si está en proceso
   const [error, setError] = useState(null); // Almacena mensaje de error
@@ -17,7 +22,7 @@ const useRegisterCustomer = () => {
     try {
       // Realiza una solicitud POST al backend con los datos del cliente
       const response = await fetch(
-        "https://rose-candle-co.onrender.com/api/registerCustomer",
+        API + "/registerCustomer",
         {
           method: "POST",
           headers: {

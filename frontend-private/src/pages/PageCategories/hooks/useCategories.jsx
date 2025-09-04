@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-const ApiCategories = "https://rose-candle-co.onrender.com/api/productCategories";
+
+
 
 const useCategories = (methods) => {
+
+  const { API } = useAuth();
+
+  const ApiCategories = API + "/productCategories";
+
   const {
     register,
     handleSubmit,

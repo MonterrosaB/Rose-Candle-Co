@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 const useSales = () => {
 
-    const API = "https://rose-candle-co.onrender.com/api"
+    const { API } = useAuth()
 
     const [orders, setOrders] = useState([]);
     const [carts, setCarts] = useState([]);
@@ -16,8 +18,6 @@ const useSales = () => {
     const [productProfit, setProductProfit] = useState([]);
     const [soldByCategory, setSoldByCategory] = useState([]);
     const [error, setError] = useState(null);
-
-    //https://rose-candle-co.onrender.com/api/
 
 
     const getTotalOrders = async () => {
@@ -60,8 +60,8 @@ const useSales = () => {
             // Preparar datos para el gráfico (últimos 6 meses)
             const chartData = (stats.last6Months || []).map((item) => ({
                 name: item._id,
-                ingresos: Number(item.totalSales).toFixed(2),
-                ganancias: Number(item.totalProfit).toFixed(2),
+                Ingresos: Number(item.totalSales).toFixed(2),
+                Ganancias: Number(item.totalProfit).toFixed(2),
             }));
 
             // Ganancias diarias

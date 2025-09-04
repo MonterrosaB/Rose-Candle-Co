@@ -1,6 +1,11 @@
 import { useState } from "react";
+import { useAuth } from "../../../global/hooks/useAuth.js";
+
 
 const usePaymentFakeForm = () => {
+
+  const { API } = useAuth();
+
   const [formData, setFormData] = useState({
     monto: 0,
     emailCliente: "",
@@ -39,7 +44,7 @@ const usePaymentFakeForm = () => {
       alert("Generando token de acceso...");
 
       // 1. Obtener token desde el backend
-      const tokenResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/token", {
+      const tokenResponse = await fetch(API + "/payments/token", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -63,7 +68,7 @@ const usePaymentFakeForm = () => {
       };
 
       // 2. Enviar datos de pago al backend
-      const paymentResponse = await fetch("https://rose-candle-co.onrender.com/api/payments/testPayment", {
+      const paymentResponse = await fetch(API + "/payments/testPayment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,13 @@
 // Hook para verificar el código de recuperación
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth.js"; // auth para el id del usuario logueado
+
+
 
 export const useVerifyCode = () => {
+
+  const { API } = useAuth()
+
   // Función para enviar el código ingresado al backend
   const verifyCode = async ({ code }) => {
     // Muestra mensaje de carga
@@ -10,7 +16,7 @@ export const useVerifyCode = () => {
     try {
       // Realiza la solicitud POST con el código al backend
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/recoveryPassword/verifyCode",
+        API + "/recoveryPassword/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

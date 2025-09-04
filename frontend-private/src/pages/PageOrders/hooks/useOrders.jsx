@@ -1,9 +1,15 @@
 import { Import } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../../global/hooks/useAuth";
+
 
 //
 const useOrders = (methods) => {
+
+  const { API } = useAuth()
+
+
   // Inicializamos react-hook-form internamente
   const { register, handleSubmit, formState: { errors }, setValue, control, watch, reset } = methods;
 
@@ -15,7 +21,7 @@ const useOrders = (methods) => {
   // Obtener productos desde el backend
   const getProductsForOrders = async () => {
     try {
-      const res = await fetch("https://rose-candle-co.onrender.com/api/products/productsOrders");
+      const res = await fetch(API + "/products/productsOrders");
       if (!res.ok) throw new Error("Error al obtener los productos");
       const data = await res.json();
       setProducts(data);
@@ -29,7 +35,7 @@ const useOrders = (methods) => {
   const getSalesOrders = async () => {
     setLoadingOrders(true);
     try {
-      const res = await fetch("https://rose-candle-co.onrender.com/api/salesOrder");
+      const res = await fetch(API + "/salesOrder");
       if (!res.ok) throw new Error("Error al obtener órdenes");
       const data = await res.json();
 
@@ -90,7 +96,7 @@ const useOrders = (methods) => {
   // Crear orden en 
   const createSalesOrderPrivate = async (orderData) => {
     try {
-      const res = await fetch("https://rose-candle-co.onrender.com/api/salesOrder/createSalesOrder", {
+      const res = await fetch(API + "/salesOrder/createSalesOrder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
@@ -117,7 +123,7 @@ const useOrders = (methods) => {
     try {
       console.log(orderData);
 
-      const res = await fetch(`https://rose-candle-co.onrender.com/api/salesOrder/${id}`, {
+      const res = await fetch(API + `/salesOrder/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shippingState: orderData }), // Aquí va como objeto
