@@ -60,11 +60,11 @@ const Nav = ({ topClass = "top-10" }) => {
 
           {/* Íconos */}
           <div className="hidden md:flex items-center space-x-4">
-            <NavLink to="/profile" className="text-gray-700 hover:text-black text-xl">
-              <FaRegUser />
-            </NavLink>
             <NavLink to="/cart" className="text-gray-700 hover:text-black text-xl">
               <MdOutlineShoppingCart />
+            </NavLink>
+            <NavLink to="/profile" className="text-gray-700 hover:text-black text-xl">
+              <FaRegUser />
             </NavLink>
           </div>
 

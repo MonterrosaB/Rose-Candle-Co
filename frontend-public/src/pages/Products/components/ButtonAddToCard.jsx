@@ -56,7 +56,7 @@ const AddToCartButton = ({ product, quantity, selectedVariantIndex }) => {
       className="w-full max-w-sm flex items-center justify-center gap-2 bg-black hover:bg-[#222222] text-white px-4 py-4 rounded-2xl font-medium text-sm transition-all duration-200"
     >
       <ShoppingCart size={18} />
-      Add to Cart
+      Agregar al Carrito
     </motion.button>
   );
 };

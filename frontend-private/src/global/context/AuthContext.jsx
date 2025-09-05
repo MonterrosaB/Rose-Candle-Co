@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifySession = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/auth/verify`, {
+      const res = await fetch(`${API_URL}/auth/verifyEmployee`, {
         method: "GET",
         credentials: "include", // Necesario para enviar cookies
       });

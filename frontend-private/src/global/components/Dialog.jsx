@@ -45,15 +45,6 @@ const Dialog = ({ children, open, onClose }) => {
         }
     };
 
-    useEffect(() => {
-        if (open) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-    }, [open]);
-
-
     return (
         <dialog
             ref={dialogRef}

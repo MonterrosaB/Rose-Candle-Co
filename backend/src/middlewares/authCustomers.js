@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config.js";
 
-const auth = (req, res, next) => {
-  const token = req.cookies.authToken || req.cookies.authTokenR;
+const authCustomer = (req, res, next) => {
+  const token = req.cookies.authToken;
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -10,8 +10,7 @@ const auth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret);
-    req.user = decoded;
-    console.log(decoded);
+    req.customer = decoded;
 
     next();
   } catch (error) {
@@ -19,4 +18,4 @@ const auth = (req, res, next) => {
   }
 };
 
-export default auth;
+export default authCustomer;

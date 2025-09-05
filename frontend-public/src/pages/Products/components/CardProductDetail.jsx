@@ -44,10 +44,9 @@ const CardProductDetail = ({ product }) => {
             <ul className="list-disc list-inside text-sm">
               {product.variant[selectedVariantIndex]?.components.map((comp, i) => (
                 <li key={i}>
-                  {comp.idComponent?.name || "Nombre no disponible"}
-                  {console.log(comp)
-                  }
-                </li>
+                  {comp?.idComponent?.name && comp?.idComponent?.idRawMaterialCategory?.name
+                    ? `${comp.idComponent.idRawMaterialCategory.name} ${comp.idComponent.name}`
+                    : "Componente no disponible"}                </li>
               ))}
             </ul>
           </div>
@@ -70,7 +69,7 @@ const CardProductDetail = ({ product }) => {
 
         {/* Cantidad y botón agregar al carrito */}
         <div className="flex flex-col items-center gap-4 pt-4 w-full max-w-sm">
-          <span className="text-sm text-gray-600 self-start pl-2">Quantity</span>
+          <span className="text-sm text-gray-600 self-start pl-2">Cantidad</span>
 
           <div className="flex items-center justify-center gap-2 border rounded-2xl p-2 w-full">
             <button
