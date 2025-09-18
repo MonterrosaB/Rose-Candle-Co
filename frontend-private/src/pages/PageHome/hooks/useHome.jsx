@@ -1,202 +1,112 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
 import { useAuth } from "../../../global/hooks/useAuth";
 
-
-
 const useHome = () => {
-  const { API } = useAuth()
+  const { API } = useAuth();
 
-  // Clientes
-  const ApiCustomers = API + "/customers/count";
-  const ApiCustomersByMonth = API + "/customers/countByMonth";
+  // API Endpoints
+  const ApiCustomers = `${API}/customers/count`;
+  const ApiCustomersByMonth = `${API}/customers/countByMonth`;
+  const ApiOrders = `${API}/salesOrder/countTotal`;
+  const ApiEarnings = `${API}/salesOrder/totalEarnings`;
+  const ApiLowStock = `${API}/rawMaterials/lowStock`;
+  const ApiBestSellingProducts = `${API}/cart/bestSellingProducts`;
+  const ApiLatestOrders = `${API}/salesOrder/latestOrders`;
 
-  // Pedidos
-  const ApiOrders = API + "/salesOrder/countTotal";
-
-  // Ingresos
-  const ApiEarnings = API + "/salesOrder/totalEarnings";
-
-  // Stock
-  const ApiLowStock = API + "/rawMaterials/lowStock";
-
-  // Productos
-  const ApiBestSellingProducts = API + "/cart/bestSellingProducts";
-
-  // Últimos pedidos
-  const ApiLatestOrders = API + "/salesOrder/latestOrders";
-
-
-  // Clientes
-  const [customerCount, setCustomerCount] = useState(0);
-  const [latestCustomerCount, setLatestCustomerCount] = useState(0);
-
-  // Pedidos
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [currentMonthOrders, setCurrentMonthOrders] = useState(0);
-
-  // Ingresos
-  const [totalEarnings, setTotalEarnings] = useState(0);
-  const [monthlyEarnings, setMonthlyEarnings] = useState(0);
-
-  // Materias primas
-  const [lowStockMaterials, setLowStockMaterials] = useState([]);
-
-  // Productos más vendidos
-  const [bestSellingProducts, setBestSellingProducts] = useState([]);
-
-  // Pedidos
-  const [latestOrders, setLatestOrders] = useState([]);
-
-  // Contador de usuarios
-  const getCustomers = async () => {
-    try {
-      const res = await fetch(ApiCustomers);
-      if (!res.ok) throw new Error("Error al obtener usuarios");
-
-      const data = await res.json();
-
-      // Devuelve el número de la cuenta
-      setCustomerCount(data.count || 0);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar la cantidad de clientes");
+  // Custom fetcher function for React Query
+  const fetcher = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Error fetching ${url}`);
     }
+    return res.json();
   };
 
-  // Contador de usuarios del último mes
-  const getLatestCustomers = async () => {
-    try {
-      const res = await fetch(ApiCustomersByMonth);
-      if (!res.ok) throw new Error("Error al obtener usuarios");
+  // Fetching data with React Query (automatically handles caching, refetching, etc.)
+  const { data: customerCountData, error: customerCountError, isLoading: isCustomerCountLoading } = useQuery({
+    queryKey: ['customerCount'],
+    queryFn: () => fetcher(ApiCustomers),
+    onError: () => toast.error("No se pudo cargar la cantidad de clientes"),
+    select: (data) => data.count || 0, // Select just the count from the response
+  });
 
-      const data = await res.json();
+  const { data: latestCustomerCountData, error: latestCustomerCountError, isLoading: isLatestCustomerCountLoading } = useQuery({
+    queryKey: ['latestCustomerCount'],
+    queryFn: () => fetcher(ApiCustomersByMonth),
+    onError: () => toast.error("No se pudo cargar la cantidad de clientes del último mes"),
+    select: (data) => data.count || 0, // Select just the count from the response
+  });
 
-      // Devuelve el número de la cuenta
-      setLatestCustomerCount(data.count || 0);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar la cantidad de clientes");
-    }
-  };
+  const { data: ordersData, error: ordersError, isLoading: isOrdersLoading } = useQuery({
+    queryKey: ['ordersCount'],
+    queryFn: () => fetcher(ApiOrders),
+    onError: () => toast.error("No se pudo cargar la cantidad de pedidos"),
+  });
 
-  // Contador de pedidos (total y del mes actual)
-  const getOrdersCount = async () => {
-    try {
-      const res = await fetch(ApiOrders);
-      if (!res.ok) throw new Error("Error al obtener pedidos");
+  const { data: earningsData, error: earningsError, isLoading: isEarningsLoading } = useQuery({
+    queryKey: ['earnings'],
+    queryFn: () => fetcher(ApiEarnings),
+    onError: () => toast.error("No se pudo cargar los ingresos"),
+  });
 
-      const data = await res.json();
-      setTotalOrders(data.totalOrders || 0);
-      setCurrentMonthOrders(data.currentMonthOrders || 0);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar la cantidad de pedidos");
-    }
-  };
+  const { data: lowStockData, error: lowStockError, isLoading: isLowStockLoading } = useQuery({
+    queryKey: ['lowStockMaterials'],
+    queryFn: () => fetcher(ApiLowStock),
+    onError: () => toast.error("No se pudo cargar los materiales con bajo stock"),
+  });
 
-  // Obtener ingresos totales y del mes
-  const getEarnings = async () => {
-    try {
-      const res = await fetch(ApiEarnings);
-      if (!res.ok) throw new Error("Error al obtener ingresos");
+  const { data: bestSellingProductsData, error: bestSellingProductsError, isLoading: isBestSellingProductsLoading } = useQuery({
+    queryKey: ['bestSellingProducts'],
+    queryFn: () => fetcher(ApiBestSellingProducts),
+    onError: () => toast.error("No se pudo cargar los productos más vendidos"),
+  });
 
-      const data = await res.json();
-      setTotalEarnings(data.totalEarnings || 0);
-      setMonthlyEarnings(data.monthlyEarnings || 0);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar los ingresos");
-    }
-  };
-
-  // Obtener materias primas con menos stock
-  const getLowStockMaterials = async () => {
-    try {
-      const res = await fetch(ApiLowStock);
-      if (!res.ok)
-        throw new Error("Error al obtener materiales con bajo stock");
-
-      const data = await res.json();
-      setLowStockMaterials(data || []);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar el stock bajo de materias primas");
-    }
-  };
-
-  // Obtener productos más vendidos
-  const getBestSellingProducts = async () => {
-    try {
-      const res = await fetch(ApiBestSellingProducts, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Error al obtener productos más vendidos");
-
-      const data = await res.json();
-      setBestSellingProducts(data || []);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar los productos más vendidos");
-    }
-  };
-
-  // Obtener últimos pedidos
-  const getLatestOrders = async () => {
-    try {
-      const res = await fetch(ApiLatestOrders);
-      if (!res.ok) throw new Error("Error al obtener últimos pedidos");
-
-      const data = await res.json();
-      setLatestOrders(data || []);
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo cargar la lista de últimos pedidos");
-    }
-  };
-
-  // Cargar automáticamente
-  useEffect(() => {
-    getCustomers();
-    getLatestCustomers();
-    getOrdersCount();
-    getEarnings();
-    getLowStockMaterials();
-    getBestSellingProducts();
-    getLatestOrders();
-  }, []);
+  const { data: latestOrdersData, error: latestOrdersError, isLoading: isLatestOrdersLoading } = useQuery({
+    queryKey: ['latestOrders'],
+    queryFn: () => fetcher(ApiLatestOrders),
+    onError: () => toast.error("No se pudo cargar los últimos pedidos"),
+  });
 
   return {
     // Clientes
-    customerCount,
-    latestCustomerCount,
-    getCustomers,
-    getLatestCustomers,
+    customerCount: customerCountData,
+    latestCustomerCount: latestCustomerCountData,
 
     // Pedidos
-    totalOrders,
-    currentMonthOrders,
-    getOrdersCount,
+    totalOrders: ordersData?.totalOrders || 0,
+    currentMonthOrders: ordersData?.currentMonthOrders || 0,
 
     // Ingresos
-    totalEarnings,
-    monthlyEarnings,
-    getEarnings,
+    totalEarnings: earningsData?.totalEarnings || 0,
+    monthlyEarnings: earningsData?.monthlyEarnings || 0,
 
     // Materias primas
-    lowStockMaterials,
-    getLowStockMaterials,
+    lowStockMaterials: lowStockData || [],
 
     // Productos más vendidos
-    bestSellingProducts,
-    getBestSellingProducts,
+    bestSellingProducts: bestSellingProductsData || [],
 
     // Últimos pedidos
-    latestOrders,
-    getLatestOrders,
+    latestOrders: latestOrdersData || [],
+
+    // Loading states
+    isCustomerCountLoading,
+    isLatestCustomerCountLoading,
+    isOrdersLoading,
+    isEarningsLoading,
+    isLowStockLoading,
+    isBestSellingProductsLoading,
+    isLatestOrdersLoading,
+
+    // Error states
+    customerCountError,
+    latestCustomerCountError,
+    ordersError,
+    earningsError,
+    lowStockError,
+    bestSellingProductsError,
+    latestOrdersError,
   };
 };
 
