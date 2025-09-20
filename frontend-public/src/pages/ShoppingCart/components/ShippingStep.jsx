@@ -61,8 +61,8 @@ const ShippingStep = ({ formData, handleInputChange, selectedAddress, setSelecte
         </label>
         {loading ? (
           <p className="text-gray-500">Cargando direcciones...</p>
-        ) : error ? (
-          <p className="text-red-500">Error: {error}</p>
+        ) : addresses.length === 0 ? (
+          <p className="text-gray-500">No hay direcciones disponibles.</p>
         ) : (
           <select
             value={selectedAddress}

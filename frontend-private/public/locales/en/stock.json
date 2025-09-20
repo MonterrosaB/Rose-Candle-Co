@@ -9,7 +9,8 @@
     "raw_materials": "Raw Materials",
     "categories": "Categories",
     "material_categories": "Material Categories",
-    "collections": "Collections"
+    "collections": "Collections",
+    "record": "Record"
   },
   "manage": "Manage",
   "document_title": "Stock"

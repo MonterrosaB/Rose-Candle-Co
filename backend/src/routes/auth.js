@@ -1,10 +1,10 @@
 import express from "express";
-import verifyTokenEmployee from "../middlewares/authEmployees.js";
-import verifyTokenCustomer from "../middlewares/authCustomers.js";
+import authEmployee from "../middlewares/authEmployees.js";
+import authCustomer from "../middlewares/authCustomers.js";
 
 const router = express.Router();
 
-router.get("/verifyEmployee", verifyTokenEmployee, (req, res) => {
+router.get("/verifyEmployee", authEmployee, (req, res) => {
   // req.user viene del middleware
   res.status(200).json({
     id: req.user.id,
@@ -18,9 +18,9 @@ router.get("/verifyEmployee", verifyTokenEmployee, (req, res) => {
   });
 });
 
-router.get("/verifyCustomer", verifyTokenCustomer, (req, res) => {
+router.get("/verifyCustomer", authCustomer, (req, res) => {
   // req.customer viene del middleware
-  return res.json({
+  return res.status(200).json({
     id: req.customer.id,
     name: req.customer.name,
     surnames: req.customer.surnames,

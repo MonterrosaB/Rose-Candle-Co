@@ -10,6 +10,7 @@ const authCustomer = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret);
+
     req.customer = decoded;
 
     next();

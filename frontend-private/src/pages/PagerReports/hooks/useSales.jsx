@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth.js";
+import { data } from "react-router-dom";
 
 
 const useSales = () => {
@@ -58,26 +59,29 @@ const useSales = () => {
             const stats = await response.json();
 
             // Preparar datos para el gráfico (últimos 6 meses)
-            const chartData = (stats.last6Months || []).map((item) => ({
+            const chartData = (stats.last6Months).map((item) => ({
                 name: item._id,
                 Ingresos: Number(item.totalSales).toFixed(2),
                 Ganancias: Number(item.totalProfit).toFixed(2),
             }));
 
             // Ganancias diarias
-            const profitD = (stats.daily || []).map((item) => ({
-                ganancias: Number(item.totalProfit).toFixed(2),
-            }));
+            const profitD = {
+                ingresos: Number(stats.today.totalSales).toFixed(2),
+                ganancias: Number(stats.today.totalProfit).toFixed(2),
+            };
 
             // Ganancias mensuales
-            const profitM = (stats.monthly || []).map((item) => ({
-                ganancias: Number(item.totalProfit).toFixed(2),
-                ingresos: Number(item.totalSales).toFixed(2),
-            }));
+            const profitM = {
+                ganancias: Number(stats.thisMonth.totalProfit).toFixed(2),
+                ingresos: Number(stats.thisMonth.totalSales).toFixed(2),
+            };
 
-            setDataD(profitD[0]);
-            setDataM(profitM[0]);
+            setDataD(profitD);
+            setDataM(profitM);
             setData6M(chartData);
+            console.log(chartData);
+
         } catch (err) {
             console.error(err);
             setError(err);

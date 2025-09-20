@@ -30,16 +30,15 @@ const useCart = () => {
             });
             const data = await res.json();
 
-            if (data.idCart) {
-                setIdCart(data.idCart);
+
+            if (data._id) {
+                setIdCart(data._id);
             }
 
             if (Array.isArray(data.products)) {
                 setCartItems(data.products);
-                console.log(data.products);
 
             }
-            console.log(data.products);
 
         } catch (error) {
             console.error("Error cargando carrito:", error);
@@ -53,8 +52,6 @@ const useCart = () => {
         setLoading(true);
         setError(null);
         setSuccess(false);
-
-        console.log("Datos de la orden:", orderData);
 
         try {
             const res = await fetch(API + "/salesOrder", {
@@ -79,23 +76,6 @@ const useCart = () => {
             return null; // para que el frontend sepa que falló
         } finally {
             setLoading(false);
-        }
-    };
-
-
-    const updateCartBackend = async (newProducts) => {
-        try {
-            const res = await fetch(API + `/cart/${idCart}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ products: newProducts }),
-            });
-            if (!res.ok) throw new Error("Error actualizando carrito");
-        } catch (error) {
-            console.error(error);
         }
     };
 
@@ -164,24 +144,19 @@ const useCart = () => {
                 }
             }
 
-            console.log("Variant index a usar:", variantIndexToUse);
-            console.log("Cantidad a usar:", quantityToUse);
-
             const res = await fetch(API + "/cart/increase", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    include: true
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     productId: idProductToIncrease,
                     cartId: idCart,
                     indexVariant: variantIndexToUse,
                     quantityVariant: quantityToUse,
                 }),
-            });
-
-            console.log(idCart);
+            }); 8
 
 
             if (!res.ok) throw new Error("Error al incrementar el producto");
@@ -200,8 +175,8 @@ const useCart = () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     cartId: idCart,
                     index: cartIndex // 👈 ahora mandamos el índice en el carrito
@@ -245,7 +220,6 @@ const useCart = () => {
         showCheckout,
         setShowCheckout,
         fetchCart,
-        updateCartBackend,
         handleClear,
         decreaseProduct,
         increaseProduct,

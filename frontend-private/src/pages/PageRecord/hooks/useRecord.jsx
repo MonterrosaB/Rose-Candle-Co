@@ -11,10 +11,15 @@ const useRecord = () => {
 
     const [bestSellers, setBestSellers] = useState([]);
     const [worstSellers, setWorstSellers] = useState([]);
+    const [materialCost, setMaterialCost] = useState([]);
     const [materialsBalance, setMaterialsBalance] = useState([]);
     const [materials, setMaterials] = useState([]);
+    const [inventoryValue, setInventoryValue] = useState([]);
     const [dataM, setDataM] = useState([]);
     const [loading, setLoading] = useState(true);
+
+
+
 
 
 
@@ -46,6 +51,34 @@ const useRecord = () => {
 
             const data = await response.json();
             setWorstSellers(data)
+        } catch (error) {
+            console.error("Error fetching Products", error);
+            toast.error("Error fetching Products");
+        }
+    }
+
+    const getProductMaterialsCost = async () => {
+
+        try {
+            const response = await fetch(API + "/productionCostHistory")
+
+            if (!response.ok) {
+                throw new Error("Error fetching Products");
+            }
+
+            const data = await response.json();
+            const rows = data.flatMap(d =>
+                d.materials.map(m => ({
+                    product: d.product,
+                    variantName: d._id.variantName,
+                    material: m.material,
+                    quantity: m.quantity,
+                    cost: m.cost
+                }))
+            );
+            setMaterialCost(rows)
+            console.log(rows);
+
         } catch (error) {
             console.error("Error fetching Products", error);
             toast.error("Error fetching Products");
@@ -101,6 +134,23 @@ const useRecord = () => {
             if (!res.ok) throw new Error("No se pudo obtener materias primas");
             const data = await res.json();
             setMaterials(data);
+            console.log(data);
+
+        } catch (err) {
+            toast.error("No se pudo cargar materias primas");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getMaterialsValue = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(API + "/rawMaterials/inventoryValue");
+            if (!res.ok) throw new Error("No se pudo obtener el valor total de las materias primas");
+            const data = await res.json();
+            setInventoryValue(data.totalInventoryValue);
+
         } catch (err) {
             toast.error("No se pudo cargar materias primas");
         } finally {
@@ -115,10 +165,12 @@ const useRecord = () => {
         getProfitAndSales();
         getMaterialsBalance();
         getMaterials();
+        getProductMaterialsCost();
+        getMaterialsValue();
     }, []);
 
     return {
-        bestSellers, worstSellers, dataM, materialsBalance, materials
+        bestSellers, worstSellers, dataM, materialsBalance, materials, materialCost, inventoryValue
     }
 }
 export default useRecord;

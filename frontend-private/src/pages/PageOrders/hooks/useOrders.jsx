@@ -59,7 +59,7 @@ const useOrders = (methods) => {
         const estadoFinal = ultimoEstado(order);
 
         return {
-          _id: order._id,
+          _id:order._id.slice(-6), // Muestra últimos 6 caracteres,
           idShoppingCart: order.idShoppingCart?._id || "",
           name: order.idShoppingCart?.idUser?.name || "Sin cliente",
           paymentMethod: order.paymentMethod || "No especificado",

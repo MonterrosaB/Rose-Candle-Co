@@ -8,7 +8,8 @@
     "raw_materials": "Materia Prima",
     "categories": "Categorías",
     "material_categories": "Categorías Materia",
-    "collections": "Colecciones"
+    "collections": "Colecciones",
+    "record": "Registro"
   },
   "manage": "Gestionar",
   "document_title": "Inventario"

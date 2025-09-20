@@ -29,6 +29,8 @@ const DoubleInputDropDown = ({
                 <div className="flex justify-center items-baseline gap-4 w-1/2">
                     <div className="relative w-full">
                         <select
+                            onClick={(e) => e.stopPropagation()}
+
                             id={name1}
                             {...register(name1, { required: `${placeholder1} es requerido` })}
                             className={`block px-2.5 py-2.5 w-full text-sm rounded-lg border text-[#9F9E9B] 

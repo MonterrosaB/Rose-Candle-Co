@@ -1,6 +1,6 @@
 import express from "express";
 import shoppingCartController from "../controllers/shoppingCartController.js";
-import auth from "../middlewares/authEmployees.js";
+import auth from "../middlewares/authCustomers.js";
 
 const router = express.Router();
 
@@ -29,7 +29,5 @@ router.post("/complete", auth, shoppingCartController.completeCart);
 router
   .route("/bestSellingProducts") // productos más vendidos
   .get(shoppingCartController.bestSellingProducts);
-
-router.route("/:id").get(auth, shoppingCartController.getCartById);
 
 export default router;

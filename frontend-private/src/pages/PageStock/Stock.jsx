@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Package, Users, Layers, Tags } from "lucide-react";
+import { Package, Users, Layers, Tags, History } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../global/hooks/useAuth";
 import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
@@ -64,6 +64,13 @@ const PageStock = () => {
       gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
       delay: "delay-300",
     },
+    {
+      key: "record",
+      path: "/record",
+      icon: History,
+      gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
+      delay: "delay-300",
+    },
   ];
 
   // Filtrar ítems visibles para usuarios no administradores
@@ -112,9 +119,8 @@ const PageStock = () => {
 
           {/* Encabezado del panel */}
           <div
-            className={`text-center mb-12 transform transition-all duration-1000 ${
-              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className={`text-center mb-12 transform transition-all duration-1000 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              }`}
           >
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[#6B8E23] via-[#C0B283] to-[#4B5320] bg-clip-text text-transparent mb-2 capitalize leading-snug">
               {t("dashboard_title")}
@@ -132,9 +138,8 @@ const PageStock = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`group relative transform transition-all duration-700 hover:scale-105 ${
-                    isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
-                  } ${item.delay}`}
+                  className={`group relative transform transition-all duration-700 hover:scale-105 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
+                    } ${item.delay}`}
                 >
                   <div className="relative h-44 sm:h-48 md:h-52 lg:h-56 rounded-2xl overflow-hidden backdrop-blur-sm bg-[#F9F7F3]/10 border border-[#DFCCAC]/20 shadow-2xl hover:shadow-[#A78A5E]/25 transition-all duration-500 hover:border-[#BCA88E]/40">
                     {/* Fondo animado de tarjeta */}
@@ -175,9 +180,8 @@ const PageStock = () => {
 
           {/* Footer del panel */}
           <div
-            className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${
-              isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className={`text-center mt-12 transform transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              }`}
           >
             <p className="text-[#000000] text-sm sm:text-base">
               {t("footer_message")}

@@ -90,7 +90,6 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       setUser(data);
       setIsAuthenticated(true);
-      console.log("Sesión válida:", data);
 
       // Aquí podrías setear el usuario al contexto
       return data;

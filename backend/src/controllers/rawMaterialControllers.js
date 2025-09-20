@@ -230,6 +230,7 @@ rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
   }
 };
 
+//Reportes
 // GET - Obtener materias primas con menor stock
 rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
   try {
@@ -276,6 +277,30 @@ rawMaterialsControllers.getLowestRawMaterials = async (req, res) => {
   } catch (error) {
     console.error("error", error);
     res.status(500).json("Internal server error");
+  }
+};
+
+rawMaterialsControllers.getInventoryValue = async (req, res) => {
+  try {
+    const result = await rawMaterialModel.aggregate([
+      { $match: { deleted: false } }, // Ignorar eliminados lógicamente
+      {
+        $group: {
+          _id: null,
+          totalValue: {
+            $sum: { $multiply: ["$currentStock", "$currentPrice"] },
+          },
+        },
+      },
+    ]);
+
+    const totalValue = result.length > 0 ? result[0].totalValue : 0;
+
+    res.json({ totalInventoryValue: totalValue });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error calculating inventory value", error });
   }
 };
 

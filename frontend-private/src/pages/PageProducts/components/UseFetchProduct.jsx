@@ -1,54 +1,61 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../../../global/hooks/useAuth";
+
+
+
 
 const useFetchProduct = () => {
 
-  const ApiProducts = "https://rose-candle-co.onrender.com/api/products";
+  const { API } = useAuth();
 
-    const [products, setProducts] = useState([]); 
 
-    const getProducts = async () => {
+  const ApiProducts = API + "/products";
 
-        try {
-            const response = await fetch(ApiProducts)
+  const [products, setProducts] = useState([]);
 
-         if(!response.ok){
-            throw new Error("Error fetching Products");
-         }
+  const getProducts = async () => {
 
-         const data = await response.json();
-         setProducts(data)
-        } catch (error) {
-            console.error("Error fetching Products", error);
-            toast.error("Error fetching Products");
-        }
+    try {
+      const response = await fetch(ApiProducts)
+
+      if (!response.ok) {
+        throw new Error("Error fetching Products");
+      }
+
+      const data = await response.json();
+      setProducts(data)
+    } catch (error) {
+      console.error("Error fetching Products", error);
+      toast.error("Error fetching Products");
     }
+  }
 
 
-        const getProductById = async (id) => {
-        try {
-          const response = await fetch(`${ApiProducts}/${id}`);
-          if (!response.ok) {
-            console.log("Failed to fetch Products");
-            throw new Error("Failed to fetch Products");
-          }
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.error("Error fetching Products:", error);
-          console.log("Failed to fetch Products");
-          return null;
-        }
-      };
-
-    useEffect(() => {
-        getProducts();
-    }, []);
-
-    return{
-        products,
-        getProducts,
-        getProductById
+  const getProductById = async (id) => {
+    try {
+      const response = await fetch(`${ApiProducts}/${id}`);
+      if (!response.ok) {
+        console.log("Failed to fetch Products");
+        throw new Error("Failed to fetch Products");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+      console.log("Failed to fetch Products");
+      return null;
     }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  return {
+    products,
+    getProducts,
+    getProductById
+  }
 };
 
 export default useFetchProduct;

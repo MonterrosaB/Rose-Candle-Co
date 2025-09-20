@@ -4,6 +4,7 @@ const DropDown = ({ name, options, label, error, hideIcon = true, register, plac
     <div className="flex justify-center items-baseline gap-4 mb-4 w-full">
       <div className="relative w-full overflow-visible">
         <select
+          onClick={(e) => e.stopPropagation()}
           disabled={disabled}
           id={name}
           {...register(name, { required: "Selecciona una opción" })}

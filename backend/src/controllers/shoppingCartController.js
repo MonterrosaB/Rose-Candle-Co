@@ -9,8 +9,8 @@ const shoppingCartController = {};
 // GET - Obtener el carrito del usuario autenticado
 shoppingCartController.getCart = async (req, res) => {
   try {
-    const userId = req.user.id; // Obtener ID del usuario autenticado desde el middleware de auth
-
+    const userId = req.customer.id; // Obtener ID del usuario autenticado desde el middleware de auth
+    
     // Buscar el carrito asociado a ese usuario y popular datos de usuario y productos
     const cart = await shoppingCartModel
       .findOne({ idUser: userId, status: "active" })
@@ -20,7 +20,7 @@ shoppingCartController.getCart = async (req, res) => {
         populate: [
           {
             path: "idProduct",
-            select : "name images variant"
+            select: "name images variant",
           },
         ],
       }); // Popular info de productos dentro del carrito
@@ -39,41 +39,10 @@ shoppingCartController.getCart = async (req, res) => {
   }
 };
 
-// GET - Obtener carrito por ID (con seguridad para que sólo el dueño acceda)
-shoppingCartController.getCartById = async (req, res) => {
-  try {
-    const cartId = req.params.id; // Obtener ID del carrito desde la URL
-
-    // Buscar carrito por ID y popular usuario y productos
-    const cart = await shoppingCartModel
-      .findById(cartId)
-      .populate("idUser")
-      .populate("products");
-
-    if (!cart) {
-      // Si no existe carrito con ese ID, responder 404
-      return res.status(404).json({ message: "Shopping cart not found" });
-    }
-
-    // Verificar que el carrito pertenezca al usuario autenticado
-    if (cart.idUser.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "Forbidden: You do not own this cart" });
-    }
-
-    // Enviar carrito si todo está correcto
-    res.status(200).json(cart);
-  } catch (error) {
-    console.log("Error in getCartById:", error);
-    res.status(500).json("Internal server error");
-  }
-};
-
 // POST - Crear un carrito nuevo para el usuario autenticado
 shoppingCartController.createCart = async (req, res) => {
   try {
-    const userId = req.user.id; // ID del usuario autenticado
+    const userId = req.customer.id; // ID del usuario autenticado
 
     // Verificar si el usuario ya tiene un carrito existente
     let cart = await shoppingCartModel.findOne({ idUser: userId });
@@ -105,10 +74,8 @@ shoppingCartController.createCart = async (req, res) => {
 
 // POST - Agregar un producto al carrito del usuario
 shoppingCartController.increaseProduct = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.customer.id;
   const { cartId, productId, quantityVariant, indexVariant } = req.body;
-
-  console.log(userId);
 
   try {
     // Buscar carrito activo del usuario
@@ -179,7 +146,7 @@ shoppingCartController.increaseProduct = async (req, res) => {
 };
 
 shoppingCartController.decreaseProduct = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.customer.id;
   const { cartId, index } = req.body;
 
   try {
@@ -222,7 +189,7 @@ shoppingCartController.decreaseProduct = async (req, res) => {
 // POST - Completar carrito y generar orden automáticamente
 shoppingCartController.completeCart = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.customer.id;
 
     // Buscar carrito del usuario
     const cart = await shoppingCartModel
@@ -270,7 +237,7 @@ shoppingCartController.completeCart = async (req, res) => {
 // DELETE - Remover un producto específico del carrito
 shoppingCartController.removeProduct = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.customer.id;
     const { productId } = req.params; // ID del producto a remover (viene en params)
 
     // Buscar carrito del usuario
@@ -307,7 +274,7 @@ shoppingCartController.removeProduct = async (req, res) => {
 // PUT/POST - Vaciar todos los productos del carrito
 shoppingCartController.emptyCart = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.customer.id;
     const cartId = req.params.idCart;
 
     const cart = await shoppingCartModel.findOne({

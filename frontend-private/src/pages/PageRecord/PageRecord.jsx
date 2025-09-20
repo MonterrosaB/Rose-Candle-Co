@@ -3,6 +3,9 @@ import PrincipalDiv from "../../global/components/PrincipalDiv";
 import DataGrid from "../../global/components/DataGrid";
 import Widget from "../../global/components/Widget";
 
+import CustomTooltip from "./components/CustomTooltip";
+import ChartCard from "./components/ChartCard";
+
 import DropDownFilter from "../../global/components/DropDownFilter"
 
 import useRecord from "./hooks/useRecord";
@@ -26,21 +29,55 @@ const PageRecord = () => {
     document.title = "Historial | Rosé Candle Co.";
   }, []);
 
-  const { bestSellers, worstSellers, dataM, materialsBalance, materials } = useRecord();
+  const { bestSellers, worstSellers, dataM, materialsBalance, materials, materialCost, inventoryValue } = useRecord();
 
   const [selectedMaterial, setSelectedMaterial] = useState(
-    materials?.[0]?.idMaterial?._id || ""
-  );
+    materials.length > 0 ? materials[0]._id : ''
+  ); const [filteredBalance, setFilteredBalance] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
 
   useEffect(() => {
     if (materials?.length) {
       const data = materials
-        .filter((item) => item.idMaterial._id === selectedMaterial)
+        .filter((item) => item._id === selectedMaterial)
         .sort((a, b) => new Date(a.date) - new Date(b.date)); // orden por fecha
       setFilteredData(data);
     }
   }, [selectedMaterial, materials]);
+
+  useEffect(() => {
+    if (materialsBalance?.length && selectedMaterial) {
+      // 1. Filtrar solo movimientos del material seleccionado
+      const data = materialsBalance
+        .filter((item) => item.idMaterial._id === selectedMaterial)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // 2. Calcular saldo acumulado
+      let runningTotal = 0;
+      const balanceData = data.map((item) => {
+        if (item.movement === "entrada") {
+          runningTotal += item.amount;
+        } else if (item.movement === "salida") {
+          runningTotal -= item.amount;
+        }
+
+        return {
+          date: item.date, // eje X
+          createdAt: item.createdAt, // si prefieres este campo para el eje X
+          amount: runningTotal, // saldo acumulado
+        };
+      });
+
+      setFilteredBalance(balanceData);
+    }
+  }, [selectedMaterial, materialsBalance]);
+
+  useEffect(() => {
+    if (materials?.length && !selectedMaterial) {
+      setSelectedMaterial(materials[0]._id);
+    }
+  }, [materials]);
 
 
 
@@ -54,40 +91,12 @@ const PageRecord = () => {
     { name: "May", value: 350 },
   ];
 
-  // 📊 Datos Stock vs Mínimo
-  const stockMinData = [
-    { name: "Calmness", stock: 150, minimo: 100 },
-    { name: "Vela Aromática", stock: 80, minimo: 50 },
-    { name: "Difusor", stock: 50, minimo: 40 },
-    { name: "Gorra", stock: 20, minimo: 10 },
-  ];
-
-  const tableData = [
-    {
-      producto: "Calmness",
-      materia: "Cera de Soja",
-      unidad: "kg",
-      cantidad: 300,
-      costoUnitario: "$2.50",
-      costoTotal: "$750",
-    },
-    {
-      producto: "Calmness",
-      materia: "Cera de Soja",
-      unidad: "kg",
-      cantidad: 150,
-      costoUnitario: "$5.00",
-      costoTotal: "$750",
-    },
-  ];
-
   const tableColumns = {
-    Producto: "producto",
-    "Materia Prima": "materia",
-    Unidad: "unidad",
-    "Cantidad Utilizada": "cantidad",
-    "Costo Unitario": "costoUnitario",
-    "Costo Total": "costoTotal",
+    "Producto": "product",
+    "Variante": "variantName",
+    "Materia Prima": "material",
+    "Cantidad": "quantity",
+    "Costo": "cost"
   };
 
   const productTableColumns = {
@@ -100,69 +109,71 @@ const PageRecord = () => {
     <PrincipalDiv>
       {/* 📦 Materia Prima */}
       <h2 className="text-center text-3xl font-bold mb-4">Materia Prima</h2>
-      <DataGrid columns={tableColumns} rows={tableData} editable={false} />
-
       {/* Widgets y gráficas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="text-md font-semibold mb-2">Precio de Compra</h3>
-          <DropDownFilter
-            options={materials.map((m) => ({
-              _id: m.idMaterial._id,
-              name: m.idMaterial.name,
-            }))}
-            value={selectedMaterial}
-            onChange={(e) => setSelectedMaterial(e.target.value)}
-            label="Material"
-            all={false} // ya no hay opción "Todos"
-          />
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={filteredData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(tick) =>
-                  new Date(tick).toLocaleDateString("es-ES")
-                }
-              />
-              <YAxis />
-              <Tooltip
-                labelFormatter={(label) =>
-                  `Fecha: ${new Date(label).toLocaleString()}`
-                }
-              />
-              <Line
-                type="monotone"
-                dataKey="unitPrice"
-                stroke="#C2A878"
-                name="Precio Unitario"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="flex justify-center items-center">
-          <Widget
-            bgColor="#F7F5EE"
-            textColor="#333"
-            tittle="Inventario Anual"
-            value="$750"
-            variant="compact"
-          />
+      <div>
+        <DropDownFilter
+          options={materials.map((m) => ({ _id: m._id, name: m.name }))}
+          value={selectedMaterial}
+          onChange={(e) => setSelectedMaterial(e.target.value)}
+          label="Material"
+          all={false}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <ChartCard
+            title="Precio de Compra"
+          >
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={filteredData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="updatedAt"
+                  tickFormatter={(tick) =>
+                    new Date(tick).toLocaleDateString("es-ES")
+                  }
+                />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="line"
+                  dataKey="currentPrice"
+                  stroke="#C2A878"
+                  name="Precio Unitario"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartCard>
+          <ChartCard title="Balance de Materia">
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={filteredBalance}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="createdAt"
+                  tickFormatter={(tick) =>
+                    new Date(tick).toLocaleDateString("es-ES")
+                  }
+                />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Line type="monotone" dataKey="amount" stroke="#C2A878" />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartCard>
         </div>
 
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="text-md font-semibold mb-2">Balance de Materia</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#C2A878" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
       </div>
+      <DataGrid columns={tableColumns} rows={materialCost} editable={false} />
+
+      <div className="flex justify-center items-center">
+        <Widget
+          bgColor="#F7F5EE"
+          textColor="#333"
+          title="Inventario Actual"
+          value={`$${inventoryValue.toString()}`}
+          variant="compact"
+        />
+      </div>
+
 
       {/* 📦 Productos */}
       <h2 className="text-center text-3xl font-bold mt-10 mb-4">Productos</h2>

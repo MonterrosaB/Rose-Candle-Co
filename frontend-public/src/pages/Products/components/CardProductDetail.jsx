@@ -9,7 +9,6 @@ const CardProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
 
-  console.log(selectedVariantIndex);
 
 
   return (

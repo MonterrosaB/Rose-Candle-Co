@@ -645,20 +645,23 @@ salesOrderController.getTotalSalesAndProfit = async (req, res) => {
 salesOrderController.getSalesAndProfitSummary = async (req, res) => {
   try {
     const now = new Date();
-    const monthsArray = Array.from({ length: 6 }).map((_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthStr = d.toISOString().slice(0, 7); // YYYY-MM
-      return { month: monthStr, totalSales: 0, totalProfit: 0 };
-    });
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startMonth = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+    // Últimos 6 meses en formato YYYY-MM
+    const monthsArray = Array.from({ length: 6 }, (_, i) => {
+      return new Date(now.getFullYear(), now.getMonth() - i, 1)
+        .toISOString()
+        .slice(0, 7);
+    }).reverse();
 
     const result = await SalesOrderModel.aggregate([
-      // 1️⃣ Filtrar órdenes válidas
-      {
-        $match: {
-          "shippingState.state": { $ne: "cancelado" },
-        },
-      },
-      // 2️⃣ Traer carrito
+      { $match: { "shippingState.state": { $ne: "cancelado" } } },
       {
         $lookup: {
           from: "shoppingcarts",
@@ -669,23 +672,19 @@ salesOrderController.getSalesAndProfitSummary = async (req, res) => {
       },
       { $unwind: "$cart" },
       { $unwind: "$cart.products" },
-
-      // 3️⃣ Traer historial de costos de producción
       {
         $lookup: {
           from: "productioncosthistories",
           let: { productId: "$cart.products.idProduct" },
           pipeline: [
             { $match: { $expr: { $eq: ["$idProduct", "$$productId"] } } },
-            { $sort: { date: -1 } }, // último costo
+            { $sort: { date: -1 } },
             { $limit: 1 },
           ],
           as: "costHistory",
         },
       },
       { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
-
-      // 4️⃣ Tomar la variante correspondiente
       {
         $addFields: {
           variantCost: {
@@ -694,63 +693,51 @@ salesOrderController.getSalesAndProfitSummary = async (req, res) => {
               "$cart.products.selectedVariantIndex",
             ],
           },
+          quantity: "$cart.products.quantity",
+          productSubtotal: "$cart.products.subtotal",
+          saleDate: "$saleDate",
         },
       },
-
-      // 5️⃣ Calcular costo y ganancia
       {
         $addFields: {
           productCost: { $ifNull: ["$variantCost.productionCost", 0] },
-          quantity: "$cart.products.quantity",
-          productSubtotal: "$cart.products.subtotal",
           profit: {
             $subtract: [
               "$cart.products.subtotal",
               {
                 $multiply: [
-                  { $ifNull: ["$variantCost.productionCost", 0] },
+                  "$variantCost.productionCost",
                   "$cart.products.quantity",
                 ],
               },
             ],
           },
-          saleDate: "$saleDate",
         },
       },
-
-      // 6️⃣ Agrupar por periodos
       {
         $facet: {
-          daily: [
+          today: [
+            { $match: { saleDate: { $gte: startOfToday } } },
             {
               $group: {
-                _id: {
-                  $dateToString: { format: "%Y-%m-%d", date: "$saleDate" },
-                },
+                _id: "today",
                 totalSales: { $sum: "$productSubtotal" },
                 totalProfit: { $sum: "$profit" },
               },
             },
-            { $sort: { _id: 1 } },
           ],
-          monthly: [
+          thisMonth: [
+            { $match: { saleDate: { $gte: startOfMonth } } },
             {
               $group: {
-                _id: { $dateToString: { format: "%Y-%m", date: "$saleDate" } },
+                _id: "thisMonth",
                 totalSales: { $sum: "$productSubtotal" },
                 totalProfit: { $sum: "$profit" },
               },
             },
-            { $sort: { _id: 1 } },
           ],
           last6Months: [
-            {
-              $match: {
-                saleDate: {
-                  $gte: new Date(now.getFullYear(), now.getMonth() - 5, 1),
-                },
-              },
-            },
+            { $match: { saleDate: { $gte: startMonth } } },
             {
               $group: {
                 _id: { $dateToString: { format: "%Y-%m", date: "$saleDate" } },
@@ -764,31 +751,35 @@ salesOrderController.getSalesAndProfitSummary = async (req, res) => {
       },
     ]);
 
-    // Mapear meses con datos reales
-    const fillMonths = (data) => {
-      return monthsArray
-        .map((m) => {
-          const found = data.find((d) => d._id === m.month);
-          return found
-            ? {
-                _id: m.month,
-                totalSales: found.totalSales,
-                totalProfit: found.totalProfit,
-              }
-            : { _id: m.month, totalSales: 0, totalProfit: 0 };
-        })
-        .reverse(); // Para ordenar cronológicamente del más antiguo al más reciente
-    };
+    const fillMonths = (data) =>
+      monthsArray.map((month) => {
+        const found = data.find((d) => d._id === month);
+        return {
+          _id: month,
+          totalSales: found?.totalSales || 0,
+          totalProfit: found?.totalProfit || 0,
+        };
+      });
 
-    const stats = result[0] || { daily: [], monthly: [], last6Months: [] };
-    stats.last6Months = fillMonths(stats.last6Months);
+    const stats = result[0] || {};
+    stats.last6Months = fillMonths(stats.last6Months || []);
+    stats.today = stats.today?.[0] || {
+      _id: "today",
+      totalSales: 0,
+      totalProfit: 0,
+    };
+    stats.thisMonth = stats.thisMonth?.[0] || {
+      _id: "thisMonth",
+      totalSales: 0,
+      totalProfit: 0,
+    };
 
     res.json(stats);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "Error al calcular estadísticas de ventas y ganancias" });
+    res.status(500).json({
+      error: "Error al calcular estadísticas de ventas y ganancias",
+    });
   }
 };
 

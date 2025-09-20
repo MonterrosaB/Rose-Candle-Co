@@ -26,6 +26,7 @@ const PageOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null); //  Para editar
 
   const columns = {
+    [t("ID")]: "_id",
     [t("client")]: "name",
     [t("products")]: "totalProducts",
     [t("date")]: "saleDate",

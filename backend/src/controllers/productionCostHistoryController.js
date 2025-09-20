@@ -6,17 +6,113 @@ const productionCostHistoryController = {};
 productionCostHistoryController.getProductionCostHistory = async (req, res) => {
   try {
     // Buscar todos los registros y popular referencias a otras colecciones
-    const productionCostHistory = await productionCostHistoryModel
-      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
-      .populate({
-        path: "idSalesOrder", // Popular detalles del pedido de venta
-      })
-      .populate({
-        path: "products.idProduct", // Popular detalles del producto en cada producto registrado
-      })
-      .populate({
-        path: "products.rawMaterialUsed.idRawMaterial", // Popular materias primas usadas en cada producto
-      });
+    const productionCostHistory = await productionCostHistoryModel.aggregate([
+      { $unwind: "$variants" },
+      { $unwind: "$variants.rawMaterialUsed" },
+
+      // Agrupar materias primas de cada variante
+      {
+        $group: {
+          _id: {
+            idProduct: "$idProduct",
+            variantName: "$variants.variantName",
+            idRawMaterial: "$variants.rawMaterialUsed.idRawMaterial",
+            unit: "$variants.rawMaterialUsed.unit",
+          },
+          totalAmount: { $sum: "$variants.rawMaterialUsed.amount" },
+          totalCost: { $sum: "$variants.rawMaterialUsed.subtotal" },
+        },
+      },
+
+      // Reagrupar por producto+variante
+      {
+        $group: {
+          _id: {
+            idProduct: "$_id.idProduct",
+            variantName: "$_id.variantName",
+          },
+          materials: {
+            $push: {
+              idRawMaterial: "$_id.idRawMaterial",
+              unit: "$_id.unit",
+              totalAmount: "$totalAmount",
+              totalCost: "$totalCost",
+            },
+          },
+        },
+      },
+
+      // Lookup para productos
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.idProduct",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+
+      // Lookup para materias primas
+      {
+        $lookup: {
+          from: "rawmaterials",
+          localField: "materials.idRawMaterial",
+          foreignField: "_id",
+          as: "rawMaterialsInfo",
+        },
+      },
+
+      // Mergear info de materias primas con cada objeto en materials
+      {
+        $addFields: {
+          materials: {
+            $map: {
+              input: "$materials",
+              as: "mat",
+              in: {
+                unit: "$$mat.unit",
+                totalAmount: "$$mat.totalAmount",
+                totalCost: "$$mat.totalCost",
+                idRawMaterial: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$rawMaterialsInfo",
+                        as: "info",
+                        cond: { $eq: ["$$info._id", "$$mat.idRawMaterial"] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          product: "$product.name", // 👈 solo el nombre
+          materials: {
+            $map: {
+              input: "$materials",
+              as: "m",
+              in: {
+                material: "$$m.idRawMaterial.name",
+                quantity: {
+                  $concat: [{ $toString: "$$m.totalAmount" }, " ", "$$m.unit"],
+                },
+                cost: {
+                  $concat: [{ $literal: "$" }, { $toString: "$$m.totalCost" }],
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
     // Enviar respuesta con los datos encontrados
     res.status(200).json(productionCostHistory); // Respuesta exitosa
   } catch (error) {
