@@ -81,7 +81,7 @@ const Home = () => {
           bgColor={"#F7F5EE"}
           textColor={"#333"}
           tittle={t("total_users")}
-          value={customerCount.toString()}
+          value={customerCount}
           increment={`${latestCustomerCount} ${t("latest_users")}`}
           icon={<User size={32} strokeWidth={3} />}
         />

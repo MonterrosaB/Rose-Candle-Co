@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import limiter from "./src/middlewares/rateLimiter.js";
 
 // Swagger
 import swaggerUi from "swagger-ui-express";
@@ -9,7 +10,10 @@ import fs from "fs";
 import path from "path";
 
 // Constante para la librería de express
-const app = express(); // <-- Inicializar app primero
+const app = express(); // Inicializar app primero
+
+ // Límite de peticiones al servidor
+app.use(limiter);
 
 // Middlewares
 app.use(express.json());
