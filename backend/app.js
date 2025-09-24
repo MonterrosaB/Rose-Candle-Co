@@ -61,6 +61,7 @@ import logoutRoutes from "./src/routes/logout.js";
 import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 import paymentsRoutes from "./src/routes/payments.js";
 import authRoutes from "./src/routes/auth.js";
+import settingsRoutes from "./src/routes/settings.js";
 
 // Montar rutas
 app.use("/api/customers", customersRoutes);
@@ -86,6 +87,7 @@ app.use("/api/registerEmployees", registerEmployeesRoutes);
 app.use("/api/recoveryPassword", recoveryPasswordRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/settings", settingsRoutes);
 
 // Exportar app
 export default app;

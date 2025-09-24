@@ -22,6 +22,7 @@ import Reports from "../../pages/PagerReports/PageReports.jsx";
 import Stock from "../../pages/PageStock/Stock.jsx";
 import PasswordRecovery from "../../pages/RecoveryPassword/logic/PageRecoveryPassword.jsx";
 import Profile from "../../pages/PageProfile/logic/PageProfile.jsx";
+import Personalize from "../../pages/PagePersonalize/logic/PagePersonalize.jsx";
 import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 function Navigation() {
@@ -103,6 +104,7 @@ function Navigation() {
               <Route path="/employees" element={<Employees />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/personalize" element={<Personalize />} />
               <Route path="/categories-materia" element={<CategoriesMateria />} />
             </Route>
           </Route>
