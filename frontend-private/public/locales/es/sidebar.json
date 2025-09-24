@@ -5,5 +5,6 @@
   "employees": "Empleados",
   "orders": "Pedidos",
   "logout": "Cerrar Sesión",
-  "change_language": "Cambiar idioma"
+  "change_language": "Cambiar idioma",
+  "customization": "Personalizar"
 }

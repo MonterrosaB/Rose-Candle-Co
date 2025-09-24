@@ -18,6 +18,7 @@ const Sidebar = () => {
     { to: "/reports", label: t("reports"), adminOnly: true },
     { to: "/employees", label: t("employees"), adminOnly: true },
     { to: "/order", label: t("orders"), adminOnly: false },
+    { to: "/personalize", label: t("customization"), adminOnly: true },
   ];
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
