@@ -12,6 +12,7 @@ import {
 import Nav from "../../global/components/Nav.jsx";
 import Footer from "../../global/components/Footer.jsx";
 import MarqueeBanner from "../../global/components/MarqueeBanner.jsx";
+import ScrollToTop from "./ScrollToTop.jsx";
 
 // Páginas
 import Home from "../../pages/Home/Home.jsx";
@@ -69,6 +70,7 @@ function Navigation() {
       {!hideNavFooter && <Nav />}
 
       <div className=" min-h-dvh">
+        <ScrollToTop/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
