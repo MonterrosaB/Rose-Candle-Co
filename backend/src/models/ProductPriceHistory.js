@@ -2,10 +2,11 @@
     Colección para historial de precios de un producto
     
     Campos:
-        idProduct    - Referencia al producto cuyo precio ha cambiado
-        reason       - Motivo del cambio de precio
-        amountSold   - Cantidad vendida con ese precio
-        deleted      - Eliminación lógica (true = eliminado)
+        idProduct - Referencia al producto cuyo precio ha cambiado
+        variantName - Variante afectada
+        unitPrice - Precio asignado
+        reference - Referencia de cambio de precio
+        changedBy - Quien realizo el cambio
 */
 import { Schema, model } from "mongoose";
 
@@ -18,28 +19,39 @@ const productPriceHistorySchema = new Schema(
       required: true, // Es obligatorio referenciar un producto
       trim: true, // Elimina espacios al inicio y final
     },
-
-    // Motivo o razón por la cual se registró este cambio de precio
-    reason: {
+    variantName: {
       type: String,
-      required: true, // Motivo obligatorio para el cambio de precio
-      minLength: [5, "El motivo debe tener al menos 5 caracteres"], // Longitud mínima
-      trim: true, // Elimina espacios en blanco
+      required: false, // Opcional si el cambio aplica al producto completo
+      trim: true,
+      minLength: [1, "El nombre de la variante debe tener al menos 1 carácter"],
+      maxLength: [
+        200,
+        "El nombre de la variante no puede exceder 200 caracteres",
+      ],
     },
-
-    // Cantidad de productos vendidos bajo este precio
-    amountSold: {
+    // Precio unitario del material en esta transacción
+    unitPrice: {
       type: Number,
-      required: true, // Cantidad vendida obligatoria
-      min: [0, "La cantidad no puede ser negativa"], // No puede ser menor a 0
-      match: [/^(0|[1-9]\d*)(\.\d+)?$/, "Número no válido"], // Número entero o decimal positivo
-      trim: true, // Aunque no afecta números, se incluye por consistencia
+      required: [true, "El precio unitario es obligatorio"],
+      min: [0, "El precio unitario no puede ser negativo"], // Precio no negativo
+      max: [1000000, "El precio unitario es demasiado alto"], // Limite superior arbitrario para evitar errores
+      validate: {
+        validator: Number.isFinite, // Validación numérica
+        message: "El precio unitario debe ser un número válido",
+      },
     },
-
-    // Campo para eliminación lógica del registro
-    deleted: {
-      type: Boolean, // Tipo booleano
-      default: false, // Por defecto no eliminado
+    // Motivo o razón por la cual se registró este cambio de precio
+    reference: {
+      type: String,
+      maxlength: [200, "La referencia no debe exceder los 200 caracteres"],
+      minlength: [2, "La referencia no debe ser menos de 2 caracteres"],
+      trim: true,
+      default: "Cambio de precio", // Valor por defecto si no se proporciona
+    },
+    changedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "Employees", // Referencia al modelo Productos
+      required: true,
     },
   },
   {

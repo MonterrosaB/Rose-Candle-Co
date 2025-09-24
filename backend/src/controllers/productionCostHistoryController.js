@@ -92,6 +92,12 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
         },
       },
       {
+        $sort: {
+          "product.name": 1,
+          "_id.variantName": 1,
+        },
+      },
+      {
         $project: {
           product: "$product.name", // 👈 solo el nombre
           materials: {

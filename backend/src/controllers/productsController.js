@@ -5,6 +5,8 @@ import { config } from "../config.js"; // Archivo config
 import { v2 as cloudinary } from "cloudinary"; // Cloudinary
 import RawMaterials from "../models/RawMaterials.js";
 import Products from "../models/Products.js";
+import { createProductPriceHistory } from "../utils/createProductPriceHistorial.js";
+import { createProductionCostHistory } from "../utils/createProducctionCostHistorial.js";
 
 // Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
@@ -105,6 +107,7 @@ productsController.createProduct = async (req, res) => {
     variant,
     idProductCategory,
     idCollection,
+    changedBy,
   } = req.body;
 
   let imagesURL = [];
@@ -192,9 +195,18 @@ productsController.createProduct = async (req, res) => {
         0
       );
 
+      // Guardar historial de precios (uno por variante)
+      await createProductPriceHistory({
+        idProduct: savedProduct._id,
+        variantName: v.variant,
+        unitPrice: parseFloat(v.variantPrice),
+        reference: "Registro Inicial", // o algo dinámico
+        changedBy,
+      });
+
       variantsWithCost.push({
         variantName: v.variant,
-        amount: 1, // puedes ajustar según producción
+        amount: 1,
         unitPrice: parseFloat(v.variantPrice),
         productionCost: totalProductionCost,
         rawMaterialUsed: rawMaterialsUsed,
@@ -209,9 +221,9 @@ productsController.createProduct = async (req, res) => {
 
     await productionRecord.save();
 
-    res
-      .status(200)
-      .json({ message: "Product and cost history saved successfully" });
+    res.status(200).json({
+      message: "Product, price history and cost history saved successfully",
+    });
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json("Internal server error");
@@ -240,7 +252,7 @@ productsController.deleteProduct = async (req, res) => {
 
 // PUT - Método para actualizar un producto por su id
 productsController.updateProduct = async (req, res) => {
-  console.log("Body", req.body); // cuerpo del schema
+  console.log("Body", req.body);
 
   let {
     name,
@@ -260,8 +272,8 @@ productsController.updateProduct = async (req, res) => {
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: "public/products", // carpeta en donde se guarda el registro
-        allowed_formats: ["png", "jpg", "jpeg"], // archivos permitidos
+        folder: "public/products",
+        allowed_formats: ["png", "jpg", "jpeg"],
       });
       imagesURL.push(result.secure_url);
     }
@@ -275,44 +287,59 @@ productsController.updateProduct = async (req, res) => {
     if (typeof variant === "string") variant = JSON.parse(variant);
     availability = availability === "true";
 
-    // Validaciones básicas
+    // Validaciones
     if (!name || name.length < 3)
       return res.status(400).json({ message: "Name too short" });
-
     if (!description || description.length < 5)
       return res.status(400).json({ message: "Description too short" });
-
     if (imagesURL.length > 8)
       return res.status(400).json({ message: "Max 8 images allowed" });
-
-    if (
-      !components ||
-      !Array.isArray(components) ||
-      components.length < 1 ||
-      !recipe ||
-      !Array.isArray(recipe) ||
-      recipe.length < 1 ||
-      !useForm ||
-      !Array.isArray(useForm) ||
-      useForm.length < 1 ||
-      !variant ||
-      !Array.isArray(variant) ||
-      variant.length < 1
-    ) {
-      return res.status(400).json({ message: "All fields must be complete" });
-    }
 
     // Buscar producto original
     const productOriginal = await productsModel.findById(req.params.id);
     if (!productOriginal)
       return res.status(404).json({ message: "Product not found" });
 
-    // Si no se subieron nuevas imágenes, conservar las anteriores
+    // Conservar imágenes si no se subieron nuevas
     if (imagesURL.length === 0) {
       imagesURL = productOriginal.images;
     }
 
-    // Actualización
+    /* ------------------------------------------------
+       1. Detectar cambios en VARIANTES → PriceHistory
+    ------------------------------------------------ */
+
+    for (const newVar of variant) {
+      const oldVar = productOriginal.variant.find(
+        (v) => v.variant === newVar.variant
+      );
+      if (oldVar && oldVar.variantPrice !== newVar.variantPrice) {
+        await createProductPriceHistory({
+          idProduct: productOriginal._id,
+          variantName: newVar.variant,
+          unitPrice: newVar.variantPrice,
+          reference: "Price updated",
+          changedBy: user.id, // o req.user.id según tu autenticación
+        });
+      }
+    }
+
+    /* --------------------------------------------------------
+       2. Detectar cambios en RECIPE (materias primas usadas)
+    -------------------------------------------------------- */
+    await createProductionCostHistory({
+      idProduct: productOriginal._id,
+      variants: variant.map((v) => ({
+        variantName: v.variant,
+        amount: v.amount,
+        unitPrice: v.variantPrice,
+        rawMaterialUsed: v.components, // array con idComponent, amount, unitPrice
+      })),
+    });
+
+    /* ------------------------
+       3. Actualizar producto
+    ------------------------- */
     const updatedProduct = await productsModel.findByIdAndUpdate(
       req.params.id,
       {
@@ -331,12 +358,12 @@ productsController.updateProduct = async (req, res) => {
     );
 
     res.status(200).json({
-      message: "Updated Successfully", // se actualiza
+      message: "Updated Successfully",
       product: updatedProduct,
     });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ message: "Internal server error" }); // error del servidor
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -636,6 +663,55 @@ productsController.getWorstSellers = async (req, res) => {
   } catch (error) {
     console.error("Error al obtener los menos vendidos:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+productsController.calculateProduction = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    // Buscar producto
+    const product = await Products.findById(productId).lean();
+    if (!product) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    let result = [];
+
+    // Recorremos cada variante del producto
+    for (const variant of product.variant) {
+      let unitsPossible = Infinity;
+
+      for (const comp of variant.components) {
+        const rawMaterial = await RawMaterials.findById(
+          comp.idComponent
+        ).lean();
+
+        if (!rawMaterial) {
+          unitsPossible = 0; // No existe la materia prima
+          break;
+        }
+
+        // Calcular cuántas unidades se pueden producir con este componente
+        const possible = Math.floor(rawMaterial.currentStock / comp.amount);
+
+        // El mínimo entre todos los componentes define el límite
+        unitsPossible = Math.min(unitsPossible, possible);
+      }
+
+      result.push({
+        variant: variant.variant,
+        maxProduction: unitsPossible,
+      });
+    }
+
+    return res.json({
+      product: product.name,
+      productionCapacity: result,
+    });
+  } catch (error) {
+    console.error("Error en cálculo de producción:", error);
+    res.status(500).json({ message: "Error al calcular producción", error });
   }
 };
 

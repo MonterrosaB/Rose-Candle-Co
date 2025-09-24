@@ -1,8 +1,5 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../global/hooks/useAuth";
-
-
-
 
 const useFetchProduct = () => {
 
@@ -11,24 +8,22 @@ const useFetchProduct = () => {
 
   const ApiProducts = API + "/products";
 
-  const [products, setProducts] = useState([]);
+  const fetcher = async (url, transform) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Error fetching data");
+    const data = await res.json();
+    return transform ? transform(data) : data;
+  };
 
-  const getProducts = async () => {
+  // Obtener datos
+  const productsQuery = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetcher(ApiProducts),
+    onError: () => toast.error("Error al obtener los productos"),
+  });
 
-    try {
-      const response = await fetch(ApiProducts)
+  console.log(productsQuery.data);
 
-      if (!response.ok) {
-        throw new Error("Error fetching Products");
-      }
-
-      const data = await response.json();
-      setProducts(data)
-    } catch (error) {
-      console.error("Error fetching Products", error);
-      toast.error("Error fetching Products");
-    }
-  }
 
 
   const getProductById = async (id) => {
@@ -47,13 +42,9 @@ const useFetchProduct = () => {
     }
   };
 
-  useEffect(() => {
-    getProducts();
-  }, []);
-
   return {
-    products,
-    getProducts,
+    products: productsQuery.data ?? [], // 👈 aseguramos array vacío 
+    getProducts: productsQuery,
     getProductById
   }
 };

@@ -18,7 +18,7 @@ const Widget = ({
             </div>
             <div className="flex flex-col">
                 <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-center">
-                    {value}
+                    {value || 0}
                 </span>
             </div>
         </div>

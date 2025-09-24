@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth";
 
-
 const useProducts = (methods) => {
-
-  const { API } = useAuth()
+  const { API, user } = useAuth();
 
   const {
     register,
@@ -13,7 +11,7 @@ const useProducts = (methods) => {
     reset,
     control,
     formState: { errors },
-    unregister
+    unregister,
   } = methods;
 
   // Api de productos
@@ -52,6 +50,8 @@ const useProducts = (methods) => {
   const createProduct = async (formData) => {
     setLoading(true);
     try {
+      // Agregar el campo changedBy al formData
+      formData.append("changedBy", user.id);
 
       const response = await fetch(ApiProducts, {
         method: "POST",
@@ -97,10 +97,6 @@ const useProducts = (methods) => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const deleteProduct = async (id) => {
     try {
       const response = await fetch(`${ApiProducts}/${id}`, {
@@ -122,7 +118,6 @@ const useProducts = (methods) => {
   };
 
   const handleUpdate = async (idProduct, formData) => {
-
     try {
       setLoading(true);
 
@@ -147,6 +142,10 @@ const useProducts = (methods) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return {
     activeTab,

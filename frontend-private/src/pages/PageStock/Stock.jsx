@@ -44,6 +44,13 @@ const PageStock = () => {
       delay: "delay-700",
     },
     {
+      key: "record",
+      path: "/record",
+      icon: History,
+      gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
+      delay: "delay-300",
+    },
+    {
       key: "categories",
       path: "/categories",
       icon: Tags,
@@ -61,13 +68,6 @@ const PageStock = () => {
       key: "collections",
       path: "/colections",
       icon: Layers,
-      gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
-      delay: "delay-300",
-    },
-    {
-      key: "record",
-      path: "/record",
-      icon: History,
       gradient: "from-[#86918C] via-[#D3CCBE] to-[#F2EBD9]",
       delay: "delay-300",
     },

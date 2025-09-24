@@ -1,176 +1,151 @@
-import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth";
 
+const fetcher = async (url, transform) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Error fetching data");
+    const data = await res.json();
+    return transform ? transform(data) : data;
+};
 
 const useRecord = () => {
-
     const { API } = useAuth();
+    const ApiProducts = `${API}/products`;
 
-    const ApiProducts = API + "/products";
+    // 🔹 Best Sellers
+    const bestSellersQuery = useQuery({
+        queryKey: ["bestSellers"],
+        queryFn: () => fetcher(`${ApiProducts}/bestSellers`),
+        onError: () => toast.error("Error al obtener los más vendidos"),
+    });
 
-    const [bestSellers, setBestSellers] = useState([]);
-    const [worstSellers, setWorstSellers] = useState([]);
-    const [materialCost, setMaterialCost] = useState([]);
-    const [materialsBalance, setMaterialsBalance] = useState([]);
-    const [materials, setMaterials] = useState([]);
-    const [inventoryValue, setInventoryValue] = useState([]);
-    const [dataM, setDataM] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // 🔹 Worst Sellers
+    const worstSellersQuery = useQuery({
+        queryKey: ["worstSellers"],
+        queryFn: () => fetcher(`${ApiProducts}/worstSellers`),
+        onError: () => toast.error("Error al obtener los menos vendidos"),
+    });
 
+    // 🔹 Materiales con costo
+    const materialCostQuery = useQuery({
+        queryKey: ["materialCost"],
+        queryFn: () =>
+            fetcher(`${API}/productionCostHistory`, (data) =>
+                data.flatMap((d) =>
+                    d.materials.map((m) => ({
+                        product: d.product,
+                        variantName: d._id.variantName,
+                        material: m.material,
+                        quantity: m.quantity,
+                        cost: m.cost,
+                    }))
+                )
+            ),
+        onError: () => toast.error("Error al obtener costos de materiales"),
+    });
 
-
-
-
-
-    const getBestSellers = async () => {
-
-        try {
-            const response = await fetch(ApiProducts + "/bestSellers")
-
-            if (!response.ok) {
-                throw new Error("Error fetching Products");
-            }
-
-            const data = await response.json();
-            setBestSellers(data)
-        } catch (error) {
-            console.error("Error fetching Products", error);
-            toast.error("Error fetching Products");
-        }
-    }
-
-    const getWorstSellers = async () => {
-
-        try {
-            const response = await fetch(ApiProducts + "/worstSellers")
-
-            if (!response.ok) {
-                throw new Error("Error fetching Products");
-            }
-
-            const data = await response.json();
-            setWorstSellers(data)
-        } catch (error) {
-            console.error("Error fetching Products", error);
-            toast.error("Error fetching Products");
-        }
-    }
-
-    const getProductMaterialsCost = async () => {
-
-        try {
-            const response = await fetch(API + "/productionCostHistory")
-
-            if (!response.ok) {
-                throw new Error("Error fetching Products");
-            }
-
-            const data = await response.json();
-            const rows = data.flatMap(d =>
-                d.materials.map(m => ({
-                    product: d.product,
-                    variantName: d._id.variantName,
-                    material: m.material,
-                    quantity: m.quantity,
-                    cost: m.cost
+    // 🔹 Ganancias y Ventas
+    const profitAndSalesQuery = useQuery({
+        queryKey: ["profitAndSales"],
+        queryFn: () =>
+            fetcher(`${API}/salesOrder/summary`, (stats) =>
+                (stats.last6Months || []).map((item) => ({
+                    name: item._id,
+                    ingresos: Number(item.totalSales).toFixed(2),
+                    ganancias: Number(item.totalProfit).toFixed(2),
                 }))
-            );
-            setMaterialCost(rows)
-            console.log(rows);
+            ),
+        onError: () => toast.error("Error al obtener resumen de ventas"),
+    });
 
-        } catch (error) {
-            console.error("Error fetching Products", error);
-            toast.error("Error fetching Products");
-        }
-    }
+    // 🔹 Balance de Materiales
+    const materialsBalanceQuery = useQuery({
+        queryKey: ["materialsBalance"],
+        queryFn: () => fetcher(`${API}/materialBalance`),
+        onError: () => toast.error("Error al cargar balance de materias"),
+    });
 
-    const getProfitAndSales = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(API + "/salesOrder/summary");
-            if (!response.ok) throw new Error("Error al obtener los datos");
-            const stats = await response.json();
+    // 🔹 Materias primas
+    const materialsQuery = useQuery({
+        queryKey: ["materials"],
+        queryFn: () => fetcher(`${API}/rawMaterials`),
+        onError: () => toast.error("Error al cargar materias primas"),
+    });
 
-            // Ganancias mensuales
-            const chartData = (stats.last6Months || []).map((item) => ({
-                name: item._id,
-                ingresos: Number(item.totalSales).toFixed(2),
-                ganancias: Number(item.totalProfit).toFixed(2),
-            }));
+    // 🔹 Valor de inventario
+    const inventoryValueQuery = useQuery({
+        queryKey: ["inventoryValue"],
+        queryFn: () =>
+            fetcher(`${API}/rawMaterials/inventoryValue`, (data) => data.totalInventoryValue),
+        onError: () => toast.error("Error al cargar valor del inventario"),
+    });
 
-            console.log(chartData);
+    // 🔹 Producción de un producto (parametrizable con mutation/query)
+    const productionQuery = useMutation({
+        mutationFn: (productId) =>
+            fetcher(`${API}/products/calculateProduction/${productId}`, (data) =>
+                data.productionCapacity.reduce((acc, v) => acc + v.maxProduction, 0)
+            ),
+        onError: () => toast.error("Error al calcular producción"),
+    });
 
+    // 🔹 Historial de precio de producto
+    const productPriceHistoryQuery = useMutation({
+        mutationFn: (productId) =>
+            fetcher(`${API}/productPriceHistory/${productId}`, (data) => {
+                const variants = {};
+                data.forEach((item) => {
+                    const date = new Date(item.createdAt).toLocaleDateString();
+                    if (!variants[item.variantName]) variants[item.variantName] = {};
+                    variants[item.variantName][date] = item.unitPrice;
+                });
 
-            setDataM(chartData);
-        } catch (err) {
-            console.error(err);
-            setError(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+                const formatted = Object.keys(
+                    data.reduce((acc, item) => {
+                        acc[new Date(item.createdAt).toLocaleDateString()] = true;
+                        return acc;
+                    }, {})
+                ).map((date) => {
+                    const row = { name: date };
+                    for (const v of Object.keys(variants)) {
+                        row[v] = variants[v][date] || null;
+                    }
+                    return row;
+                });
 
-    const getMaterialsBalance = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(API + "/materialBalance");
-            if (!res.ok) throw new Error("No se pudo obtener el balance de materias primas");
-            const data = await res.json();
-            console.log(data);
-
-            setMaterialsBalance(data);
-        } catch (err) {
-            toast.error("No se pudo cargar el balance");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const getMaterials = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(API + "/rawMaterials");
-            if (!res.ok) throw new Error("No se pudo obtener materias primas");
-            const data = await res.json();
-            setMaterials(data);
-            console.log(data);
-
-        } catch (err) {
-            toast.error("No se pudo cargar materias primas");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const getMaterialsValue = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(API + "/rawMaterials/inventoryValue");
-            if (!res.ok) throw new Error("No se pudo obtener el valor total de las materias primas");
-            const data = await res.json();
-            setInventoryValue(data.totalInventoryValue);
-
-        } catch (err) {
-            toast.error("No se pudo cargar materias primas");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-
-    useEffect(() => {
-        getBestSellers();
-        getWorstSellers();
-        getProfitAndSales();
-        getMaterialsBalance();
-        getMaterials();
-        getProductMaterialsCost();
-        getMaterialsValue();
-    }, []);
+                return formatted;
+            }),
+        onError: () => toast.error("Error al obtener historial de precios"),
+    });
 
     return {
-        bestSellers, worstSellers, dataM, materialsBalance, materials, materialCost, inventoryValue
-    }
-}
+        // Queries
+        bestSellers: bestSellersQuery.data,
+        worstSellers: worstSellersQuery.data,
+        materialCost: materialCostQuery.data,
+        dataM: profitAndSalesQuery.data,
+        materialsBalance: materialsBalanceQuery.data,
+        materials: materialsQuery.data,
+        inventoryValue: inventoryValueQuery.data,
+
+        // Mutations
+        getProducctionProducts: productionQuery.mutateAsync,
+        production: productionQuery.data,
+
+        getProductPriceHistorial: productPriceHistoryQuery.mutateAsync,
+        priceHistorial: productPriceHistoryQuery.data,
+
+        // Estados
+        isLoading:
+            bestSellersQuery.isLoading ||
+            worstSellersQuery.isLoading ||
+            materialCostQuery.isLoading ||
+            profitAndSalesQuery.isLoading ||
+            materialsBalanceQuery.isLoading ||
+            materialsQuery.isLoading ||
+            inventoryValueQuery.isLoading,
+    };
+};
+
 export default useRecord;

@@ -29,5 +29,8 @@ router
 
 // Rutas específicas
 router.route("/restore/:id").put(productsController.restoreProduct); // restaurar por id
+router
+  .route("/calculateProduction/:id")
+  .get(productsController.calculateProduction); // calcular por id
 
 export default router;

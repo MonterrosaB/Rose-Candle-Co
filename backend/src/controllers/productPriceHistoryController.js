@@ -6,35 +6,37 @@ const productPriceHistoryController = {};
 // GET - Obtener todo el historial de precios de productos
 productPriceHistoryController.getProductPriceHistory = async (req, res) => {
   try {
-    // Buscar todos los registros en la colección
-    const productPriceHistory = await productPriceHistoryModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
-    // Responder con los datos encontrados
-    res.status(200).json(productPriceHistory); // Todo bien
+    const { productId } = req.params;
+
+    const history = await productPriceHistoryModel
+      .find({ idProduct: productId })
+      .populate("changedBy", "name email") // opcional
+      .sort({ createdAt: 1 }); // Ordenar cronológicamente
+
+    res.json(history);
   } catch (error) {
-    // Capturar y mostrar error en consola
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    res.status(500).json({ message: "Error al obtener historial", error });
   }
 };
 
 // POST - Crear un nuevo registro en el historial de precios
 productPriceHistoryController.createProductPriceHistory = async (req, res) => {
   // Obtener datos enviados en el cuerpo de la petición
-  const { idProduct, reason, amountSold } = req.body;
+  const { idProduct, variantName, unitPrice, reference, changedBy } = req.body;
 
   try {
     // Validaciones básicas de entrada
-    if (!idProduct || !reason || !amountSold) {
+    if (!idProduct || !variantName || !unitPrice || !changedBy) {
       return res
         .status(400)
         .json({ message: "Please complete all the fields" }); // Campos vacíos
     }
 
-    if (reason.length < 5) {
+    if (reference.length < 2) {
       return res.status(400).json({ message: "Too short" }); // Texto muy corto
     }
 
-    if (amountSold < 0) {
+    if (unitPrice < 0) {
       return res
         .status(400)
         .json({ message: "The amount can't be less than 0" }); // Monto inválido (negativo)
@@ -43,8 +45,10 @@ productPriceHistoryController.createProductPriceHistory = async (req, res) => {
     // Crear nuevo documento con los datos validados
     const newProductPriceHistory = new productPriceHistoryModel({
       idProduct,
-      reason,
-      amountSold,
+      variantName,
+      unitPrice,
+      reference,
+      changedBy,
     });
     // Guardar en la base de datos
     await newProductPriceHistory.save();
@@ -60,12 +64,12 @@ productPriceHistoryController.createProductPriceHistory = async (req, res) => {
 
 // DELETE - Eliminar un registro del historial por ID
 productPriceHistoryController.deleteProductPriceHistory = async (req, res) => {
- try {
-        const deletedHistory = await productPriceHistoryModel.findByIdAndUpdate(
-              req.params.id,
-              { deleted: true }, // Se marca como "eliminada"
-              { new: true }
-            ); // Eliminar por ID
+  try {
+    const deletedHistory = await productPriceHistoryModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     // Validar si se encontró el registro
     if (!deletedHistory) {
@@ -119,7 +123,7 @@ productPriceHistoryController.updateProductPriceHistory = async (req, res) => {
   }
 };
 
-productPriceHistoryController.restoreProductPriceHistory= async (req, res) => {
+productPriceHistoryController.restoreProductPriceHistory = async (req, res) => {
   try {
     const productPriceHistory = await productCategories.findByIdAndUpdate(
       req.params.id,
@@ -128,7 +132,9 @@ productPriceHistoryController.restoreProductPriceHistory= async (req, res) => {
     ); // Se actualiza por ID
 
     if (!productPriceHistory) {
-      return res.status(400).json({ message: "Product Price History not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "Product Price History not found" }); // No encontrada
     }
 
     res.status(200).json({ message: "Product Price History restored" }); // Restauracion exitosa
