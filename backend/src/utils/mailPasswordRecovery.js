@@ -1,80 +1,64 @@
-// Correo electrónico que se envía con el código de verificación
-import nodemailer from "nodemailer";
-import { config } from "../config.js";
+import fetch from "node-fetch";
+import { config } from "../config.js"; // opcional si guardas la API key aquí
 
-// Configuración del transportador SMTP usando Gmail
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // Servidor SMTP de Gmail
-  port: 465, // Puerto seguro SSL
-  secure: true, // Usar conexión segura
-  auth: {
-    user: config.email.user, // Usuario (email) desde config
-    pass: config.email.pass, // Contraseña o token de app desde config
-  },
-});
+// API key de Brevo
+const apiKey = config.brevo.brevoapi;
 
-// Función asíncrona para enviar un correo
-const sendEmail = async (to, subject, body, html) => {
+// Función para enviar correo de recuperación de contraseña
+const sendRecoveryEmail = async (to, code, name = "Usuario") => {
   try {
-    // Envía el correo con los parámetros indicados
-    const info = await transporter.sendMail({
-      from: config.email.user, // correo remitente
-      to, // destinatario
-      subject, // asunto del correo
-      body, // texto plano
-      html, // contenido en HTML
+    // Contenido HTML
+    const htmlContent = `
+      <div style="font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F9F7F3; padding: 0; max-width: 600px; margin: 0 auto; border-radius: 20px; overflow: hidden; border: 1px solid #DFCCAC; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);">
+        <div style="background: linear-gradient(135deg, #EADBC3, #DFCCAC); padding: 40px 20px; text-align: center;">
+          <img src="https://img.icons8.com/ios-filled/100/a78a5e/lock--v1.png" width="70" height="70" alt="Lock Icon" style="margin-bottom: 20px; opacity: 0.8;">
+          <h2 style="color: #7D674A; font-size: 24px; font-weight: 650; margin-bottom: 10px;">Rosé Candle Co.</h2>
+          <p style="color: #8C7B63; font-size: 14px; line-height: 1.5; margin: 0;">Inspiramos confianza con cada detalle.</p>
+        </div>
+        <div style="background-color: #FFFFFF; padding: 40px 30px; position: relative; text-align: center;">
+          <h1 style="color: #A78A5E; font-size: 22px; font-weight: 650; margin-bottom: 12px;">Código de verificación</h1>
+          <p style="color: #6F6A50; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+            ¡Hola, <strong>${name}</strong>!<br>
+            Recibimos una solicitud para restablecer tu contraseña. Utiliza este código para continuar:
+          </p>
+          <div style="background-color: #F2E7D5; padding: 16px 32px; font-size: 26px; font-weight: bold; color: #A77A44; border-radius: 12px; display: inline-block; letter-spacing: 4px;">
+            ${code}
+          </div>
+          <p style="color: #8E8A76; font-size: 13.5px; line-height: 1.5; margin-top: 30px;">
+            Este código expira en <strong>20 minutos</strong>. Si no solicitaste esta acción, puedes ignorar este correo.
+          </p>
+          <div style="margin-top: 35px; border-top: 1px solid #E6DACA; padding-top: 15px; font-size: 13px; color: #A3A093;">
+            ¿Necesitas ayuda? Contáctanos en
+            <a href="mailto:rosecandleco@gmail.com" style="color: #A78A5E; text-decoration: none; font-weight: 500;">
+              rosecandleco@gmail.com
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Llamada a la API de Brevo
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "Rosé Candle Co.", email: config.brevo.brevoSender },
+        to: [{ email: to, name }],
+        subject: "Recuperación de contraseña - Rosé Candle Co.",
+        htmlContent,
+      }),
     });
 
-    // Retorna la información del envío para uso o log
-    return info;
+    const data = await response.json();
+    console.log("Correo enviado:", data);
+    return data;
   } catch (error) {
-    // Captura y muestra error en consola
-    console.log("error" + error);
+    console.error("Error enviando correo:", error);
   }
 };
 
-// Función que genera el contenido HTML personalizado para el correo de recuperación
-const HTMLRecoveryEmail = (code, name = "Usuario") => {
-  return `
-  <div style="font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F9F7F3; padding: 0; max-width: 600px; margin: 0 auto; border-radius: 20px; overflow: hidden; border: 1px solid #DFCCAC; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);">
-    <div style="background: linear-gradient(135deg, #EADBC3, #DFCCAC); padding: 40px 20px; text-align: center;">
-      <img src="https://img.icons8.com/ios-filled/100/a78a5e/lock--v1.png" width="70" height="70" alt="Lock Icon" style="margin-bottom: 20px; opacity: 0.8;">
-      <h2 style="color: #7D674A; font-size: 24px; font-weight: 650; margin-bottom: 10px;">
-        Rosé Candle Co.
-      </h2>
-      <p style="color: #8C7B63; font-size: 14px; line-height: 1.5; margin: 0;">
-        Inspiramos confianza con cada detalle.
-      </p>
-    </div>
-
-    <div style="background-color: #FFFFFF; padding: 40px 30px; position: relative; text-align: center;">
-      <h1 style="color: #A78A5E; font-size: 22px; font-weight: 650; margin-bottom: 12px; position: relative; z-index: 2;">
-        Código de verificación
-      </h1>
-
-      <p style="color: #6F6A50; font-size: 15px; line-height: 1.6; margin-bottom: 20px; position: relative; z-index: 2;">
-        ¡Hola, <strong>${name}</strong>!<br>
-        Recibimos una solicitud para restablecer tu contraseña. Utiliza este código para continuar:
-      </p>
-
-      <div style="background-color: #F2E7D5; padding: 16px 32px; font-size: 26px; font-weight: bold; color: #A77A44; border-radius: 12px; display: inline-block; letter-spacing: 4px; position: relative; z-index: 2;">
-        ${code}
-      </div>
-
-      <p style="color: #8E8A76; font-size: 13.5px; line-height: 1.5; margin-top: 30px; position: relative; z-index: 2;">
-        Este código expira en <strong>20 minutos</strong>. Si no solicitaste esta acción, puedes ignorar este correo.
-      </p>
-
-      <div style="margin-top: 35px; border-top: 1px solid #E6DACA; padding-top: 15px; font-size: 13px; color: #A3A093; position: relative; z-index: 2;">
-        ¿Necesitas ayuda? Contáctanos en
-        <a href="mailto:rosecandleco@gmail.com" style="color: #A78A5E; text-decoration: none; font-weight: 500;">
-          rosecandleco@gmail.com
-        </a>
-      </div>
-    </div>
-  </div>
-  `;
-};
-
-// Exportación de las funciones para ser usadas en otras partes del proyecto
-export { sendEmail, HTMLRecoveryEmail };
+export default sendRecoveryEmail;

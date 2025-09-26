@@ -11,21 +11,25 @@ import RegisterProducts from "./components/RegisterProducts";
 import Button from "../../global/components/Button";
 import UseProductsList from "./components/UseProductList";
 
-import useFetchProduct from "./components/UseFetchProduct";
+import useProducts from "./hooks/useProducts";
 import useProductOptions from "./hooks/useProductOptions";
 
+import { useForm } from "react-hook-form";
+
 const PageProducts = () => {
-// Cambiar el título de la página al montar el componente
-  useEffect(() => { 
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
     document.title = "Productos | Rosé Candle Co.";
   }, []);
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const { products, getProducts } = useFetchProduct();
+  const methods = useForm();
+
 
   const { opcionesCategorias, opcionesEstado, opcionesColecciones } = useProductOptions();
+  const { products } = useProducts(methods);
 
   const handleAdd = () => {
     setSelectedProduct(null);
@@ -41,9 +45,6 @@ const PageProducts = () => {
   const handleCloseModal = () => {
     setSelectedProduct(null); // esto limpia defaultValues
     setOpenDialogProduct(false);
-    useEffect(() => {
-      getProducts();
-    }, []);  // o cerrar modal, si usas uno
   };
 
   const [filtroCategoria, setFiltroCategoria] = useState(""); // estado del filtro

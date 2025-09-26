@@ -7,6 +7,7 @@ import RawMaterials from "../models/RawMaterials.js";
 import Products from "../models/Products.js";
 import { createProductPriceHistory } from "../utils/createProductPriceHistorial.js";
 import { createProductionCostHistory } from "../utils/createProducctionCostHistorial.js";
+import { mapComponentsToHistoryFormat } from "../utils/mapComponents.js";
 
 // Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
@@ -96,6 +97,7 @@ productsController.getProductsForOrders = async (req, res) => {
 
 // POST - Método para insertar un producto
 productsController.createProduct = async (req, res) => {
+  const changedBy = req.user.id;
   console.log("Body", req.body);
 
   let {
@@ -107,7 +109,6 @@ productsController.createProduct = async (req, res) => {
     variant,
     idProductCategory,
     idCollection,
-    changedBy,
   } = req.body;
 
   let imagesURL = [];
@@ -285,6 +286,7 @@ productsController.updateProduct = async (req, res) => {
     if (typeof recipe === "string") recipe = JSON.parse(recipe);
     if (typeof useForm === "string") useForm = JSON.parse(useForm);
     if (typeof variant === "string") variant = JSON.parse(variant);
+
     availability = availability === "true";
 
     // Validaciones
@@ -309,33 +311,85 @@ productsController.updateProduct = async (req, res) => {
        1. Detectar cambios en VARIANTES → PriceHistory
     ------------------------------------------------ */
 
-    for (const newVar of variant) {
-      const oldVar = productOriginal.variant.find(
-        (v) => v.variant === newVar.variant
-      );
-      if (oldVar && oldVar.variantPrice !== newVar.variantPrice) {
-        await createProductPriceHistory({
-          idProduct: productOriginal._id,
-          variantName: newVar.variant,
-          unitPrice: newVar.variantPrice,
-          reference: "Price updated",
-          changedBy: user.id, // o req.user.id según tu autenticación
-        });
+    if (Array.isArray(variant)) {
+      for (const newVar of variant) {
+        const oldVar = productOriginal.variant.find(
+          (v) => v.variant === newVar.variant
+        );
+
+        if (oldVar && oldVar.variantPrice !== newVar.variantPrice) {
+          await createProductPriceHistory({
+            idProduct: productOriginal._id,
+            variantName: newVar.variant,
+            unitPrice: newVar.variantPrice,
+            reference: "Price updated",
+            changedBy: req.user?.id || "system", // depende de tu auth
+          });
+        }
       }
     }
 
     /* --------------------------------------------------------
        2. Detectar cambios en RECIPE (materias primas usadas)
     -------------------------------------------------------- */
-    await createProductionCostHistory({
-      idProduct: productOriginal._id,
-      variants: variant.map((v) => ({
-        variantName: v.variant,
-        amount: v.amount,
-        unitPrice: v.variantPrice,
-        rawMaterialUsed: v.components, // array con idComponent, amount, unitPrice
-      })),
-    });
+
+    if (Array.isArray(variant)) {
+      for (const newVar of variant) {
+        const oldVar = productOriginal.variant.find(
+          (v) => v.variant === newVar.variant
+        );
+
+        const mappedComponents = mapComponentsToHistoryFormat(
+          newVar.components
+        );
+
+        // Si la variante no existía antes → registrar como nueva
+        if (!oldVar) {
+          await createProductionCostHistory({
+            idProduct: productOriginal._id,
+            variants: [
+              {
+                variantName: newVar.variant,
+                amount: newVar.amount,
+                unitPrice: newVar.variantPrice,
+                rawMaterialUsed: mappedComponents,
+              },
+            ],
+          });
+          continue;
+        }
+
+        // 🔎 Comparar arrays de componentes
+        const normalize = (arr) =>
+          arr
+            .map((c) => ({
+              id: c.idComponent?._id?.toString() || c.idComponent.toString(),
+              amount: Number(c.amount),
+              unitPrice: Number(c.unitPrice),
+            }))
+            .sort((a, b) => a.id.localeCompare(b.id));
+
+        const oldComponents = normalize(oldVar.components);
+        const newComponents = normalize(newVar.components);
+
+        const componentsChanged =
+          JSON.stringify(oldComponents) !== JSON.stringify(newComponents);
+
+        if (componentsChanged) {
+          await createProductionCostHistory({
+            idProduct: productOriginal._id,
+            variants: [
+              {
+                variantName: newVar.variant,
+                amount: newVar.amount,
+                unitPrice: newVar.variantPrice,
+                rawMaterialUsed: mappedComponents,
+              },
+            ],
+          });
+        }
+      }
+    }
 
     /* ------------------------
        3. Actualizar producto

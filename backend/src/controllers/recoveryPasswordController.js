@@ -3,7 +3,7 @@ import bcryptjs from "bcryptjs";
 import customersModel from "../models/Customers.js";
 import employeesModel from "../models/Employees.js";
 
-import { sendEmail, HTMLRecoveryEmail } from "../utils/mailPasswordRecovery.js";
+import sendRecoveryEmail from "../utils/mailPasswordRecovery.js";
 import { config } from "../config.js";
 
 const passwordRecoveryController = {};
@@ -50,13 +50,7 @@ passwordRecoveryController.requestCode = async (req, res) => {
     // Guardar token en cookie para mantener estado de recuperación
     res.cookie("tokenRecoveryCode", token, { maxAge: 20 * 60 * 1000 });
 
-    // Enviar email con el código de recuperación usando plantilla HTML
-    await sendEmail(
-      email,
-      "Código de verificación | Rosé Candle Co.",
-      "Hola",
-      HTMLRecoveryEmail(code, name)
-    );
+    await sendRecoveryEmail(email, code, name);
 
     // Responder con éxito
     res.status(200).json({ message: "Code sent successfully" }); // todo bien

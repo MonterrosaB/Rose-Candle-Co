@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+
 const DropDown = ({ name, options, label, error, hideIcon = true, register, placeHolder = "Selecciona una opción", disabled = false }) => {
   return (
     <div className="flex justify-center items-baseline gap-4 mb-4 w-full">

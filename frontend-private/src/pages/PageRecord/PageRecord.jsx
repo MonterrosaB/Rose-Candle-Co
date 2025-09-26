@@ -184,7 +184,7 @@ const PageRecord = () => {
           bgColor="#F7F5EE"
           textColor="#333"
           title="Inventario Actual"
-          value={`$${inventoryValue?.toString() || 0}`}
+          value={`$${inventoryValue?.toFixed(2) || 0}`}
           variant="compact"
         />
       </div>

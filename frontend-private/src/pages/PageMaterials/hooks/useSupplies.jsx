@@ -62,7 +62,8 @@ const useSupplies = (methods) => {
                 unitPrice: Number(data.amount) > 0
                     ? (Number(data.unitPrice) / Number(data.amount)).toFixed(2)
                     : "0.00",
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                reference: "Ingreso de suministros"
             };
 
             const res = await fetch(API + "/materialBalance", {

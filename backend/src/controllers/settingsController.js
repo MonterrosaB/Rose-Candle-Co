@@ -239,21 +239,19 @@ settingsController.updateBanner = async (req, res) => {
 
 // PATCH - Actualizar el campo "email" del ajuste
 settingsController.updateEmail = async (req, res) => {
+  const { subject, body, recipient, name } = req.body;
+
   try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const updatedSetting = await Settings.findOneAndUpdate(
-      { name: "email" }, // Suponiendo que el ajuste de correo es único
-      { value: email }, // Actualiza solo el valor del correo
-      { new: true }
+    const updated = await settingsModel.findOneAndUpdate(
+      {},
+      { email: { subject, body } },
+      { new: true, runValidators: true }
     );
 
-    if (!updatedSetting) {
-      return res.status(404).json({ message: "Email setting not found" });
+    // Enviar correo si hay destinatario
+    if (recipient) {
+      const htmlContent = HTMLMail(body, subject, name);
+      await sendEmail(recipient, subject, htmlContent); // ahora usa Brevo
     }
 
     res.status(200).json({

@@ -14,9 +14,15 @@ import useMaterials from "../hooks/useMaterials";
 const RegisterMaterial = ({ onClose, defaultValues }) => {
 
   const methods = useForm({
-    defaultValues
+    defaultValues: defaultValues
+      ? {
+        ...defaultValues,
+        idRawMaterialCategory: defaultValues.idRawMaterialCategory?._id || "",
+        idSupplier: defaultValues.idSupplier?._id || "",
+        unit: defaultValues.unit || "", // ya es string
+      }
+      : {}
   });
-
   const { register, handleSubmit, errors, reset, createMaterial, updateMaterial, categories } = useMaterials(methods);
   const { suppliers } = useSuppliers(methods);
 
@@ -26,18 +32,16 @@ const RegisterMaterial = ({ onClose, defaultValues }) => {
     { _id: "unit", label: "Unidad" },
   ];
 
-
   useEffect(() => {
-    if (defaultValues) {
+    if (defaultValues && categories.length && suppliers.length) {
       reset({
         ...defaultValues,
-        idRawMaterialCategory: defaultValues.idRawMaterialCategory?._id,
-        idSupplier: defaultValues.idSupplier?._id,
+        idRawMaterialCategory: defaultValues.idRawMaterialCategory?._id || "",
+        idSupplier: defaultValues.idSupplier?._id || "",
+        unit: defaultValues.unit || "",
       });
-    } else {
-      reset({});
     }
-  }, [defaultValues, reset]);
+  }, [defaultValues, categories, suppliers, reset]);
 
   const onSubmit = (data) => {
     if (defaultValues?._id) {

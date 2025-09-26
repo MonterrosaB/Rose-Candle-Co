@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
 
-// 🔹 Obtener token
+// Obtener token
 export const getToken = async (req, res) => {
   try {
     const response = await fetch("https://id.wompi.sv/connect/token", {
@@ -37,17 +37,17 @@ export const testPayment = async (req, res) => {
     const { token, formData } = req.body;
 
     if (!token) return res.status(400).json({ error: "Token requerido" });
-    if (!formData) return res.status(400).json({ error: "Datos de pago requeridos" });
+    if (!formData)
+      return res.status(400).json({ error: "Datos de pago requeridos" });
 
-    // ✅ Toma el correo del usuario logueado desde el token decodificado
-    const emailCliente = req.user?.email; // esto viene del payload que agregaste en login
+    // Toma el correo del usuario logueado desde el token decodificado
+    const emailCliente = req.customer?.email; // esto viene del payload que agregaste en login
 
     // Sobrescribe o agrega el email al formData
     const finalFormData = {
-  ...formData,
-  emailCliente: req.user?.email || formData.emailCliente,
-};
-
+      ...formData,
+      emailCliente: emailCliente || formData.emailCliente,
+    };
 
     const paymentResponse = await fetch(
       "https://api.wompi.sv/TransaccionCompra/TokenizadaSin3Ds",
@@ -74,13 +74,14 @@ export const testPayment = async (req, res) => {
   }
 };
 
-// 🔹 Pago real con 3Ds
+// Pago real con 3Ds
 export const payment3ds = async (req, res) => {
   try {
     const { token, formData } = req.body;
 
     if (!token) return res.status(400).json({ error: "Token requerido" });
-    if (!formData) return res.status(400).json({ error: "Datos de pago requeridos" });
+    if (!formData)
+      return res.status(400).json({ error: "Datos de pago requeridos" });
 
     const response = await fetch("https://api.wompi.sv/TransaccionCompra/3Ds", {
       method: "POST",

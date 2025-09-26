@@ -48,7 +48,7 @@ const Dialog = ({ children, open, onClose }) => {
     return (
         <dialog
             ref={dialogRef}
-            className="shadow-xl rounded-xl p-0 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="shadow-xl rounded-xl p-0 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
             onClick={handleBackdropClick}
         >
             {children}

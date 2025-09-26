@@ -56,22 +56,46 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     onImageChange,
   } = changeImages(selectedProduct);
 
-
   useEffect(() => {
-    if (selectedProduct) {
-      resetInputs();
-
+    if (
+      selectedProduct &&
+      opcionesCategorias.length &&
+      opcionesColecciones.length &&
+      opcionesMateria.length
+    ) {
+      // Normalizamos variantes y componentes
       const normalizedVariants = selectedProduct.variant?.map(v => ({
+        id: crypto.randomUUID(), // id único para el estado local
         ...v,
         components: v.components?.map(c => ({
-          ...c,
-          idComponent: c.idComponent?._id || c.idComponent // solo el ID
-        })) || []
+          id: crypto.randomUUID(),
+          idComponent: String(c.idComponent?._id || c.idComponent),
+          amount: c.amount || "",
+        })) || [],
       })) || [];
 
+      // 🔹 Reset RHF
+      reset({
+        ...selectedProduct,
+        idProductCategory: selectedProduct.idProductCategory?._id || "",
+        idCollection: selectedProduct.idCollection?._id || "",
+        unit: selectedProduct.unit || "",
+        variant: normalizedVariants, // RHF también recibe las variantes normalizadas
+      });
+
+      // Reset estado local
+      resetInputs();
       normalizedVariants.forEach(v => agregarVariante(v));
+      console.log(normalizedVariants);
+
     }
-  }, [selectedProduct]);
+  }, [
+    selectedProduct,
+    opcionesCategorias,
+    opcionesColecciones,
+    opcionesMateria,
+    reset,
+  ]);
 
 
   const onSubmit = async (data) => {

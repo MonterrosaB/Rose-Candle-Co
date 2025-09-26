@@ -26,7 +26,7 @@ const CardMaterials = ({ ordenVenta, material }) => {
                     <div>{isActive ? <ChevronUp /> : <ChevronDown />}</div>
                 </div>
                 {isActive &&
-                    <ul class="accordion-it em-content p-5 border-t-2 border-t-gray-400 w-full">
+                    <ul className="accordion-it em-content p-5 border-t-2 border-t-gray-400 w-full">
                         {material ? (
                             material.map((item, index) => (
 

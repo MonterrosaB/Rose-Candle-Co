@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+
 
 const useProducts = (methods) => {
-  const { API, user } = useAuth();
+  const { API } = useAuth();
 
   const {
     register,
@@ -31,7 +33,6 @@ const useProducts = (methods) => {
   const [errorProduct, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
 
   const cleanData = () => {
     setName("");
@@ -46,16 +47,30 @@ const useProducts = (methods) => {
     setId("");
   };
 
+  const fetcher = async (url, transform) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Error fetching data");
+    const data = await res.json();
+    return transform ? transform(data) : data;
+  };
+
+  // Obtener datos
+  const productsQuery = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetcher(ApiProducts),
+    onError: () => toast.error("Error al obtener los productos"),
+  });
+
   // Guardar datos
   const createProduct = async (formData) => {
     setLoading(true);
     try {
       // Agregar el campo changedBy al formData
-      formData.append("changedBy", user.id);
 
       const response = await fetch(ApiProducts, {
         method: "POST",
         body: formData,
+        credentials: "include"
       });
 
       if (!response.ok) {
@@ -69,29 +84,11 @@ const useProducts = (methods) => {
       setSuccess("Producto registrado correctamente");
       setProducts(data);
       cleanData();
-      fetchData();
+      productsQuery.refetch();
     } catch (error) {
       console.error("Error:", error);
       setError(error.message);
       toast.error("Ocurrió un error al registrar el producto");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Obtener datos
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(ApiProducts);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log(data);
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -110,7 +107,7 @@ const useProducts = (methods) => {
       const result = await response.json();
       console.log("Deleted:", result);
       toast.success("Producto eliminado");
-      fetchData();
+      productsQuery.refetch();
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Error al eliminar el producto");
@@ -124,6 +121,7 @@ const useProducts = (methods) => {
       const response = await fetch(`${ApiProducts}/${idProduct}`, {
         method: "PUT",
         body: formData,
+        credentials: "include"
       });
 
       if (!response.ok) {
@@ -133,7 +131,7 @@ const useProducts = (methods) => {
       toast.success("Producto actualizado");
       setSuccess("Producto actualizado correctamente");
       //reset();
-      fetchData();
+      productsQuery.refetch();
     } catch (error) {
       setError(error.message);
       alert("Error al actualizar el producto");
@@ -142,10 +140,6 @@ const useProducts = (methods) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return {
     activeTab,
@@ -176,10 +170,9 @@ const useProducts = (methods) => {
     setSuccess,
     loading,
     setLoading,
-    products,
-    setProducts,
+    products: productsQuery.data || [],
     cleanData,
-    fetchData,
+    productsQuery,
     deleteProduct,
     handleUpdate,
     // RHF

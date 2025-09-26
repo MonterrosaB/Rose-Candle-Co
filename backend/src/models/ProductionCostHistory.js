@@ -38,8 +38,9 @@ const rawMaterialUsedSchema = new Schema(
       required: true,
       min: [0, "El precio unitario no puede ser negativo"], // Precio positivo o cero
       validate: {
-        validator: (value) => /^\d+(\.\d{1,4})?$/.test(value), // Max 4 decimales
-        message: "El precio unitario debe tener como máximo cuatro decimales",
+        validator: (value) =>
+          Number.isFinite(value) && Number(value.toFixed(2)) === value,
+        message: "La cantidad debe tener máximo dos decimales",
       },
     },
     subtotal: {
@@ -47,8 +48,9 @@ const rawMaterialUsedSchema = new Schema(
       required: true,
       min: [0, "El subtotal no puede ser negativo"], // Subtotal >= 0
       validate: {
-        validator: (value) => /^\d+(\.\d{1,2})?$/.test(value), // Max 2 decimales
-        message: "El subtotal debe tener como máximo dos decimales",
+        validator: (value) =>
+          Number.isFinite(value) && Number(value.toFixed(2)) === value,
+        message: "La cantidad debe tener máximo dos decimales",
       },
     },
   },

@@ -239,7 +239,7 @@ salesOrderController.updateSalesOrder = async (req, res) => {
               movement: "salida",
               amount: comp.amount * cartItem.quantity,
               unitPrice: material.unitPrice || 0, // tomar precio unitario actual
-              reference: `Orden de venta ${orderUpdated._id}`,
+              reference: `Orden de venta ${orderUpdated._id.slice(-8)}`,
             });
           }
         }

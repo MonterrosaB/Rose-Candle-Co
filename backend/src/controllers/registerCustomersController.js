@@ -3,8 +3,8 @@ import bcryptjs from "bcryptjs"; // Librería para encriptar contraseñas
 import jsonwebtoken from "jsonwebtoken"; // Librería para manejar tokens JWT
 import { config } from "../config.js";
 
-import { HTMLAccountCreatedEmail } from "../utils/mailAccountConfirmation.js"; // Funciones para enviar código de verificación del correo
-import { sendEmail, HTMLWelcomeMail } from "../utils/mailWelcome.js"; // Funciones para enviar email de bienvenida
+import sendAccountConfirmationEmail from "../utils/mailAccountConfirmation.js"; // Funciones para enviar código de verificación del correo
+import sendWelcomeEmail from "../utils/mailWelcome.js"; // Funciones para enviar email de bienvenida
 
 // Controlador con métodos para registro de clientes
 const registerCustomersController = {};
@@ -27,12 +27,7 @@ registerCustomersController.requestCode = async (req, res) => {
     res.cookie("tokenRecoveryCode", token, { maxAge: 20 * 60 * 1000 });
 
     // Enviar email con el código de recuperación usando plantilla HTML
-    await sendEmail(
-      email,
-      "Código de verificación | Rosé Candle Co.",
-      "Hola",
-      HTMLAccountCreatedEmail(code)
-    );
+    await sendAccountConfirmationEmail(email, code);
 
     // Responder con éxito
     res.status(200).json({ message: "Code sent successfully" }); // todo bien
@@ -206,12 +201,7 @@ registerCustomersController.registerCustomers = async (req, res) => {
     await newCustomer.save();
 
     // Enviar correo de bienvenida al nuevo cliente
-    await sendEmail(
-      email,
-      "Bienvenido a Rosé Candle Co | Rosé Candle Co.",
-      "¡Un gusto tenerte aquí!",
-      HTMLWelcomeMail(name)
-    );
+    await sendWelcomeEmail(email, name);
 
     // Generar token JWT para autenticación posterior
     jsonwebtoken.sign(

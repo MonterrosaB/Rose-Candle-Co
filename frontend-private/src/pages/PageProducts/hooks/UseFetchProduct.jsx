@@ -22,8 +22,6 @@ const useFetchProduct = () => {
     onError: () => toast.error("Error al obtener los productos"),
   });
 
-  console.log(productsQuery.data);
-
 
 
   const getProductById = async (id) => {
@@ -43,7 +41,7 @@ const useFetchProduct = () => {
   };
 
   return {
-    products: productsQuery.data ?? [], // 👈 aseguramos array vacío 
+    products: productsQuery.data ?? [], //  aseguramos array vacío 
     getProducts: productsQuery,
     getProductById
   }
