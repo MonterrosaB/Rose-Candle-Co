@@ -74,11 +74,14 @@ const ProfileSection = () => {
               {t("my_profile")}
             </h2>
             <p className="mt-2">{t("manage_info")}</p>
-            <Link>
-              <p className="text-gray-500 hover:text-gray-800">
-                {t("app_manual")}
-              </p>
-            </Link>
+            <a
+              href="https://drive.google.com/drive/folders/1L1x21jq8xz6jcsNg1ujzAtLahgPTfswb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-800"
+            >
+              {t("app_manual")}
+            </a>
           </div>
         </div>
 
@@ -88,11 +91,10 @@ const ProfileSection = () => {
               if (isEditing) handleSubmit(onSubmit)();
               else setIsEditing(true);
             }}
-            className={`${
-              isEditing
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-black hover:bg-neutral-800"
-            } text-white shadow transition-all duration-300 transform hover:scale-105`}
+            className={`${isEditing
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-black hover:bg-neutral-800"
+              } text-white shadow transition-all duration-300 transform hover:scale-105`}
             disabled={isSubmitting}
             icon={isEditing ? Save : Edit}
             text={isEditing ? t("save") : t("edit")}

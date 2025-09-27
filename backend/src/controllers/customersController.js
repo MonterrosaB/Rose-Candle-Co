@@ -88,11 +88,7 @@ customersController.updateCustomers = async (req, res) => {
 
   try {
     // Validaciones de longitud mínima
-    if (
-      name.length < 3 ||
-      surnames.length < 3 ||
-      phone.length < 9
-    ) {
+    if (name.length < 3 || surnames.length < 3 || phone.length < 9) {
       return res.status(400).json({ message: "Too short" }); // Datos demasiado cortos
     }
 
@@ -213,7 +209,6 @@ customersController.addAddress = async (req, res) => {
       zipCode,
       phone,
       address,
-      type,
     });
 
     await customer.save();
@@ -295,7 +290,8 @@ customersController.updatePassword = async (req, res) => {
 
   try {
     const customer = await customersModel.findById(id);
-    if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
+    if (!customer)
+      return res.status(404).json({ message: "Cliente no encontrado" });
 
     // Comparar contraseña actual con la guardada (hashed)
     const isMatch = await bcrypt.compare(currentPassword, customer.password);

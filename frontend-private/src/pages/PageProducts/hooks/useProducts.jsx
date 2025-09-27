@@ -82,7 +82,6 @@ const useProducts = (methods) => {
 
       toast.success("Producto registrado correctamente");
       setSuccess("Producto registrado correctamente");
-      setProducts(data);
       cleanData();
       productsQuery.refetch();
     } catch (error) {

@@ -21,7 +21,6 @@ const useCart = () => {
     const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
-    //https://rose-candle-co.onrender.com
 
     const fetchCart = async () => {
         try {

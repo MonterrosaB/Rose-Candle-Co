@@ -1,13 +1,19 @@
 // Hook para verificar el código
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
+
 
 export const useVerifyCode = () => {
+
+
+
+
   const verifyCode = async ({ code }) => {
     const toastId = toast.loading("Verificando código...");
 
     try {
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/recoveryPassword/verifyCode",
+        API + "/recoveryPassword/verifyCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

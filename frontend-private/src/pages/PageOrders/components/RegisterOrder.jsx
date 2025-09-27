@@ -11,8 +11,6 @@ import Button from "../../../global/components/Button";
 import useOrders from "../../PageOrders/hooks/useOrders";
 import InputsInline from "../../../global/components/InputsInline"
 
-import CardMaterial from "./CardMaterials"
-
 const RegisterOrder = ({ onClose, initialData }) => {
   const methods = useForm({ defaultValues: initialData || { products: [], total: 0 } });
   const { register, handleSubmit, setValue, watch, formState: errors, updateOrder, products, createSalesOrderPrivate, reset } = useOrders(methods);
@@ -171,7 +169,6 @@ const RegisterOrder = ({ onClose, initialData }) => {
     { _id: "Cancelado", label: "Cancelado" },
   ];
 
-
   const onSubmit = async (data) => {
     try {
       if (initialData && initialData._id) {
@@ -197,7 +194,6 @@ const RegisterOrder = ({ onClose, initialData }) => {
         //Crear
         await createSalesOrderPrivate(payload);
         onClose();
-
       }
     } catch (err) {
       console.error("Error al crear/editar orden:", err);
@@ -212,7 +208,7 @@ const RegisterOrder = ({ onClose, initialData }) => {
     >
       <FormInputs>
         <InputsInline>
-          <Input name="name" label="Nombre de Usuario" type="text" register={register} errors={errors} disabled={initialData} />
+          <Input name="name" label="Nombre del cliente" type="text" register={register} errors={errors} disabled={initialData} />
           <Dropdown name="paymentMethod" label="Método de pago" options={metodosPago} register={register} disabled={initialData} />
           {initialData &&
             <Dropdown name="shippingState" label="Estado de Orden" options={opcionesEstadoEnvio} register={register} />
@@ -316,7 +312,7 @@ const RegisterOrder = ({ onClose, initialData }) => {
               return (
                 <div
                   key={key}
-                  className="flex items-center justify-between border rounded-lg p-3 bg-pink-50 shadow-sm border-pink-200 gap-2 mb-12"
+                  className="flex items-center justify-between border rounded-lg p-3 mb-3 bg-yellow-50 shadow-sm border-pink-200 gap-5"
                 >
                   <div className="flex items-center gap-4">
                     <img
@@ -357,31 +353,22 @@ const RegisterOrder = ({ onClose, initialData }) => {
                 </div>
               );
             })}
-            {initialData && (
-              <div className="mt-6">
-                <h2 className="font-bold text-xl mb-2">Materiales de la Orden</h2>
-                <CardMaterial
-                  ordenVenta={initialData.products.map(p => {
-                    const prod = products.find(pr => pr._id === p.idProduct);
-                    const variant = prod?.variant?.[p.selectedVariantIndex ?? 0];
-                    return {
-                      img: prod?.images?.[0] || "",
-                      producto: prod?.name || "",
-                      variante: variant?.variant || ""
-                    };
-                  })}
-                  material={initialData.materials || []} // Aquí dependerá de cómo envíes los materiales desde backend
-                />
-              </div>
-            )}
           </div>
         </div>
+        <h3 className="p-4 text-2xl">Datos de envío</h3>
         <Input name="address" label="Dirección" type="text" register={register} errors={errors} disabled={initialData} />
-        <Input name="Waypoint" label="Lugar de Referencia" type="text" register={register} errors={errors} disabled={initialData} />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Input name="state" label="Departamento" type="text" register={register} errors={errors} disabled={initialData} />
-          <Input name="city" label="Municipio" type="text" register={register} errors={errors} disabled={initialData} />
-          <Input name="phone" label="Teléfono" type="text" register={register} errors={errors} disabled={initialData} />
+        <div className="space-y-6">
+          {/* Formulario de envío */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Input name="firstName" label="Nombre" type="text" register={register} errors={errors} disabled={initialData} />
+            <Input name="lastName" label="Apellido" type="text" register={register} errors={errors} disabled={initialData} />
+            <Input name="phone" label="Teléfono" type="text" register={register} errors={errors} disabled={initialData} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Input name="state" label="Departamento" type="text" register={register} errors={errors} disabled={initialData} />
+            <Input name="city" label="Municipio" type="text" register={register} errors={errors} disabled={initialData} />
+            <Input name="zipCode" label="Código Postal" type="text" register={register} errors={errors} disabled={initialData} />
+          </div>
         </div>
 
         <h2 className="font-bold text-2xl mt-6">Total: ${total.toFixed(2)}</h2>

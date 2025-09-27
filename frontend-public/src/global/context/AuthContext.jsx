@@ -13,6 +13,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const API_URL = "http://localhost:4000/api";
+  //https://rose-candle-co.onrender.com
+
 
   const navigate = useNavigate();
 

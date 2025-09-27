@@ -166,10 +166,9 @@ export default function OrdersSection() {
         <>
           {/* Lista de Pedidos */}
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 text-center shadow-xl border border-rose-100 col-span-full min-h-96">
-
             {pedidosFiltrados.length > 0 ? (
-              pedidosFiltrados.map((pedido) => (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                {pedidosFiltrados.map((pedido) => (
                   <div
                     key={pedido._id}
                     className="w-3xs bg-white rounded-2xl overflow-hidden shadow-md border border-rose-100 hover:shadow-xl transition-transform transform hover:scale-105 duration-300 max-w-md"
@@ -181,16 +180,15 @@ export default function OrdersSection() {
                     />
                     <div className="p-4">
                       <h3 className="text-lg font-bold text-gray-800 mb-1">
-                        ORD: {pedido._id.slice(-6)}
+                        ORD: {pedido._id.slice(-8).toUpperCase()}
                       </h3>
                       <p className="text-sm text-gray-600 capitalize">
                         Estado: {pedido.estado}
                       </p>
                     </div>
                   </div>
-                </div>
-
-              ))
+                ))}
+              </div>
             ) : (
               <div>
                 <div className="w-24 h-24 mx-auto bg-gradient-to-br from-rose-100 to-pink-100 rounded-full flex items-center justify-center shadow-2xl mb-6">
@@ -203,10 +201,7 @@ export default function OrdersSection() {
                   Intenta cambiar el filtro o buscar otro nombre.
                 </p>
                 <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                  <Link to={"/products"}>
-                    Explorar Productos
-
-                  </Link>
+                  <Link to={"/products"}>Explorar Productos</Link>
                 </Button>
               </div>
             )}

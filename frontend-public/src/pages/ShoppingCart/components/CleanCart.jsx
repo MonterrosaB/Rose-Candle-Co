@@ -1,9 +1,13 @@
 import React from "react";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 const ClearButton = ({ cartId, onClear }) => {
+
+  const { API } = useAuth();
+
   const clearCart = async () => {
     try {
-      const response = await fetch(`https://rose-candle-co.onrender.com/api/cart/empty/${cartId}`, {
+      const response = await fetch(API + `/cart/empty/${cartId}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
       });

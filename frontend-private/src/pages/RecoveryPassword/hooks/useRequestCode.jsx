@@ -1,13 +1,17 @@
 // Hook para solicitar el código
 import { toast } from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 export const useRequestCode = () => {
+  const { API } = useAuth();
+
+
   const requestCode = async ({ email }) => {
     const toastId = toast.loading("Enviando código...");
 
     try {
       const res = await fetch(
-        "https://rose-candle-co.onrender.com/api/recoveryPassword/requestCode",
+        API + "/recoveryPassword/requestCode",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
