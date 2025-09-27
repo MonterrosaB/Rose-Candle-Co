@@ -12,7 +12,7 @@ import path from "path";
 // Constante para la librería de express
 const app = express(); // Inicializar app primero
 
- // Límite de peticiones al servidor
+// Límite de peticiones al servidor
 app.use(limiter);
 
 // Middlewares
@@ -21,8 +21,8 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      "https://rose-candle-co-t1as.vercel.app",
-      "https://rose-candle-co-imt9.vercel.app",
+      "https://rose-candle-co-eight.vercel.app",
+      "https://rose-candle-co-private.vercel.app",
       "http://localhost:5173",
       "http://localhost:5174",
     ],
