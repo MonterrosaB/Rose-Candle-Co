@@ -1,5 +1,5 @@
 // Lógica para la página del Login
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import Star from "../../assets/star.svg?react";
@@ -11,6 +11,10 @@ import { useAuth } from "../../global/hooks/useAuth.js";
 import toast from "react-hot-toast";
 
 const Login = () => {
+  useEffect(() => {
+    document.title = "Iniciar Sesión | Rosé Candle Co.";
+  }, []);
+
   const { login } = useAuth(); // login del authContext
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

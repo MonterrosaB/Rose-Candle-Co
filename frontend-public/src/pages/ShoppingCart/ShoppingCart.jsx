@@ -6,6 +6,10 @@ import useShoppingCart from "./hooks/useShoppingCart.jsx";
 import { Minus, Trash2, Plus } from "lucide-react";
 
 const Cart = () => {
+  useEffect(() => {
+    document.title = "Carrito de Compras | Rosé Candle Co.";
+  }, []);
+
   const {
     cartId,
     cartItems,
