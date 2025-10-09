@@ -15,11 +15,15 @@ import ProductImagesUploader from "./ProductImagesUploader";
 
 import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
+
 import { useForm } from "react-hook-form";
+
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
+
 import toast from "react-hot-toast";
 
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
 
@@ -34,6 +38,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       idCollection: selectedProduct?.idCollection._id
     },
   });
+
+const { t, i18n } = useTranslation("products"); // Traducciones del namespace "stock"
+
 
   const { opcionesCategorias, opcionesColecciones, opcionesMateria, opcionesEstado } = useProductOptions();
 
@@ -74,7 +81,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         })) || [],
       })) || [];
 
-      // 🔹 Reset RHF
+      // Reset RHF
       reset({
         ...selectedProduct,
         idProductCategory: selectedProduct.idProductCategory?._id || "",
@@ -142,7 +149,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   return (
     <Form
-      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? t("edit_product") : t("add_prodcut")}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
@@ -288,7 +295,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} disable={loading} />
+        <Button buttonText={selectedProduct ? t("edit_product") : t("add_prodcut")} type={"submit"} disable={loading} />
       </FormButton>
     </Form>
   );

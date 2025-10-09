@@ -1,0 +1,22 @@
+{
+  "title": "Products",
+  "add_prodcut": "Add Product",
+  "edit_product": "Edit Product",
+  "collection_selector": "Collection",
+  "category_selector": "Category",
+  "availability_selector": "Status",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "name": "Name",
+    "description": "Description",
+    "use_form": "Use Form",
+    "recipe": "Recipe",
+    "variants": {
+      "add_variant": "Add Variant",
+      "add_componnets": "Add Componnet"
+    }
+  }
+}

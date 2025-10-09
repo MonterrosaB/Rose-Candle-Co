@@ -20,10 +20,18 @@ const collectionSchema = new Schema(
       maxLength: 100, // Máximo 100 caracteres
       trim: true, // Eliminar espacios en blanco al inicio y final
     },
+    // Campo "description" para el nombre de la colección
+    description: {
+      type: String, // Tipo de dato string
+      required: true, // Campo obligatorio
+      minLength: 10, // Mínimo 10 caracteres
+      maxLength: 255, // Máximo 255 caracteres
+      trim: true, // Eliminar espacios en blanco al inicio y final
+    },
     deleted: {
       type: Boolean, // Tipo de dato boolean
-      default: false // por defecto en falso
-    }
+      default: false, // por defecto en falso
+    },
   },
   {
     timestamps: true, // Agrega automáticamente campos "createdAt" y "updatedAt"

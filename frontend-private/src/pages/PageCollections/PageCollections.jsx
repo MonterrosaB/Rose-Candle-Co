@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import TitleH1 from "../../global/components/TitleH1";
 import DataGrid from "../../global/components/DataGrid";
-import FormOneInput from "../../global/components/FormOneInput";
+import RegisterCollections from "./components/RegisterCollections";
 import Dialog from "../../global/components/Dialog";
 import useCollections from "./hooks/useCollections";
 
@@ -27,9 +27,6 @@ const PageCollections = () => {
   });
 
   const {
-    register,
-    handleSubmit,
-    errors,
     reset,
     collections,
     createCollection,
@@ -93,7 +90,7 @@ const PageCollections = () => {
   };
 
   const columns = {
-    [t("nameLabel")]: "name",
+    [t("name")]: "name",
   };
 
   return (
@@ -105,7 +102,7 @@ const PageCollections = () => {
         <DataGrid
           columns={columns}
           rows={collections}
-          primaryBtnText={t("addCollection")}
+          primaryBtnText={t("form.add_title")}
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
@@ -115,7 +112,9 @@ const PageCollections = () => {
       {/* Vista en tarjetas para móviles */}
       <div className="md:hidden pt-13 space-y-4 px-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">{t("mobileTitle")}</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            {t("mobileTitle")}
+          </h2>
           <button
             onClick={handleAdd}
             className="bg-[#C2A878] text-white px-4 py-2 rounded-md text-sm shadow-md hover:bg-[#a98c6a] transition"
@@ -129,7 +128,9 @@ const PageCollections = () => {
             key={collection._id}
             className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
           >
-            <h3 className="text-lg font-semibold text-gray-800">{collection.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              {collection.name}
+            </h3>
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={() => handleEdit(collection)}
@@ -150,19 +151,18 @@ const PageCollections = () => {
 
       {/* Diálogo para agregar o editar colección */}
       {openDialogCollections && (
-        <Dialog open={openDialogCollections} onClose={() => setOpenDialogCollections(false)}>
-          <FormOneInput
-            headerLabel={selectedCollection ? t("editCollection") : t("addCollection")}
-            onSubmit={handleSubmit(onSubmit)}
-            name="name"
-            label={t("nameLabel")}
-            register={register}
+        <Dialog
+          open={openDialogCollections}
+          onClose={() => setOpenDialogCollections(false)}
+        >
+          <RegisterCollections
+            defaultValues={selectedCollection}
+            methods={methods}
             onClose={() => {
               setOpenDialogCollections(false);
               setSelectedCollection(null);
             }}
-            error={errors.name?.message}
-            btnTxt={selectedCollection ? t("saveChanges") : t("addCollection")}
+            onSubmit={onSubmit}
           />
         </Dialog>
       )}

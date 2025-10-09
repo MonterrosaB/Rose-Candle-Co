@@ -6,11 +6,13 @@ import Form from "../../../global/components/Form";
 import FormInputs from "../../../global/components/FormInputs";
 import FormButton from "../../../global/components/FormButton";
 import InputsInline from "../../../global/components/InputsInline";
+import Textarea from "../../../global/components/TextArea";
 import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 
-const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
-  const { t } = useTranslation("suppliers"); // Namespace: suppliers
+const RegisterCollections = ({ onClose, defaultValues, onSubmit, methods }) => {
+
+  const { t } = useTranslation("collections"); // Namespace: collection
 
   const {
     register,
@@ -24,7 +26,7 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
     if (defaultValues) {
       reset(defaultValues);
     } else {
-      reset({ name: "", contact: "" });
+      reset({ name: "", description: "" });
     }
   }, [defaultValues, reset]);
 
@@ -48,35 +50,13 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
             options={{ required: t("form.validation.name_required") }}
             error={errors.name?.message}
           />
-          <Input
-            name="phoneNumber"
-            label={t("phone_number")}
-            type="text"
-            register={register}
-            options={{
-              required: t("form.validation.contact_required"),
-              pattern: {
-                value: /^\d{4}-\d{4}$/,
-                message: t("form.validation.contact_format"),
-              },
-            }}
-            error={errors.contact?.message}
-          />
-                    <Input
-            name="email"
-            label={t("email")}
-            type="text"
-            register={register}
-            options={{
-              required: t("form.validation.contact_required"),
-              pattern: {
-                value: /^\d{4}-\d{4}$/,
-                message: t("form.validation.contact_format"),
-              },
-            }}
-            error={errors.contact?.message}
-          />
         </InputsInline>
+        <Textarea
+            label={t("description")}
+            name="description"
+          register={register}
+          errors={errors}
+        />
       </FormInputs>
 
       <FormButton>
@@ -91,4 +71,4 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
   );
 };
 
-export default RegisterSuppliers;
+export default RegisterCollections;

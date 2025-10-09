@@ -14,6 +14,9 @@ import UseProductsList from "./components/UseProductList";
 import useProducts from "./hooks/useProducts";
 import useProductOptions from "./hooks/useProductOptions";
 
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
+
+
 import { useForm } from "react-hook-form";
 
 const PageProducts = () => {
@@ -21,6 +24,9 @@ const PageProducts = () => {
   useEffect(() => {
     document.title = "Productos | Rosé Candle Co.";
   }, []);
+
+  const { t, i18n } = useTranslation("products"); // Traducciones del namespace "stock"
+
 
   const [openDialogProduct, setOpenDialogProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -73,10 +79,10 @@ const PageProducts = () => {
   return (
     <>
       <PrincipalDiv>
-        <TitleH1 title="Productos" />
+        <TitleH1 title={t("title")} />
         <div className="flex justify-end gap-4 px-4">
           <Button
-            buttonText={"Agregar Producto"}
+            buttonText={t("add_prodcut")}
             showIcon={true}
             type={"button"}
             onClick={handleAdd}
@@ -87,21 +93,21 @@ const PageProducts = () => {
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
             options={opcionesEstado}
-            label="Disponibilidad"
+            label={t("availability_selector")}
           />
 
           <DropDownFilter
             value={filtroCategoria}
             onChange={(e) => setFiltroCategoria(e.target.value)}
             options={opcionesCategorias}
-            label="Categoría"
+            label={t("category_selector")}
           />
 
           <DropDownFilter
             value={filtroColeccion}
             onChange={(e) => setFiltroColeccion(e.target.value)}
             options={opcionesColecciones}
-            label="Colección"
+            label={t("collection_selector")}
           />
         </InputsInLine>
 

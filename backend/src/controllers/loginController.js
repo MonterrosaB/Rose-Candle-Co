@@ -61,8 +61,8 @@ loginController.login = async (req, res) => {
 
     res.cookie("authTokenR", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: false,
+      sameSite: "Lax",
       path: "/",
     });
 

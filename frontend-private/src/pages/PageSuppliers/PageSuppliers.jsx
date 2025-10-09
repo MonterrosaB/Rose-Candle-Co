@@ -87,7 +87,8 @@ const PageSuppliers = () => {
 
   const columns = {
     [t("name")]: "name",
-    [t("contact")]: "contact",
+    [t("phone_number")]: "phoneNumber",
+    [t("email")]: "email",
   };
 
   const rows = suppliers;
@@ -125,7 +126,8 @@ const PageSuppliers = () => {
             className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
           >
             <h3 className="text-lg font-semibold text-gray-800">{supplier.name}</h3>
-            <p className="text-sm text-gray-600"><strong>{t("contact")}:</strong> {supplier.contact}</p>
+            <p className="text-sm text-gray-600"><strong>{t("contact")}:</strong> {supplier.phoneNumber}</p>
+            <p className="text-sm text-gray-600"><strong>{t("contact")}:</strong> {supplier.email}</p>
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={() => handleEdit(supplier)}

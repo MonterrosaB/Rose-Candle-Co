@@ -96,7 +96,7 @@ const customerSchema = new Schema(
       unique: true,
       required: true, // Obligatorio
       match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         "Debe ser un correo electrónico válido",
       ],
       trim: true,
