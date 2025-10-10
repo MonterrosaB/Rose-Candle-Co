@@ -1,6 +1,6 @@
 # Rosé Candle Co. - Velas de Soja
 
-Rosé Candle Co es una tienda de velas aromáticas ecológicas hechas a mano con ingredientes naturales y fragancias inspiradas en la calma, la naturaleza y el bienestar. 
+Rosé Candle Co es un emprendimiento de velas aromáticas ecológicas hechas a mano con ingredientes naturales y fragancias inspiradas en la calma, la naturaleza y el bienestar. 
 Este proyecto digital nace para acompañar el crecimiento del emprendimiento, permitiendo a los clientes explorar fácilmente los productos, hacer pedidos y seguir sus compras; mientras que el equipo de Rosé puede gestionar el inventario, la producción y las finanzas desde una plataforma práctica e intuitiva.
 
 ---
@@ -32,7 +32,7 @@ El objetivo es optimizar el emprendimiento y mejorar tanto la experiencia del cl
 
 ## Frontend  
 - **React Native** — Aplicación móvil para clientes  
-- **React.js con Vite** — Panel web administrativo  
+- **React.js con Vite** — Panel web  
 - **HTML, CSS**  
 - **TailwindCSS** — Diseño responsivo y moderno  
 
@@ -133,6 +133,10 @@ El objetivo es optimizar el emprendimiento y mejorar tanto la experiencia del cl
   CLOUDINARY_NAME=""
   CLOUDINARY_API_KEY=""
   CLOUDINARY_API_SECRET=""
+  CLIENT_ID=
+  CLIENT_SECRET=
+  GRANT_TYPE=
+  AUDIENCE=
 
 ---
 
