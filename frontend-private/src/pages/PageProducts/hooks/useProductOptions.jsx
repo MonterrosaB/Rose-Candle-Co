@@ -1,11 +1,15 @@
 //Para traer categorias, colecciones y raw materials
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../global/hooks/useAuth";
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
+
 
 
 const useProductOptions = () => {
 
   const { API } = useAuth()
+
+  const { t } = useTranslation("products"); // Traducciones del namespace "stock"
 
 
   const [opcionesCategorias, setOpcionesCategorias] = useState([]);
@@ -60,8 +64,8 @@ const useProductOptions = () => {
 
 
   const opcionesEstado = [
-    { _id: true, label: "Activo" },
-    { _id: false, label: "Inactivo" },
+    { _id: true, label: t("status.active") },
+    { _id: false, label: t("status.inactive") },
   ];
   return {
     opcionesCategorias,

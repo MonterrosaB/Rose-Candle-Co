@@ -1,4 +1,12 @@
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
+
+
+
 const DropDownFilter = ({ value, onChange, options, label, all = true }) => {
+
+    const { t } = useTranslation("components"); // Traducciones del namespace "stock"
+
+
     return (
         <div className="flex justify-center items-baseline gap-4 mb-4 w-full">
             <div className="relative w-full overflow-visible">
@@ -9,7 +17,7 @@ const DropDownFilter = ({ value, onChange, options, label, all = true }) => {
                 >
                     {/* opción "todos" */}
                     {all &&
-                        <option value="">Todos</option>
+                        <option value="">{t("dropdown_all")}</option>
                     }
                     {options.map((opt) => (
                         <option

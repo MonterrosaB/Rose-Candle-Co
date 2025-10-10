@@ -1,6 +1,13 @@
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
+
 
 const DropDown = ({ name, options, label, error, hideIcon = true, register, placeHolder = "Selecciona una opción", disabled = false }) => {
+
+  const { t } = useTranslation("components"); // Traducciones del namespace "stock"
+
+  placeHolder = t("dropdown_placeholder")
+
   return (
     <div className="flex justify-center items-baseline gap-4 mb-4 w-full">
       <div className="relative w-full overflow-visible">
