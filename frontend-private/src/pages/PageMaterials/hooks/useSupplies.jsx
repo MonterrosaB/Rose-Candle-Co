@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../global/hooks/useAuth";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useSupplies = (methods) => {
+    const { API } = useAuth();
 
-    const { API } = useAuth()
+    const queryClient = useQueryClient();
 
     const {
         register,
@@ -19,39 +21,39 @@ const useSupplies = (methods) => {
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const getMaterialsBalance = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(API + "/materialBalance");
-            if (!res.ok) throw new Error("No se pudo obtener materias primas");
-            const data = await res.json();
-            setMaterialsBalanceBalance(data);
-        } catch (err) {
-            toast.error(err.message);
-        } finally {
-            setLoading(false);
-        }
+    const fetcher = async (url) => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Error en la petición");
+        return res.json();
     };
 
-    const getMaterials = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(API + "/rawMaterials");
+    const materialsBalanceQuery = useQuery({
+        queryKey: ["materialsBalance"],
+        queryFn: () => fetcher(APIURL + "/materialBalance"),
+        onError: () => toast.error("Error al obtener el balance")
+    });
+
+    const materialsQuery = useQuery({
+        queryKey: ["materials"],
+        queryFn: async () => {
+            const res = await fetch(`${API}/rawMaterials`);
             if (!res.ok) throw new Error("No se pudo obtener materias primas");
+
             const data = await res.json();
-            // Formatea para el dropdown
-            const formatted = data.map(cat => ({
+            // Formatear para el dropdown
+            return data.map((cat) => ({
                 _id: cat._id,
-                label: cat.name
+                label: cat.name,
             }));
-            setMaterials(formatted);
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error("Error al cargar categorías:", error);
-        }
-    };
+            toast.error("Error al obtener materias primas");
+        },
+    });
 
     const createMaterial = async (data) => {
-        setLoading(true)
+        setLoading(true);
         try {
             // Convertimos a número antes de enviar
             const parsedData = {
@@ -59,11 +61,12 @@ const useSupplies = (methods) => {
                 idMaterial: data.idMaterial,
                 movement: "entrada",
                 amount: Number(data.amount),
-                unitPrice: Number(data.amount) > 0
-                    ? (Number(data.unitPrice) / Number(data.amount)).toFixed(2)
-                    : "0.00",
+                unitPrice:
+                    Number(data.amount) > 0
+                        ? (Number(data.unitPrice) / Number(data.amount)).toFixed(2)
+                        : "0.00",
                 date: new Date().toISOString(),
-                reference: "Ingreso de suministros"
+                reference: "Ingreso de suministros",
             };
 
             const res = await fetch(API + "/materialBalance", {
@@ -74,11 +77,11 @@ const useSupplies = (methods) => {
 
             if (!res.ok) throw new Error("Error al guardar");
             toast.success("Materia Prima Guardada");
-            getMaterials();
+            queryClient.invalidateQueries(["materialsBalance"]);
         } catch (err) {
             toast.error(err.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
@@ -120,13 +123,17 @@ const useSupplies = (methods) => {
         }
     };
 
-    useEffect(() => {
-        getMaterialsBalance();
-        getMaterials();
-    }, []);
-
     return {
-        materialsBalance, materials, loading, createMaterial, register, handleSubmit, errors, reset, updateMaterial, deleteMaterial
+        materialsBalance: materialsBalanceQuery.data ?? [],
+        materials: materialsQuery.data ?? [],
+        loading: materialsQuery.isLoading || materialsQuery.isLoading,
+        createMaterial,
+        register,
+        handleSubmit,
+        errors,
+        reset,
+        updateMaterial,
+        deleteMaterial,
     };
 };
 

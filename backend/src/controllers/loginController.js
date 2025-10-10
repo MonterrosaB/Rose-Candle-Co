@@ -38,7 +38,10 @@ loginController.login = async (req, res) => {
     }
 
     // Verificar contraseña
-    const isValidPassword = await bcryptjs.compare(password, userFound.password);
+    const isValidPassword = await bcryptjs.compare(
+      password,
+      userFound.password
+    );
     if (!isValidPassword) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
@@ -61,8 +64,8 @@ loginController.login = async (req, res) => {
 
     res.cookie("authTokenR", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: true, //  en local DEBE ser false (no hay HTTPS)
+      sameSite: "None", //  funciona bien en local
       path: "/",
     });
 
