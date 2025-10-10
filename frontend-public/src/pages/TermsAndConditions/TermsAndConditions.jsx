@@ -10,6 +10,10 @@ import LegalInformation from "../TermsAndConditions/Components/InformationLegal.
 
 
 const TermsAndCondition = () => {
+  useEffect(() => {
+    document.title = "Términos y Condiciones | Rosé Candle Co.";
+  }, []);
+
   const [openIndex, setOpenIndex] = useState(0);
 
   const toggleIndex = (index) => {

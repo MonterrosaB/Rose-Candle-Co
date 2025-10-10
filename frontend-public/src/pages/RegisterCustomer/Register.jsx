@@ -18,6 +18,10 @@ import { useRequestCode } from "./hooks/useRequestCode.jsx";
 import { useVerifyCode } from "./hooks/useVerifyCode.jsx";
 
 const Register = () => {
+  useEffect(() => {
+    document.title = "Registrarse | Rosé Candle Co.";
+  }, []);
+
   const navigate = useNavigate();
   const {
     registerCustomer,

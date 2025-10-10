@@ -15,14 +15,17 @@ import ProductImagesUploader from "./ProductImagesUploader";
 
 import AddComponent from "../logic/addComponents";
 import changeImages from "../logic/changeImages";
+
 import { useForm } from "react-hook-form";
+
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
+
 import toast from "react-hot-toast";
 
+import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
 
 const RegisterProducts = ({ onClose, selectedProduct }) => {
-
   const methods = useForm({
     defaultValues: {
       ...selectedProduct,
@@ -31,20 +34,39 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       variant: selectedProduct?.variant || [],
       availability: selectedProduct?.availability, // para el dropdown
       idProductCategory: selectedProduct?.idProductCategory._id,
-      idCollection: selectedProduct?.idCollection._id
+      idCollection: selectedProduct?.idCollection._id,
     },
   });
 
-  const { opcionesCategorias, opcionesColecciones, opcionesMateria, opcionesEstado } = useProductOptions();
+  const { t, i18n } = useTranslation("products"); // Traducciones del namespace "stock"
 
-  const { inputs,
+  const {
+    opcionesCategorias,
+    opcionesColecciones,
+    opcionesMateria,
+    opcionesEstado,
+  } = useProductOptions();
+
+  const {
+    inputs,
     agregarVariante,
     agregarComponente,
     eliminarVariante,
     eliminarComponente,
-    resetInputs, } = AddComponent();
+    resetInputs,
+  } = AddComponent();
 
-  const { register, unregister, handleSubmit, errors, reset, control, createProduct, handleUpdate, loading } = useProducts(methods);
+  const {
+    register,
+    unregister,
+    handleSubmit,
+    errors,
+    reset,
+    control,
+    createProduct,
+    handleUpdate,
+    loading,
+  } = useProducts(methods);
 
   const {
     productImage,
@@ -64,17 +86,19 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
       opcionesMateria.length
     ) {
       // Normalizamos variantes y componentes
-      const normalizedVariants = selectedProduct.variant?.map(v => ({
-        id: crypto.randomUUID(), // id único para el estado local
-        ...v,
-        components: v.components?.map(c => ({
-          id: crypto.randomUUID(),
-          idComponent: String(c.idComponent?._id || c.idComponent),
-          amount: c.amount || "",
-        })) || [],
-      })) || [];
+      const normalizedVariants =
+        selectedProduct.variant?.map((v) => ({
+          id: crypto.randomUUID(), // id único para el estado local
+          ...v,
+          components:
+            v.components?.map((c) => ({
+              id: crypto.randomUUID(),
+              idComponent: String(c.idComponent?._id || c.idComponent),
+              amount: c.amount || "",
+            })) || [],
+        })) || [];
 
-      // 🔹 Reset RHF
+      // Reset RHF
       reset({
         ...selectedProduct,
         idProductCategory: selectedProduct.idProductCategory?._id || "",
@@ -85,9 +109,8 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
       // Reset estado local
       resetInputs();
-      normalizedVariants.forEach(v => agregarVariante(v));
+      normalizedVariants.forEach((v) => agregarVariante(v));
       console.log(normalizedVariants);
-
     }
   }, [
     selectedProduct,
@@ -97,9 +120,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     reset,
   ]);
 
-
   const onSubmit = async (data) => {
-
     const allImages = [productImageFile, ...multipleFileFiles];
 
     const formData = new FormData();
@@ -112,11 +133,9 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
     formData.append("idCollection", data.idCollection); // si lo necesitas
     formData.append("recipe", JSON.stringify(data.recipe));
 
-
     allImages.forEach((file) => {
       formData.append("images", file);
     });
-
 
     try {
       const action = selectedProduct
@@ -125,12 +144,16 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
       await toast.promise(action, {
         loading: selectedProduct ? "Actualizando..." : "Guardando...",
-        success: selectedProduct
-          ? <b>¡Producto actualizado exitosamente!</b>
-          : <b>¡Producto guardado exitosamente!</b>,
-        error: selectedProduct
-          ? <b>No se pudo actualizar el producto.</b>
-          : <b>No se pudo guardar el producto.</b>,
+        success: selectedProduct ? (
+          <b>¡Producto actualizado exitosamente!</b>
+        ) : (
+          <b>¡Producto guardado exitosamente!</b>
+        ),
+        error: selectedProduct ? (
+          <b>No se pudo actualizar el producto.</b>
+        ) : (
+          <b>No se pudo guardar el producto.</b>
+        ),
       });
 
       onClose(); // cerrar y limpiar solo si todo sale bien
@@ -142,13 +165,13 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
   return (
     <Form
-      headerLabel={selectedProduct ? "Editar Producto" : "Agregar Nuevo Producto"}
+      headerLabel={selectedProduct ? t("edit_product") : t("add_prodcut")}
       onSubmit={handleSubmit(onSubmit)}
       onClose={onClose}
     >
       <FormInputs>
         <Input
-          label={"Nombre"}
+          label={t("form.name")}
           type="text"
           name={"name"}
           register={register}
@@ -165,7 +188,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         />
 
         <Textarea
-          label={"Descripción"}
+          label={t("form.description")}
           name={"description"}
           register={register}
           errors={errors}
@@ -175,7 +198,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <Dropdown
             name={"idProductCategory"}
             options={opcionesCategorias}
-            label={"Categoría"}
+            label={t("category_selector")}
             register={register}
             errors={errors}
             hideIcon={true}
@@ -183,7 +206,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <Dropdown
             name={"idCollection"}
             options={opcionesColecciones}
-            label={"Colección"}
+            label={t("collection_selector")}
             register={register}
             errors={errors}
             hideIcon={true}
@@ -191,7 +214,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <Dropdown
             name={"availability"}
             options={opcionesEstado}
-            label={"Estado"}
+            label={t("availability_selector")}
             register={register}
             errors={errors}
             hideIcon={true}
@@ -202,16 +225,16 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
           <TextAreaArray
             control={control}
             name="useForm"
-            label="Recomendaciones"
-            placeholder="Escribe y presiona coma o enter"
+            label={t("form.use_form")}
+            placeholder={t("form.textarea")}
             error={errors.tags}
             valueKey="instruction"
           />
           <TextAreaArray
             control={control}
             name="recipe"
-            label="Recetas"
-            placeholder="Escribe y presiona coma o enter"
+            label={t("form.recipe")}
+            placeholder={t("form.textarea")}
             error={errors.tags}
             valueKey="step"
           />
@@ -220,7 +243,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         <div className="flex flex-col lg:flex-row justify-center items-start gap-6 w-full">
           <div className="flex flex-col items-center w-full gap-4">
             <Button
-              buttonText={"Agregar Variante"}
+              buttonText={t("form.variants.add_variant")}
               showIcon={true}
               style={"gray"}
               onClick={() => agregarVariante()}
@@ -240,12 +263,15 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                 <DoubleInput
                   id={variante.id}
                   eliminarInput={() => {
-                    unregister([`variant.${vIndex}.variant`, `variant.${vIndex}.variantPrice`]);
+                    unregister([
+                      `variant.${vIndex}.variant`,
+                      `variant.${vIndex}.variantPrice`,
+                    ]);
                     eliminarVariante(variante.id);
                   }}
                   grupo="variant"
-                  placeholder1="Nombre Variante"
-                  placeholder2="Precio Variante"
+                  placeholder1={t("form.variants.variant_name")}
+                  placeholder2={t("form.variants.varian_price")}
                   name1={`variant.${vIndex}.variant`}
                   name2={`variant.${vIndex}.variantPrice`}
                   register={register}
@@ -256,7 +282,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                 {/* Componentes de esta variante */}
                 <div className="flex flex-col items-center gap-4">
                   <Button
-                    buttonText={"Agregar Componente"}
+              buttonText={t("form.variants.add_componet")}
                     showIcon={true}
                     style={"gray"}
                     onClick={() => agregarComponente(vIndex)}
@@ -269,14 +295,14 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                       eliminarInput={() => {
                         unregister([
                           `variant.${vIndex}.components.${cIndex}.idComponent`,
-                          `variant.${vIndex}.components.${cIndex}.amount`
+                          `variant.${vIndex}.components.${cIndex}.amount`,
                         ]);
                         eliminarComponente(vIndex, comp.id);
                       }}
                       name1={`variant.${vIndex}.components.${cIndex}.idComponent`}
                       name2={`variant.${vIndex}.components.${cIndex}.amount`}
-                      placeholder1="Componente"
-                      placeholder2="Cantidad"
+                      placeholder1={t("form.variants.component")}
+                      placeholder2={t("form.variants.amount")}
                       register={register}
                       options={opcionesMateria}
                     />
@@ -288,7 +314,11 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         </div>
       </FormInputs>
       <FormButton>
-        <Button buttonText={selectedProduct ? "Editar Producto" : "Agregar Producto"} type={"submit"} disable={loading} />
+        <Button
+          buttonText={selectedProduct ? t("edit_product") : t("add_prodcut")}
+          type={"submit"}
+          disable={loading}
+        />
       </FormButton>
     </Form>
   );

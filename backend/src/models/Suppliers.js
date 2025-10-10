@@ -10,7 +10,7 @@ const suppliersSchema = new Schema(
       trim: true, // Elimina espacios al inicio y final
     },
     // Número de contacto del proveedor, con formato específico
-    contact: {
+    phoneNumber: {
       type: String,
       required: true, // Contacto obligatorio
       match: [
@@ -18,6 +18,17 @@ const suppliersSchema = new Schema(
         "Número de contacto no válido (formato debe ser ####-####)",
       ],
       trim: true, // Elimina espacios innecesarios
+    },
+    // Correo electrónico del proveedor, con formato específico.
+    email: {
+      type: String,
+      unique: true,
+      required: true, // Obligatorio
+      match: [
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Debe ser un correo electrónico válido",
+      ],
+      trim: true,
     },
 
     // Campo para eliminación lógica del proveedor

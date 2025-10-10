@@ -35,7 +35,7 @@ const employeeSchema = new Schema(
       unique: true, // No puede repetirse en la colección
       lowercase: true, // Guardar en minúsculas
       match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, // Validación formato email
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         "Debe ser un correo electrónico válido",
       ],
       trim: true,

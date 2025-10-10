@@ -12,8 +12,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+<<<<<<< HEAD
   //const API_URL = "https://rose-candle-co-sv.up.railway.app/api";
   const API_URL = "http://localhost:4000/api";
+=======
+  const API_URL = "https://rose-candle-co-sv.up.railway.app/api";
+
+  //https://rose-candle-co.onrender.com
+>>>>>>> e7142685403228029e6f2af03f7aab2934b58bdf
 
 
   const navigate = useNavigate();

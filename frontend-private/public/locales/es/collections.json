@@ -1,8 +1,6 @@
 {
     "title": "Colecciones",
-    "addCollection": "Agregar Colección",
-    "editCollection": "Editar Colección",
-    "saveChanges": "Guardar Cambios",
+    "add": "Agregar Colección",
     "delete": "Eliminar",
     "edit": "Editar",
     "confirmDeleteTitle": "¿Eliminar la colección \"{{name}}\"?",
@@ -11,7 +9,18 @@
     "cancelButton": "Cancelar",
     "deletedTitle": "Eliminado",
     "deletedText": "La colección \"{{name}}\" ha sido eliminada.",
-    "nameLabel": "Colección",
+    "name": "Colección",
+    "description": "Descripción",
     "mobileTitle": "Colecciones",
-    "add": "Agregar"
-}
+    "form": {
+      "add_title": "Agregar Colección",
+      "edit_title": "Editar Colección",
+      "submit_add": "Agregar Colección",
+      "submit_edit": "Guardar Cambios",
+      "validation": {
+        "name_required": "El nombre es obligatorio",
+        "description_required": "La descripción es obligatoria"
+      }
+    }
+  }
+  

@@ -1,5 +1,4 @@
-
-
+import { useEffect } from "react";
 import BannerOne from "./components/BannerOne.jsx";
 import BannerTwo from "./components/BannerTwo.jsx";
 import BannerThree from "./components/BannerThree.jsx";
@@ -10,12 +9,11 @@ import TestimonialSection from "./components/TestimonialSection.jsx";
 import MarqueeBanner from "../../global/components/MarqueeBanner.jsx"
 
 const Home = () => {
-
-
+    useEffect(() => {
+        document.title = "Inicio | Rosé Candle Co.";
+      }, []);
     return (
         <div className="relative bg-[#F9F7F3] ">
-
-
             <BannerTwo />
             <BannerThree />
             <MarqueeBanner />

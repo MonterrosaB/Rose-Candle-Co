@@ -1,0 +1,31 @@
+{
+  "title": "Products",
+  "add_prodcut": "Add Product",
+  "edit_product": "Edit Product",
+  "collection_selector": "Collection",
+  "category_selector": "Category",
+  "availability_selector": "Status",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "name": "Name",
+    "description": "Description",
+    "use_form": "Suggestions",
+    "recipe": "Recipe",
+    "textarea" : "Type and press comma or enter",
+    "images": {
+      "primary"  : "Select the main image here",
+      "secondary" : "Select secondary images here"
+    },
+    "variants": {
+      "add_variant": "Add Variant",
+      "add_componet": "Add Componnet",
+      "varian_price": "Variant Price",
+      "variant_name": "Variant Name",
+      "component" : "Componet",
+      "amount" : "Amount"
+    }
+  }
+}

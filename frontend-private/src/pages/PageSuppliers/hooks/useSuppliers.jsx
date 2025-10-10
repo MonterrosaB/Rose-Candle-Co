@@ -20,7 +20,8 @@ const useSuppliers = () => {
       const formatted = data.map((s) => ({
         _id: s._id,
         name: s.name,
-        contact: s.contact,
+        phoneNumber: s.phoneNumber,
+        email: s.email,
         label: s.name,
       }));
 
@@ -40,7 +41,6 @@ const useSuppliers = () => {
       });
 
       const data = await res.json();
-      console.log("Respuesta backend:", data);
 
       if (!res.ok) throw new Error(data.message || "Error al crear proveedor");
 

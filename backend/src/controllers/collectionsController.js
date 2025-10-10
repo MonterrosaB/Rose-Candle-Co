@@ -11,7 +11,8 @@ collectionsController.getCollections = async (req, res) => {
     // Normalizar estructura de respuesta
     const normalized = collections.map((c) => ({
       _id: c._id,
-      name: c.name || c.collection || "", // Compatibilidad con campos antiguos
+      name: c.name,
+      description: c.description,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -35,7 +36,8 @@ collectionsController.getCollectionById = async (req, res) => {
     // Normalizar respuesta
     const normalized = {
       _id: collection._id,
-      name: collection.name || collection.collection || "",
+      name: collection.name,
+      description: c.description,
       createdAt: collection.createdAt,
       updatedAt: collection.updatedAt,
     };
@@ -49,7 +51,7 @@ collectionsController.getCollectionById = async (req, res) => {
 
 // POST - Crear una nueva colección
 collectionsController.createCollection = async (req, res) => {
-  const { name } = req.body; // Obtener campo desde el cuerpo
+  const { name, description } = req.body; // Obtener campo desde el cuerpo
 
   try {
     // Validación: campo vacío
@@ -69,8 +71,23 @@ collectionsController.createCollection = async (req, res) => {
       return res.status(400).json({ message: "Too large" });
     }
 
+    // Validar que exista
+    if (!description || typeof description !== "string") {
+      return res.status(400).json({
+        message: "La descripción es obligatoria y debe ser texto",
+      });
+    }
+
+    // Validar longitud mínima y máxima
+    const trimmedDescription = description.trim();
+    if (trimmedDescription.length < 10 || trimmedDescription.length > 255) {
+      return res.status(400).json({
+        message: "La descripción debe tener entre 10 y 255 caracteres",
+      });
+    }
+
     // Crear y guardar nueva colección
-    const newCollection = new collectionModel({ name });
+    const newCollection = new collectionModel({ name, description });
     await newCollection.save();
 
     res.status(200).json({ message: "Collection saved" }); // Creación exitosa
@@ -82,22 +99,45 @@ collectionsController.createCollection = async (req, res) => {
 
 // PUT - Actualizar una colección por ID
 collectionsController.updateCollection = async (req, res) => {
-  const { name } = req.body; // Obtener campo del cuerpo
+  const { name, description } = req.body; // Obtener campo del cuerpo
 
   try {
-    // Validación de campo
-    if (!name || typeof name !== "string" || name.length < 3) {
+    // Validación: campo vacío
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "Please complete all the fields" });
+    }
+
+    // Validación: mínimo de caracteres
+    if (name.length < 3) {
       return res.status(400).json({ message: "Too short" });
     }
 
+    // Validación: máximo de caracteres
     if (name.length > 100) {
       return res.status(400).json({ message: "Too large" });
+    }
+
+    // Validar que exista
+    if (!description || typeof description !== "string") {
+      return res.status(400).json({
+        message: "La descripción es obligatoria y debe ser texto",
+      });
+    }
+
+    // Validar longitud mínima y máxima
+    const trimmedDescription = description.trim();
+    if (trimmedDescription.length < 10 || trimmedDescription.length > 255) {
+      return res.status(400).json({
+        message: "La descripción debe tener entre 10 y 255 caracteres",
+      });
     }
 
     // Actualizar colección en base de datos
     const updatedCollection = await collectionModel.findByIdAndUpdate(
       req.params.id,
-      { name },
+      { name, description },
       { new: true } // Retornar el documento actualizado
     );
 

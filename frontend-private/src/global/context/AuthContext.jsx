@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
   const API_URL = "http://localhost:4000/api";
 
 
-
   const navigate = useNavigate();
 
   // Eliminar sesión: token local, cookie, y estado

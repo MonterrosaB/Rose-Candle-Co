@@ -7,7 +7,7 @@ const suppliersControllers = {};
 suppliersControllers.getSuppliers = async (req, res) => {
   try {
     // Buscar todos los documentos de proveedores en la colección
-    const suppliers = await suppliersModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const suppliers = await suppliersModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
 
     // Enviar listado completo de proveedores con código 200
     res.status(200).json(suppliers);
@@ -39,7 +39,7 @@ suppliersControllers.getSupplierById = async (req, res) => {
 
 // POST - Crear un nuevo proveedor
 suppliersControllers.createSuppliers = async (req, res) => {
-  const { name, contact } = req.body; // Obtener datos del cuerpo de la petición
+  const { name, phoneNumber, email } = req.body; // Obtener datos del cuerpo de la petición
 
   try {
     // Validar que se hayan recibido ambos campos obligatorios
@@ -55,14 +55,21 @@ suppliersControllers.createSuppliers = async (req, res) => {
     }
 
     // Validar formato del contacto (ejemplo: ####-####)
-    if (!/^\d{4}-\d{4}$/.test(contact)) {
+    if (!/^\d{4}-\d{4}$/.test(phoneNumber)) {
       return res
         .status(400)
-        .json({ message: "Contact must be in format ####-####" });
+        .json({ message: "Phone Number must be in format ####-####" });
+    }
+
+    // Validar correo electrónico
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      return res
+        .status(400)
+        .json({ message: "Email must be a valid email address" });
     }
 
     // Crear instancia del modelo con los datos validados
-    const newSupplier = new suppliersModel({ name, contact });
+    const newSupplier = new suppliersModel({ name, phoneNumber, email });
 
     // Guardar en la base de datos
     await newSupplier.save();
@@ -79,10 +86,10 @@ suppliersControllers.createSuppliers = async (req, res) => {
 suppliersControllers.deleteSuppliers = async (req, res) => {
   try {
     const deletedSupplier = await suppliersModel.findByIdAndUpdate(
-    req.params.id,
-    { deleted: true }, // Se marca como "eliminada"
-    { new: true }
-   ); // Eliminar por ID
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     if (!deletedSupplier) {
       // Si no se encontró el proveedor para eliminar, responder 400
@@ -99,7 +106,7 @@ suppliersControllers.deleteSuppliers = async (req, res) => {
 
 // PUT - Actualizar datos de un proveedor existente
 suppliersControllers.updateSuppliers = async (req, res) => {
-  const { name, contact } = req.body; // Obtener datos del cuerpo
+  const { name, phoneNumber, email } = req.body; // Obtener datos del cuerpo
 
   try {
     // Validar que se reciban todos los campos requeridos
@@ -115,16 +122,24 @@ suppliersControllers.updateSuppliers = async (req, res) => {
     }
 
     // Validar formato de contacto
-    if (!/^\d{4}-\d{4}$/.test(contact)) {
+    if (!/^\d{4}-\d{4}$/.test(phoneNumber)) {
       return res
         .status(400)
         .json({ message: "Contact must be in format ####-####" });
     }
 
+
+        // Validar correo electrónico
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+          return res
+            .status(400)
+            .json({ message: "Email must be a valid email address" });
+        }
+
     // Buscar proveedor por ID y actualizar sus datos
     const updatedSupplier = await suppliersModel.findByIdAndUpdate(
       req.params.id,
-      { name, contact },
+      { name, phoneNumber, email },
       { new: true } // Para que retorne el documento actualizado
     );
 
@@ -140,7 +155,7 @@ suppliersControllers.updateSuppliers = async (req, res) => {
     res.status(500).json("Internal server error");
   }
 };
-suppliersControllers.restoreSuppliers= async (req, res) => {
+suppliersControllers.restoreSuppliers = async (req, res) => {
   try {
     const restoreSuppliers = await suppliersModel.findByIdAndUpdate(
       req.params.id,
@@ -149,10 +164,12 @@ suppliersControllers.restoreSuppliers= async (req, res) => {
     ); // Se actualiza por ID
 
     if (!restoreSuppliers) {
-      return res.status(400).json({ message: "Restore Shopping Cart not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "Restore Suppliers Cart not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "Restore Shopping Cart restored" }); // Restauracion exitosa
+    res.status(200).json({ message: "Restore Suppliers Cart restored" }); // Restauracion exitosa
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor
