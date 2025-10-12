@@ -88,8 +88,8 @@ loginCustomerController.login = async (req, res) => {
     // Guardar token en cookie
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: false,
+      sameSite: "Lax",
       path: "/",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
     });

@@ -282,7 +282,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                 {/* Componentes de esta variante */}
                 <div className="flex flex-col items-center gap-4">
                   <Button
-              buttonText={t("form.variants.add_componet")}
+                    buttonText={t("form.variants.add_componet")}
                     showIcon={true}
                     style={"gray"}
                     onClick={() => agregarComponente(vIndex)}

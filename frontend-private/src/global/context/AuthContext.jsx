@@ -1,7 +1,6 @@
 // Hook para manejar funciones de inicio de sesión
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
 // Crear y exportar el contexto
@@ -12,8 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_URL = "https://rose-candle-co-sv.up.railway.app/api";
-  //const API_URL = "http://localhost:4000/api";
+  //const API_URL = "https://rose-candle-co-sv.up.railway.app/api";
+  const API_URL = "http://localhost:4000/api";
 
 
   const navigate = useNavigate();
