@@ -3,9 +3,14 @@ import { NavLink } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa"; // Icono de cuenta
 import { MdOutlineShoppingCart } from "react-icons/md"; // Icono de carrito
 import Logo from "../../assets/Logotipo.svg"; // Logo
+import { useAuth } from "../hooks/useAuth";
+
 
 const Nav = ({ topClass = "top-10" }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { user } = useAuth();
+
 
   return (
     <nav className={`fixed ${topClass} left-0 w-full z-50 bg-[#F9F7F3] shadow`}>
@@ -60,9 +65,11 @@ const Nav = ({ topClass = "top-10" }) => {
 
           {/* Íconos */}
           <div className="hidden md:flex items-center space-x-4">
-            <NavLink to="/cart" className="text-gray-700 hover:text-black text-xl">
-              <MdOutlineShoppingCart />
-            </NavLink>
+            {user &&
+              <NavLink to="/cart" className="text-gray-700 hover:text-black text-xl">
+                <MdOutlineShoppingCart />
+              </NavLink>
+            }
             <NavLink to="/profile" className="text-gray-700 hover:text-black text-xl">
               <FaRegUser />
             </NavLink>
@@ -109,9 +116,12 @@ const Nav = ({ topClass = "top-10" }) => {
               <NavLink to="/profile" className="text-gray-700 hover:text-black text-xl">
                 <FaRegUser />
               </NavLink>
-              <NavLink to="/cart" className="text-gray-700 hover:text-black text-xl">
-                <MdOutlineShoppingCart />
-              </NavLink>
+              {user &&
+                <NavLink to="/cart" className="text-gray-700 hover:text-black text-xl">
+                  <MdOutlineShoppingCart />
+                </NavLink>
+              }
+
             </div>
           </div>
         </div>

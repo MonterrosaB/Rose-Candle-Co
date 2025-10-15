@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Dialog from "../../global/components/Dialog";
 import DataGrid from "../../global/components/DataGrid";
 import TitleH1 from "../../global/components/TitleH1"
+import CardOrdersMobile from "./components/CardOrdersMobile";
 
 import useOrders from "./hooks/useOrders";
 import { useForm } from "react-hook-form";
@@ -26,7 +27,7 @@ const PageOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null); //  Para editar
 
   const columns = {
-    [t("ID")]: "orderId",
+    ["ID"]: "orderId",
     [t("client")]: "name",
     [t("products")]: "totalProducts",
     [t("date")]: "saleDate",
@@ -61,6 +62,7 @@ const PageOrders = () => {
             onClickPrimaryBtn={handleAddOrder}
             updateRow={handleEditOrder} //  Aquí pasamos la función
             showDelete={false}
+            showMore={true}
           />
         </div>
         {openDialogOrders && (
@@ -75,36 +77,23 @@ const PageOrders = () => {
           </Dialog>
         )}
 
-        {/* Cards móvil */}
-        <div className="sm:hidden pt-17 space-y-4 px-4 py-4">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Órdenes</h2>
+
+        <div className="sm:hidden pt-4 space-y-4 px-4 pb-16">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">
+            Órdenes ({salesOrders.length})
+          </h2>
+
           {salesOrders.map((order) => (
-            <div
-              key={order.idShoppingCart}
-              className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
-            >
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>{t("order_id")}:</strong> {order.idShoppingCart}
-              </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>{t("date")}:</strong> {new Date(order.createdAt).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>{t("amount")}:</strong> ${order.total?.toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>{t("payment_method")}:</strong> {order.paymentMethod}
-              </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>{t("status")}:</strong> {order.shippingState[0]?.state || "Sin estado"}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>{t("address")}:</strong> {order.address?.address}
-              </p>
-            </div>
+            <CardOrdersMobile
+              key={order._id}
+              order={order}
+              onEdit={handleEditOrder}
+              t={t} // Pasa la función de traducción
+            />
           ))}
         </div>
       </PrincipalDiv>
+
 
 
     </>

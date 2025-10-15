@@ -4,7 +4,7 @@ import { useAuth } from "../../../global/hooks/useAuth.js"; // auth para el id d
 
 
 export const useUserInformation = () => {
-  const { user, setUser, API} = useAuth();
+  const { user, API } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: "",
@@ -13,7 +13,7 @@ export const useUserInformation = () => {
     email: "",
   });
 
-const ApiCustomers = API + "/customers"; // api para el cliente
+  const ApiCustomers = API + "/customers"; // api para el cliente
 
 
   // Obtener perfil desde backend
@@ -55,8 +55,6 @@ const ApiCustomers = API + "/customers"; // api para el cliente
 
       toast.success("Perfil actualizado correctamente"); // alerta fija del frontend
 
-      // Actualizar contexto global sin incluir password
-      setUser((prev) => ({ ...prev, ...profile, password: undefined }));
     } catch (error) {
       console.error(error);
       toast.error("No se pudieron guardar los cambios"); // alerta fija del frontend

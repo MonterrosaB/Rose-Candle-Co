@@ -21,6 +21,7 @@ const useSuppliers = () => {
         _id: s._id,
         name: s.name,
         phoneNumber: s.phoneNumber,
+        deleted: s.deleted,
         email: s.email,
         label: s.name,
       }));
@@ -33,9 +34,12 @@ const useSuppliers = () => {
   };
 
   const createSupplier = async (newSupplier) => {
+    console.log(newSupplier);
+
     try {
       const res = await fetch(ApiSuppliers, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSupplier),
       });
@@ -56,6 +60,7 @@ const useSuppliers = () => {
     try {
       const res = await fetch(`${ApiSuppliers}/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedSupplier),
       });
@@ -72,6 +77,7 @@ const useSuppliers = () => {
     try {
       const res = await fetch(`${ApiSuppliers}/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Error al eliminar proveedor");
       toast.success("Proveedor eliminado");
@@ -79,6 +85,36 @@ const useSuppliers = () => {
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar proveedor");
+    }
+  };
+
+  const softDeleteSupplier = async (id) => {
+    try {
+      const res = await fetch(`${ApiSuppliers}/softdelete/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Error al eliminar proveedor");
+      toast.success("Proveedor eliminado");
+      getSuppliers();
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar proveedor");
+    }
+  };
+
+  const restoreSupplier = async (id) => {
+    try {
+      const res = await fetch(`${ApiSuppliers}/restore/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Error al restaurar proveedor");
+      toast.success("Proveedor restaurado");
+      getSuppliers();
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo restaurar proveedor");
     }
   };
 
@@ -92,6 +128,8 @@ const useSuppliers = () => {
     createSupplier,
     updateSupplier,
     deleteSupplier,
+    softDeleteSupplier,
+    restoreSupplier
   };
 };
 

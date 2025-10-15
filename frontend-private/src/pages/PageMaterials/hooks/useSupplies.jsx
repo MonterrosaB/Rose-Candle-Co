@@ -17,8 +17,6 @@ const useSupplies = (methods) => {
         formState: { errors },
     } = methods;
 
-    const [materialsBalance, setMaterialsBalanceBalance] = useState([]);
-    const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetcher = async (url) => {

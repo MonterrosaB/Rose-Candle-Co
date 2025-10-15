@@ -12,7 +12,7 @@ function ProtectedRoute({ children }) {
 
   if (!isAuthenticated) {
     toast.error("Por favor, inicia sesión para continuar.");
-    return <Navigate to="/loginCustomer" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

@@ -1,5 +1,6 @@
 import materialBalanceModel from "../models/MaterialBalance.js"; // Importar modelo de materialBalance
 import rawMaterial from "../models/RawMaterials.js"; // Importar modelo de materialBalance
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos CRUD para materialBalance
 const materialBalanceControllers = {};
@@ -9,7 +10,7 @@ materialBalanceControllers.getMaterialBalance = async (req, res) => {
   try {
     // Buscar todos los documentos en la colección
     const MaterialBalance = await materialBalanceModel
-      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+      .find() // Buscar todas las colecciones, salvo las que no han sido eliminadas
       .populate("idMaterial", "name")
       .sort({ date: -1 }); // Ordenar por fecha descendente (más nuevo primero)
     // Enviar respuesta con datos encontrados
@@ -61,6 +62,15 @@ materialBalanceControllers.createMaterialBalance = async (req, res) => {
     rawMaterialNewBalance.currentStock = newStock;
     rawMaterialNewBalance.currentPrice = newPrice;
     await rawMaterialNewBalance.save();
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Raw Materials",
+      targetId: rawMaterialNewBalance._id,
+      description: `Raw Materials ${rawMaterialNewBalance.name} restocked`,
+    });
 
     res
       .status(200)

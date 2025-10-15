@@ -2,7 +2,7 @@ import OrbitedCircle from "../../../global/components/OrbitedCircle.jsx";
 
 const ValuesDesktop = () => {
   return (
-    <div className="relative px-12 py-20">
+    <div className="relative px-12 py-20 min-h-dvh">
       <div className="absolute -bottom-40 -left-40 scale-[3]">
         <OrbitedCircle size="large" />
       </div>

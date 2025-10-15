@@ -2,6 +2,8 @@ import jsonwebtoken from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import customersModel from "../models/Customers.js";
 import employeesModel from "../models/Employees.js";
+import { createLog } from "../utils/logger.js";
+
 
 import sendRecoveryEmail from "../utils/mailPasswordRecovery.js";
 import { config } from "../config.js";
@@ -139,6 +141,17 @@ passwordRecoveryController.newPassword = async (req, res) => {
         { password: hashedPassword },
         { new: true }
       );
+
+      // Guardar log si la actualización fue exitosa
+      if (updateUser) {
+        await createLog({
+          userId: req.user.id,
+          action: "change password",
+          collectionAffected: "Employees",
+          targetId: updateUser._id,
+          description: `Employee ${updateUser.name} changed password for account with ID ${updateUser._id}`,
+        });
+      }
     }
 
     // Limpiar la cookie con el token para evitar reutilización

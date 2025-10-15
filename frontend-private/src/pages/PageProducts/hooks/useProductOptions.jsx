@@ -33,7 +33,9 @@ const useProductOptions = () => {
 
         //  Colecciones
         const resCollections = await fetch(
-          API + "/collections"
+          API + "/collections", {
+          credentials: "include"
+        }
         );
         if (!resCollections.ok) throw new Error("Error al traer colecciones");
         const collections = await resCollections.json();

@@ -40,7 +40,7 @@ function Navigation() {
   // Donde mostrar el marquee
   const showMarquee = [
     "/profile",
-    "/loginCustomer",
+    "/login",
     "/recoveryPassword",
     "/profile",
     "/register",
@@ -48,7 +48,7 @@ function Navigation() {
 
   // Aqui no aparece el footer y el nav
   const noNavFooterRoutes = [
-    "/loginCustomer",
+    "/login",
     "/recoveryPassword",
     "/profile",
     "/register",
@@ -57,7 +57,7 @@ function Navigation() {
 
   // Redirigir automáticamente si el usuario ya está logueado y entra a login o register
   useEffect(() => {
-    const blockedWhenAuth = ["/loginCustomer", "/register"];
+    const blockedWhenAuth = ["/login", "/register"];
     if (isAuthenticated && blockedWhenAuth.includes(location.pathname)) {
       navigate("/home", { replace: true });
     }
@@ -70,11 +70,11 @@ function Navigation() {
       {!hideNavFooter && <Nav />}
 
       <div className=" min-h-dvh">
-        <ScrollToTop/>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/loginCustomer" element={<LoginCustomer />} />
+          <Route path="/login" element={<LoginCustomer />} />
           <Route path="/register" element={<RegisterCustomer />} />
           <Route path="/recoveryPassword" element={<PasswordRecovery />} />
           <Route path="/aboutUs" element={<AboutUs />} />

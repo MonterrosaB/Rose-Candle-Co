@@ -73,6 +73,7 @@ const useMaterials = (methods) => {
 
       const res = await fetch(API + "/rawMaterials", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsedData),
       });
@@ -101,6 +102,7 @@ const useMaterials = (methods) => {
       };
       const res = await fetch(API + `/rawMaterials/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsedData),
       });
@@ -120,6 +122,7 @@ const useMaterials = (methods) => {
     try {
       const res = await fetch(`${API}/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!res.ok) throw new Error("Error al eliminar la materia prima");
@@ -127,6 +130,42 @@ const useMaterials = (methods) => {
       toast.success("Materia Prima eliminada");
     } catch (err) {
       toast.error("Error al eliminar la materia prima");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const softDeleteMaterial = async (id) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/rawMaterials/softdelete/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar la materia prima");
+
+      toast.success("Materia Prima eliminada");
+    } catch (err) {
+      toast.error("Error al eliminar la materia prima");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const restoreMaterial = async (id) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/rawMaterials/restore/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Error al restaurar la materia prima");
+
+      toast.success("Materia Prima restaurada");
+    } catch (err) {
+      toast.error("Error al restaurar la materia prima");
     } finally {
       setLoading(false);
     }
@@ -144,6 +183,8 @@ const useMaterials = (methods) => {
     reset,
     updateMaterial,
     deleteMaterial,
+    softDeleteMaterial,
+    restoreMaterial
   };
 };
 

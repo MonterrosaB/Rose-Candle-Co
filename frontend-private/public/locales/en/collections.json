@@ -1,25 +1,39 @@
 {
-    "title": "Collections",
-    "add": "Add Supplier",
-    "delete": "Delete",
-    "edit": "Edit",
-    "confirmDeleteTitle": "Delete collection \"{{name}}\"?",
-    "confirmDeleteText": "This action cannot be undone.",
-    "confirmDeleteButton": "Yes, delete",
-    "cancelButton": "Cancel",
-    "deletedTitle": "Deleted",
-    "deletedText": "Collection \"{{name}}\" has been deleted.",
-    "name": "Collection",
-    "description": "Description",
-    "mobileTitle": "Collections",
-    "form": {
-        "add_title": "Add Collection",
-        "edit_title": "Edit Collection",
-        "submit_add": "Add Collection",
-        "submit_edit": "Save Changes",
-        "validation": {
-            "name_required": "Name is required",
-            "description_required": "Contact is required"
-        }
+  "title": "Collections",
+  "add": "Add Supplier",
+  "delete": "Delete",
+  "edit": "Edit",
+
+  "confirmHardDeleteTitle": "Permanently delete collection \"{{name}}\"?",
+  "confirmHardDeleteText": "This action cannot be undone. All associated data will be lost.",
+  "confirmHardDeleteButton": "Yes, delete permanently",
+  "deletedTitle": "Deleted Permanently",
+  "deletedText": "Collection \"{{name}}\" has been permanently deleted.",
+
+  "confirmSoftDeleteTitle": "Archive collection \"{{name}}\"?",
+  "confirmSoftDeleteText": "The collection will be archived and hidden, but you can restore it later.",
+  "confirmSoftDeleteButton": "Yes, archive it",
+  "softDeletedTitle": "Archived",
+  "softDeletedText": "Collection \"{{name}}\" has been archived.",
+
+  "confirmRestoreTitle": "Restore collection \"{{name}}\"?",
+  "confirmRestoreText": "The collection will be visible and active again.",
+  "confirmRestoreButton": "Yes, restore it",
+  "restoredTitle": "Restored",
+  "restoredText": "Collection \"{{name}}\" has been successfully restored.",
+
+  "cancelButton": "Cancel",
+  "name": "Collection",
+  "description": "Description",
+  "mobileTitle": "Collections",
+  "form": {
+    "add_title": "Add Collection",
+    "edit_title": "Edit Collection",
+    "submit_add": "Add Collection",
+    "submit_edit": "Save Changes",
+    "validation": {
+      "name_required": "Name is required",
+      "description_required": "Contact is required"
     }
+  }
 }

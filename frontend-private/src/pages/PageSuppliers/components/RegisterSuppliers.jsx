@@ -17,6 +17,7 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue
   } = methods;
 
   // Al montar o actualizar el modal, establecer valores por defecto
@@ -24,11 +25,34 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
     if (defaultValues) {
       reset(defaultValues);
     } else {
-      reset({ name: "", contact: "" });
+      reset();
     }
   }, [defaultValues, reset]);
 
   const isEditMode = !!defaultValues;
+
+  // En RegisterOrder.jsx
+
+  const handlePhoneChange = (e) => {
+    const rawValue = e.target.value;
+    const numericValue = rawValue.replace(/[^\d]/g, '');
+
+    let formattedValue = '';
+    if (numericValue.length > 4) {
+      formattedValue = numericValue.slice(0, 4) + '-' + numericValue.slice(4, 8);
+    } else {
+      formattedValue = numericValue;
+    }
+
+    // Limitar a 9 caracteres (8 dígitos + guion)
+    const finalValue = formattedValue.slice(0, 9);
+
+    // Usar setValue de React Hook Form para actualizar el valor con el formato
+    setValue('phoneNumber', finalValue, { shouldValidate: true });
+
+    // OJO: Es crucial llamar a setValue aquí porque el valor
+    // de entrada no se actualizaría automáticamente con el guion.
+  };
 
   return (
     <Form
@@ -51,32 +75,34 @@ const RegisterSuppliers = ({ onClose, defaultValues, onSubmit, methods }) => {
           <Input
             name="phoneNumber"
             label={t("phone_number")}
-            type="text"
+            type="tel"
             register={register}
             options={{
               required: t("form.validation.contact_required"),
               pattern: {
-                value: /^\d{4}-\d{4}$/,
+                value: /^\d{4}-\d{4}$/, // Valida el formato final
                 message: t("form.validation.contact_format"),
               },
             }}
-            error={errors.contact?.message}
-          />
-                    <Input
-            name="email"
-            label={t("email")}
-            type="text"
-            register={register}
-            options={{
-              required: t("form.validation.contact_required"),
-              pattern: {
-                value: /^\d{4}-\d{4}$/,
-                message: t("form.validation.contact_format"),
-              },
-            }}
-            error={errors.contact?.message}
+            // Pasa tu manejador de cambio personalizado a la nueva prop
+            onChange={handlePhoneChange}
+            error={errors.phoneNumber?.message}
           />
         </InputsInline>
+        <Input
+          name="email"
+          label={t("email")}
+          type="text"
+          register={register}
+          options={{
+            required: t("form.validation.contact_required"),
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: t("form.validation.contact_format"),
+            },
+          }}
+          error={errors.email?.message}
+        />
       </FormInputs>
 
       <FormButton>

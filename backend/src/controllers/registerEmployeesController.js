@@ -2,6 +2,7 @@ import employeesModel from "../models/Employees.js"; // Modelo de empleados
 import bcryptjs from "bcryptjs"; // Librería para encriptar contraseñas
 import jsonwebtoken from "jsonwebtoken"; // Librería para manejar tokens JWT
 import { config } from "../config.js";
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos para registro de empleados
 const registerEmployeesController = {};
@@ -62,6 +63,15 @@ registerEmployeesController.registerEmployees = async (req, res) => {
 
     // Guardar el nuevo empleado en la base de datos
     await newEmployee.save();
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Employees",
+      targetId: newEmployee._id,
+      description: `Employees ${newEmployee.name} ${newEmployee.surnames} created`,
+    });
 
     // Generar token JWT para autenticación futura
     jsonwebtoken.sign(

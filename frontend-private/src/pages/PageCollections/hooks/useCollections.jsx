@@ -23,7 +23,9 @@ const useCollections = (methods) => {
   // Obtener todas las colecciones desde la API
   const getCollections = async () => {
     try {
-      const res = await fetch(ApiCollections);
+      const res = await fetch(ApiCollections, {
+        credentials: "include"
+      });
       if (!res.ok) throw new Error("Error al obtener colecciones");
       const data = await res.json();
       setCollections(data);
@@ -40,6 +42,7 @@ const useCollections = (methods) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCollection),
+        credentials: "include"
       });
       if (!res.ok) throw new Error("Error al crear colección");
       toast.success("Colección agregada");
@@ -55,6 +58,7 @@ const useCollections = (methods) => {
     try {
       const res = await fetch(`${ApiCollections}/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedCollection),
       });
@@ -68,10 +72,11 @@ const useCollections = (methods) => {
   };
 
   // Eliminar colección por ID
-  const deleteCollection = async (id) => {
+  const softDeleteCollection = async (id) => {
     try {
-      const res = await fetch(`${ApiCollections}/${id}`, {
-        method: "DELETE",
+      const res = await fetch(`${ApiCollections}/softdelete/${id}`, {
+        method: "PATCH",
+        credentials: "include"
       });
       if (!res.ok) throw new Error("Error al eliminar colección");
       toast.success("Colección eliminada");
@@ -79,6 +84,40 @@ const useCollections = (methods) => {
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar colección");
+    }
+  };
+
+  // Eliminar colección por ID
+  const hardDeleteCollection = async (id) => {
+    try {
+      const res = await fetch(`${ApiCollections}/${id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Error al eliminar colección");
+      toast.success("Colección eliminada");
+      getCollections(); // Actualizar lista tras eliminación
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar colección");
+    }
+  };
+
+  // Restaurar colección por ID
+  const restoreCollection = async (id) => {
+    try {
+      const res = await fetch(`${ApiCollections}/restore/${id}`, {
+        method: "PATCH",
+        credentials: "include"
+      });
+      if (!res.ok) {
+        throw new Error("Error al restaurar la colección");
+      }
+      toast.success("Colección restaurada exitosamente");
+      getCollections(); // Actualizar lista tras eliminación
+    } catch (error) {
+      console.error("Restore error:", error);
+      toast.error("No se pudo restaurar la colección");
     }
   };
 
@@ -96,7 +135,9 @@ const useCollections = (methods) => {
     getCollections,
     createCollection,
     updateCollection,
-    deleteCollection,
+    softDeleteCollection,
+    hardDeleteCollection,
+    restoreCollection
   };
 };
 

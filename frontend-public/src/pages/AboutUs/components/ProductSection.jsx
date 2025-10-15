@@ -21,7 +21,7 @@ const ProductSection = () => {
   }, []);
 
   return (
-    <section className="bg-[#f5f1e8] py-16 px-6 relative overflow-hidden min-h-[600px]">
+    <section className="bg-[#f5f1e8] py-16 px-6 relative overflow-hidden min-h-dvh">
       <div className="max-w-7xl mx-auto relative z-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <div className="space-y-8 pl-0 lg:pl-12 text-center lg:text-left">
@@ -31,9 +31,8 @@ const ProductSection = () => {
               <span className="font-semibold">Creado con propósito</span>
             </h2>
           </div>
-
           <div className="pt-6 lg:pt-8 pl-0 lg:pl-18 text-center lg:text-left">
-            <p className="text-gray-700 text-sm leading-relaxed max-w-md mx-auto lg:mx-0">
+            <p className="text-gray-700 text-md leading-relaxed max-w-lg mx-auto lg:mx-0">
               En Rosé, cada obra es hecha a mano con ingredientes 100% naturales. Cuidamos cada detalle, desde la mezcla
               de fragancias hasta el vertido artesanal, para crear productos únicos que transmiten calma, calidez y
               propósito.
@@ -50,7 +49,7 @@ const ProductSection = () => {
               <img
                 src={ProductSection1}
                 alt="Vela artesanal negra con etiqueta blanca"
-                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
+                className="w-50 h-70 lg:w-54 lg:h-80 object-cover rounded"
               />
             </div>
 
@@ -58,7 +57,7 @@ const ProductSection = () => {
               <img
                 src={ProductSection2}
                 alt="Vela con flores secas y plantas naturales"
-                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
+                className="w-50 h-70 lg:w-54 lg:h-80 object-cover rounded"
               />
             </div>
 
@@ -66,7 +65,7 @@ const ProductSection = () => {
               <img
                 src={ProductSection3}
                 alt="Velas encendidas sobre superficie blanca"
-                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
+                className="w-50 h-70 lg:w-54 lg:h-80 object-cover rounded"
               />
             </div>
           </div>

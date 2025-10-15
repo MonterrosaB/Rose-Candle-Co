@@ -1,16 +1,30 @@
 {
-    "title": "Categorías de Materia Prima",
-    "categoryLabel": "Categoría",
-    "addCategory": "Agregar Categoría",
-    "editCategory": "Editar Categoría",
-    "saveChanges": "Guardar Cambios",
-    "add": "Agregar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "confirmDeleteTitle": "¿Estás seguro?",
-    "confirmDeleteText": "¿Eliminar categoría \"{{name}}\"?",
-    "confirmDeleteButton": "Sí, eliminar",
-    "cancelButton": "Cancelar",
-    "deletedTitle": "¡Eliminado!",
-    "deletedText": "La categoría ha sido eliminada."
+  "title": "Categorías de Materia Prima",
+  "categoryLabel": "Categoría",
+  "addCategory": "Agregar Categoría",
+  "editCategory": "Editar Categoría",
+  "saveChanges": "Guardar Cambios",
+  "add": "Agregar",
+  "edit": "Editar",
+  "delete": "Eliminar",
+
+  "confirmDeleteTitle": "¿Eliminar permanentemente categoría \"{{name}}\"?",
+  "confirmDeleteText": "Esta acción no se puede deshacer. Se perderán todos los datos asociados.",
+  "confirmDeleteButton": "Sí, eliminar permanentemente",
+  "deletedTitle": "Eliminada Permanentemente",
+  "deletedText": "La categoría \"{{name}}\" ha sido eliminada permanentemente.",
+
+  "confirmSoftDeleteTitle": "¿Archivar categoría \"{{name}}\"?",
+  "confirmSoftDeleteText": "La categoría será archivada y oculta, pero podrás restaurarla más tarde.",
+  "confirmSoftDeleteButton": "Sí, archivar",
+  "softDeletedTitle": "Archivada",
+  "softDeletedText": "La categoría \"{{name}}\" ha sido archivada con éxito.",
+
+  "confirmRestoreTitle": "¿Restaurar categoría \"{{name}}\"?",
+  "confirmRestoreText": "La categoría volverá a ser visible y activa de nuevo.",
+  "confirmRestoreButton": "Sí, restaurar",
+  "restoredTitle": "Restaurada",
+  "restoredText": "La categoría \"{{name}}\" ha sido restaurada con éxito.",
+
+  "cancelButton": "Cancelar"
 }

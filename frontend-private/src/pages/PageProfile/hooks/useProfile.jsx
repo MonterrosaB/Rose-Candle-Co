@@ -31,7 +31,9 @@ export const useProfile = () => {
   const getProfile = async () => {
     if (!user?.id) return; // Usamos user.id
     try {
-      const res = await fetch(`${ApiEmployees}/${user.id}`);
+      const res = await fetch(`${ApiEmployees}/${user.id}`, {
+        credentials: "include"
+      });
       if (!res.ok) throw new Error("Error al cargar perfil");
       const data = await res.json();
 

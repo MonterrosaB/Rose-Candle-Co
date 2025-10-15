@@ -1,6 +1,6 @@
 // Lógica para la página de home
 import React, { useEffect, useContext } from "react";
-import { Boxes, DollarSign, User, CircleUser } from "lucide-react";
+import { Boxes, DollarSign, User, CircleUser, Settings } from "lucide-react";
 import CardWidgets from "./components/CardWidgets";
 import PrincipalDiv from "../../global/components/PrincipalDiv";
 import PopularProducts from "./components/PopularProducts";
@@ -50,14 +50,23 @@ const Home = () => {
   return (
     <PrincipalDiv>
       {/* Encabezado con enlace al perfil */}
-      <Link to="/profile">
-        <div className="flex flex-wrap mb-1 items-center">
+      <div className="flex mb-1 justify-between items-center">
+        <Link to="/profile" className="flex flex-wrap mb-1 items-center max-w-max">
+
           <CircleUser strokeWidth={2.5} className="cursor-pointer" />
           <h1 className="text-2xl font-semibold ml-2">
             {t("welcome_back")} {user?.name || "usuario"}
           </h1>
-        </div>
-      </Link>
+        </Link>
+        <Link to="/profile" className="flex flex-wrap mb-1 items-center max-w-max">
+          <Settings strokeWidth={2.5} className="cursor-pointer" />
+        </Link>
+
+
+
+
+
+      </div>
 
       {/* Tarjetas de widgets */}
       <div className="w-full flex flex-wrap justify-center gap-x-14 gap-y-8 mb-1">

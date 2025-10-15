@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
-import { Pencil, Trash, X } from "lucide-react";
+import { Pencil, Trash, X, ArchiveRestore, ArchiveX, Receipt } from "lucide-react";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
+import DropDownFilter from "../../global/components/DropDownFilter"
+import { useAuth } from "../../global/hooks/useAuth";
 
 const DataGrid = ({
   columns,
   rows,
+  restoreRow,
+  softDelete,
   deleteRow,
   updateRow,
   loading,
@@ -18,8 +22,13 @@ const DataGrid = ({
   checkboxText,
   checkboxChecked = false,
   onCheckboxChange = () => { },
-  editable = true
+  editable = true,
+  showStatus = false,
+  showMore
 }) => {
+
+  const { user } = useAuth();
+
 
   const { t } = useTranslation("datagrid");
 
@@ -79,25 +88,40 @@ const DataGrid = ({
 
   // Search
   const [search, setSearch] = useState("");
+  const [deletedFilter, setDeletedFilter] = useState("false"); // estado del filtro
   const [filteredRows, setFilteredRows] = useState(rows);
 
+  const opcionesEstado = [
+    { _id: false, label: t("active") },
+    { _id: true, label: t("deleted") },
+  ];
+
+
+  // Actualizamos el useEffect de filtrado
   useEffect(() => {
-    if (!search.trim()) {
-      setFilteredRows(rows);
-      setCurrentPage(1);
-      return;
+    let filtered = [...rows];
+
+    // filtro de búsqueda
+    if (search.trim()) {
+      filtered = filtered.filter((row) =>
+        Object.values(columns).some((columnKey) => {
+          const value = getNestedValue(row, columnKey);
+          return String(value).toLowerCase().includes(search.toLowerCase());
+        })
+      );
     }
 
-    const filtered = rows.filter((row) =>
-      Object.values(columns).some((columnKey) => {
-        const value = getNestedValue(row, columnKey);
-        return String(value).toLowerCase().includes(search.toLowerCase());
-      })
-    );
+    // filtro deleted
+    if (deletedFilter !== "") {
+      const isDeleted = deletedFilter === "true";
+      filtered = filtered.filter((row) => Boolean(row.deleted) === isDeleted);
+    }
+
+
 
     setFilteredRows(filtered);
     setCurrentPage(1);
-  }, [search, rows, columns]); // añadimos columns
+  }, [search, deletedFilter, rows, columns]);
 
 
   const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
@@ -108,14 +132,14 @@ const DataGrid = ({
 
   return (
     <div className="flex flex-col relative overflow-x-auto sm:rounded-lg bg-stone-50 text-[#333] shadow-xl">
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center p-4 gap-2">
         <div className="relative">
           <input
             type="search"
             placeholder={t("buscar")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded border pl-2 text-sm"
+            className="w-full rounded border pl-2 text-md"
           />
           {search && (
             <X
@@ -125,6 +149,18 @@ const DataGrid = ({
             />
           )}
         </div>
+        <div className="flex items-center w-1/3">
+          {showStatus && user.isAdmin && (
+            <DropDownFilter
+              value={deletedFilter}
+              onChange={(e) => setDeletedFilter(e.target.value)}
+              options={opcionesEstado}
+              label={t("availability_selector")}
+            />
+          )}
+
+        </div>
+
         <div className="flex gap-4 px-4">
           {checkbox && (
             <div className="flex items-center">
@@ -167,7 +203,7 @@ const DataGrid = ({
           {loading ? (
             <tr>
               <td colSpan={Object.keys(columns).length + (editable ? 1 : 0)} className="text-center py-4">
-              {t("cargando")}
+                {t("cargando")}
               </td>
             </tr>
           ) : (
@@ -185,11 +221,29 @@ const DataGrid = ({
                 {editable && (
                   <td className="px-6 py-4">
                     <div className="flex justify-center items-center gap-4">
-                      {showDelete &&
-                        <Trash onClick={() => deleteRow(row)} className="cursor-pointer" />
-
+                      {showMore &&
+                        <Receipt
+                          onClick={() => showMore(row)}
+                          className="cursor-pointer"
+                        />
                       }
-                      <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
+                      {row.deleted
+                        ? <ArchiveRestore onClick={() => restoreRow(row)} className="cursor-pointer" />
+                        : <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
+                      }
+                      {showDelete && (
+                        row.deleted ? (
+                          <Trash
+                            onClick={() => deleteRow(row)}
+                            className="cursor-pointer"
+                          />
+                        ) : (
+                          <ArchiveX
+                            onClick={() => softDelete(row)}
+                            className="cursor-pointer"
+                          />
+                        )
+                      )}
                     </div>
                   </td>
                 )}

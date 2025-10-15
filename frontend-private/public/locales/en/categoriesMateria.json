@@ -1,16 +1,30 @@
 {
-    "title": "Raw Material Categories",
-    "categoryLabel": "Category",
-    "addCategory": "Add Category",
-    "editCategory": "Edit Category",
-    "saveChanges": "Save Changes",
-    "add": "Add",
-    "edit": "Edit",
-    "delete": "Delete",
-    "confirmDeleteTitle": "Are you sure?",
-    "confirmDeleteText": "Delete category \"{{name}}\"?",
-    "confirmDeleteButton": "Yes, delete",
-    "cancelButton": "Cancel",
-    "deletedTitle": "Deleted!",
-    "deletedText": "The category has been deleted."
+  "title": "Raw Material Categories",
+  "categoryLabel": "Category",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "saveChanges": "Save Changes",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+
+  "confirmDeleteTitle": "Delete category \"{{name}}\" permanently?",
+  "confirmDeleteText": "This action cannot be undone.",
+  "confirmDeleteButton": "Yes, delete permanently",
+  "deletedTitle": "Deleted!",
+  "deletedText": "Category \"{{name}}\" has been permanently deleted.",
+
+  "confirmSoftDeleteTitle": "Archive category \"{{name}}\"?",
+  "confirmSoftDeleteText": "The category will be hidden, but you can restore it later.",
+  "confirmSoftDeleteButton": "Yes, archive it",
+  "softDeletedTitle": "Archived!",
+  "softDeletedText": "Category \"{{name}}\" has been archived.",
+
+  "confirmRestoreTitle": "Restore category \"{{name}}\"?",
+  "confirmRestoreText": "The category will be visible and active again.",
+  "confirmRestoreButton": "Yes, restore it",
+  "restoredTitle": "Restored!",
+  "restoredText": "Category \"{{name}}\" has been restored.",
+
+  "cancelButton": "Cancel"
 }

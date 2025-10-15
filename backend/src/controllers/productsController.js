@@ -8,6 +8,7 @@ import Products from "../models/Products.js";
 import { createProductPriceHistory } from "../utils/createProductPriceHistorial.js";
 import { createProductionCostHistory } from "../utils/createProducctionCostHistorial.js";
 import { mapComponentsToHistoryFormat } from "../utils/mapComponents.js";
+import { createLog } from "../utils/logger.js";
 
 // Configuración de cloudinary (servidor de imagenes)
 cloudinary.config({
@@ -80,14 +81,20 @@ productsController.getProductById = async (req, res) => {
 
 productsController.getProductsForOrders = async (req, res) => {
   try {
-    const products = await productsModel.find(
-      { availability: true },
-      {
-        name: 1,
-        variant: 1,
-        images: { $slice: 1 }, // devuelve solo el primer elemento del array
-      }
-    ); // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const products = await productsModel
+      .find(
+        { availability: true },
+        {
+          name: 1,
+          variant: 1,
+          images: { $slice: 1 }, // devuelve solo el primer elemento del array
+        }
+      )
+      .populate({
+        path: "variant.components.idComponent", // populate componentes de cada variante
+        select: "name currentPrice unit",
+        strictPopulate: false, // evita errores si algo no coincide
+      }); // Buscar todas las colecciones
     res.status(200).json(products); // Todo bien
   } catch (error) {
     console.log("error " + error);
@@ -221,6 +228,15 @@ productsController.createProduct = async (req, res) => {
     });
 
     await productionRecord.save();
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Products",
+      targetId: newProduct._id,
+      description: `Product ${newProduct.name} created`,
+    });
 
     res.status(200).json({
       message: "Product, price history and cost history saved successfully",
@@ -410,6 +426,15 @@ productsController.updateProduct = async (req, res) => {
       },
       { new: true }
     );
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Products",
+      targetId: updatedProduct._id,
+      description: `Product ${updatedProduct.name} updated`,
+    });
 
     res.status(200).json({
       message: "Updated Successfully",

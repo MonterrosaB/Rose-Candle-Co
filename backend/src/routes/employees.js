@@ -1,5 +1,6 @@
 // Librerias
 import express from "express";
+import authEmployees from "../middlewares/authEmployees.js";
 
 // Controlador
 import employeesController from "../controllers/employeesController.js";
@@ -9,16 +10,20 @@ const router = express.Router();
 
 router.get("/count", employeesController.countEmployees);
 
-router.route("/")
-.get(employeesController.getEmployees)
+router.route("/").get(employeesController.getEmployees);
 
-router.route("/:id")
-.get(employeesController.getEmployeesById)
-.put(employeesController.updateEmployees)
-.delete(employeesController.deleteEmployees)
+router
+  .route("/:id")
+  .get(authEmployees, employeesController.getEmployeesById)
+  .put(authEmployees, employeesController.updateEmployees)
+  .delete(authEmployees, employeesController.hardDeleteEmployees);
 
 // Rutas específicas
-router.route("/restore/:id")
-  .put(employeesController.restoreEmployees); // restaurar por id
+router
+  .route("/softdelete/:id")
+  .patch(authEmployees, employeesController.softDeleteEmployees); // eliminar por id
+router
+  .route("/restore/:id")
+  .patch(authEmployees, employeesController.restoreEmployees); // restaurar por id
 
 export default router;

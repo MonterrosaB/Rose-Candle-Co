@@ -25,15 +25,16 @@ const PageMaterials = () => {
   const [isChecked, setIsChecked] = useState(false); // Toggle para mostrar movimientos
 
   const methods = useForm();
-  const { materials, materialsBalance, loading, deleteMaterial } = useMaterials(methods);
+  const { materials, materialsBalance, loading, deleteMaterial, softDeleteMaterial, restoreMaterial } = useMaterials(methods);
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   };
 
-  // Confirmación y eliminación de material
+  // ELIMINACIÓN PERMANENTE (Función Genérica)
   const handleDelete = async (item, deleteFunction, itemType = "material") => {
     const result = await Swal.fire({
+      // Usa claves de eliminación permanente
       title: t("confirmDeleteTitle", { name: item.name }),
       text: t("confirmDeleteText", { itemType }),
       icon: "warning",
@@ -56,6 +57,63 @@ const PageMaterials = () => {
     }
   };
 
+  // ELIMINACIÓN LÓGICA (Archivar)
+  const handleSoftDelete = async (material) => {
+    if (!material?._id) return;
+
+    const result = await Swal.fire({
+      // Usar claves de SOFT DELETE
+      title: t("confirmSoftDeleteTitle", { name: material.name }),
+      text: t("confirmSoftDeleteText"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b", // Cambiado a Naranja para archivar
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("confirmSoftDeleteButton"),
+      cancelButtonText: t("cancelButton"),
+    });
+
+    if (result.isConfirmed) {
+      await softDeleteMaterial(material._id);
+      Swal.fire({
+        // Usar claves de éxito de SOFT DELETE
+        title: t("softDeletedTitle"),
+        text: t("softDeletedText", { name: material.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+
+  // RESTAURACIÓN
+  const handleRestore = async (material) => {
+    if (!material?._id) return;
+
+    const result = await Swal.fire({
+      // Usar claves de RESTAURACIÓN
+      title: t("confirmRestoreTitle", { name: material.name }),
+      text: t("confirmRestoreText"),
+      icon: "question", // Cambiado a 'question' o 'info'
+      showCancelButton: true,
+      confirmButtonColor: "#10b981", // Cambiado a Verde para restaurar
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("confirmRestoreButton"),
+      cancelButtonText: t("cancelButton"),
+    });
+
+    if (result.isConfirmed) {
+      await restoreMaterial(material._id);
+      Swal.fire({
+        // Usar claves de éxito de RESTAURACIÓN
+        title: t("restoredTitle"),
+        text: t("restoredText", { name: material.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
   // Definición dinámica de columnas según el estado del checkbox
   const columns = isChecked
     ? {
@@ -105,6 +163,9 @@ const PageMaterials = () => {
             setOpenDialogMaterial(true);
           }}
           deleteRow={(row) => handleDelete(row, deleteMaterial, "material")}
+          softDelete={handleSoftDelete}
+          restoreRow={handleRestore}
+          showStatus={true}
         />
       </div>
 

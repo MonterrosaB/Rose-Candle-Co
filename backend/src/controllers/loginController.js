@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs"; // Para encriptar y comparar contraseñas
 import JsonWebToken from "jsonwebtoken"; // Para generar tokens JWT
 import { config } from "../config.js"; // Archivo de configuración
 import employeesModel from "../models/Employees.js"; // Modelo de empleados
+import { createLog } from "../utils/logger.js";
 
 // Controlador de login
 const loginController = {};
@@ -67,6 +68,15 @@ loginController.login = async (req, res) => {
       secure: false,
       sameSite: "Lax",
       path: "/",
+    });
+
+    // Guardar log
+    await createLog({
+      userId: userFound._id,
+      action: "login",
+      collectionAffected: "Employees",
+      targetId: userFound._id,
+      description: `Employee ${userFound.name} ${userFound.surnames} logged`,
     });
 
     res.status(200).json({

@@ -9,6 +9,7 @@ import useSuppliers from "./hooks/useSuppliers";
 import TitleH1 from "../../global/components/TitleH1"
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next"; // Soporte para i18n
+import toast from "react-hot-toast";
 
 const PageSuppliers = () => {
   const { t } = useTranslation("suppliers"); // Namespace del archivo suppliers.json
@@ -22,23 +23,25 @@ const PageSuppliers = () => {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
   const methods = useForm({
-    defaultValues: { name: "", contact: "" },
+    defaultValues: { name: "", email: "", phoneNumber: "" },
   });
 
-  const { reset } = methods;
+  const { reset, setValue } = methods;
 
   const {
     suppliers,
     createSupplier,
     updateSupplier,
     deleteSupplier,
+    softDeleteSupplier,
+    restoreSupplier
   } = useSuppliers();
 
   useEffect(() => {
     if (selectedSupplier) {
       reset(selectedSupplier);
     } else {
-      reset({ name: "", contact: "" });
+      reset({ name: "", email: "", phoneNumber: "" });
     }
   }, [selectedSupplier, reset]);
 
@@ -52,13 +55,14 @@ const PageSuppliers = () => {
     setOpenDialogSuppliers(true);
   };
 
+  // Eliminación Permanente
   const handleDelete = async (supplier) => {
     const result = await Swal.fire({
       title: t("confirm_delete_title", { name: supplier.name }),
       text: t("confirm_delete_text"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
+      confirmButtonColor: "#d33", // Rojo
       cancelButtonColor: "#3085d6",
       confirmButtonText: t("confirm_delete_confirm"),
       cancelButtonText: t("confirm_delete_cancel"),
@@ -76,13 +80,84 @@ const PageSuppliers = () => {
     }
   };
 
-  const onSubmit = async (data) => {
-    if (selectedSupplier) {
-      await updateSupplier(selectedSupplier._id, data);
-    } else {
-      await createSupplier(data);
+  // Eliminación Lógica (Archivar)
+  const handleSoftDelete = async (supplier) => {
+    const result = await Swal.fire({
+      // Usar claves de SOFT DELETE
+      title: t("confirm_soft_delete_title", { name: supplier.name }),
+      text: t("confirm_soft_delete_text"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b", // Naranja para archivar
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("confirm_soft_delete_confirm"),
+      cancelButtonText: t("confirm_delete_cancel"),
+    });
+
+    if (result.isConfirmed) {
+      await softDeleteSupplier(supplier._id);
+
+      Swal.fire({
+        // Usar claves de éxito de SOFT DELETE
+        title: t("soft_deleted_title"),
+        text: t("soft_deleted_text", { name: supplier.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
-    setOpenDialogSuppliers(false);
+  };
+
+  // Restauración
+  const handleRestore = async (supplier) => {
+    const result = await Swal.fire({
+      // Usar claves de RESTAURACIÓN
+      title: t("confirm_restore_title", { name: supplier.name }),
+      text: t("confirm_restore_text"),
+      icon: "question", // Cambio a 'question' o 'info'
+      showCancelButton: true,
+      confirmButtonColor: "#10b981", // Verde para restaurar
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("confirm_restore_confirm"),
+      cancelButtonText: t("confirm_delete_cancel"),
+    });
+
+    if (result.isConfirmed) {
+      await restoreSupplier(supplier._id);
+      Swal.fire({
+        // Usar claves de éxito de RESTAURACIÓN
+        title: t("restored_title"),
+        text: t("restored_text", { name: supplier.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+
+
+
+  const onSubmit = async (data) => {
+    try {
+      if (selectedSupplier) {
+        await updateSupplier(selectedSupplier._id, data);
+        toast.success("Proveedor actualizado exitosamente.");
+      } else {
+        await createSupplier(data);
+        toast.success("Proveedor creado exitosamente.");
+      }
+
+      // ÉXITO: Cerramos el diálogo SOLO si todo salió bien.
+      setOpenDialogSuppliers(false);
+
+    } catch (error) {
+      // ERROR: El diálogo NO se cierra.
+
+      // Muestra el mensaje de error de forma limpia.
+      // El objeto 'error' tendrá la propiedad 'message' si se lanzó con 'throw new Error(message)'.
+      console.error("Error capturado en onSubmit:", error.message);
+      toast.error(error.message || "Error desconocido al guardar el proveedor.");
+    }
   };
 
   const columns = {
@@ -105,6 +180,9 @@ const PageSuppliers = () => {
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
+          softDelete={handleSoftDelete}
+          restoreRow={handleRestore}
+          showStatus={true}
         />
       </div>
 
@@ -126,8 +204,8 @@ const PageSuppliers = () => {
             className="bg-white rounded-xl shadow-md p-4 border border-gray-100"
           >
             <h3 className="text-lg font-semibold text-gray-800">{supplier.name}</h3>
-            <p className="text-sm text-gray-600"><strong>{t("contact")}:</strong> {supplier.phoneNumber}</p>
-            <p className="text-sm text-gray-600"><strong>{t("contact")}:</strong> {supplier.email}</p>
+            <p className="text-sm text-gray-600"><strong>{t("phone_number")}:</strong> {supplier.phoneNumber}</p>
+            <p className="text-sm text-gray-600"><strong>{t("email")}:</strong> {supplier.email}</p>
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={() => handleEdit(supplier)}

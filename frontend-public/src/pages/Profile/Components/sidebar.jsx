@@ -8,8 +8,10 @@ import {
   LogOut,
   Menu,
   X,
+  ChevronLeft
 } from "lucide-react";
 import { useAuth } from "../../../global/hooks/useAuth.js";
+import { NavLink } from "react-router";
 
 const Button = ({
   children,
@@ -85,79 +87,101 @@ export default function Sidebar({ activeSection, setActiveSection }) {
             : "-translate-x-full lg:translate-x-0"
           }`}
       >
-        <div className="p-6 lg:p-8">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-2">
-              Cuenta
-            </h1>
-          </div>
+        <div className="flex flex-col justify-between p-6 lg:p-8 h-full">
+          {/* Contenedor para todo el contenido superior: Título, Info, Menú */}
+          <div className="flex flex-col">
+            {/* Título y Botón de Regreso */}
+            <div className="mb-8 flex items-center space-x-3">
+              {/* Botón de Regreso */}
+              <NavLink to={-1} className="p-1 rounded-full text-gray-500 hover:text-gray-800 transition-colors">
+                <ChevronLeft className="w-6 h-6" />
+              </NavLink>
 
-          <div className="mb-8 p-6 bg-gradient-to-br from-rose-100 to-pink-100 rounded-2xl border border-rose-200/50 shadow-lg">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center shadow-lg">
-                  <User className="w-8 h-8 text-white" />
+              {/* Título */}
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
+                Cuenta
+              </h1>
+            </div>
+
+            {/* Info de Usuario */}
+            <div className="mb-8 p-6 bg-gradient-to-br from-rose-100 to-pink-100 rounded-2xl border border-rose-200/50 shadow-lg">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-8 h-8 text-white" />
+                  </div>
+                  <div
+                    className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white animate-pulse"
+                  />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-              </div>
-              <div>
-                {user ? (
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    ¡Hola! {user.name} {user.surnames}
-                  </h2>
-                ) : (
-                  <p className="text-gray-500">Cargando...</p>
-                )}
+                <div>
+                  {user ? (
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      ¡Hola! {user.name} {user.surnames}
+                    </h2>
+                  ) : (
+                    <p className="text-gray-500">Cargando...</p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          <nav className="space-y-2">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.id;
+            {/* Menú de Navegación */}
+            <nav className="space-y-2">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeSection === item.id;
 
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveSection(item.id);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left
-                    transition-all duration-300 ease-in-out group relative overflow-hidden
-                    ${isActive
-                      ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-200 transform scale-105"
-                      : "text-gray-700 hover:bg-rose-50 hover:text-rose-600 hover:transform hover:scale-105"
-                    }`}
-                >
-                  <div
-                    className={`p-2 rounded-lg transition-all duration-300
-                    ${isActive
-                        ? "bg-white/20"
-                        : "bg-rose-100 group-hover:bg-rose-200"
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveSection(item.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left
+                transition-all duration-300 ease-in-out group relative overflow-hidden cursor-pointer
+                ${isActive
+                        ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-200 transform scale-105"
+                        : "text-gray-700 hover:bg-rose-50 hover:text-rose-600 hover:transform hover:scale-105"
                       }`}
                   >
-                    <Icon
-                      className={`w-5 h-5 ${isActive ? "text-white" : "text-rose-600"
+                    <div
+                      className={`p-2 rounded-lg transition-all duration-300
+                    ${isActive
+                          ? "bg-white/20"
+                          : "bg-rose-100 group-hover:bg-rose-200"
                         }`}
-                    />
-                  </div>
-                  <span className="font-medium">{item.label}</span>
+                    >
+                      <Icon
+                        className={`w-5 h-5 ${isActive ? "text-white" : "text-rose-600"
+                          }`}
+                      />
+                    </div>
+                    <span className="font-medium">{item.label}</span>
 
-                  {isActive && (
-                    <div className="absolute right-2 w-2 h-2 bg-white rounded-full animate-pulse" />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+                    {isActive && (
+                      <div
+                        className="absolute right-2 w-2 h-2 bg-white rounded-full animate-pulse"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+          {/* Fin del Contenido Superior */}
 
-          <div className="mt-8 pt-6 border-t border-rose-100">
+          {/* Botón de Cerrar Sesión (quedará abajo por el justify-between) */}
+          <div className="border-t border-rose-100 mt-6 pt-6">
             <button
               onClick={logout}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-300 group">
-              <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 
+            transition-all duration-300 group cursor-pointer"
+            >
+              <div
+                className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors"
+              >
                 <LogOut className="w-5 h-5" />
               </div>
               <span className="font-medium">Cerrar Sesión</span>

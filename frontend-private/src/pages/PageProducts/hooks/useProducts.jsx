@@ -61,36 +61,62 @@ const useProducts = (methods) => {
     onError: () => toast.error("Error al obtener los productos"),
   });
 
-  // Guardar datos
   const createProduct = async (formData) => {
-    setLoading(true);
-    try {
-      // Agregar el campo changedBy al formData
+    return toast.promise(
+      (async () => {
+        const response = await fetch(ApiProducts, {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
 
-      const response = await fetch(ApiProducts, {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error del servidor: ${errorText}`);
+        }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error del servidor: ${errorText}`);
+        const data = await response.json();
+
+        cleanData();
+        productsQuery.refetch();
+
+        return data; // importante: para que toast.promise sepa que terminó bien
+      })(),
+      {
+        loading: "Guardando producto...",
+        success: "Producto registrado correctamente 🎉",
+        error: "Ocurrió un error al registrar el producto 😥",
       }
+    );
+  };
 
-      const data = await response.json();
+  const handleUpdate = async (idProduct, formData) => {
+    return toast.promise(
+      (async () => {
+        const response = await fetch(`${ApiProducts}/${idProduct}`, {
+          method: "PUT",
+          body: formData,
+          credentials: "include"
+        });
 
-      toast.success("Producto registrado correctamente");
-      setSuccess("Producto registrado correctamente");
-      cleanData();
-      productsQuery.refetch();
-    } catch (error) {
-      console.error("Error:", error);
-      setError(error.message);
-      toast.error("Ocurrió un error al registrar el producto");
-    } finally {
-      setLoading(false);
-    }
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error del servidor: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        cleanData();
+        productsQuery.refetch();
+
+        return data; // importante: para que toast.promise sepa que terminó bien
+      })(),
+      {
+        loading: "Actualizando producto...",
+        success: "Producto actualizado correctamente",
+        error: "Ocurrió un error al actualizar el producto",
+      }
+    );
   };
 
   const deleteProduct = async (id) => {
@@ -110,33 +136,6 @@ const useProducts = (methods) => {
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Error al eliminar el producto");
-    }
-  };
-
-  const handleUpdate = async (idProduct, formData) => {
-    try {
-      setLoading(true);
-
-      const response = await fetch(`${ApiProducts}/${idProduct}`, {
-        method: "PUT",
-        body: formData,
-        credentials: "include"
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al actualizar el producto");
-      }
-
-      toast.success("Producto actualizado");
-      setSuccess("Producto actualizado correctamente");
-      //reset();
-      productsQuery.refetch();
-    } catch (error) {
-      setError(error.message);
-      alert("Error al actualizar el producto");
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

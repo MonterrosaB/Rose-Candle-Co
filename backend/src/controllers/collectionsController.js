@@ -1,4 +1,5 @@
 import collectionModel from "../models/Collections.js"; // Modelo de colecciones
+import { createLog } from "../utils/logger.js";
 
 // Objeto que agrupa los métodos CRUD para colecciones
 const collectionsController = {};
@@ -6,13 +7,14 @@ const collectionsController = {};
 // GET - Obtener todas las colecciones
 collectionsController.getCollections = async (req, res) => {
   try {
-    const collections = await collectionModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const collections = await collectionModel.find().sort({ deleted: 1 }); // Ascendente: false primero
 
     // Normalizar estructura de respuesta
     const normalized = collections.map((c) => ({
       _id: c._id,
       name: c.name,
       description: c.description,
+      deleted: c.deleted,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -38,6 +40,7 @@ collectionsController.getCollectionById = async (req, res) => {
       _id: collection._id,
       name: collection.name,
       description: c.description,
+      deleted: c.deleted,
       createdAt: collection.createdAt,
       updatedAt: collection.updatedAt,
     };
@@ -90,6 +93,15 @@ collectionsController.createCollection = async (req, res) => {
     const newCollection = new collectionModel({ name, description });
     await newCollection.save();
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Collections",
+      targetId: newCollection._id,
+      description: `Collection ${newCollection.name} created`,
+    });
+
     res.status(200).json({ message: "Collection saved" }); // Creación exitosa
   } catch (error) {
     console.log("error " + error);
@@ -141,6 +153,15 @@ collectionsController.updateCollection = async (req, res) => {
       { new: true } // Retornar el documento actualizado
     );
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Collections",
+      targetId: updatedCollection._id,
+      description: `Collection ${updatedCollection.name} updated`,
+    });
+
     if (!updatedCollection) {
       return res.status(400).json({ message: "Collection not found" }); // No se encontró la colección
     }
@@ -152,14 +173,57 @@ collectionsController.updateCollection = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar una colección por ID (con soft delete)
-collectionsController.deleteCollection = async (req, res) => {
+// DELETE - Permanently delete a collection by ID
+collectionsController.hardDeleteCollection = async (req, res) => {
   try {
+    const id = req.params.id;
+
+    const deletedCollection = await collectionModel.findByIdAndDelete(id);
+
+    if (!deletedCollection) {
+      return res.status(404).json({ message: "Collection not found" });
+    }
+
+    // Log the deletion
+    await createLog({
+      userId: req.user.id,
+      action: "delete",
+      collectionAffected: "Collections",
+      targetId: id,
+      description: `Collection "${deletedCollection.name}" was permanently deleted.`,
+    });
+
+    return res.status(200).json({ message: "Collection permanently deleted" });
+  } catch (error) {
+    console.error("Hard delete error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// DELETE - Eliminar una colección por ID (con soft delete)
+collectionsController.softDeleteCollection = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const collection = await collectionModel.findById(id);
+    if (!collection) {
+      return res.status(404).json({ message: "Collection not found" });
+    }
+
     const deletedCollection = await collectionModel.findByIdAndUpdate(
-      req.params.id,
+      id,
       { deleted: true }, // Se marca como "eliminada"
       { new: true }
     ); // Eliminar por ID
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "archiving",
+      collectionAffected: "Collections",
+      targetId: id,
+      description: `Collection ${collection.name} was archived`,
+    });
 
     if (!deletedCollection) {
       return res.status(400).json({ message: "Collection not found" }); // No encontrada
@@ -175,8 +239,10 @@ collectionsController.deleteCollection = async (req, res) => {
 // RESTAURAR una colección eliminada
 collectionsController.restoreCollection = async (req, res) => {
   try {
+    const id = req.params.id;
+
     const restoredCollection = await collectionModel.findByIdAndUpdate(
-      req.params.id,
+      id,
       { deleted: false }, // Se marca como "no eliminada"
       { new: true }
     ); // Se actualiza por ID
@@ -184,6 +250,15 @@ collectionsController.restoreCollection = async (req, res) => {
     if (!restoredCollection) {
       return res.status(400).json({ message: "Collection not found" }); // No encontrada
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "restore",
+      collectionAffected: "Collections",
+      targetId: id,
+      description: `Collection ${restoredCollection.name} restored`,
+    });
 
     res.status(200).json({ message: "Collection restored" }); // Restauracion exitosa
   } catch (error) {

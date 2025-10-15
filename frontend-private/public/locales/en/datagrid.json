@@ -1,16 +1,18 @@
 {
-    "buscar": "Search...",
-    "anterior": "Previous",
-    "siguiente": "Next",
-    "pagina": "Page",
-    "de": "of",
-    "acciones": "Actions",
-    "cargando": "Loading...",
-    "estado": {
-        "pendiente": "Pending",
-        "enProceso": "In Progress",
-        "enviado": "Shipped",
-        "completado": "Completed",
-        "cancelado": "Cancelled"
-    }
+  "buscar": "Search...",
+  "anterior": "Previous",
+  "siguiente": "Next",
+  "pagina": "Page",
+  "availability_selector": "Status",
+  "deleted": "Deleted",
+  "active": "Active",
+  "acciones": "Actions",
+  "cargando": "Loading...",
+  "estado": {
+    "pendiente": "Pending",
+    "enProceso": "In Progress",
+    "enviado": "Shipped",
+    "completado": "Completed",
+    "cancelado": "Cancelled"
+  }
 }

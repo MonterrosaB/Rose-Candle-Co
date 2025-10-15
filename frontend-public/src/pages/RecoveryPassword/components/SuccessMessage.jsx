@@ -14,7 +14,7 @@ const SuccessMessage = () => {
       </p>
       <button
         type="button"
-        onClick={() => navigate("/loginCustomer")}
+        onClick={() => navigate("/login")}
         className="py-2 px-6 mt-5 border border-[#C2A878] rounded-lg text-[#C2A878] font-medium cursor-pointer transition duration-200 hover:bg-[#C2A878] hover:text-[#F7F5EE]"
       >
         Iniciar sesión
