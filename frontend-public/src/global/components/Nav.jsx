@@ -8,7 +8,7 @@ const Nav = ({ topClass = "top-10" }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className={`fixed ${topClass} left-0 w-full z-50 bg-[#F9F7F3] shadow`}>
+    <nav className={`fixed ${topClass} left-0 w-full z-50 bg-[#F9F7F3]`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-20 relative">
           {/* Menú */}

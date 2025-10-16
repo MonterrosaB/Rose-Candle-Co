@@ -5,11 +5,30 @@ import VisionRight from "../../../assets/VisionRight.png";
 const MissionAndVision = () => {
   return (
     <>
-      <section className="bg-[#e8dcc0] relative overflow-hidden">
+      {/* SECCIÓN MISIÓN */}
+      <section className="bg-[#F2EBD9] relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+          {/* Texto Misión */}
           <div className="flex items-center justify-center p-12 lg:p-16">
-            <div className="space-y-8 max-w-lg">
-              <h3 className="text-4xl font-light text-gray-800">Misión</h3>
+            <div className="space-y-8 max-w-lg text-left">
+              <div>
+                <h3
+                  className="text-4xl text-gray-800"
+                  style={{ fontFamily: "Lora, serif", fontWeight: "700" }}
+                >
+                  Misión
+                </h3>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "4px",
+                    backgroundColor: "#A78A5E",
+                    borderRadius: "9999px",
+                    marginTop: "8px",
+                  }}
+                ></div>
+              </div>
+
               <div className="space-y-6 text-gray-700">
                 <p className="text-base leading-relaxed">
                   Crear productos aromáticos sostenibles que no solo iluminen luz y tranquilidad a cada espacio, sino
@@ -25,12 +44,13 @@ const MissionAndVision = () => {
             </div>
           </div>
 
+          {/* Imagen Misión */}
           <div className="relative min-h-[600px]">
             <img
               src={Mission}
               alt="Velas aromáticas con pétalos rosados"
-              className="w-full object-cover rounded-2xl"
-              style={{ maxHeight: '600px' }}
+              className="w-full object-cover"
+              style={{ maxHeight: "600px" }}
             />
             <div className="absolute bottom-12 right-12 w-12 h-12 bg-pink-200 rounded-full opacity-70"></div>
             <div className="absolute bottom-6 right-6 w-8 h-8 bg-pink-300 rounded-full opacity-50"></div>
@@ -41,8 +61,10 @@ const MissionAndVision = () => {
         </div>
       </section>
 
-      <section className="bg-[#d4c4a0] relative overflow-hidden">
+      {/* SECCIÓN VISIÓN */}
+      <section className="bg-[#F9F7F3] relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[600px]">
+          {/* Imagen izquierda */}
           <div className="relative h-full min-h-[600px] -ml-12 hidden lg:block">
             <img
               src={VisionLeft}
@@ -54,9 +76,29 @@ const MissionAndVision = () => {
             <div className="absolute bottom-12 left-6 w-10 h-10 bg-green-200 rounded-full opacity-60"></div>
           </div>
 
+          {/* Texto Visión */}
           <div className="flex items-center justify-center p-12 lg:p-16">
             <div className="space-y-8 max-w-lg text-center">
-              <h3 className="text-4xl font-light text-gray-800">Visión</h3>
+              <div>
+                <h3
+                  className="text-4xl text-gray-800"
+                  style={{ fontFamily: "Lora, serif", fontWeight: "700" }}
+                >
+                  Visión
+                </h3>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "4px",
+                    backgroundColor: "#A78A5E",
+                    borderRadius: "9999px",
+                    marginTop: "8px",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                ></div>
+              </div>
+
               <div className="space-y-6 text-gray-700">
                 <p className="text-base leading-relaxed">
                   Ser una marca referente en el mundo de los productos aromáticos conscientes, reconocida por su
@@ -71,6 +113,7 @@ const MissionAndVision = () => {
             </div>
           </div>
 
+          {/* Imagen derecha */}
           <div className="relative h-full min-h-[600px] -mr-12">
             <div className="relative h-[400px] -mr-12">
               <img
