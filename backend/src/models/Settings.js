@@ -5,24 +5,35 @@ const seasonalCollectionSchema = new Schema({
   idCollection: {
     type: Types.ObjectId,
     ref: "Collections",
-    required: true,
+    default: null,
   },
   name: {
     type: String,
-    required: true,
     trim: true,
+    default: "Colección de temporada",
   },
   image: {
     type: String,
     trim: true,
+    default: null,
   },
   date: {
     type: Date,
     default: Date.now,
   },
+  availableUntil: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  isConstant: {
+    type: Boolean,
+    default: false,
+  },
   description: {
     type: String,
     trim: true,
+    default: "Descripción de la colección de temporada",
   },
 });
 
@@ -44,31 +55,15 @@ const settingsSchema = new Schema(
     marquee: {
       name: {
         type: String,
-        required: true,
         trim: true,
         default: "¡Disfruta nuestras velas de temporada!",
       },
     },
-    // Banner principal
-    banner: {
-      imageUrl: {
-        type: String,
-        trim: true,
-      },
-    },
-    // Configuración de correos
-    email: {
-      subject: {
-        type: String,
-        trim: true,
-      },
-      body: {
-        type: String,
-        trim: true,
-      },
-    },
     // Colección de temporada
-    seasonalCollection: seasonalCollectionSchema,
+    seasonalCollection: {
+      type: seasonalCollectionSchema,
+      default: () => ({}),
+    },
     
     // Sección de inspiración
     inspiration: {
@@ -76,11 +71,13 @@ const settingsSchema = new Schema(
         type: String,
         trim: true,
         maxLength: 300,
+        default: "Enciende tu luz interior",
       },
       description: {
         type: String,
         trim: true,
         maxLength: 1000,
+        default: "Cada vela está hecha con amor y propósito para transmitir calma y bienestar.",
       },
     },
     
@@ -96,6 +93,7 @@ const settingsSchema = new Schema(
         type: String,
         trim: true,
         maxLength: 500,
+        default: "Nuestros clientes adoran estos productos",
       },
       products: {
         type: [recommendedProductSchema],

@@ -3,8 +3,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../../global/context/AuthContext"; // se obtiene el id del usuario logueado
 
-
-
 export const useProfile = () => {
   const { user, API } = useContext(AuthContext);
 
@@ -62,6 +60,7 @@ export const useProfile = () => {
       const res = await fetch(`${ApiEmployees}/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(sendData),
       });
 

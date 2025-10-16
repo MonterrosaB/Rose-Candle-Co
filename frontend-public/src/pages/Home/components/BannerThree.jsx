@@ -1,13 +1,14 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import bannerbackground3 from "../../../assets/image1.webp";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 // Animaciones suaves y delicadas
 const containerVariants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.3, // cada línea aparece escalonada
+      staggerChildren: 0.3,
     },
   },
 };
@@ -22,14 +23,44 @@ const fadeRightSubtle = {
   show: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } },
 };
 
-// Variables de contenido
-const textoPrincipal = "CADA FRAGANCIA \nES UN SUSPIRO \nDE ARMONÍA";
-const textoSecundario =
+// Valores por defecto
+const DEFAULT_TEXT_PRINCIPAL = "CADA FRAGANCIA \nES UN SUSPIRO \nDE ARMONÍA";
+const DEFAULT_TEXT_SECUNDARIO =
   "En cada aroma, una historia. \nEn cada nota, un instante de paz. \nSumérgete en un universo sensorial único.";
 
 const BannerThree = () => {
+  const { API } = useAuth();
+  const ApiSettings = API + "/settings";
   const bannerRef = useRef(null);
-  const isInView = useInView(bannerRef, { amount: 0.5, once: true }); // Solo cuando la sección entra en pantalla
+  const isInView = useInView(bannerRef, { amount: 0.5, once: true });
+
+  const [textoPrincipal, setTextoPrincipal] = useState(DEFAULT_TEXT_PRINCIPAL);
+  const [textoSecundario, setTextoSecundario] = useState(DEFAULT_TEXT_SECUNDARIO);
+
+  useEffect(() => {
+    const fetchInspirationText = async () => {
+      try {
+        const res = await fetch(`${ApiSettings}`, {
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.inspiration?.phrase) {
+            setTextoPrincipal(data.inspiration.phrase);
+          }
+          if (data.inspiration?.description) {
+            setTextoSecundario(data.inspiration.description);
+          }
+        }
+      } catch (error) {
+        console.error("Error al cargar textos de inspiración:", error);
+        // Mantiene los valores por defecto si hay error
+      }
+    };
+
+    fetchInspirationText();
+  }, []);
 
   return (
     <div ref={bannerRef} className="relative min-h-screen w-full overflow-hidden">
@@ -43,7 +74,7 @@ const BannerThree = () => {
       >
         <div
           className="absolute inset-0"
-          style={{ backgroundColor: "#A94048", opacity: 0.65 }} // opacidad
+          style={{ backgroundColor: "#A94048", opacity: 0.65 }}
         />
       </motion.div>
 
@@ -52,7 +83,7 @@ const BannerThree = () => {
         className="relative z-10 min-h-screen"
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "show" : "hidden"} // Solo anima si el apartado está visible
+        animate={isInView ? "show" : "hidden"}
       >
         {/* Texto principal centrado */}
         <div className="flex flex-col justify-center items-center min-h-screen px-4 py-8 text-center">

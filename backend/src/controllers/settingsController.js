@@ -184,88 +184,10 @@ settingsController.updateMarquee = async (req, res) => {
   }
 };
 
-// PATCH - Actualizar el campo "banner"
-settingsController.updateBanner = async (req, res) => {
-  try {
-    const { bannerUrl, bannerImage } = req.body;
-
-    if (bannerImage) {
-      cloudinary.uploader.upload(
-        bannerImage,
-        { folder: "banners" },
-        async (err, result) => {
-          if (err) {
-            return res.status(500).json({
-              message: "Error uploading image to Cloudinary",
-              error: err,
-            });
-          }
-
-          const updatedSetting = await Settings.findOneAndUpdate(
-            {},
-            { "banner.imageUrl": result.secure_url },
-            { new: true, upsert: true }
-          );
-
-          return res.status(200).json({
-            message: "Banner updated successfully",
-            setting: updatedSetting,
-          });
-        }
-      );
-    } else if (bannerUrl) {
-      const updatedSetting = await Settings.findOneAndUpdate(
-        {},
-        { "banner.imageUrl": bannerUrl },
-        { new: true, upsert: true }
-      );
-
-      res.status(200).json({
-        message: "Banner updated successfully",
-        setting: updatedSetting,
-      });
-    } else {
-      return res.status(400).json({
-        message: "Either bannerUrl or bannerImage is required",
-      });
-    }
-  } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// PATCH - Actualizar el campo "email"
-settingsController.updateEmail = async (req, res) => {
-  try {
-    const { subject, body } = req.body;
-
-    if (!subject || !body) {
-      return res.status(400).json({
-        message: "Subject and body are required",
-      });
-    }
-
-    const updatedSetting = await Settings.findOneAndUpdate(
-      {},
-      { "email.subject": subject, "email.body": body },
-      { new: true, upsert: true }
-    );
-
-    res.status(200).json({
-      message: "Email settings updated successfully",
-      setting: updatedSetting,
-    });
-  } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 // PATCH - Actualizar la colección de temporada
 settingsController.updateSeasonalCollection = async (req, res) => {
-  try {
-    const { idCollection, name, image, description } = req.body;
+  try { 
+    const { idCollection, name, description, availableUntil, isConstant } = req.body;
 
     if (!idCollection || !name) {
       return res.status(400).json({
@@ -273,26 +195,36 @@ settingsController.updateSeasonalCollection = async (req, res) => {
       });
     }
 
-    let imageUrl = image;
+    const updateFields = {
+      "seasonalCollection.idCollection": idCollection,
+      "seasonalCollection.name": name,
+      "seasonalCollection.description": description || "",
+      "seasonalCollection.date": Date.now(),
+    };
 
-    // Subir imagen a Cloudinary si se proporciona
-    if (req.files && req.files.length > 0) {
-      const result = await cloudinary.uploader.upload(req.files[0].path, {
+    // Subir imagen a Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "public/seasonal-collections",
         allowed_formats: ["png", "jpg", "jpeg"],
       });
-      imageUrl = result.secure_url;
+      updateFields["seasonalCollection.image"] = result.secure_url;
+    }
+
+    // Manejar isConstant
+    const isConstantBool = isConstant === 'true' || isConstant === true;
+    updateFields["seasonalCollection.isConstant"] = isConstantBool;
+
+    // Manejar availableUntil
+    if (!isConstantBool && availableUntil && availableUntil !== '' && availableUntil !== 'undefined') {
+      updateFields["seasonalCollection.availableUntil"] = availableUntil;
+    } else if (isConstantBool) {
+      updateFields["seasonalCollection.availableUntil"] = '';
     }
 
     const updatedSetting = await Settings.findOneAndUpdate(
       {},
-      {
-        "seasonalCollection.idCollection": idCollection,
-        "seasonalCollection.name": name,
-        "seasonalCollection.image": imageUrl,
-        "seasonalCollection.description": description,
-        "seasonalCollection.date": Date.now(),
-      },
+      updateFields,
       { new: true, upsert: true }
     ).populate('seasonalCollection.idCollection');
 
@@ -301,8 +233,8 @@ settingsController.updateSeasonalCollection = async (req, res) => {
       setting: updatedSetting,
     });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Error completo:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 

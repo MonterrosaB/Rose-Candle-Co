@@ -1,24 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import Star from "../../../assets/Star.png";
-import { useNavigate } from "react-router-dom";
-
-import ProductHome1 from "../../../assets/ProductHome1.png";
-import ProductHome2 from "../../../assets/ProductHome2.png";
-import ProductHome3 from "../../../assets/ProductHome3.png";
-import ProductHome4 from "../../../assets/ProductHome4.png";
+import { Link } from "react-router-dom";
+import useBestSellers from "../hooks/useBestSellers";
 
 const FeaturedProductsSection = () => {
-  const navigate = useNavigate();
+  const { bestSellers, loading } = useBestSellers();
   const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef(null);
   const carouselRef = useRef(null);
-
-  const products = [
-    { id: 1, image: ProductHome1, title: "FRESH LOVE", description: "Esencia de vainilla y canela", price: "$8.50" },
-    { id: 2, image: ProductHome2, title: "FRESH LOVE", description: "Esencia de vainilla y canela", price: "$8.50" },
-    { id: 3, image: ProductHome3, title: "FRESH LOVE", description: "Esencia de vainilla y canela", price: "$8.50" },
-    { id: 4, image: ProductHome4, title: "FRESH LOVE", description: "Esencia de vainilla y canela", price: "$8.50" },
-  ];
 
   // Scroll animación línea
   useEffect(() => {
@@ -47,6 +36,22 @@ const FeaturedProductsSection = () => {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Mostrar loading
+  if (loading) {
+    return (
+      <div ref={sectionRef} className="relative overflow-hidden bg-[#F2EBD9] py-16">
+        <div className="relative z-10 max-w-7xl mx-auto text-center px-4">
+          <p className="text-gray-500">Cargando productos más vendidos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // No mostrar si no hay productos
+  if (bestSellers.length === 0) {
+    return null;
+  }
 
   return (
     <div ref={sectionRef} className="relative overflow-hidden bg-[#F2EBD9] py-16">
@@ -89,44 +94,76 @@ const FeaturedProductsSection = () => {
           className="flex gap-4 overflow-x-auto lg:hidden pb-4"
           style={{ scrollSnapType: "x mandatory" }}
         >
-          {products.map((product) => (
-            <div
-              key={product.id}
+          {bestSellers.map((product) => (
+            <Link
+              key={product.productId}
+              to={`/product/${product.productId}`}
               className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow flex-shrink-0 w-72 scroll-snap-align-start"
             >
               <div className="aspect-[4/5]">
-                <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                <img 
+                  src={product.images?.[0] || ""} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = ""; // Fallback si la imagen falla
+                    e.target.style.display = "none";
+                  }}
+                />
               </div>
               <div className="p-4 space-y-2">
-                <h3 className="font-bold text-gray-900 text-lg">{product.title}</h3>
-                <p className="text-gray-600 text-sm">{product.description}</p>
+                <h3 className="font-bold text-gray-900 text-lg">{product.name}</h3>
+                <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
                 <div className="flex gap-2">
-                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">8oz</span>
-                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">16oz</span>
+                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">
+                    {product.variant}
+                  </span>
                 </div>
-                <p className="font-bold text-gray-900 text-xl">{product.price}</p>
+                <p className="font-bold text-gray-900 text-xl">
+                  ${Number(product.variantPrice || 0).toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-500">
+                </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* Grid desktop */}
         <div className="hidden lg:grid grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div key={product.id} className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+          {bestSellers.map((product) => (
+            <Link
+              key={product.productId}
+              to={`/product/${product.productId}`}
+              className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+            >
               <div className="aspect-[4/5]">
-                <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                <img 
+                  src={product.images?.[0] || ""} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = ""; 
+                    e.target.style.display = "none";
+                  }}
+                />
               </div>
               <div className="p-4 space-y-2">
-                <h3 className="font-bold text-gray-900 text-lg">{product.title}</h3>
-                <p className="text-gray-600 text-sm">{product.description}</p>
+                <h3 className="font-bold text-gray-900 text-lg">{product.name}</h3>
+                <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
                 <div className="flex gap-2">
-                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">8oz</span>
-                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">16oz</span>
+                  <span className="border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-700">
+                    {product.variant}
+                  </span>
                 </div>
-                <p className="font-bold text-gray-900 text-xl">{product.price}</p>
+                <p className="font-bold text-gray-900 text-xl">
+                  ${Number(product.variantPrice || 0).toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-500">
+                  
+                </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

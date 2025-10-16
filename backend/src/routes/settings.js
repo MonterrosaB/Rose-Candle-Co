@@ -11,6 +11,9 @@ const upload = multer({ dest: "public/" });
 // Obtener configuración completa
 router.get("/", settingsController.getSettings);
 
+// Actualizar colección de temporada
+router.patch("/seasonal-collection", upload.single("image"), settingsController.updateSeasonalCollection);
+
 // Obtener configuración por ID
 router.get("/:id", settingsController.getSettingById);
 
@@ -31,12 +34,6 @@ router.patch("/:id/restore", settingsController.restoreSetting);
 
 // Actualizar marquee
 router.patch("/marquee", settingsController.updateMarquee);
-
-// Actualizar banner
-router.patch("/banner", settingsController.updateBanner);
-
-// Actualizar email
-router.patch("/email", settingsController.updateEmail);
 
 // Actualizar colección de temporada
 router.patch("/seasonal-collection", upload.single("image"), settingsController.updateSeasonalCollection);
