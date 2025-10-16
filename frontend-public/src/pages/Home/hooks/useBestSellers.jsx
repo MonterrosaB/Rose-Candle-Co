@@ -16,11 +16,12 @@ const useBestSellers = () => {
       const res = await fetch(`${ApiProducts}/bestSellers`, {
         credentials: "include",
       });
-      
+
       if (!res.ok) throw new Error("Error al obtener productos más vendidos");
-      
+
       const data = await res.json();
-      
+
+
       // Limitar a máximo 4 productos para el home
       setBestSellers(data.slice(0, 4));
       return data;

@@ -105,7 +105,6 @@ productsController.getProductsForOrders = async (req, res) => {
 // POST - Método para insertar un producto
 productsController.createProduct = async (req, res) => {
   const changedBy = req.user.id;
-  console.log("Body", req.body);
 
   let {
     name,
@@ -269,8 +268,6 @@ productsController.deleteProduct = async (req, res) => {
 
 // PUT - Método para actualizar un producto por su id
 productsController.updateProduct = async (req, res) => {
-  console.log("Body", req.body);
-
   let {
     name,
     description,
@@ -355,7 +352,8 @@ productsController.updateProduct = async (req, res) => {
           (v) => v.variant === newVar.variant
         );
 
-        const mappedComponents = mapComponentsToHistoryFormat(
+        //  CAMBIO CRÍTICO: USAR AWAIT
+        const mappedComponents = await mapComponentsToHistoryFormat(
           newVar.components
         );
 
@@ -368,20 +366,19 @@ productsController.updateProduct = async (req, res) => {
                 variantName: newVar.variant,
                 amount: newVar.amount,
                 unitPrice: newVar.variantPrice,
-                rawMaterialUsed: mappedComponents,
+                rawMaterialUsed: mappedComponents, // Usamos los datos completos
               },
             ],
           });
           continue;
         }
 
-        // 🔎 Comparar arrays de componentes
+        // Comparar arrays de componentes
         const normalize = (arr) =>
           arr
             .map((c) => ({
               id: c.idComponent?._id?.toString() || c.idComponent.toString(),
               amount: Number(c.amount),
-              unitPrice: Number(c.unitPrice),
             }))
             .sort((a, b) => a.id.localeCompare(b.id));
 
@@ -399,7 +396,7 @@ productsController.updateProduct = async (req, res) => {
                 variantName: newVar.variant,
                 amount: newVar.amount,
                 unitPrice: newVar.variantPrice,
-                rawMaterialUsed: mappedComponents,
+                rawMaterialUsed: mappedComponents, // Usamos los datos completos
               },
             ],
           });
@@ -612,27 +609,27 @@ productsController.getBestSellers = async (req, res) => {
         },
       },
 
-      // Proyectar solo lo necesario
+      // Proyectar solo lo necesario (VERSIÓN REVISADA)
       {
         $project: {
           _id: 0,
-          productId: "$product._id",
+          productId: "$product._id", // Campos del producto
+
           name: "$product.name",
-          variant: "$variant.variant",
-          variantPrice: "$variant.variantPrice",
-          images: "$product.images",
           description: "$product.description",
+          images: "$product.images", // <--- Mantenemos el campo // Campos de la variante (obtenidos de $addFields)
+
+          variant: "$variant.variant",
+          variantPrice: "$variant.variantPrice", // Campos calculados
+
           totalQuantity: 1,
           totalRevenue: {
             $multiply: ["$variant.variantPrice", "$totalQuantity"],
           },
         },
-      },
+      }, // Ordenar y limitar
 
-      // Ordenar por más vendidos
       { $sort: { totalQuantity: -1 } },
-
-      // Limitar al top 10
       { $limit: 10 },
     ]);
 

@@ -25,29 +25,60 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey
                     render={({ field: { value, onChange } }) => {
                         const tags = value || [];
 
-                        const addTag = () => {
-                            const trimmed = inputValue.trim();
-                            if (!trimmed) return;
+                        // Esta función ahora acepta un valor de texto explícito o usa inputValue
+                        const processInput = (textToProcess) => {
+                            const input = textToProcess || inputValue;
+                            
+                            // 1. Dividir el valor por saltos de línea (\n)
+                            const newValues = input
+                                .split('\n')
+                                .map(v => v.trim())
+                                .filter(v => v.length > 0);
 
-                            const exists = valueKey
-                                ? tags.some((t) => t[valueKey] === trimmed)
-                                : tags.includes(trimmed);
+                            if (newValues.length === 0) return;
 
-                            if (!exists) {
-                                onChange([
-                                    ...tags,
-                                    valueKey ? { [valueKey]: trimmed } : trimmed,
-                                ]);
+                            let uniqueNewTags = [];
+
+                            newValues.forEach(newValue => {
+                                // 2. Verificar duplicados
+                                const exists = valueKey
+                                    ? tags.some((t) => t[valueKey] === newValue)
+                                    : tags.includes(newValue);
+
+                                if (!exists) {
+                                    uniqueNewTags.push(valueKey ? { [valueKey]: newValue } : newValue);
+                                }
+                            });
+
+                            // 3. Agregar nuevos tags únicos
+                            if (uniqueNewTags.length > 0) {
+                                onChange([...tags, ...uniqueNewTags]);
                             }
 
+                            // 4. Limpiar el input
                             setInputValue("");
                         };
 
                         const handleKeyDown = (e) => {
-                            if (e.key === "," || e.key === "Enter") {
+                            // Dispara la acción al presionar Enter.
+                            if (e.key === "Enter") {
                                 e.preventDefault();
-                                addTag();
+                                processInput();
                             }
+                            // Si se presiona Enter y el campo está vacío, no hace nada (para no crear un tag vacío).
+                            if (e.key === "Enter" && !inputValue.trim()) {
+                                e.preventDefault();
+                            }
+                        };
+                        
+                        const handlePaste = (e) => {
+                            e.preventDefault(); // Previene que el texto se pegue en el textarea
+                            
+                            // Obtiene el texto del portapapeles
+                            const pasteText = e.clipboardData.getData('text');
+                            
+                            // Procesa el texto inmediatamente
+                            processInput(pasteText);
                         };
 
                         const removeTag = (index) => {
@@ -109,13 +140,14 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey
                                     );
                                 })}
 
-                                <input
-                                    type="text"
+                                <textarea
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={handleKeyDown}
+                                    onPaste={handlePaste} //  NUEVO: Maneja la acción de pegar
                                     placeholder={placeholder}
-                                    className="flex-1 min-w-[100px] p-1 bg-transparent text-sm text-[#333] outline-none"
+                                    rows={1} 
+                                    className="flex-1 min-w-[100px] p-1 bg-transparent text-sm text-[#333] outline-none resize-none overflow-hidden h-6"
                                 />
                             </div>
                         );

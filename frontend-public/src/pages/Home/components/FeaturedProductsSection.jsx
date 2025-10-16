@@ -101,8 +101,8 @@ const FeaturedProductsSection = () => {
               className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow flex-shrink-0 w-72 scroll-snap-align-start"
             >
               <div className="aspect-[4/5]">
-                <img 
-                  src={product.images?.[0] || ""} 
+                <img
+                  src={product.images?.[0] || ""}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -138,12 +138,12 @@ const FeaturedProductsSection = () => {
               className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow"
             >
               <div className="aspect-[4/5]">
-                <img 
-                  src={product.images?.[0] || ""} 
+                <img
+                  src={product.images?.[0] || ""}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = ""; 
+                    e.target.src = "";
                     e.target.style.display = "none";
                   }}
                 />
@@ -160,7 +160,7 @@ const FeaturedProductsSection = () => {
                   ${Number(product.variantPrice || 0).toFixed(2)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  
+
                 </p>
               </div>
             </Link>

@@ -14,7 +14,7 @@
     "description": "Description",
     "use_form": "Suggestions",
     "recipe": "Recipe",
-    "textarea" : "Type and press comma or enter",
+    "textarea" : "Type and press enter or copy and paste",
     "images": {
       "primary"  : "Select the main image here",
       "secondary" : "Select secondary images here"

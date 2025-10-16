@@ -246,7 +246,7 @@ const PageRecord = () => {
           <Widget
             bgColor="#F7F5EE"
             textColor="#333"
-            title="Producción de Inventario"
+            title="Producción de Productos"
             value={production || 0}
             variant="compact"
           />

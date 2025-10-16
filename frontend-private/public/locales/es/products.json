@@ -14,7 +14,7 @@
     "description": "Descripción",
     "use_form": "Sugerencias",
     "recipe": "Receta",
-    "textarea": "Escribe y presiona coma o enter",
+    "textarea": "Escribe y presiona enter o copia y pega",
     "images": {
       "primary": "Selecciona la imagen principal aquí",
       "secondary": "Selecciona las imágenes secundarias aquí"

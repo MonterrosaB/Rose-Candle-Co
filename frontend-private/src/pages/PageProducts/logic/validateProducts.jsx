@@ -47,8 +47,8 @@ function validateProductData(data, allImages) {
         data.recipe.forEach((r, i) => {
             if (!r.step?.trim())
                 errors.push(`El paso ${i + 1} de la receta está vacío`);
-            if (r.step?.length < 3 || r.step?.length > 200)
-                errors.push(`El paso ${i + 1} debe tener entre 3 y 200 caracteres`);
+            if (r.step?.length < 3 || r.step?.length > 300)
+                errors.push(`El paso ${i + 1} debe tener entre 3 y 300 caracteres`);
         });
     }
 

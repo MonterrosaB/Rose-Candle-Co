@@ -99,7 +99,7 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
       },
       {
         $project: {
-          product: "$product.name", // 👈 solo el nombre
+          product: "$product.name", //  solo el nombre
           materials: {
             $map: {
               input: "$materials",
