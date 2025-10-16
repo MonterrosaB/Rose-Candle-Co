@@ -1,5 +1,6 @@
 import rawMaterialModel from "../models/RawMaterials.js"; // Importar modelo de materia prima
 import materialBalance from "../models/MaterialBalance.js"; // Importar modelo del balance de materia prima
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos CRUD para materias primas
 const rawMaterialsControllers = {};
@@ -10,9 +11,10 @@ rawMaterialsControllers.getrawMaterial = async (req, res) => {
     // Buscar todas las materias primas en la base de datos
     // Además, poblar (populate) las referencias a categoría y proveedor para mostrar sus nombres
     const rawMaterial = await rawMaterialModel
-      .find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+      .find()
       .populate("idRawMaterialCategory", "name")
-      .populate("idSupplier", "name");
+      .populate("idSupplier", "name")
+      .sort({ deleted: 1 }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
 
     // Enviar respuesta con código 200 y datos encontrados
     res.status(200).json(rawMaterial);
@@ -101,6 +103,15 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
 
     await initialBalanceMaterial.save();
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Raw Materials",
+      targetId: newRawMaterial._id,
+      description: `Raw Materials ${newRawMaterial.name} deleted`,
+    });
+
     // Responder con éxito
     res.status(200).json({ message: "Saved Successfully" });
   } catch (error) {
@@ -110,8 +121,8 @@ rawMaterialsControllers.createrRawMaterial = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar materia prima por ID
-rawMaterialsControllers.deleterRawMaterial = async (req, res) => {
+// SOFTDELETE - Eliminar materia prima por ID
+rawMaterialsControllers.softDeleterRawMaterial = async (req, res) => {
   try {
     const deleted = await rawMaterialModel.findByIdAndUpdate(
       req.params.id,
@@ -123,6 +134,43 @@ rawMaterialsControllers.deleterRawMaterial = async (req, res) => {
     if (!deleted) {
       return res.status(400).json({ message: "RawMaterial not found" });
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "archive",
+      collectionAffected: "Raw Materials",
+      targetId: deleted._id,
+      description: `Raw Materials ${deleted.name} archived`,
+    });
+
+    // Responder con éxito
+    res.status(200).json({ message: "Deleted Successfully" });
+  } catch (error) {
+    // Capturar error, mostrar en consola y responder con error 500
+    console.error("error", error);
+    res.status(500).json("Internal server error");
+  }
+};
+
+// hardDELETE - Eliminar materia prima por ID
+rawMaterialsControllers.hardDeleterRawMaterial = async (req, res) => {
+  try {
+    const deleted = await rawMaterialModel.findByIdAndDelete(req.params.id); // Eliminar por ID
+
+    // Validar si se encontró y eliminó el registro
+    if (!deleted) {
+      return res.status(400).json({ message: "RawMaterial not found" });
+    }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "delete",
+      collectionAffected: "Raw Materials",
+      targetId: deleted._id,
+      description: `Raw Materials ${deleted.name} deleted`,
+    });
 
     // Responder con éxito
     res.status(200).json({ message: "Deleted Successfully" });
@@ -199,6 +247,15 @@ rawMaterialsControllers.updaterRawMaterial = async (req, res) => {
       return res.status(400).json({ message: "RawMaterial not found" });
     }
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Raw Materials",
+      targetId: updated._id,
+      description: `Raw Materials ${updated.name} updated`,
+    });
+
     // Responder con éxito
     res.status(200).json({ message: "Updated Successfully" });
   } catch (error) {
@@ -222,6 +279,15 @@ rawMaterialsControllers.restoreRawMaterials = async (req, res) => {
         .status(400)
         .json({ message: "Restore Raw Materials not found" }); // No encontrada
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "restore",
+      collectionAffected: "Raw Materials",
+      targetId: restoreRawMaterials._id,
+      description: `Raw Materials ${restoreRawMaterials.name} restored`,
+    });
 
     res.status(200).json({ message: "Raw Material restored" }); // Restauracion exitosa
   } catch (error) {

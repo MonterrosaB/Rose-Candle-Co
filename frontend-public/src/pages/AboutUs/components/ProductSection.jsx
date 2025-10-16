@@ -91,12 +91,11 @@ const ProductSection = () => {
             </h2>
           </div>
 
-          {/* Descripción */}
-          <div className="text-left lg:pr-8">
-            <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-              En Rosé, cada obra es hecha a mano con ingredientes 100% naturales. Cuidamos cada detalle: desde la
-              mezcla de fragancias hasta el vertido artesanal, para crear productos únicos que transmiten calma,
-              calidez y propósito.
+          <div className="pt-6 lg:pt-8 pl-0 lg:pl-18 text-center lg:text-left">
+            <p className="text-gray-700 text-sm leading-relaxed max-w-md mx-auto lg:mx-0">
+              En Rosé, cada obra es hecha a mano con ingredientes 100% naturales. Cuidamos cada detalle, desde la mezcla
+              de fragancias hasta el vertido artesanal, para crear productos únicos que transmiten calma, calidez y
+              propósito.
             </p>
           </div>
         </div>
@@ -113,12 +112,28 @@ const ProductSection = () => {
               style={{ scrollSnapAlign: "center" }}
             >
               <img
-                src={imgSrc}
-                alt={`Producto ${i + 1}`}
-                className="w-full h-72 sm:h-80 md:h-96 object-cover rounded-lg"
+                src={ProductSection1}
+                alt="Vela artesanal negra con etiqueta blanca"
+                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
               />
             </div>
-          ))}
+
+            <div className="bg-[#d4b896] p-4 lg:p-6 rounded-lg shadow-sm flex-shrink-0">
+              <img
+                src={ProductSection2}
+                alt="Vela con flores secas y plantas naturales"
+                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
+              />
+            </div>
+
+            <div className="bg-[#d4b896] p-4 lg:p-6 rounded-lg shadow-sm flex-shrink-0">
+              <img
+                src={ProductSection3}
+                alt="Velas encendidas sobre superficie blanca"
+                className="w-40 h-60 lg:w-44 lg:h-70 object-cover rounded"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Botón centrado */}

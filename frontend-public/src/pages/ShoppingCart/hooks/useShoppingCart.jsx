@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 
 const useCart = () => {
 
-    const { API } = useAuth();
+    const { API, user } = useAuth();
 
     const [idCart, setIdCart] = useState(null);
     const [cartItems, setCartItems] = useState([]);
@@ -111,6 +111,33 @@ const useCart = () => {
 
     const increaseProduct = async (idProductToIncrease, quantityRecived, indexRecived) => {
         if (!idProductToIncrease) return;
+
+        if (!user) {
+            Swal.fire({
+                title: 'No Has Iniciado Sesión',
+                text: 'Necesitas una cuenta para realizar una compra. ¿Deseas iniciar sesión o crear una nueva?',
+                icon: 'warning',
+                showCancelButton: true,
+                showDenyButton: true, // Agregamos un tercer botón
+                confirmButtonText: 'Iniciar Sesión', // Botón principal (verde/azul)
+                denyButtonText: 'Crear Cuenta', // Botón secundario (rojo/gris)
+                cancelButtonText: 'Cancelar Compra', // Botón de cancelación
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario hace clic en 'Iniciar Sesión'
+                    console.log('Redirigiendo a /login...');
+                    // Redirigir a la página de inicio de sesión
+                    navigate('/login');
+                } else if (result.isDenied) {
+                    // Si el usuario hace clic en 'Crear Cuenta'
+                    console.log('Redirigiendo a /register...');
+                    // Redirigir a la página de registro
+                    navigate('/register');
+                }
+            });
+            return;
+        }
 
         try {
             let variantIndexToUse = indexRecived;

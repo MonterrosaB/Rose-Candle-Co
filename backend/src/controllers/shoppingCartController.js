@@ -10,7 +10,7 @@ const shoppingCartController = {};
 shoppingCartController.getCart = async (req, res) => {
   try {
     const userId = req.customer.id; // Obtener ID del usuario autenticado desde el middleware de auth
-    
+
     // Buscar el carrito asociado a ese usuario y popular datos de usuario y productos
     const cart = await shoppingCartModel
       .findOne({ idUser: userId, status: "active" })

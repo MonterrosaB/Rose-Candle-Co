@@ -21,6 +21,8 @@ import { useForm } from "react-hook-form";
 import useProducts from "../hooks/useProducts";
 import useProductOptions from "../hooks/useProductOptions";
 
+import validateProductData from "../logic/validateProducts";
+
 import toast from "react-hot-toast";
 
 import { useTranslation } from "react-i18next"; // Soporte para múltiples idiomas
@@ -103,14 +105,12 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
         ...selectedProduct,
         idProductCategory: selectedProduct.idProductCategory?._id || "",
         idCollection: selectedProduct.idCollection?._id || "",
-        unit: selectedProduct.unit || "",
         variant: normalizedVariants, // RHF también recibe las variantes normalizadas
       });
 
       // Reset estado local
       resetInputs();
       normalizedVariants.forEach((v) => agregarVariante(v));
-      console.log(normalizedVariants);
     }
   }, [
     selectedProduct,
@@ -123,43 +123,39 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
   const onSubmit = async (data) => {
     const allImages = [productImageFile, ...multipleFileFiles];
 
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("availability", data.availability);
-    formData.append("useForm", JSON.stringify(data.useForm));
-    formData.append("variant", JSON.stringify(data.variant));
-    formData.append("idProductCategory", data.idProductCategory);
-    formData.append("idCollection", data.idCollection); // si lo necesitas
-    formData.append("recipe", JSON.stringify(data.recipe));
-
-    allImages.forEach((file) => {
-      formData.append("images", file);
-    });
-
     try {
-      const action = selectedProduct
-        ? handleUpdate(selectedProduct._id, formData)
-        : createProduct(formData);
 
-      await toast.promise(action, {
-        loading: selectedProduct ? "Actualizando..." : "Guardando...",
-        success: selectedProduct ? (
-          <b>¡Producto actualizado exitosamente!</b>
-        ) : (
-          <b>¡Producto guardado exitosamente!</b>
-        ),
-        error: selectedProduct ? (
-          <b>No se pudo actualizar el producto.</b>
-        ) : (
-          <b>No se pudo guardar el producto.</b>
-        ),
+      //  Validar todos los campos
+      const errors = validateProductData(data, allImages);
+      if (errors.length > 0) {
+        errors.forEach((msg) => toast.error(msg));
+        return; // detener ejecución
+      }
+
+      //Construir el FormData
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("availability", data.availability);
+      formData.append("useForm", JSON.stringify(data.useForm));
+      formData.append("variant", JSON.stringify(data.variant));
+      formData.append("idProductCategory", data.idProductCategory);
+      formData.append("idCollection", data.idCollection); // si lo necesitas
+      formData.append("recipe", JSON.stringify(data.recipe));
+
+      allImages.forEach((file) => {
+        formData.append("images", file);
       });
+
+      if (selectedProduct) {
+        await handleUpdate(selectedProduct._id, formData);
+      } else {
+        await createProduct(formData);
+      }
 
       onClose(); // cerrar y limpiar solo si todo sale bien
     } catch (error) {
-      console.error("Error al guardar el producto:", error);
-      toast.error("Ocurrió un error inesperado al guardar el producto.");
+      toast.error(error.message);
     }
   };
 
@@ -282,7 +278,7 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
                 {/* Componentes de esta variante */}
                 <div className="flex flex-col items-center gap-4">
                   <Button
-              buttonText={t("form.variants.add_componet")}
+                    buttonText={t("form.variants.add_componet")}
                     showIcon={true}
                     style={"gray"}
                     onClick={() => agregarComponente(vIndex)}

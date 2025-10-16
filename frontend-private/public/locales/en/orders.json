@@ -1,14 +1,15 @@
 {
-    "title": "Orders",
-    "add_order": "Add Order",
-    "edit_order": "Edit Order",
-    "error_fetching_orders": "Error fetching orders",
-    "client": "Client",
-    "products": "Products",
-    "date": "Date",
-    "amount": "Amount",
-    "payment_method": "Method",
-    "status": "Status",
-    "shipping_state": "Shipping State",
-    "address": "Address"
+  "title": "Orders",
+  "add_order": "Add Order",
+  "order_id": "ID",
+  "edit_order": "Edit Order",
+  "error_fetching_orders": "Error fetching orders",
+  "client": "Client",
+  "products": "Products",
+  "date": "Date",
+  "amount": "Amount",
+  "payment_method": "Method",
+  "status": "Status",
+  "shipping_state": "Shipping State",
+  "address": "Address"
 }

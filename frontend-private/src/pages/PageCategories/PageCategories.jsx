@@ -34,6 +34,8 @@ const PageCategories = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    softDeleteCategory,
+    restoreCategory
   } = useCategories(methods);
 
   // Sincronizar el formulario con la categoría seleccionada
@@ -66,11 +68,12 @@ const PageCategories = () => {
     if (!category?._id) return;
 
     const result = await Swal.fire({
+      // Usamos las claves originales, pero con el texto de "permanente"
       title: t("confirmDeleteTitle", { name: category.name }),
       text: t("confirmDeleteText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
+      confirmButtonColor: "#d33", // Rojo para eliminar
       cancelButtonColor: "#3085d6",
       confirmButtonText: t("confirmDeleteButton"),
       cancelButtonText: t("cancelButton"),
@@ -79,6 +82,7 @@ const PageCategories = () => {
     if (result.isConfirmed) {
       await deleteCategory(category._id);
       Swal.fire({
+        // Mensajes de éxito específicos para la eliminación permanente
         title: t("deletedTitle"),
         text: t("deletedText", { name: category.name }),
         icon: "success",
@@ -87,6 +91,63 @@ const PageCategories = () => {
       });
     }
   };
+
+  const handleSoftDelete = async (category) => {
+    if (!category?._id) return;
+
+    const result = await Swal.fire({
+      // Títulos y textos específicos para la eliminación lógica
+      title: t("confirmSoftDeleteTitle", { name: category.name }),
+      text: t("confirmSoftDeleteText"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b", // Color naranja para archivar/soft delete
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("confirmSoftDeleteButton"),
+      cancelButtonText: t("cancelButton"),
+    });
+
+    if (result.isConfirmed) {
+      await softDeleteCategory(category._id);
+      Swal.fire({
+        // Mensajes de éxito específicos para la eliminación lógica
+        title: t("softDeletedTitle"),
+        text: t("softDeletedText", { name: category.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+
+  const handleRestore = async (category) => {
+    if (!category?._id) return;
+
+    const result = await Swal.fire({
+      // Títulos y textos específicos para la restauración
+      title: t("confirmRestoreTitle", { name: category.name }),
+      text: t("confirmRestoreText"),
+      icon: "question", // Cambiado a 'question' o 'info'
+      showCancelButton: true,
+      confirmButtonColor: "#10b981", // Color verde para restaurar
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("confirmRestoreButton"),
+      cancelButtonText: t("cancelButton"),
+    });
+
+    if (result.isConfirmed) {
+      await restoreCategory(category._id);
+      Swal.fire({
+        // Mensajes de éxito específicos para la restauración
+        title: t("restoredTitle"),
+        text: t("restoredText", { name: category.name }),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+
 
   const onSubmit = async (data) => {
     if (selectedCategory) {
@@ -111,6 +172,10 @@ const PageCategories = () => {
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
+          softDelete={handleSoftDelete}
+          restoreRow={handleRestore}
+          showStatus={true}
+          showDelete={true}
         />
       </div>
 

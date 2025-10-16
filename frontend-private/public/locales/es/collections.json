@@ -1,26 +1,39 @@
 {
-    "title": "Colecciones",
-    "add": "Agregar Colección",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "confirmDeleteTitle": "¿Eliminar la colección \"{{name}}\"?",
-    "confirmDeleteText": "Esta acción no se puede deshacer.",
-    "confirmDeleteButton": "Sí, eliminar",
-    "cancelButton": "Cancelar",
-    "deletedTitle": "Eliminado",
-    "deletedText": "La colección \"{{name}}\" ha sido eliminada.",
-    "name": "Colección",
-    "description": "Descripción",
-    "mobileTitle": "Colecciones",
-    "form": {
-      "add_title": "Agregar Colección",
-      "edit_title": "Editar Colección",
-      "submit_add": "Agregar Colección",
-      "submit_edit": "Guardar Cambios",
-      "validation": {
-        "name_required": "El nombre es obligatorio",
-        "description_required": "La descripción es obligatoria"
-      }
+  "title": "Colecciones",
+  "add": "Agregar Colección",
+  "delete": "Eliminar",
+  "edit": "Editar",
+
+  "confirmHardDeleteTitle": "¿Eliminar permanentemente colección \"{{name}}\"?",
+  "confirmHardDeleteText": "Esta acción no se puede deshacer. Se perderán todos los datos asociados.",
+  "confirmHardDeleteButton": "Sí, eliminar permanentemente",
+  "deletedTitle": "Eliminada Permanentemente",
+  "deletedText": "La colección \"{{name}}\" ha sido eliminada permanentemente.",
+
+  "confirmSoftDeleteTitle": "¿Archivar colección \"{{name}}\"?",
+  "confirmSoftDeleteText": "La colección será archivada y oculta, pero podrás restaurarla más tarde.",
+  "confirmSoftDeleteButton": "Sí, archivar",
+  "softDeletedTitle": "Archivada",
+  "softDeletedText": "La colección \"{{name}}\" ha sido archivada.",
+
+  "confirmRestoreTitle": "¿Restaurar colección \"{{name}}\"?",
+  "confirmRestoreText": "La colección volverá a ser visible y activa.",
+  "confirmRestoreButton": "Sí, restaurar",
+  "restoredTitle": "Restaurada",
+  "restoredText": "La colección \"{{name}}\" ha sido restaurada con éxito.",
+
+  "cancelButton": "Cancelar",
+  "name": "Colección",
+  "description": "Descripción",
+  "mobileTitle": "Colecciones",
+  "form": {
+    "add_title": "Agregar Colección",
+    "edit_title": "Editar Colección",
+    "submit_add": "Agregar Colección",
+    "submit_edit": "Guardar Cambios",
+    "validation": {
+      "name_required": "El nombre es obligatorio",
+      "description_required": "La descripción es obligatoria"
     }
   }
-  
+}

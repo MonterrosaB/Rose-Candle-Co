@@ -27,12 +27,6 @@ const AddToCartButton = ({ product, quantity, selectedVariantIndex }) => {
         quantity,
         selectedVariantIndex
       );
-
-      Swal.fire({
-        icon: "success",
-        title: "Producto agregado",
-        text: "El producto se agregó al carrito correctamente.",
-      });
     } catch (err) {
       console.error("Error al agregar al carrito:", err);
       Swal.fire({

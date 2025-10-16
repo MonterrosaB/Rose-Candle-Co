@@ -1,28 +1,42 @@
 {
-    "title": "Proveedores",
-    "add": "Agregar Proveedor",
-    "add_short": "Agregar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "name": "Nombre",
-    "phone_number": "Teléfono",
-    "email": "Correo Electrónico",
-    "confirm_delete_title": "¿Eliminar proveedor \"{{name}}\"?",
-    "confirm_delete_text": "Esta acción no se puede deshacer.",
-    "confirm_delete_confirm": "Sí, eliminar",
-    "confirm_delete_cancel": "Cancelar",
-    "deleted_title": "Eliminado",
-    "deleted_text": "Proveedor \"{{name}}\" ha sido eliminado.",
-    "document_title": "Proveedores",
-    "form": {
-        "add_title": "Agregar Proveedor",
-        "edit_title": "Editar Proveedor",
-        "submit_add": "Agregar Proveedor",
-        "submit_edit": "Guardar Cambios",
-        "validation": {
-            "name_required": "El nombre es requerido",
-            "contact_required": "El contacto es requerido",
-            "contact_format": "El formato debe ser 0000-0000"
-        }
+  "title": "Proveedores",
+  "add": "Agregar Proveedor",
+  "add_short": "Agregar",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "name": "Nombre",
+  "phone_number": "Número de Teléfono",
+  "email": "Correo Electrónico",
+
+  "confirm_delete_title": "¿Eliminar permanentemente proveedor \"{{name}}\"?",
+  "confirm_delete_text": "Esta acción no se puede deshacer. Se perderán todos los datos asociados.",
+  "confirm_delete_confirm": "Sí, eliminar permanentemente",
+  "deleted_title": "Eliminado Permanentemente",
+  "deleted_text": "El proveedor \"{{name}}\" ha sido eliminado permanentemente.",
+
+  "confirm_soft_delete_title": "¿Archivar proveedor \"{{name}}\"?",
+  "confirm_soft_delete_text": "El proveedor será archivado y oculto, pero podrás restaurarlo más tarde.",
+  "confirm_soft_delete_confirm": "Sí, archivar",
+  "soft_deleted_title": "Archivado",
+  "soft_deleted_text": "El proveedor \"{{name}}\" ha sido archivado.",
+
+  "confirm_restore_title": "¿Restaurar proveedor \"{{name}}\"?",
+  "confirm_restore_text": "El proveedor volverá a ser visible y activo.",
+  "confirm_restore_confirm": "Sí, restaurar",
+  "restored_title": "Restaurado",
+  "restored_text": "El proveedor \"{{name}}\" ha sido restaurado con éxito.",
+
+  "confirm_delete_cancel": "Cancelar",
+  "document_title": "Proveedores",
+  "form": {
+    "add_title": "Agregar Proveedor",
+    "edit_title": "Editar Proveedor",
+    "submit_add": "Agregar Proveedor",
+    "submit_edit": "Guardar Cambios",
+    "validation": {
+      "name_required": "El nombre es obligatorio",
+      "contact_required": "El contacto es obligatorio",
+      "contact_format": "El formato debe ser 0000-0000"
     }
+  }
 }

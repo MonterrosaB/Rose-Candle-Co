@@ -2,23 +2,27 @@ import { X } from "lucide-react";
 
 const FormDiv = ({ children, headerLabel, onClose, onSubmit }) => {
   return (
-    <div className="
-      bg-white
-      w-full
-      max-w-xs        /* móvil muy pequeño */
-      sm:max-w-sm     /* ≥640px */
-      md:max-w-md     /* ≥768px */
-      lg:max-w-3xl    /* ≥1024px */
-      xl:max-w-5xl    /* ≥1280px */
-      max-h-screen
-      sm:max-h-[90vh] /* deja margen superior/inferior */
-      overflow-y-auto
-      rounded-xl
-      shadow-2xl
-      relative
-    ">
+    <div
+      className="
+ bg-white
+          w-full
+          max-h-[95vh]
+          overflow-y-auto
+          rounded-xl
+          shadow-2xl
+          transform transition-all duration-300 ease-out
+          max-w-xs
+          sm:max-w-md
+          lg:max-w-xl 
+          xl:max-w-2xl
+    "
+    >
       {/* Encabezado */}
-      <div className="flex justify-between items-center bg-[#C2A878] text-white text-xl p-4 font-bold rounded-t-xl">
+      <div
+        className="sticky top-0 z-20 flex justify-between items-center 
+                   bg-[#C2A878] text-white text-xl p-4 font-extrabold 
+                   rounded-t-xl shadow-md border-b-2"
+      >
         <span>{headerLabel}</span>
         <X
           className="cursor-pointer hover:scale-110 transition"

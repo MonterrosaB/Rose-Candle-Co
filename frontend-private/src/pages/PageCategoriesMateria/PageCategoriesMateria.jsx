@@ -40,6 +40,8 @@ const PageCategoriesMateria = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    softDeleteCategory,
+    restoreCategory
   } = useCategoriesMateria(methods);
 
   // Actualiza el formulario cuando cambia la categoría seleccionada
@@ -66,8 +68,8 @@ const PageCategoriesMateria = () => {
   // Eliminar una categoría con confirmación de usuario
   const handleDelete = async (category) => {
     const result = await Swal.fire({
-      title: t("confirmDeleteTitle"),
-      text: t("confirmDeleteText", { name: category.name }),
+      title: t("confirmDeleteTitle", { name: category.name }), // Añadido el nombre aquí
+      text: t("confirmDeleteText"),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -80,13 +82,69 @@ const PageCategoriesMateria = () => {
       await deleteCategory(category._id);
       Swal.fire({
         title: t("deletedTitle"),
-        text: t("deletedText"),
+        text: t("deletedText", { name: category.name }), // Añadido el nombre aquí
         icon: 'success',
         timer: 2000,
         showConfirmButton: false
       });
     }
   };
+
+  // Eliminar lógicamente una categoría con confirmación de usuario
+  const handleSoftDelete = async (category) => {
+    const result = await Swal.fire({
+      // Utiliza mensajes para Archivar (Soft Delete)
+      title: t("confirmSoftDeleteTitle", { name: category.name }),
+      text: t("confirmSoftDeleteText"),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f59e0b', // Naranja para Archivar
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: t("confirmSoftDeleteButton"),
+      cancelButtonText: t("cancelButton")
+    });
+
+    if (result.isConfirmed) {
+      await softDeleteCategory(category._id);
+      Swal.fire({
+        // Utiliza mensajes de éxito para Archivar
+        title: t("softDeletedTitle"),
+        text: t("softDeletedText", { name: category.name }),
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  };
+
+  // Restaurar una categoría con confirmación de usuario
+  const handleRestore = async (category) => {
+    const result = await Swal.fire({
+      // Utiliza mensajes para Restaurar
+      title: t("confirmRestoreTitle", { name: category.name }),
+      text: t("confirmRestoreText"),
+      icon: 'question', // Pregunta/Info en lugar de Warning
+      showCancelButton: true,
+      confirmButtonColor: '#10b981', // Verde para Restaurar
+      cancelButtonColor: '#d33',
+      confirmButtonText: t("confirmRestoreButton"),
+      cancelButtonText: t("cancelButton")
+    });
+
+    if (result.isConfirmed) {
+      await restoreCategory(category._id);
+      Swal.fire({
+        // Utiliza mensajes de éxito para Restaurar
+        title: t("restoredTitle"),
+        text: t("restoredText", { name: category.name }),
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  };
+
+
 
   // Enviar el formulario para crear o actualizar una categoría
   const onSubmit = async (data) => {
@@ -118,6 +176,9 @@ const PageCategoriesMateria = () => {
           onClickPrimaryBtn={handleAdd}
           updateRow={handleEdit}
           deleteRow={handleDelete}
+          softDelete={handleSoftDelete}
+          restoreRow={handleRestore}
+          showStatus={true}
         />
       </div>
 

@@ -6,12 +6,12 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey
     const [editingIndex, setEditingIndex] = useState(null);
 
     return (
-        <div className="mb-3 w-full">
+        <div className="mb-3 w-full min-w-auto max-w-xs">
             <div className="relative w-full">
                 <label className="absolute text-sm text-neutral-800 font-medium duration-300 transform 
-                    -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 
+                    -translate-y-4 scale-90 top-2 z-10 origin-[0] bg-white px-2 
                     peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 
-                    peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-75
+                    peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-100
                     peer-focus:-translate-y-4 start-1 capitalize"
                 >
                     {label}
@@ -65,7 +65,7 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey
                             <div
                                 className={`flex flex-wrap gap-2 p-2 rounded-lg border min-h-[60px] mt-6
                                     ${error ? "border-red-500" : "border-gray-300 focus-within:border-black"} 
-                                    bg-white transition-colors duration-200`}
+                                    bg-white transition-colors duration-200 max-w-xs`}
                             >
                                 {tags.map((tag, index) => {
                                     const displayText = valueKey ? tag[valueKey] : tag;
@@ -73,7 +73,7 @@ const TextAreaArray = ({ control, name, label, error, placeholder = "", valueKey
                                     return (
                                         <div
                                             key={index}
-                                            className="flex items-center gap-1 bg-[#333] text-white p-1 rounded-full text-sm"
+                                            className="flex items-center gap-1 bg-[#333] text-white p-1 rounded-xl text-sm mt-2  break-all"
                                         >
                                             {editingIndex === index ? (
                                                 <input

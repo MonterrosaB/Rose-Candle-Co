@@ -1,4 +1,5 @@
 import suppliersModel from "../models/Suppliers.js"; // Modelo de Proveedores
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos CRUD para proveedores
 const suppliersControllers = {};
@@ -7,7 +8,7 @@ const suppliersControllers = {};
 suppliersControllers.getSuppliers = async (req, res) => {
   try {
     // Buscar todos los documentos de proveedores en la colección
-    const suppliers = await suppliersModel.find({ deleted: false }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const suppliers = await suppliersModel.find().sort({ deleted: 1 }); // Buscar todas las colecciones, salvo las que no han sido eliminadas
 
     // Enviar listado completo de proveedores con código 200
     res.status(200).json(suppliers);
@@ -43,7 +44,7 @@ suppliersControllers.createSuppliers = async (req, res) => {
 
   try {
     // Validar que se hayan recibido ambos campos obligatorios
-    if (!name || !contact) {
+    if (!name || !phoneNumber || !email) {
       return res
         .status(400)
         .json({ message: "Please complete all the fields" });
@@ -74,6 +75,15 @@ suppliersControllers.createSuppliers = async (req, res) => {
     // Guardar en la base de datos
     await newSupplier.save();
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Suppliers",
+      targetId: newSupplier._id,
+      description: `Suppliers ${newSupplier.name} created`,
+    });
+
     // Confirmar creación exitosa con código 200
     res.status(200).json({ message: "Supplier saved" });
   } catch (error) {
@@ -82,8 +92,8 @@ suppliersControllers.createSuppliers = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar un proveedor por ID
-suppliersControllers.deleteSuppliers = async (req, res) => {
+// SOFTDELETE - Eliminar un proveedor por ID
+suppliersControllers.softDeleteSuppliers = async (req, res) => {
   try {
     const deletedSupplier = await suppliersModel.findByIdAndUpdate(
       req.params.id,
@@ -95,6 +105,44 @@ suppliersControllers.deleteSuppliers = async (req, res) => {
       // Si no se encontró el proveedor para eliminar, responder 400
       return res.status(400).json({ message: "Supplier not found" });
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "archive",
+      collectionAffected: "Suppliers",
+      targetId: deletedSupplier._id,
+      description: `Suppliers ${deletedSupplier.name} archived`,
+    });
+
+    // Confirmar eliminación exitosa
+    res.status(200).json({ message: "Supplier deleted" });
+  } catch (error) {
+    console.log("error " + error);
+    res.status(500).json("Internal server error");
+  }
+};
+
+// SOFTDELETE - Eliminar un proveedor por ID
+suppliersControllers.hardDeleteSuppliers = async (req, res) => {
+  try {
+    const deletedSupplier = await suppliersModel.findByIdAndDelete(
+      req.params.id
+    ); // Eliminar por ID
+
+    if (!deletedSupplier) {
+      // Si no se encontró el proveedor para eliminar, responder 400
+      return res.status(400).json({ message: "Supplier not found" });
+    }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "delete",
+      collectionAffected: "Suppliers",
+      targetId: deletedSupplier._id,
+      description: `Suppliers ${deletedSupplier.name} deleted`,
+    });
 
     // Confirmar eliminación exitosa
     res.status(200).json({ message: "Supplier deleted" });
@@ -110,7 +158,7 @@ suppliersControllers.updateSuppliers = async (req, res) => {
 
   try {
     // Validar que se reciban todos los campos requeridos
-    if (!name || !contact) {
+    if (!name || !phoneNumber || !email) {
       return res
         .status(400)
         .json({ message: "Please complete all the fields" });
@@ -128,13 +176,12 @@ suppliersControllers.updateSuppliers = async (req, res) => {
         .json({ message: "Contact must be in format ####-####" });
     }
 
-
-        // Validar correo electrónico
-        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-          return res
-            .status(400)
-            .json({ message: "Email must be a valid email address" });
-        }
+    // Validar correo electrónico
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      return res
+        .status(400)
+        .json({ message: "Email must be a valid email address" });
+    }
 
     // Buscar proveedor por ID y actualizar sus datos
     const updatedSupplier = await suppliersModel.findByIdAndUpdate(
@@ -147,6 +194,15 @@ suppliersControllers.updateSuppliers = async (req, res) => {
       // Si no se encontró el proveedor a actualizar
       return res.status(400).json({ message: "Supplier not found" });
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Suppliers",
+      targetId: updatedSupplier._id,
+      description: `Suppliers ${updatedSupplier.name} updated`,
+    });
 
     // Confirmar actualización exitosa
     res.status(200).json({ message: "Supplier updated" });
@@ -168,6 +224,15 @@ suppliersControllers.restoreSuppliers = async (req, res) => {
         .status(400)
         .json({ message: "Restore Suppliers Cart not found" }); // No encontrada
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "restore",
+      collectionAffected: "Suppliers",
+      targetId: restoreSuppliers._id,
+      description: `Suppliers ${restoreSuppliers.name} restored`,
+    });
 
     res.status(200).json({ message: "Restore Suppliers Cart restored" }); // Restauracion exitosa
   } catch (error) {

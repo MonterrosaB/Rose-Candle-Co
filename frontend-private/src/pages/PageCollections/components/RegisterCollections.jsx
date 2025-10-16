@@ -26,7 +26,7 @@ const RegisterCollections = ({ onClose, defaultValues, onSubmit, methods }) => {
     if (defaultValues) {
       reset(defaultValues);
     } else {
-      reset({ name: "", description: "" });
+      reset();
     }
   }, [defaultValues, reset]);
 
@@ -52,8 +52,8 @@ const RegisterCollections = ({ onClose, defaultValues, onSubmit, methods }) => {
           />
         </InputsInline>
         <Textarea
-            label={t("description")}
-            name="description"
+          label={t("description")}
+          name="description"
           register={register}
           errors={errors}
         />

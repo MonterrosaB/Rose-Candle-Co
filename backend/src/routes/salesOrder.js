@@ -1,5 +1,6 @@
 import express from "express";
 import salesOrderController from "../controllers/salesOrderController.js";
+import authEmployees from "../middlewares/authEmployees.js";
 
 const router = express.Router();
 
@@ -9,15 +10,18 @@ router
   .post(salesOrderController.createSalesOrder);
 
 router.route("/count").get(salesOrderController.countSalesOrderAndTotal);
-router.route("/countTotal").get(salesOrderController.countOrdersGeneralAndMonthly); // cantidad de pedidos por mes
+router
+  .route("/countTotal")
+  .get(salesOrderController.countOrdersGeneralAndMonthly); // cantidad de pedidos por mes
 router.route("/totalEarnings").get(salesOrderController.totalEarnings); // total de ingresos
 router.route("/latestOrders").get(salesOrderController.getLatestOrders); // ùltimos pedidos
 router.route("/salesEvolution").get(salesOrderController.getSalesEvolution); // ùltimos pedidos
 router.route("/salesProfit").get(salesOrderController.getTotalSalesAndProfit); // ùltimos pedidos
 router.route("/summary").get(salesOrderController.getSalesAndProfitSummary); // ùltimos pedidos
 
-router.route("/createSalesOrder").post(salesOrderController.createSalesOrderPrivate)//
-
+router
+  .route("/createSalesOrder")
+  .post(authEmployees, salesOrderController.createSalesOrderPrivate); //
 
 // Rutas específicas antes de rutas dinámicas
 router.get("/user/:userId", salesOrderController.getUserCartWithProducts);

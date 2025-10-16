@@ -39,6 +39,7 @@ const useRawMaterialCategories = (methods) => {
       const res = await fetch(ApiRawMaterialCategories, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(newCategory),
       });
       if (!res.ok) throw new Error("Error al crear categoría");
@@ -55,6 +56,7 @@ const useRawMaterialCategories = (methods) => {
     try {
       const res = await fetch(`${ApiRawMaterialCategories}/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedCategory),
       });
@@ -72,6 +74,7 @@ const useRawMaterialCategories = (methods) => {
     try {
       const res = await fetch(`${ApiRawMaterialCategories}/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Error al eliminar categoría");
       toast.success("Categoría eliminada");
@@ -79,6 +82,40 @@ const useRawMaterialCategories = (methods) => {
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar categoría");
+    }
+  };
+
+  // Eliminar categoría por ID
+  const softDeleteCategory = async (id) => {
+    try {
+      const res = await fetch(`${ApiRawMaterialCategories}/softdelete/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Error al eliminar categoría");
+      toast.success("Categoría eliminada");
+      getCategories(); // Actualizar lista tras eliminación
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar categoría");
+    }
+  };
+
+  // Restaurar colección por ID
+  const restoreCategory = async (id) => {
+    try {
+      const res = await fetch(`${ApiRawMaterialCategories}/restore/${id}`, {
+        method: "PATCH",
+        credentials: "include"
+      });
+      if (!res.ok) {
+        throw new Error("Error al restaurar la categoría");
+      }
+      toast.success("Categoría restaurada exitosamente");
+      getCategories(); // Actualizar lista tras eliminación
+    } catch (error) {
+      console.error("Restore error:", error);
+      toast.error("No se pudo restaurar la categoría");
     }
   };
 
@@ -97,6 +134,8 @@ const useRawMaterialCategories = (methods) => {
     createCategory,
     updateCategory,
     deleteCategory,
+    softDeleteCategory,
+    restoreCategory
   };
 };
 

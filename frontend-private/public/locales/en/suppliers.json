@@ -1,28 +1,42 @@
 {
-    "title": "Suppliers",
-    "add": "Add Supplier",
-    "add_short": "Add",
-    "edit": "Edit",
-    "delete": "Delete",
-    "name": "Name",
-    "phone_number": "Phone Number",
-    "email": "Email",
-    "confirm_delete_title": "Delete supplier \"{{name}}\"?",
-    "confirm_delete_text": "This action cannot be undone.",
-    "confirm_delete_confirm": "Yes, delete",
-    "confirm_delete_cancel": "Cancel",
-    "deleted_title": "Deleted",
-    "deleted_text": "Supplier \"{{name}}\" has been deleted.",
-    "document_title": "Suppliers",
-    "form": {
-        "add_title": "Add Supplier",
-        "edit_title": "Edit Supplier",
-        "submit_add": "Add Supplier",
-        "submit_edit": "Save Changes",
-        "validation": {
-            "name_required": "Name is required",
-            "contact_required": "Contact is required",
-            "contact_format": "Format must be 0000-0000"
-        }
+  "title": "Suppliers",
+  "add": "Add Supplier",
+  "add_short": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "name": "Name",
+  "phone_number": "Phone Number",
+  "email": "Email",
+
+  "confirm_delete_title": "Delete supplier \"{{name}}\" permanently?",
+  "confirm_delete_text": "This action cannot be undone. All associated data will be lost.",
+  "confirm_delete_confirm": "Yes, delete permanently",
+  "deleted_title": "Deleted Permanently",
+  "deleted_text": "Supplier \"{{name}}\" has been permanently deleted.",
+
+  "confirm_soft_delete_title": "Archive supplier \"{{name}}\"?",
+  "confirm_soft_delete_text": "The supplier will be archived and hidden, but you can restore it later.",
+  "confirm_soft_delete_confirm": "Yes, archive it",
+  "soft_deleted_title": "Archived",
+  "soft_deleted_text": "Supplier \"{{name}}\" has been archived.",
+
+  "confirm_restore_title": "Restore supplier \"{{name}}\"?",
+  "confirm_restore_text": "The supplier will be visible and active again.",
+  "confirm_restore_confirm": "Yes, restore it",
+  "restored_title": "Restored",
+  "restored_text": "Supplier \"{{name}}\" has been successfully restored.",
+
+  "confirm_delete_cancel": "Cancel",
+  "document_title": "Suppliers",
+  "form": {
+    "add_title": "Add Supplier",
+    "edit_title": "Edit Supplier",
+    "submit_add": "Add Supplier",
+    "submit_edit": "Save Changes",
+    "validation": {
+      "name_required": "Name is required",
+      "contact_required": "Contact is required",
+      "contact_format": "Format must be 0000-0000"
     }
+  }
 }

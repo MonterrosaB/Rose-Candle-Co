@@ -1,4 +1,5 @@
 import rawMaterialCategoriesModel from "../models/RawMaterialCategories.js"; // Importar modelo de categorías de materia prima
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos CRUD para categorías de materia prima
 const rawMaterialCategoriesControllers = {};
@@ -7,7 +8,9 @@ const rawMaterialCategoriesControllers = {};
 rawMaterialCategoriesControllers.getCategories = async (req, res) => {
   try {
     // Buscar todas las categorías en la base de datos
-    const categories = await rawMaterialCategoriesModel.find({ deleted: false }) // Buscar todas las colecciones, salvo las que no han sido eliminadas
+    const categories = await rawMaterialCategoriesModel
+      .find()
+      .sort({ deleted: 1 }); // Buscar todas las colecciones
     // Enviar respuesta con código 200 y lista de categorías
     res.status(200).json(categories);
   } catch (error) {
@@ -62,6 +65,16 @@ rawMaterialCategoriesControllers.createCategory = async (req, res) => {
     // Guardar en la base de datos
     await newCategory.save();
     // Responder con éxito
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Raw Material Categories",
+      targetId: newCategory._id,
+      description: `Raw Material Categories ${newCategory.name} created`,
+    });
+
     res.status(200).json({ message: "Category saved" });
   } catch (error) {
     // Capturar error, mostrarlo en consola y responder con error 500
@@ -70,20 +83,62 @@ rawMaterialCategoriesControllers.createCategory = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar categoría por ID
-rawMaterialCategoriesControllers.deleteCategory = async (req, res) => {
-   try {
-          const deletedCategory = await rawMaterialCategoriesModel.findByIdAndUpdate(
-                req.params.id,
-                { deleted: true }, // Se marca como "eliminada"
-                { new: true }
-              ); // Eliminar por ID
+// SOFTDELETE - Eliminar categoría por ID
+rawMaterialCategoriesControllers.softDeleteCategory = async (req, res) => {
+  try {
+    const deletedCategory = await rawMaterialCategoriesModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
 
     // Validar si la categoría existía para ser eliminada
     if (!deletedCategory) {
       // Responder con error 400 si no se encontró la categoría
       return res.status(400).json({ message: "Category not found" });
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "archive",
+      collectionAffected: "Raw Material Categories",
+      targetId: deletedCategory._id,
+      description: `Raw Material Categories ${deletedCategory.name} archived`,
+    });
+
+    // Responder con éxito
+    res.status(200).json({ message: "Category deleted" });
+  } catch (error) {
+    // Capturar error, mostrarlo en consola y responder con error 500
+    console.log("error " + error);
+    res.status(500).json("Internal server error");
+  }
+};
+
+// HARDDELETE - Eliminar categoría por ID
+rawMaterialCategoriesControllers.hardDeleteCategory = async (req, res) => {
+  try {
+    const deletedCategory = await rawMaterialCategoriesModel.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true }, // Se marca como "eliminada"
+      { new: true }
+    ); // Eliminar por ID
+
+    // Validar si la categoría existía para ser eliminada
+    if (!deletedCategory) {
+      // Responder con error 400 si no se encontró la categoría
+      return res.status(400).json({ message: "Category not found" });
+    }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "delete",
+      collectionAffected: "Raw Material Categories",
+      targetId: deletedCategory._id,
+      description: `Raw Material Categories ${deletedCategory.name} deleted`,
+    });
 
     // Responder con éxito
     res.status(200).json({ message: "Category deleted" });
@@ -123,6 +178,15 @@ rawMaterialCategoriesControllers.updateCategory = async (req, res) => {
       return res.status(400).json({ message: "Category not found" });
     }
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Raw Material Categories",
+      targetId: updatedCategory._id,
+      description: `Raw Material Categories ${updatedCategory.name} deleted`,
+    });
+
     // Responder con éxito
     res.status(200).json({ message: "Category updated" });
   } catch (error) {
@@ -131,19 +195,36 @@ rawMaterialCategoriesControllers.updateCategory = async (req, res) => {
     res.status(500).json("Internal server error");
   }
 };
-rawMaterialCategoriesControllers.restoreRawMaterialCategories= async (req, res) => {
+rawMaterialCategoriesControllers.restoreRawMaterialCategories = async (
+  req,
+  res
+) => {
   try {
-    const restoreRawMaterialCategories = await rawMaterialCategoriesModel.findByIdAndUpdate(
-      req.params.id,
-      { deleted: false }, // Se marca como "no eliminada"
-      { new: true }
-    ); // Se actualiza por ID
+    const restoreRawMaterialCategories =
+      await rawMaterialCategoriesModel.findByIdAndUpdate(
+        req.params.id,
+        { deleted: false }, // Se marca como "no eliminada"
+        { new: true }
+      ); // Se actualiza por ID
 
     if (!restoreRawMaterialCategories) {
-      return res.status(400).json({ message: "restoreRawMaterialCategories not found" }); // No encontrada
+      return res
+        .status(400)
+        .json({ message: "restoreRawMaterialCategories not found" }); // No encontrada
     }
 
-    res.status(200).json({ message: "restore Raw Material Categories restored" }); // Restauracion exitosa
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "restore",
+      collectionAffected: "Raw Material Categories",
+      targetId: restoreRawMaterialCategories._id,
+      description: `Raw Material Categories ${restoreRawMaterialCategories.name} restored`,
+    });
+
+    res
+      .status(200)
+      .json({ message: "restore Raw Material Categories restored" }); // Restauracion exitosa
   } catch (error) {
     console.log("error " + error);
     return res.status(500).json("Internal server error"); // Error del servidor

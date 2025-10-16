@@ -32,6 +32,7 @@ const useCategories = (methods) => {
         _id: s._id,
         name: s.name,
         label: s.name,
+        deleted: s.deleted
       }));
 
       setCategories(formatted);
@@ -46,6 +47,7 @@ const useCategories = (methods) => {
     try {
       const res = await fetch(ApiCategories, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCategory),
       });
@@ -63,6 +65,7 @@ const useCategories = (methods) => {
     try {
       const res = await fetch(`${ApiCategories}/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedCategory),
       });
@@ -80,6 +83,29 @@ const useCategories = (methods) => {
     try {
       const res = await fetch(`${ApiCategories}/${id}`, {
         method: "DELETE",
+        credentials: "include"
+
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error al eliminar: ${errorText}`);
+      }
+
+      toast.success("Categoría eliminada correctamente");
+      getCategories();
+    } catch (error) {
+      console.error("Error eliminando:", error);
+      toast.error("No se pudo eliminar categoría");
+    }
+  };
+
+  // Eliminar una categoría por ID
+  const softDeleteCategory = async (id) => {
+    try {
+      const res = await fetch(`${ApiCategories}/softdelete/${id}`, {
+        method: "PATCH",
+        credentials: "include"
       });
 
       if (!res.ok) {
@@ -89,10 +115,32 @@ const useCategories = (methods) => {
 
       toast.success("Categoría eliminada correctamente");
       // Actualiza el estado local eliminando la categoría borrada
-      setCategories((prev) => prev.filter((cat) => cat._id !== id));
+      getCategories();
     } catch (error) {
       console.error("Error eliminando:", error);
       toast.error("No se pudo eliminar categoría");
+    }
+  };
+
+
+  // restaurar una categoría por ID
+  const restoreCategory = async (id) => {
+    try {
+      const res = await fetch(`${ApiCategories}/restore/${id}`, {
+        method: "PATCH",
+        credentials: "include"
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error al restaurar: ${errorText}`);
+      }
+
+      toast.success("Categoría restaurada correctamente");
+      getCategories();
+    } catch (error) {
+      console.error("Error restaurar:", error);
+      toast.error("No se pudo restaurar categoría");
     }
   };
 
@@ -111,6 +159,8 @@ const useCategories = (methods) => {
     createCategory,
     updateCategory,
     deleteCategory,
+    softDeleteCategory,
+    restoreCategory
   };
 };
 

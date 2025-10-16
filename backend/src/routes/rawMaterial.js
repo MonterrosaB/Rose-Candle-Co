@@ -1,5 +1,6 @@
 // Librerias
 import express from "express";
+import authEmployees from "../middlewares/authEmployees.js";
 
 // Controlador
 import rawMaterialsController from "../controllers/rawMaterialControllers.js";
@@ -10,15 +11,21 @@ const router = express.Router();
 router
   .route("/")
   .get(rawMaterialsController.getrawMaterial)
-  .post(rawMaterialsController.createrRawMaterial);
+  .post(authEmployees, rawMaterialsController.createrRawMaterial);
 
 router
   .route("/:id")
-  .put(rawMaterialsController.updaterRawMaterial)
-  .delete(rawMaterialsController.deleterRawMaterial);
+  .put(authEmployees, rawMaterialsController.updaterRawMaterial)
+  .delete(authEmployees, rawMaterialsController.hardDeleterRawMaterial);
 
 // Rutas específicas
-router.route("/restore/:id").put(rawMaterialsController.restoreRawMaterials); // restaurar por id
+router
+  .route("/restore/:id")
+  .patch(authEmployees, rawMaterialsController.restoreRawMaterials); // restaurar por id
+
+router
+  .route("/softdelete/:id")
+  .patch(authEmployees, rawMaterialsController.softDeleterRawMaterial); // restaurar por id
 
 router
   .route("/lowStock") // materia prima con bajo stock

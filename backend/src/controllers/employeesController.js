@@ -1,5 +1,6 @@
 import employeesModel from "../models/Employees.js"; // Modelo de empleados
 import bcrypt from "bcryptjs"; // para encriptar
+import { createLog } from "../utils/logger.js";
 
 // CRUD controller para empleados
 const employeesController = {};
@@ -31,8 +32,8 @@ employeesController.getEmployeesById = async (req, res) => {
   }
 };
 
-// DELETE - eliminar un empleado por ID
-employeesController.deleteEmployees = async (req, res) => {
+// SOFTDELETE - eliminar un empleado por ID
+employeesController.softDeleteEmployees = async (req, res) => {
   try {
     const deletedEmployee = await employeesModel.findByIdAndUpdate(
       req.params.id,
@@ -43,6 +44,42 @@ employeesController.deleteEmployees = async (req, res) => {
     if (!deletedEmployee) {
       return res.status(404).json({ message: "Employee not found" }); // Empleado no encontrado
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "archive",
+      collectionAffected: "Employees",
+      targetId: deletedEmployee._id,
+      description: `Employee ${deletedEmployee.name} ${deletedEmployee.surnames} archived`,
+    });
+
+    res.status(200).json({ message: "Employee deleted" }); // Eliminación exitosa
+  } catch (error) {
+    console.error("Error al eliminar empleado:", error); // Log de error
+    res.status(500).json({ message: "Internal server error" }); // Error del servidor
+  }
+};
+
+// DELETE - eliminar un empleado por ID
+employeesController.hardDeleteEmployees = async (req, res) => {
+  try {
+    const deletedEmployee = await employeesModel.findByIdAndDelete(
+      req.params.id
+    ); // Eliminar por ID
+
+    if (!deletedEmployee) {
+      return res.status(404).json({ message: "Employee not found" }); // Empleado no encontrado
+    }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "delete",
+      collectionAffected: "Employees",
+      targetId: deletedEmployee._id,
+      description: `Employee ${deletedEmployee.name} ${deletedEmployee.surnames} was deleted`,
+    });
 
     res.status(200).json({ message: "Employee deleted" }); // Eliminación exitosa
   } catch (error) {
@@ -105,9 +142,17 @@ employeesController.updateEmployees = async (req, res) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Employees",
+      targetId: employeeUpdated._id,
+      description: `Employee ${employeeUpdated.name} ${employeeUpdated.surnames} was updated`,
+    });
+
     res.status(200).json({
       message: "Employee updated",
-      employee: employeeUpdated,
     });
   } catch (error) {
     console.error("Error al actualizar empleado:", error);
@@ -127,6 +172,15 @@ employeesController.restoreEmployees = async (req, res) => {
     if (!restoreEmployees) {
       return res.status(400).json({ message: "Employees not found" }); // No encontrada
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "restore",
+      collectionAffected: "Employees",
+      targetId: restoreEmployees._id,
+      description: `Employee ${restoreEmployees.name} ${restoreEmployees.surnames} archived`,
+    });
 
     res.status(200).json({ message: "Customers restored" }); // Restauracion exitosa
   } catch (error) {

@@ -4,7 +4,7 @@ import ShoppingCart from "../models/ShoppingCart.js";
 import ProductsModel from "../models/Products.js";
 import RawMaterialModel from "../models/RawMaterials.js";
 import MaterialBalanceModel from "../models/MaterialBalance.js";
-import ProductionCostHistory from "../models/ProductionCostHistory.js";
+import { createLog } from "../utils/logger.js";
 
 // Controlador con métodos CRUD para Ordenes de Venta
 const salesOrderController = {};
@@ -84,7 +84,7 @@ salesOrderController.createSalesOrder = async (req, res) => {
         .json({ message: "The total can't be less than 0" });
     }
 
-    // 1️⃣ Crear la orden
+    //  Crear la orden
     const newOrder = new SalesOrderModel({
       idShoppingCart,
       paymentMethod,
@@ -96,14 +96,14 @@ salesOrderController.createSalesOrder = async (req, res) => {
 
     await newOrder.save();
 
-    // 2️⃣ Actualizar el carrito como completed
+    //  Actualizar el carrito como completed
     const updatedCart = await ShoppingCart.findByIdAndUpdate(
       idShoppingCart,
       { status: "completed" },
       { new: true }
     );
 
-    // 3️⃣ Responder con éxito y detalles de la orden y carrito
+    //  Responder con éxito y detalles de la orden y carrito
     res.status(200).json({
       message: "Order saved and cart updated",
       order: newOrder,
@@ -120,7 +120,7 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
   try {
     const { name, email, paymentMethod, products, total, addresses } = req.body;
 
-    // 1️⃣ Validar campos requeridos
+    //  Validar campos requeridos
     if (!name || !email) {
       return res.status(400).json({
         message: "Name and email are required",
@@ -145,7 +145,7 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
       });
     }
 
-    // 2️⃣ Verificar si el cliente ya existe o crearlo
+    //  Verificar si el cliente ya existe o crearlo
     let customer = await Customers.findOne({ email });
 
     if (!customer) {
@@ -160,7 +160,7 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
       await customer.save();
     }
 
-    // 3️⃣ Crear carrito
+    //  Crear carrito
     const cart = await ShoppingCart.create({
       idUser: customer._id,
       products,
@@ -168,7 +168,7 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
       status: "completed",
     });
 
-    // 4️⃣ Crear orden (usa addresses array)
+    //  Crear orden (usa addresses array)
     const newOrder = await SalesOrderModel.create({
       idShoppingCart: cart._id,
       paymentMethod,
@@ -176,6 +176,15 @@ salesOrderController.createSalesOrderPrivate = async (req, res) => {
       total,
       shippingState: [{ state: "Pendiente" }],
       address: addresses[0], //  guardamos array en SalesOrder
+    });
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "create",
+      collectionAffected: "Sales Orders",
+      targetId: newOrder._id,
+      description: `Sales Orders ${newRawMaterial.name} created`,
     });
 
     return res.status(201).json({
@@ -245,6 +254,15 @@ salesOrderController.updateSalesOrder = async (req, res) => {
         }
       }
     }
+
+    // Guardar log
+    await createLog({
+      userId: req.user.id,
+      action: "update",
+      collectionAffected: "Sales Orders",
+      targetId: orderUpdated._id,
+      description: `Sales Orders ${orderUpdated.name} updates`,
+    });
 
     res.status(200).json({ message: "Order updated" });
   } catch (error) {

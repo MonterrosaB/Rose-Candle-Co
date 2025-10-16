@@ -1,59 +1,20 @@
-import React, { useEffect, useRef } from "react";
-
-const Dialog = ({ children, open, onClose }) => {
-    const dialogRef = useRef(null);
-
-    // Sincroniza prop `open` con el elemento nativo
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        if (open && !dialog.open) {
-            dialog.showModal(); // bloquea el foco
-        } else if (!open && dialog.open) {
-            dialog.close();
-        }
-    }, [open]);
-
-    // Detecta cierre con ESC o <form method="dialog">
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        const handleClose = () => {
-            onClose?.();
-        };
-
-        dialog.addEventListener("close", handleClose);
-        return () => {
-            dialog.removeEventListener("close", handleClose);
-        };
-    }, [onClose]);
-
-    const handleBackdropClick = (e) => {
-        // backdrop click: si el click fue fuera del contenido
-        const dialog = dialogRef.current;
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog =
-            e.clientX >= rect.left &&
-            e.clientX <= rect.right &&
-            e.clientY >= rect.top &&
-            e.clientY <= rect.bottom;
-
-        if (!isInDialog) {
-            onClose?.();
-        }
-    };
+const Dialog = ({ open, onClose, children }) => {
+    if (!open) return null;
 
     return (
-        <dialog
-            ref={dialogRef}
-            className="shadow-xl rounded-xl p-0 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
-            onClick={handleBackdropClick}
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/10"
+            onClick={onClose}
         >
-            {children}
-        </dialog>
+            <div
+                className="bg-white rounded-xl shadow-xl relative"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {children}
+            </div>
+        </div>
     );
 };
+
 
 export default Dialog;

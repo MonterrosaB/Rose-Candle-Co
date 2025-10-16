@@ -1,18 +1,32 @@
 {
-    "title": "Categorías de Productos",
-    "tableTitle": "Categorías",
-    "addCategory": "Agregar Categoría",
-    "editCategory": "Editar Categoría",
-    "saveChanges": "Guardar Cambios",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "confirmDeleteTitle": "¿Eliminar la categoría \"{{name}}\"?",
-    "confirmDeleteText": "Esta acción no se puede deshacer.",
-    "confirmDeleteButton": "Sí, eliminar",
-    "cancelButton": "Cancelar",
-    "deletedTitle": "Eliminado",
-    "deletedText": "La categoría \"{{name}}\" ha sido eliminada.",
-    "nameLabel": "Nombre de Categoría",
-    "mobileTitle": "Categorías",
-    "add": "Agregar"
+  "title": "Categorías de Productos",
+  "tableTitle": "Categorías",
+  "addCategory": "Agregar Categoría",
+  "editCategory": "Editar Categoría",
+  "saveChanges": "Guardar Cambios",
+  "delete": "Eliminar",
+  "edit": "Editar",
+
+  "confirmDeleteTitle": "¿Eliminar permanentemente categoría \"{{name}}\"?",
+  "confirmDeleteText": "Esta acción no se puede deshacer. Se perderán todos los datos asociados.",
+  "confirmDeleteButton": "Sí, eliminar permanentemente",
+  "deletedTitle": "Eliminada Permanentemente",
+  "deletedText": "La categoría \"{{name}}\" ha sido eliminada permanentemente.",
+
+  "confirmSoftDeleteTitle": "¿Archivar categoría \"{{name}}\"?",
+  "confirmSoftDeleteText": "La categoría será archivada y oculta, pero podrás restaurarla más tarde.",
+  "confirmSoftDeleteButton": "Sí, archivar",
+  "softDeletedTitle": "Archivada",
+  "softDeletedText": "La categoría \"{{name}}\" ha sido archivada.",
+
+  "confirmRestoreTitle": "¿Restaurar categoría \"{{name}}\"?",
+  "confirmRestoreText": "La categoría volverá a ser visible y activa.",
+  "confirmRestoreButton": "Sí, restaurar",
+  "restoredTitle": "Restaurada",
+  "restoredText": "La categoría \"{{name}}\" ha sido restaurada con éxito.",
+
+  "cancelButton": "Cancelar",
+  "nameLabel": "Nombre de la Categoría",
+  "mobileTitle": "Categorías",
+  "add": "Agregar"
 }

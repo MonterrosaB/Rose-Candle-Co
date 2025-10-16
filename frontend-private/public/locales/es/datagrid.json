@@ -1,16 +1,19 @@
 {
-    "buscar": "Buscar...",
-    "anterior": "Anterior",
-    "siguiente": "Siguiente",
-    "pagina": "Página",
-    "de": "de",
-    "acciones": "Acciones",
-    "cargando": "Cargando...",
-    "estado": {
-        "pendiente": "Pendiente",
-        "enProceso": "En Proceso",
-        "enviado": "Enviado",
-        "completado": "Completado",
-        "cancelado": "Cancelado"
-    }
+  "buscar": "Buscar...",
+  "anterior": "Anterior",
+  "siguiente": "Siguiente",
+  "pagina": "Página",
+  "de": "de",
+  "acciones": "Acciones",
+  "cargando": "Cargando...",
+  "availability_selector": "Estado",
+  "deleted": "Eliminados",
+  "active": "Activos",
+  "estado": {
+    "pendiente": "Pendiente",
+    "enProceso": "En Proceso",
+    "enviado": "Enviado",
+    "completado": "Completado",
+    "cancelado": "Cancelado"
+  }
 }
