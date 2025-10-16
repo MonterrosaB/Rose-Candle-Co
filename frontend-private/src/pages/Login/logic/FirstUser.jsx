@@ -51,7 +51,7 @@ const FirstUser = () => {
       return;
     }
 
-    const success = await handleSubmit(e, { isActive: true, role: "admin" });
+    const success = await handleSubmit(e, { isActive: true, role: "super_admin" });
 
     if (success) {
       await refetchHasEmployees(); // vuelve a contar los empleados

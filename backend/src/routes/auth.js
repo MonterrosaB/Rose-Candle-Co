@@ -9,6 +9,7 @@ router.get("/verifyEmployee", authEmployee, (req, res) => {
   res.status(200).json({
     id: req.user.id,
     isAdmin: req.user.isAdmin,
+    role: req.user.role,
     name: req.user.name,
     surnames: req.user.surnames,
     phone: req.user.phone,

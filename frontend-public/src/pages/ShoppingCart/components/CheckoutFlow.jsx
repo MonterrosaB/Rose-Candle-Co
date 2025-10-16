@@ -5,6 +5,7 @@ import useCart from "../hooks/useShoppingCart.jsx";
 import toast from "react-hot-toast";
 
 
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,13 +21,15 @@ import ReviewStep from "./ReviewStep";
 import ConfirmationStep from "./ConfirmationStep";
 
 
+
+
 const CheckoutFlow = ({
   cartItems = [],
   total = "0.00",
   onBack,
   onClearCart,
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user, API } = useContext(AuthContext);
   const { idCart, createSalesOrder } = useCart();
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -136,7 +139,7 @@ const CheckoutFlow = ({
 
       // 1️⃣ Obtener token de pago
       const tokenResponse = await fetch(
-        "https://rose-candle-co.onrender.com/api/payments/token",
+        API + "/payments/token",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -161,7 +164,7 @@ const CheckoutFlow = ({
 
       // 3️⃣ Enviar pago simulado
       const paymentResponse = await fetch(
-        "https://rose-candle-co.onrender.com/api/payments/testPayment",
+        API + "/payments/testPayment",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

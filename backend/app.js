@@ -57,6 +57,7 @@ import registerCustomersRoutes from "./src/routes/registerCustomers.js";
 import loginCustomerRoutes from "./src/routes/loginCustomer.js";
 import logoutCustomerRoutes from "./src/routes/logoutCustomer.js";
 import logoutRoutes from "./src/routes/logout.js";
+import loggerRoutes from "./src/routes/logs.js";
 import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 import paymentsRoutes from "./src/routes/payments.js";
 import authRoutes from "./src/routes/auth.js";
@@ -85,6 +86,7 @@ app.use("/api/registerEmployees", registerEmployeesRoutes);
 app.use("/api/recoveryPassword", recoveryPasswordRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/logs", loggerRoutes);
 app.use("/api/settings", settingsRoutes);
 
 // Exportar app

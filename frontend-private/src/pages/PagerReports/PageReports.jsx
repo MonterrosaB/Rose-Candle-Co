@@ -62,7 +62,7 @@ const PageReports = () => {
           {t("no_data")}
         </p>
       ) : (
-        <div className="pt-15">
+        <>
           {/* Widgets superiores */}
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
@@ -98,9 +98,13 @@ const PageReports = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full mb-6">
-            <div className="w-full lg:w-1/2 mb-4 xl:mb-0">
+
+            {/* 1. Orders by Category Component (takes up one column, but is limited to w-1/2 on large screens) */}
+            <div className="w-full lg:w-1/2 mb-4 xl:mb-0 object-center">
               <OrdersByCategory data={soldByCategory} />
             </div>
+
+            {/* 2. Daily Earnings Card (takes up one column, full width) */}
             <div className="w-full">
               <div className="bg-[#C2A878] h-full rounded-2xl p-6 flex flex-col justify-between text-white shadow-lg">
                 <h2 className="text-2xl font-semibold mb-2">
@@ -119,6 +123,8 @@ const PageReports = () => {
                 </div>
               </div>
             </div>
+
+            {/* 3. Average Sell by Orders Component (takes up one column, but is limited to w-1/2 on large screens) */}
             <div className="w-full lg:w-1/2 mb-4 xl:mb-0">
               <AverageSellByOrders
                 tittle={t("avg_order_value")}
@@ -190,6 +196,7 @@ const PageReports = () => {
                 columns={productTableColumns}
                 rows={bestSellers}
                 editable={false}
+                rowsPerPage={4}
               />
             </div>
             <div className="bg-white p-4 rounded-xl shadow">
@@ -200,10 +207,11 @@ const PageReports = () => {
                 columns={productTableColumns}
                 rows={worstSellers}
                 editable={false}
+                rowsPerPage={4}
               />
             </div>
           </div>
-        </div>
+        </>
       )}
     </PrincipalDiv>
   );

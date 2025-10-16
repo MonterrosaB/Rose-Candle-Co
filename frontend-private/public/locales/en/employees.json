@@ -19,5 +19,8 @@
         "addTitle": "Add Employee",
         "editTitle": "Edit Employee",
         "close": "Close"
-    }
+    },
+    "messages": {
+    "editAdminRestriction": "Acceso denegado. Solo un Super Administrador puede editar a otro Administrador." 
+  }
 }

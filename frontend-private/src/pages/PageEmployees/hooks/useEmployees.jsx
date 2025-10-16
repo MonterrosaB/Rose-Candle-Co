@@ -22,6 +22,7 @@ const useEmployees = (methods) => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = methods;
 
@@ -85,6 +86,7 @@ const useEmployees = (methods) => {
 
       const response = await fetch(ApiEmployeesRegister, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataForm),
       });
@@ -96,6 +98,7 @@ const useEmployees = (methods) => {
         toast.error(msg);
         return false;
       }
+
 
       finishOperation("Empleado creado exitosamente");
       return true;
@@ -120,6 +123,7 @@ const useEmployees = (methods) => {
 
       const response = await fetch(`${ApiEmployees}/${employeeId}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataForm),
       });
@@ -164,6 +168,7 @@ const useEmployees = (methods) => {
     loading,
     editEmployee,
     saveEmployeeForm,
+    setValue
   };
 };
 

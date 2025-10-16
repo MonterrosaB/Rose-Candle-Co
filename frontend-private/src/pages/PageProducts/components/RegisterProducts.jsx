@@ -125,10 +125,15 @@ const RegisterProducts = ({ onClose, selectedProduct }) => {
 
     try {
 
+      console.log(data);
+
+
       //  Validar todos los campos
       const errors = validateProductData(data, allImages);
       if (errors.length > 0) {
         errors.forEach((msg) => toast.error(msg));
+        errors.forEach((msg) => console.log(msg));
+
         return; // detener ejecución
       }
 

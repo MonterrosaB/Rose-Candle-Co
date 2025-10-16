@@ -23,12 +23,12 @@ const DataGrid = ({
   checkboxChecked = false,
   onCheckboxChange = () => { },
   editable = true,
+  rowsPerPage = 10,
   showStatus = false,
   showMore
 }) => {
 
   const { user } = useAuth();
-
 
   const { t } = useTranslation("datagrid");
 
@@ -84,7 +84,6 @@ const DataGrid = ({
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
 
   // Search
   const [search, setSearch] = useState("");
@@ -233,10 +232,13 @@ const DataGrid = ({
                       }
                       {showDelete && (
                         row.deleted ? (
-                          <Trash
-                            onClick={() => deleteRow(row)}
-                            className="cursor-pointer"
-                          />
+                          user.role === "super_admin" && (
+                            <Trash
+                              onClick={() => deleteRow(row)} // Esta función debe llamar al HARD DELETE en el backend
+                              className="cursor-pointer"
+                              title="Borrar Permanentemente (Solo Super Admin)"
+                            />
+                          )
                         ) : (
                           <ArchiveX
                             onClick={() => softDelete(row)}

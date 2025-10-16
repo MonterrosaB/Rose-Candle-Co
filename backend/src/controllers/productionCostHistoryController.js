@@ -296,7 +296,7 @@ productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
     const result = await Product.aggregate([
       { $match: { deleted: false } }, // solo productos activos
 
-      // 1️⃣ Lookup para traer historial de producción
+      //  Lookup para traer historial de producción
       {
         $lookup: {
           from: "productioncosthistories",
@@ -311,10 +311,10 @@ productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
       },
       { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
 
-      // 2️⃣ Desanidar variantes del producto
+      //  Desanidar variantes del producto
       { $unwind: "$variant" },
 
-      // 3️⃣ Tomar el costo de producción correspondiente a la variante
+      //  Tomar el costo de producción correspondiente a la variante
       {
         $addFields: {
           variantCost: {
@@ -331,7 +331,7 @@ productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
         },
       },
 
-      // 4️⃣ Calcular costo y % ganancia
+      //  Calcular costo y % ganancia
       {
         $addFields: {
           productionCost: { $ifNull: ["$variantCost.productionCost", 0] },
@@ -360,7 +360,7 @@ productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
         },
       },
 
-      // 5️⃣ Dar formato final
+      //  Dar formato final
       {
         $project: {
           _id: 0,

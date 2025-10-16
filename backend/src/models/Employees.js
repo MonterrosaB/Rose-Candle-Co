@@ -87,7 +87,7 @@ const employeeSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ["admin", "employee"], // Valores permitidos
+      enum: ["super_admin", "admin", "employee"], // Valores permitidos
       default: "employee", // Valor por defecto
       trim: true,
     },

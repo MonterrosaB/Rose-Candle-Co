@@ -1,21 +1,42 @@
 {
   "personal_info": "Personal Information",
   "my_profile": "My Profile",
-  "manage_info": "Manage your personal information",
-  "app_manual": "App Manual",
+  "manage_info": "Manage your contact information and credentials.",
+  "app_manual": "Application Manual (Open in Drive)",
+  
+  "loading": "Loading information...",
+  
   "edit": "Edit",
   "save": "Save",
   "save_changes": "Save Changes",
   "cancel": "Cancel",
   "change_language": "Change Language",
-  "recover_password": "Recover Password",
-  "loading": "Loading profile...",
+  
   "name": "Name",
   "surnames": "Surnames",
   "phone": "Phone",
   "email": "Email",
-  "dui": "DUI",
-  "user": "Username",
+  "dui": "ID / Identification",
+  "user": "User",
   "password": "Password",
-  "document_title": "My Profile"
+  "recover_password": "Change Password",
+  
+  "audit_trail": "Activity Audit Trail",
+  "collection": "Collection",
+  "target_id": "Record ID",
+  "system_user": "System User",
+  "no_description_provided": "No detailed description provided.",
+  "show_more": "Show More",
+  "show_less": "Show Less",
+  
+  "search_logs_placeholder": "Search by action, user, or description...",
+  "loading_logs": "Loading audit trail...",
+  "error_fetching_logs": "There was an error loading the audit trail. Please try again later.",
+  "no_logs": "No activity records found for this user.",
+  "no_search_results": "No results found for your search.",
+  
+  "update": "Data Update",
+  "create": "Record Creation",
+  "delete": "Record Deletion",
+  "login": "Login Event"
 }

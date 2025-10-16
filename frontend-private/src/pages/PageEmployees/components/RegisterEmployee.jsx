@@ -5,7 +5,7 @@ import InputsInline from "../../../global/components/InputsInline";
 import Input from "../../../global/components/Input";
 import Button from "../../../global/components/Button";
 import Dropdown from "../../../global/components/Dropdown";
-import useDataEmployee from "../hooks/useEmployees";  
+import useDataEmployee from "../hooks/useEmployees";
 import useDropDown from "../hooks/useDropDowns";
 
 import { useForm } from "react-hook-form";
@@ -22,12 +22,31 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
     errors,
     loading,
     saveEmployeeForm,
-    editEmployee
+    editEmployee,
+    setValue
   } = useDataEmployee(methods);
 
   const {
     opcionesEstado, opcionesRol
   } = useDropDown(methods);
+
+  // Función para aplicar máscara de teléfono (****-****)
+  const maskPhone = (e) => {
+    let value = e.target.value.replace(/[^\d]/g, ""); // Elimina todo lo que no sea dígito
+    if (value.length > 4) {
+      value = value.slice(0, 4) + "-" + value.slice(4, 8); // Inserta el guion
+    }
+    setValue("phone", value, { shouldValidate: true }); // Actualiza el valor en el formulario
+  };
+
+  // Función para aplicar máscara de DUI (12345678-9)
+  const maskDui = (e) => {
+    let value = e.target.value.replace(/[^\d]/g, ""); // Elimina todo lo que no sea dígito
+    if (value.length > 8) {
+      value = value.slice(0, 8) + "-" + value.slice(8, 9); // Inserta el guion
+    }
+    setValue("dui", value, { shouldValidate: true }); // Actualiza el valor en el formulario
+  };
 
 
   const onSubmit = async (data) => {
@@ -99,11 +118,24 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
           }}
         />
 
+
+        {defaultValues && (
+          <Dropdown
+            name="isActive"
+            label="Estado"
+            register={register}
+            error={errors.isActive?.message}
+            hideIcon={true}
+            options={opcionesEstado}
+          />
+        )}
+
         <InputsInline>
           <Input
             name="phone"
             label="Número de teléfono"
             type="text"
+            onChange={maskPhone}
             register={register}
             error={errors.phone?.message}
             options={{
@@ -118,6 +150,7 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
             name="dui"
             label="DUI"
             type="text"
+            onChange={maskDui}
             register={register}
             error={errors.dui?.message}
             options={{
@@ -128,17 +161,6 @@ const RegisterEmployee = ({ onClose, defaultValues }) => {
               },
             }}
           />
-
-          {defaultValues && (
-            <Dropdown
-              name="isActive"
-              label="Estado"
-              register={register}
-              error={errors.isActive?.message}
-              hideIcon={true}
-              options={opcionesEstado}
-            />
-          )}
         </InputsInline>
 
         <InputsInline>

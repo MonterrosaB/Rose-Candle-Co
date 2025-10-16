@@ -62,6 +62,8 @@ const useProducts = (methods) => {
   });
 
   const createProduct = async (formData) => {
+    console.log(formData);
+
     return toast.promise(
       (async () => {
         const response = await fetch(ApiProducts, {
@@ -84,8 +86,8 @@ const useProducts = (methods) => {
       })(),
       {
         loading: "Guardando producto...",
-        success: "Producto registrado correctamente 🎉",
-        error: "Ocurrió un error al registrar el producto 😥",
+        success: "Producto registrado correctamente",
+        error: "Ocurrió un error al registrar el producto",
       }
     );
   };

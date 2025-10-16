@@ -126,12 +126,11 @@ const PageMaterials = () => {
     }
     : {
       [t("columns.name")]: "name",
-      [t("columns.stock")]: "currentStock",
-      [t("columns.minStock")]: "minimunStock",
-      [t("columns.unit")]: "unit",
-      [t("columns.price")]: "currentPrice",
-      [t("columns.category")]: "idRawMaterialCategory.name",
-      [t("columns.supplier")]: "idSupplier.name",
+      [t("columns.stock")]: "stock",
+      [t("columns.minStock")]: "minimum",
+      [t("columns.price")]: "price",
+      [t("columns.category")]: "category",
+      [t("columns.supplier")]: "supplier",
     };
 
   return (
@@ -204,10 +203,7 @@ const PageMaterials = () => {
           >
             <h3 className="text-lg font-semibold text-gray-800">{mat.name}</h3>
             <p className="text-sm text-gray-600">
-              <strong>{t("stock")}:</strong> {mat.currentStock}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>{t("unit")}:</strong> {mat.unit}
+              <strong>{t("stock")}:</strong> {mat.currentStock} {mat.unit}
             </p>
             <p className="text-sm text-gray-600">
               <strong>{t("price")}:</strong> ${mat.currentPrice}

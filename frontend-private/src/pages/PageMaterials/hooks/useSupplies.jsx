@@ -31,25 +31,6 @@ const useSupplies = (methods) => {
         onError: () => toast.error("Error al obtener el balance")
     });
 
-    const materialsQuery = useQuery({
-        queryKey: ["materials"],
-        queryFn: async () => {
-            const res = await fetch(`${API}/rawMaterials`);
-            if (!res.ok) throw new Error("No se pudo obtener materias primas");
-
-            const data = await res.json();
-            // Formatear para el dropdown
-            return data.map((cat) => ({
-                _id: cat._id,
-                label: cat.name,
-            }));
-        },
-        onError: (error) => {
-            console.error("Error al cargar categorías:", error);
-            toast.error("Error al obtener materias primas");
-        },
-    });
-
     const createMaterial = async (data) => {
         setLoading(true);
         try {
@@ -69,6 +50,7 @@ const useSupplies = (methods) => {
 
             const res = await fetch(API + "/materialBalance", {
                 method: "POST",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(parsedData),
             });
@@ -93,6 +75,7 @@ const useSupplies = (methods) => {
 
             const res = await fetch(API + `/materialBalance/${id}`, {
                 method: "PUT",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(parsedData),
             });
@@ -110,6 +93,7 @@ const useSupplies = (methods) => {
         try {
             const res = await fetch(API + `/materialBalance/${id}`, {
                 method: "DELETE",
+                credentials: "include",
             });
 
             if (!res.ok) throw new Error("Error al eliminar la materia prima");
@@ -123,8 +107,7 @@ const useSupplies = (methods) => {
 
     return {
         materialsBalance: materialsBalanceQuery.data ?? [],
-        materials: materialsQuery.data ?? [],
-        loading: materialsQuery.isLoading || materialsQuery.isLoading,
+        loading: materialsBalanceQuery.isLoading,
         createMaterial,
         register,
         handleSubmit,

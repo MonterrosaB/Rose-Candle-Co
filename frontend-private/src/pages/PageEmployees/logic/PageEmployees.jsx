@@ -7,6 +7,8 @@ import DataGrid from "../../../global/components/DataGrid";
 import useEmployeeAction from "../hooks/useEmployeeAction";
 import TitleH1 from "../../../global/components/TitleH1";
 import useFetchEmployees from "../hooks/useFetchEmployees";
+import toast from "react-hot-toast";
+import { useAuth } from "../../../global/hooks/useAuth";
 
 const PageEmployees = () => {
   const { t } = useTranslation("employees"); // Inicializar traducción con el namespace 'employees'
@@ -15,6 +17,8 @@ const PageEmployees = () => {
   useEffect(() => {
     document.title = t("title");
   }, [t]);
+
+  const { user } = useAuth();
 
   // Obtener empleados y función para refrescar lista desde hook personalizado
   const { employees, getEmployees } = useFetchEmployees();
@@ -29,24 +33,49 @@ const PageEmployees = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   // Función para abrir el modal en modo "agregar"
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+
+    e.preventDefault();    //  Detener el comportamiento por defecto (evitar el submit/refresco)
+
     setSelectedEmployee(null); // Limpiar selección previa
     setOpenDialogEmployees(true); // Abrir diálogo
   };
 
-  // Función para abrir el modal en modo "editar" con empleado seleccionado
+  const userRole = user.role; //
   const handleUpdate = (employee) => {
-    setSelectedEmployee(employee);
-    setOpenDialogEmployees(true);
+    // Aseguramos que el rol del empleado a editar esté en minúsculas y sin espacios
+    const employeeRole = employee.role.toLowerCase().replace(/\s/g, '_');
+
+    // 1. Un Super Admin puede editar a cualquiera (incluidos otros Admins, pero no a sí mismo si está en la lista)
+    // 2. Un Admin NO puede editar a otro Admin.
+    // 3. NADIE (excepto el Super Admin logueado, que se maneja fuera de esta lista) puede editar a un Super Admin.
+
+    const canEdit =
+      userRole === "super_admin" && employeeRole !== "super_admin" || // Super Admin puede editar Admins/Empleados, pero no a OTRO Super Admin (si estuviera en la lista)
+      (userRole !== "super_admin" && employeeRole !== "admin" && employeeRole !== "super_admin"); // Cualquier otro rol solo puede editar 'empleados' (ni admin ni super_admin)
+
+    // Simplificando la intención (evitar que un userRole < super_admin edite a admin/super_admin):
+    const isTargetAdminOrSuper = employeeRole === "admin" || employeeRole === "super_admin";
+
+    const canProceed = userRole === "super_admin" || !isTargetAdminOrSuper;
+
+
+    if (canProceed) {
+      setSelectedEmployee(employee);
+      setOpenDialogEmployees(true);
+    } else {
+      // Si el usuario logueado no es super_admin e intenta editar un admin/super_admin
+      toast.error(t("messages.editAdminRestriction"));
+    }
   };
 
   // Definición de columnas para la tabla, usando textos traducidos
   const columns = {
+    [t("columns.dui")]: "dui",
     [t("columns.firstName")]: "name",
     [t("columns.lastName")]: "surnames",
     [t("columns.email")]: "email",
     [t("columns.phone")]: "phone",
-    [t("columns.dui")]: "dui",
     [t("columns.role")]: "role",
   };
 
@@ -54,7 +83,6 @@ const PageEmployees = () => {
   const handleCloseModal = () => {
     setSelectedEmployee(null);
     setOpenDialogEmployees(false);
-    getEmployees(); // Refrescar datos después de cerrar modal
   };
 
   return (

@@ -8,11 +8,13 @@ import Input from "../../../global/components/Input";
 import Dropdown from "../../../global/components/Dropdown";
 import Button from "../../../global/components/Button";
 import useSupplies from "../hooks/useSupplies";
+import useMaterials from "../hooks/useMaterials";
 
 const RegisterSupplies = ({ onClose }) => {
 
   const methods = useForm();
-  const { createMaterial, materials, register, handleSubmit, errors } = useSupplies(methods);
+  const { createMaterial, register, handleSubmit, errors } = useSupplies(methods);
+  const { materials } = useMaterials(methods);
 
 
   const onSubmit = (data) => {

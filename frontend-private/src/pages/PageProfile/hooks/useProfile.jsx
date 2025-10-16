@@ -61,6 +61,7 @@ export const useProfile = () => {
 
       const res = await fetch(`${ApiEmployees}/${user.id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sendData),
       });

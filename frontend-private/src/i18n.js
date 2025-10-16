@@ -1,25 +1,25 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import HttpBackend from 'i18next-http-backend';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+import LanguageDetector from "i18next-browser-languagedetector";
 
 i18n
   .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'es',
+    fallbackLng: "es",
     debug: true,
 
-    ns: ['profile, sidebar'],
-    defaultNS: 'profile',
+    ns: ["profile", "sidebar", "datagrid"], //  arreglado y agregado datagrid
+    defaultNS: "profile",
 
     interpolation: {
       escapeValue: false,
     },
 
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
 
     react: {

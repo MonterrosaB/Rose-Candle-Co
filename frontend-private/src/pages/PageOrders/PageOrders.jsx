@@ -40,14 +40,12 @@ const PageOrders = () => {
   const handleAddOrder = () => {
     setSelectedOrder(null);
     setOpenDialogOrders(true);
-    getSalesOrders();
   };
 
   // Abrir modal para editar
   const handleEditOrder = (order) => {
     setSelectedOrder(order);
     setOpenDialogOrders(true);
-    getSalesOrders();
   };
 
   return (
@@ -62,7 +60,7 @@ const PageOrders = () => {
             onClickPrimaryBtn={handleAddOrder}
             updateRow={handleEditOrder} //  Aquí pasamos la función
             showDelete={false}
-            showMore={true}
+            showMore={false}
           />
         </div>
         {openDialogOrders && (

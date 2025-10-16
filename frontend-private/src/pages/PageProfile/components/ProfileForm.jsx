@@ -11,6 +11,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useProfile } from "../hooks/useProfile";
+import Logs from "./Logs.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -56,11 +57,9 @@ const ProfileSection = () => {
   return (
     <div className="space-y-10 lg:mt-0 sm:mt-12">
       {/* Header */}
-      <Link to="/home">
-        <div className="flex flex-wrap mb-1 items-center">
-          <ArrowLeft strokeWidth={2.5} className="cursor-pointer" />
-          <h1 className="text-2xl font-semibold ml-2">{t("personal_info")}</h1>
-        </div>
+      <Link to="/home" className="flex mb-1 items-center w-max">
+        <ArrowLeft strokeWidth={2.5} className="cursor-pointer" />
+        <h1 className="text-2xl font-semibold ml-2">{t("personal_info")}</h1>
       </Link>
 
       {/* Avatar, título y botones */}
@@ -184,6 +183,7 @@ const ProfileSection = () => {
           </div>
         )}
       </form>
+      <Logs />
     </div>
   );
 };

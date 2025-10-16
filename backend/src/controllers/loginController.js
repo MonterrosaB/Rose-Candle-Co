@@ -28,7 +28,8 @@ loginController.login = async (req, res) => {
       return res.status(400).json({ message: "User not found" }); // Usuario no existe
     }
 
-    const isAdmin = userFound.role === "admin";
+    const isAdmin =
+      userFound.role === "admin" || userFound.role === "super_admin";
 
     // Validar si la cuenta no está bloqueada
     if (!isAdmin && userFound.timeOut > Date.now()) {
@@ -51,6 +52,8 @@ loginController.login = async (req, res) => {
     const token = JsonWebToken.sign(
       {
         id: userFound._id,
+        role: userFound.role,
+        name: userFound.name,
         isAdmin,
         name: userFound.name,
         surnames: userFound.surnames,

@@ -27,9 +27,6 @@ const PageRecord = () => {
   }, []);
 
   const {
-    bestSellers,
-    worstSellers,
-    dataM,
     materialsBalance,
     materials,
     materialCost,
@@ -74,23 +71,38 @@ const PageRecord = () => {
 
   // Filtrado de balance de material
   useEffect(() => {
-    if (materialsBalance?.length && selectedMaterial) {
-      let runningTotal = 0;
-      const data = materialsBalance
-        .filter((item) => item.idMaterial._id === selectedMaterial)
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .map((item) => {
-          if (item.movement === "entrada") runningTotal += item.amount;
-          else if (item.movement === "salida") runningTotal -= item.amount;
-          return {
-            date: item.date,
-            createdAt: item.createdAt,
-            amount: runningTotal,
-          };
-        });
+    try {
 
-      setFilteredBalance(data);
+      if (materialsBalance?.length && selectedMaterial) {
+        let runningTotal = 0;
+        const data = materialsBalance
+          .filter((item) => {
+            // 👈 CORRECCIÓN CLAVE: Verifica que item.idMaterial no sea null/undefined
+            return item.idMaterial && item.idMaterial._id === selectedMaterial;
+          })
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .map((item) => {
+            if (item.movement === "entrada") runningTotal += item.amount;
+            else if (item.movement === "salida") runningTotal -= item.amount;
+            return {
+              date: item.date,
+              createdAt: item.createdAt,
+              amount: runningTotal,
+            };
+          });
+
+        setFilteredBalance(data);
+      } else if (selectedMaterial && !materialsBalance.some(item => item.idMaterial && item.idMaterial._id === selectedMaterial)) {
+        // Opcional: Manejar el caso donde no hay balance para el material seleccionado
+        setFilteredBalance([]);
+        // Puedes agregar aquí un toast o un log si necesitas notificar al usuario
+        console.error(`No se encontró balance para el material ID: ${selectedMaterial}`);
+      }
+    } catch (error) {
+      console.log(error);
+
     }
+
   }, [selectedMaterial, materialsBalance]);
 
   // Calcular producción y precios de producto al cambiar selección
@@ -237,30 +249,6 @@ const PageRecord = () => {
             title="Producción de Inventario"
             value={production || 0}
             variant="compact"
-          />
-        </div>
-      </div>
-
-      {/* 📊 Más y menos vendidos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Productos más vendidos
-          </h3>
-          <DataGrid
-            columns={productTableColumns}
-            rows={bestSellers || []}
-            editable={false}
-          />
-        </div>
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Productos menos vendidos
-          </h3>
-          <DataGrid
-            columns={productTableColumns}
-            rows={worstSellers || []}
-            editable={false}
           />
         </div>
       </div>

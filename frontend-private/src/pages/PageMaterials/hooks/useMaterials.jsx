@@ -44,7 +44,30 @@ const useMaterials = (methods) => {
 
   const materialsQuery = useQuery({
     queryKey: ["materials"],
-    queryFn: () => fetcher(API + "/rawMaterials"),
+    queryFn: async () => {
+      const res = await fetch(`${API}/rawMaterials`);
+      if (!res.ok) throw new Error("No se pudo obtener materias primas");
+
+      const data = await res.json();
+      // Formatear para el dropdown
+      return data.map((mat) => ({
+        _id: mat._id,
+        name: mat.name,
+        label: mat.name,
+        unit: mat.unit,
+        stock: `${mat.currentStock} ${mat.unit}`,
+        currentStock: mat.currentStock,
+        minimum: `${mat.minimunStock} ${mat.unit}`,
+        minimunStock: mat.minimunStock,
+        price: "$" + mat.currentPrice,
+        currentPrice: mat.currentPrice,
+        idRawMaterialCategory: mat.idRawMaterialCategory,
+        category: mat.idRawMaterialCategory.name,
+        idSupplier: mat.idSupplier,
+        supplier: mat.idSupplier.name,
+        deleted: mat.deleted,
+      }));
+    },
     onError: () => toast.error("Error al obtener materias primas"),
   });
 
@@ -108,6 +131,7 @@ const useMaterials = (methods) => {
       });
 
       if (!res.ok) throw new Error("Error al actualizar la materia prima");
+      materialsQuery.refetch();
 
       toast.success("Materia Prima actualizada");
     } catch (err) {
@@ -120,7 +144,7 @@ const useMaterials = (methods) => {
   const deleteMaterial = async (id) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/${id}`, {
+      const res = await fetch(`${API}/rawMaterials/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -128,6 +152,7 @@ const useMaterials = (methods) => {
       if (!res.ok) throw new Error("Error al eliminar la materia prima");
 
       toast.success("Materia Prima eliminada");
+      materialsQuery.refetch();
     } catch (err) {
       toast.error("Error al eliminar la materia prima");
     } finally {
@@ -145,6 +170,7 @@ const useMaterials = (methods) => {
 
       if (!res.ok) throw new Error("Error al eliminar la materia prima");
 
+      materialsQuery.refetch();
       toast.success("Materia Prima eliminada");
     } catch (err) {
       toast.error("Error al eliminar la materia prima");
@@ -162,6 +188,7 @@ const useMaterials = (methods) => {
       });
 
       if (!res.ok) throw new Error("Error al restaurar la materia prima");
+      materialsQuery.refetch();
 
       toast.success("Materia Prima restaurada");
     } catch (err) {
@@ -184,7 +211,7 @@ const useMaterials = (methods) => {
     updateMaterial,
     deleteMaterial,
     softDeleteMaterial,
-    restoreMaterial
+    restoreMaterial,
   };
 };
 

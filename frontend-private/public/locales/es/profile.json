@@ -1,21 +1,42 @@
 {
   "personal_info": "Información Personal",
   "my_profile": "Mi Perfil",
-  "manage_info": "Gestiona tu información personal",
-  "app_manual": "Manual de la aplicación",
+  "manage_info": "Gestiona tu información de contacto y credenciales.",
+  "app_manual": "Manual de la Aplicación (Abrir en Drive)",
+  
+  "loading": "Cargando información...",
+  
   "edit": "Editar",
   "save": "Guardar",
   "save_changes": "Guardar Cambios",
   "cancel": "Cancelar",
-  "change_language": "Cambiar idioma",
-  "recover_password": "Recuperar contraseña",
-  "loading": "Cargando perfil...",
+  "change_language": "Cambiar Idioma",
+  
   "name": "Nombre",
   "surnames": "Apellidos",
   "phone": "Teléfono",
   "email": "Correo Electrónico",
-  "dui": "DUI",
+  "dui": "DUI / Identificación",
   "user": "Usuario",
   "password": "Contraseña",
-  "document_title": "Mi Perfil"
+  "recover_password": "Cambiar Contraseña",
+  
+  "audit_trail": "Bitácora de Actividad",
+  "collection": "Colección",
+  "target_id": "ID de Registro",
+  "system_user": "Usuario del Sistema",
+  "no_description_provided": "Sin descripción detallada.",
+  "show_more": "Ver más",
+  "show_less": "Ver menos",
+  
+  "search_logs_placeholder": "Buscar por acción, usuario o descripción...",
+  "loading_logs": "Cargando bitácora...",
+  "error_fetching_logs": "Hubo un error al cargar la bitácora. Intente más tarde.",
+  "no_logs": "No se encontraron registros de actividad para este usuario.",
+  "no_search_results": "No se encontraron resultados para su búsqueda.",
+  
+  "update": "Actualización de Datos",
+  "create": "Creación de Registro",
+  "delete": "Eliminación de Registro",
+  "login": "Inicio de Sesión"
 }

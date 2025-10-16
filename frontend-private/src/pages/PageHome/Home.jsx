@@ -51,13 +51,13 @@ const Home = () => {
     <PrincipalDiv>
       {/* Encabezado con enlace al perfil */}
       <div className="flex mb-1 justify-between items-center">
-        <Link to="/profile" className="flex flex-wrap mb-1 items-center max-w-max">
+        <div className="flex flex-wrap mb-1 items-center max-w-max">
 
-          <CircleUser strokeWidth={2.5} className="cursor-pointer" />
+          <CircleUser strokeWidth={2.5} />
           <h1 className="text-2xl font-semibold ml-2">
             {t("welcome_back")} {user?.name || "usuario"}
           </h1>
-        </Link>
+        </div>
         <Link to="/profile" className="flex flex-wrap mb-1 items-center max-w-max">
           <Settings strokeWidth={2.5} className="cursor-pointer" />
         </Link>

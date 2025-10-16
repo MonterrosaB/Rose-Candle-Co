@@ -24,7 +24,7 @@ function validateProductData(data, allImages) {
     if (allImages?.length > 8) errors.push("Máximo 8 imágenes permitidas");
 
 
-    // 4️⃣ Normalizar y validar disponibilidad
+    //  Normalizar y validar disponibilidad
     if (typeof data.availability === "string") {
         data.availability = data.availability === "true"; // convierte "true"/"false" a boolean
     }
@@ -65,6 +65,11 @@ function validateProductData(data, allImages) {
                 errors.push(
                     `La variante ${i + 1} debe tener entre 1 y 200 caracteres`
                 );
+
+            if (typeof v.variantPrice === "string" && !isNaN(parseFloat(v.variantPrice))) {
+                v.variantPrice = parseFloat(v.variantPrice);
+            }
+
             if (
                 typeof v.variantPrice !== "number" ||
                 v.variantPrice < 1 ||
@@ -81,6 +86,12 @@ function validateProductData(data, allImages) {
                         errors.push(
                             `Componente ${j + 1} en variante ${i + 1} no tiene ID`
                         );
+
+                    //  CONVERSIÓN A NÚMERO
+                    if (typeof c.amount === "string" && !isNaN(parseFloat(c.amount))) {
+                        c.amount = parseFloat(c.amount);
+                    }
+
                     if (typeof c.amount !== "number" || c.amount < 1 || c.amount > 500)
                         errors.push(
                             `Cantidad inválida en componente ${j + 1} de variante ${i + 1} (1–500)`
