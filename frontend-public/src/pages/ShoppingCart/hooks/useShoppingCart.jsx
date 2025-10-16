@@ -4,6 +4,7 @@ import { useAuth } from "../../../global/hooks/useAuth.js";
 
 
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 
 const useCart = () => {
@@ -186,6 +187,8 @@ const useCart = () => {
 
 
             if (!res.ok) throw new Error("Error al incrementar el producto");
+
+            toast.success("Producto Agregado Correctamente");
 
             await res.json();
             fetchCart();
