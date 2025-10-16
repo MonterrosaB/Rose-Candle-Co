@@ -69,7 +69,7 @@ function Navigation() {
 
       {!hideNavFooter && <Nav />}
 
-      <div className=" min-h-dvh">
+      <div className={`min-h-dvh ${!hideNavFooter ? "mt-20" : ""}`}>
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />

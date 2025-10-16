@@ -1,86 +1,182 @@
-import { useEffect, useContext, useState } from "react";
-import { useForm } from "react-hook-form";
+// hooks/useSettings.js
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { AuthContext } from "../../../global/context/AuthContext";
+import { useAuth } from "../../../global/hooks/useAuth";
 
-export const usePersonalize = () => {
-  const { user, API } = useContext(AuthContext);
-  const ApiSettings = API + "/settings"; // API para Settings
+const useSettings = () => {
+  const { API } = useAuth();
+  const ApiSettings = API + "/settings";
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { isSubmitting },
-  } = useForm({
-    defaultValues: {
-      marquee: "",
-      bannerTitle: "",
-      bannerSubtitle: "",
-      bannerImage: null, // Para manejar la imagen del banner
-      emailSubject: "",
-      emailBody: "",
-    },
-  });
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Obtener la configuración desde la base de datos
+  // GET - Obtener configuración
   const getSettings = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(ApiSettings);
-      if (!res.ok) throw new Error("Error al cargar la configuración");
-      const data = await res.json();
-      reset({
-        marquee: data.marquee || "",
-        bannerTitle: data.banner?.title || "",
-        bannerSubtitle: data.banner?.subtitle || "",
-        emailSubject: data.email?.subject || "",
-        emailBody: data.email?.body || "",
+      const res = await fetch(ApiSettings, {
+        credentials: "include",
       });
+      if (!res.ok) throw new Error("Error al obtener configuración");
+      const data = await res.json();
+      setSettings(data);
     } catch (error) {
       console.error(error);
       toast.error("No se pudo cargar la configuración");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Actualizar la configuración (Marquee, Banner, Email)
-  const updateSettings = async (data) => {
+  // PATCH - Actualizar Marquee
+  const updateMarquee = async (name) => {
     try {
-      // FormData para manejar la imagen del banner si es necesario
-      const formData = new FormData();
-      formData.append("marquee", data.marquee);
-      formData.append("bannerTitle", data.bannerTitle);
-      formData.append("bannerSubtitle", data.bannerSubtitle);
-      formData.append("emailSubject", data.emailSubject);
-      formData.append("emailBody", data.emailBody);
-
-      if (data.bannerImage && data.bannerImage[0]) {
-        formData.append("bannerImage", data.bannerImage[0]);
-      }
-
-      const res = await fetch(ApiSettings, {
-        method: "PUT",
-        body: formData,
+      const res = await fetch(`${ApiSettings}/marquee`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
       });
 
-      if (!res.ok) throw new Error("Error al actualizar la configuración");
-      toast.success("Configuración actualizada correctamente");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al actualizar marquee");
+
+      toast.success("Marquee actualizado exitosamente");
+      getSettings();
+    } catch (error) {
+      console.error("Error en updateMarquee:", error.message);
+      toast.error(error.message || "No se pudo actualizar marquee");
+      throw error;
+    }
+  };
+
+  // PATCH - Actualizar Colección de Temporada
+const updateSeasonalCollection = async (data) => {
+  try {
+    const formData = new FormData();
+    formData.append("idCollection", data.idCollection);
+    formData.append("name", data.name);
+    formData.append("description", data.description || "");
+    formData.append("availableUntil", data.availableUntil || "");
+    formData.append("isConstant", data.isConstant || false);
+
+    if (data.image instanceof File) {
+      formData.append("image", data.image);
+    }
+
+    const res = await fetch(`${ApiSettings}/seasonal-collection`, {
+      method: "PATCH",
+      credentials: "include",
+      body: formData,
+    });
+
+    const responseData = await res.json();
+    if (!res.ok) throw new Error(responseData.message || "Error al actualizar colección de temporada");
+
+    toast.success("Colección de temporada actualizada");
+    getSettings();
+  } catch (error) {
+    console.error("Error en updateSeasonalCollection:", error.message);
+    toast.error(error.message || "No se pudo actualizar la colección");
+    throw error;
+  }
+};
+
+  // PATCH - Actualizar Inspiración
+  const updateInspiration = async (data) => {
+    try {
+      const res = await fetch(`${ApiSettings}/inspiration`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await res.json();
+      if (!res.ok) throw new Error(responseData.message || "Error al actualizar inspiración");
+
+      toast.success("Inspiración actualizada exitosamente");
+      getSettings();
+    } catch (error) {
+      console.error("Error en updateInspiration:", error.message);
+      toast.error(error.message || "No se pudo actualizar inspiración");
+      throw error;
+    }
+  };
+
+  // PATCH - Actualizar Productos Recomendados
+  const updateRecommendedProducts = async (data) => {
+    try {
+      const res = await fetch(`${ApiSettings}/recommended-products`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await res.json();
+      if (!res.ok) throw new Error(responseData.message || "Error al actualizar productos recomendados");
+
+      toast.success("Productos recomendados actualizados");
+      getSettings();
+    } catch (error) {
+      console.error("Error en updateRecommendedProducts:", error.message);
+      toast.error(error.message || "No se pudo actualizar productos");
+      throw error;
+    }
+  };
+
+  // GET - Obtener solo productos recomendados
+  const getRecommendedProducts = async () => {
+    try {
+      const res = await fetch(`${ApiSettings}/recommended-products/list`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Error al obtener productos recomendados");
+      const data = await res.json();
+      return data;
     } catch (error) {
       console.error(error);
-      toast.error("Error al guardar los cambios");
+      toast.error("No se pudo cargar productos recomendados");
+      throw error;
+    }
+  };
+
+  // DELETE - Eliminar un producto de recomendados
+  const removeRecommendedProduct = async (productId) => {
+    try {
+      const res = await fetch(`${ApiSettings}/recommended-products/${productId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al eliminar producto");
+
+      toast.success("Producto eliminado de recomendados");
+      getSettings();
+    } catch (error) {
+      console.error("Error en removeRecommendedProduct:", error.message);
+      toast.error(error.message || "No se pudo eliminar producto");
+      throw error;
     }
   };
 
   useEffect(() => {
     getSettings();
-  }, []); // Cargar la configuración solo una vez cuando el componente se monte
+  }, []);
 
   return {
-    register,
-    handleSubmit,
-    updateSettings,
-    isSubmitting,
-    reset,
-    setValue, // Para cambiar valores del formulario si es necesario
+    settings,
+    loading,
+    getSettings,
+    updateMarquee,
+    updateSeasonalCollection,
+    updateInspiration,
+    updateRecommendedProducts,
+    getRecommendedProducts,
+    removeRecommendedProduct,
   };
 };
+
+export default useSettings;

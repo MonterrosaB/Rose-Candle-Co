@@ -21,13 +21,13 @@ const OrbitedCircle = ({ size = "small" }) => {
   return (
     <div className={`relative ${sizeClasses[size]}`}>
       {/* Círculo orbital */}
-      <div className="absolute inset-0 border border-gray-400 rounded-full"></div>
+      <div className="absolute inset-0 border border-gray-900 rounded-full"></div>
 
       {/* Contenedor rotatorio */}
       <div
         className="absolute inset-0"
         style={{
-          animation: "spin 8s linear infinite",
+          animation: "spin 50s linear infinite",
         }}
       >
         {/* Estrella 1 - izquierda (180°) */}

@@ -3,8 +3,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../../global/context/AuthContext"; // se obtiene el id del usuario logueado
 
-
-
 export const useProfile = () => {
   const { user, API } = useContext(AuthContext);
 
@@ -63,6 +61,7 @@ export const useProfile = () => {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(sendData),
       });
 

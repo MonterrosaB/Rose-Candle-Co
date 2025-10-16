@@ -11,23 +11,37 @@ const valores = [
 const ValuesMobile = () => {
   return (
     <div className="relative max-w-xs mx-auto p-4 overflow-visible">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold mb-2">Nuestros valores,</h3>
-        <h3 className="text-3xl font-bold">Nuestra esencia</h3>
+      {/* Título siempre en dos líneas */}
+      <div className="text-center mb-16">
+        <h3
+          className="text-3xl font-italic mb-0"
+          style={{ fontFamily: "Lora", fontStyle: "italic" }}
+        >
+          Nuestros Valores
+        </h3>
+        <h3
+          className="text-3xl font-semibold"
+          style={{ fontFamily: "Lora" }}
+        >
+          Nuestra Esencia
+        </h3>
       </div>
 
       <div className="relative min-h-[480px] flex flex-col gap-6 overflow-visible">
+        {/* Orbita decorativa parcial en la esquina superior izquierda */}
         <div
-          className="absolute top-0 left-0 pointer-events-none"
+          className="absolute -top-12 -left-12 pointer-events-none"
           style={{
             zIndex: 0,
-            transform: "translate(-40%, -148%) scale(1.5)",
-            transformOrigin: "top left",
+            width: "120px",
+            height: "120px",
+            overflow: "hidden",
           }}
         >
           <OrbitedCircle size="medium" />
         </div>
 
+        {/* Valores */}
         {valores.map((valor, index) => (
           <div
             key={index}

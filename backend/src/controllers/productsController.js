@@ -620,6 +620,8 @@ productsController.getBestSellers = async (req, res) => {
           name: "$product.name",
           variant: "$variant.variant",
           variantPrice: "$variant.variantPrice",
+          images: "$product.images",
+          description: "$product.description",
           totalQuantity: 1,
           totalRevenue: {
             $multiply: ["$variant.variantPrice", "$totalQuantity"],

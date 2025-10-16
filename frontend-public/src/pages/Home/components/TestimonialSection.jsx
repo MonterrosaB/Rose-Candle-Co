@@ -81,66 +81,65 @@ const TestimonialSection = () => {
   };
 
   return (
-    <div className="bg-[#F2EBD9] min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-7xl w-full flex flex-col md:flex-row h-auto md:h-screen">
-        {/* Imagen de la vela */}
-        <div className="w-full md:w-1/2 h-64 md:h-full">
-          <img
-            src={current.image || "/placeholder.svg"}
-            alt="Producto"
-            className="w-full h-full object-cover rounded-md"
-          />
-        </div>
+    <div className="bg-[#F2EBD9] min-h-[80vh] flex items-center justify-center p-4">
+  <div className="max-w-7xl w-full flex flex-col md:flex-row h-auto">
+    {/* Imagen de la vela */}
+    <div className="w-full md:w-1/2 h-64 md:h-[60vh]">
+      <img
+        src={current.image || "/placeholder.svg"}
+        alt="Producto"
+        className="w-full h-full object-cover rounded-md"
+      />
+    </div>
 
-        {/* Contenido de la opinión */}
-        <div className="w-full md:w-1/2 flex flex-col justify-end px-6 md:px-20 py-10 md:pb-24 relative">
-          {/* Comillas decorativas SVG */}
-          <div className="hidden md:block absolute -top-8 left-16">
-            <img src={comillas} alt="Comillas decorativas" />
-          </div>
+    {/* Contenido de la opinión */}
+    <div className="w-full md:w-1/2 flex flex-col justify-end px-6 md:px-20 py-10 md:pb-20 relative">
+      {/* Comillas decorativas SVG */}
+      <div className="hidden md:block absolute -top-8 left-16">
+        <img src={comillas} alt="Comillas decorativas" />
+      </div>
 
-          {/* Texto de la opinión */}
-          <div className="relative z-10 space-y-6 max-w-md md:max-w-none mx-auto md:mx-0 mt-4 md:mt-8">
-            <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
-              {current.text}
-            </p>
+      {/* Texto de la opinión */}
+      <div className="relative z-10 space-y-6 max-w-md md:max-w-none mx-auto md:mx-0 mt-4 md:mt-8">
+        <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
+          {current.text}
+        </p>
 
-            <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
-              {current.highlight}
-            </p>
+        <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
+          {current.highlight}
+        </p>
 
-            <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
-              {current.conclusion}
-            </p>
+        <p className="text-[#2c2c2c] text-base leading-relaxed font-normal">
+          {current.conclusion}
+        </p>
 
-
-            <div className="flex items-center justify-between pt-6 mt-8">
-              <h3 className="text-[#2c2c2c] text-lg font-bold underline decoration-2 underline-offset-4">
-                {current.author}
-              </h3>
-              <button
-                onClick={nextOpinion}
-                className="hover:bg-gray-200 p-2 rounded-full transition-colors duration-200"
-                aria-label="Siguiente opinión"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#2c2c2c"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="9,18 15,12 9,6"></polyline>
-                </svg>
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center justify-between pt-6 mt-8">
+          <h3 className="text-[#2c2c2c] text-lg font-bold underline decoration-2 underline-offset-4">
+            {current.author}
+          </h3>
+          <button
+            onClick={nextOpinion}
+            className="cursor-pointer text-white p-2 rounded-full transition-colors duration-200"
+            aria-label="Siguiente opinión"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#2c2c2c"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9,18 15,12 9,6"></polyline>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>
   );
 };
 
