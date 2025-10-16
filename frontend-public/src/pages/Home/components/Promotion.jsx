@@ -81,7 +81,7 @@ const Promotion = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/products")}
             >
-              Explorar colección
+              Explorar Colección
             </motion.button>
           </div>
         </motion.div>
