@@ -22,7 +22,7 @@ const PageOrders = () => {
   }, [t]);
 
   const methods = useForm();
-  const { salesOrders } = useOrders(methods);
+  const { salesOrders, getSalesOrders } = useOrders(methods);
 
   const [openDialogOrders, setOpenDialogOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null); //  Para editar
@@ -105,12 +105,17 @@ const PageOrders = () => {
         {openDialogOrders && (
           <Dialog
             open={openDialogOrders}
-            onClose={() => setOpenDialogOrders(false)}
+            onClose={() => {
+              setOpenDialogOrders(false)
+              getSalesOrders();
+            }}
           >
             <RegisterOrder
               initialData={selectedOrder} //  Le pasamos la orden si es edición
-              onClose={() => setOpenDialogOrders(false)}
-            />
+              onClose={() => {
+                setOpenDialogOrders(false)
+                getSalesOrders();
+              }} />
           </Dialog>
         )}
 
