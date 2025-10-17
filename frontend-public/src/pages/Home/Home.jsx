@@ -10,7 +10,7 @@ import MarqueeBanner from "../../global/components/MarqueeBanner.jsx"
 const Home = () => {
     useEffect(() => {
         document.title = "Inicio | Rosé Candle Co.";
-      }, []);
+    }, []);
     return (
         <div className="relative bg-[#F9F7F3] ">
             <BannerTwo />
@@ -19,7 +19,7 @@ const Home = () => {
             <MarqueeBanner />
             <FeaturedProductsSection />
             <ValuesSection />
-            <TestimonialSection />
+            {/*<TestimonialSection />*/}
         </div>
     );
 };

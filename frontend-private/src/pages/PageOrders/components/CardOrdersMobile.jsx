@@ -43,7 +43,7 @@ const OrderCardMobile = ({ order, onEdit, t }) => {
     });
 
     // Traducciones (o etiquetas por defecto)
-    const orderIdLabel = t ? t("order_id") : "Orden #";
+    const orderIdLabel = t ? "ID" : "Orden #";
     const dateLabel = t ? t("date") : "Fecha";
     const totalLabel = t ? t("amount") : "Total";
     const clientLabel = t ? t("client") : "Cliente";

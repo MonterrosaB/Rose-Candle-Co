@@ -23,7 +23,7 @@ export const createProductPriceHistory = async ({
   const newHistory = new productPriceHistoryModel({
     idProduct,
     variantName,
-    unitPrice,
+    unitPrice: unitPrice.toFixed(2),
     reference,
     changedBy,
   });

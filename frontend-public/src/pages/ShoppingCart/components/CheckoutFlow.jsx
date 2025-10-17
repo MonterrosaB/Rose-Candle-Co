@@ -31,6 +31,7 @@ const CheckoutFlow = ({
 }) => {
   const { user, API } = useContext(AuthContext);
   const { idCart, createSalesOrder } = useCart();
+  const [orderId, setOrderId] = useState("");
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
@@ -123,8 +124,6 @@ const CheckoutFlow = ({
     }
   };
 
-
-
   // Función para procesar el pedido (simulado)
   const processOrder = async () => {
     try {
@@ -137,7 +136,7 @@ const CheckoutFlow = ({
 
       const { shipping, payment } = formData;
 
-      // 1️⃣ Obtener token de pago
+      //  Obtener token de pago
       const tokenResponse = await fetch(
         API + "/payments/token",
         {
@@ -152,7 +151,7 @@ const CheckoutFlow = ({
       const tokenData = await tokenResponse.json();
       const accessToken = tokenData.access_token;
 
-      // 2️⃣ Preparar datos de pago
+      //  Preparar datos de pago
       const paymentData = {
         monto: total,
         emailCliente: shipping.email,
@@ -160,9 +159,8 @@ const CheckoutFlow = ({
         tokenTarjeta: "null", // simulado
       };
 
-      console.log("Email cliente (desde frontend):", shipping.email);
 
-      // 3️⃣ Enviar pago simulado
+      // Enviar pago simulado
       const paymentResponse = await fetch(
         API + "/payments/testPayment",
         {
@@ -180,7 +178,7 @@ const CheckoutFlow = ({
       const paymentResult = await paymentResponse.json();
       console.log("Respuesta del pago simulado:", paymentResult);
 
-      // 4️⃣ Crear la orden solo si el pago se completó
+      //  Crear la orden solo si el pago se completó
       const orderData = {
         idShoppingCart: idCart,
         paymentMethod: "credit card",
@@ -193,7 +191,13 @@ const CheckoutFlow = ({
       const orderResult = await createSalesOrder(orderData);
       if (!orderResult) throw new Error("Error al crear la orden");
 
-      console.log("Orden creada correctamente:", orderResult);
+      // 1. Obtiene el ID completo
+      const fullOrderId = orderResult.order._id;
+
+      // 2. Extrae los últimos 8 caracteres y los convierte a MAYÚSCULAS
+      const shortenedOrderId = fullOrderId.slice(-8).toUpperCase();
+      setOrderId(shortenedOrderId);
+
       setOrderComplete(true);
 
     } catch (err) {
@@ -203,11 +207,6 @@ const CheckoutFlow = ({
       setIsProcessing(false); // Siempre desactiva el loading
     }
   };
-
-
-
-
-
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 pt-45">
@@ -316,6 +315,7 @@ const CheckoutFlow = ({
                 isProcessing={isProcessing}
                 orderComplete={orderComplete}
                 processOrder={processOrder}
+                orderId={orderId}
               />
             )}
           </AnimatePresence>

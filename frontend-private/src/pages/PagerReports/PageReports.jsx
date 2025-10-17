@@ -178,14 +178,6 @@ const PageReports = () => {
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto">
-            <DataGrid
-              title={t("earnings_by_product")}
-              columns={columns}
-              rows={productProfit}
-              editable={false}
-            />
-          </div>
           {/* Más y menos vendidos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div className="bg-white p-4 rounded-xl shadow">

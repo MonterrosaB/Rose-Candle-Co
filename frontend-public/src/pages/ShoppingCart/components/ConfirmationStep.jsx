@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { CheckCircle, Gift } from "lucide-react"
 
-const ConfirmationStep = ({ isProcessing, orderComplete, processOrder }) => (
+const ConfirmationStep = ({ isProcessing, orderComplete, processOrder, orderId }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.8 }}
     animate={{ opacity: 1, scale: 1 }}
@@ -30,7 +30,7 @@ const ConfirmationStep = ({ isProcessing, orderComplete, processOrder }) => (
         <p className="text-gray-600">Tu pedido ha sido procesado exitosamente</p>
         <div className="bg-green-50 p-4 rounded-lg">
           <p className="text-sm text-green-700">
-            Número de pedido: <span className="font-mono">#ORD-{Date.now()}</span>
+            Número de pedido: <span className="font-mono">{orderId ? `#ORD-${orderId}` : 'Cargando ID...'}</span>
           </p>
         </div>
       </motion.div>

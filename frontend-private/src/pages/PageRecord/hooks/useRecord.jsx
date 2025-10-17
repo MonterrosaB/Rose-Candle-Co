@@ -13,21 +13,21 @@ const useRecord = () => {
     const { API } = useAuth();
     const ApiProducts = `${API}/products`;
 
-    // 🔹 Best Sellers
+    //  Best Sellers
     const bestSellersQuery = useQuery({
         queryKey: ["bestSellers"],
         queryFn: () => fetcher(`${ApiProducts}/bestSellers`),
         onError: () => toast.error("Error al obtener los más vendidos"),
     });
 
-    // 🔹 Worst Sellers
+    //  Worst Sellers
     const worstSellersQuery = useQuery({
         queryKey: ["worstSellers"],
         queryFn: () => fetcher(`${ApiProducts}/worstSellers`),
         onError: () => toast.error("Error al obtener los menos vendidos"),
     });
 
-    // 🔹 Materiales con costo
+    // Materiales con costo
     const materialCostQuery = useQuery({
         queryKey: ["materialCost"],
         queryFn: () =>
@@ -35,7 +35,8 @@ const useRecord = () => {
                 data.flatMap((d) =>
                     d.materials.map((m) => ({
                         product: d.product,
-                        variantName: d._id.variantName,
+                        //Accede directamente a d.variantName
+                        variantName: d.variantName,
                         material: m.material,
                         quantity: m.quantity,
                         cost: m.cost,
@@ -43,9 +44,11 @@ const useRecord = () => {
                 )
             ),
         onError: () => toast.error("Error al obtener costos de materiales"),
+        refetchOnWindowFocus: false,
+
     });
 
-    // 🔹 Ganancias y Ventas
+    //  Ganancias y Ventas
     const profitAndSalesQuery = useQuery({
         queryKey: ["profitAndSales"],
         queryFn: () =>
@@ -59,21 +62,21 @@ const useRecord = () => {
         onError: () => toast.error("Error al obtener resumen de ventas"),
     });
 
-    // 🔹 Balance de Materiales
+    //  Balance de Materiales
     const materialsBalanceQuery = useQuery({
         queryKey: ["materialsBalance"],
         queryFn: () => fetcher(`${API}/materialBalance`),
         onError: () => toast.error("Error al cargar balance de materias"),
     });
 
-    // 🔹 Materias primas
+    //  Materias primas
     const materialsQuery = useQuery({
         queryKey: ["materials"],
         queryFn: () => fetcher(`${API}/rawMaterials`),
         onError: () => toast.error("Error al cargar materias primas"),
     });
 
-    // 🔹 Valor de inventario
+    //  Valor de inventario
     const inventoryValueQuery = useQuery({
         queryKey: ["inventoryValue"],
         queryFn: () =>
@@ -81,7 +84,7 @@ const useRecord = () => {
         onError: () => toast.error("Error al cargar valor del inventario"),
     });
 
-    // 🔹 Producción de un producto (parametrizable con mutation/query)
+    //  Producción de un producto (parametrizable con mutation/query)
     const productionQuery = useMutation({
         mutationFn: (productId) =>
             fetcher(`${API}/products/calculateProduction/${productId}`, (data) =>
@@ -90,7 +93,7 @@ const useRecord = () => {
         onError: () => toast.error("Error al calcular producción"),
     });
 
-    // 🔹 Historial de precio de producto
+    //  Historial de precio de producto
     const productPriceHistoryQuery = useMutation({
         mutationFn: (productId) =>
             fetcher(`${API}/productPriceHistory/${productId}`, (data) => {

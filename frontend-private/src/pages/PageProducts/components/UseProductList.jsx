@@ -1,5 +1,21 @@
 const ProductList = ({ onEdit, products }) => {
 
+  const calculateCost = (components) => {
+    if (!components || components.length === 0) {
+      return 0;
+    }
+
+    const totalCost = components.reduce((sum, component) => {
+      // Verifica que idComponent y currentPrice existan
+      const price = component.idComponent?.currentPrice || 0;
+      const amount = component.amount || 0;
+      // Multiplica la cantidad * precio y lo suma al acumulador
+      return sum + (amount * price);
+    }, 0);
+
+    return totalCost;
+  };
+
   return (
     <>
       {products && products.length > 0 ? (
@@ -48,18 +64,24 @@ const ProductList = ({ onEdit, products }) => {
                     <p className="text-sm text-gray-400">Sin variantes</p>
                   )}
                 </div>
+
+                {/* Bloque de Costo actualizado */}
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold">Costo:</p>
+                  <p className="text-sm font-semibold">Costo por Variante:</p>
                   {product.variant?.length > 0 ? (
-                    product.variant.map((v, i) => (
-                      <div key={i} className="text-sm flex justify-between gap-2">
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          ${parseFloat(v.variantPrice || 0).toFixed(2)}
-                        </span>
-                      </div>
-                    ))
+                    product.variant.map((v, i) => {
+                      // **Llamada a la función de cálculo**
+                      const cost = calculateCost(v.components);
+                      return (
+                        <div key={i} className="text-sm flex justify-between gap-2 items-center">
+                          <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-bold">
+                            ${cost.toFixed(2)}
+                          </span>
+                        </div>
+                      );
+                    })
                   ) : (
-                    <p className="text-sm text-gray-400">Sin variantes</p>
+                    <p className="text-sm text-gray-400">Sin componentes para calcular costo</p>
                   )}
                 </div>
 

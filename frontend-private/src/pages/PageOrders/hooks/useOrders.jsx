@@ -81,7 +81,7 @@ const useOrders = (methods) => {
           updatedAt: order.updatedAt,
           products,
           totalProducts,
-          totalPrice
+          totalPrice,
         };
       });
 

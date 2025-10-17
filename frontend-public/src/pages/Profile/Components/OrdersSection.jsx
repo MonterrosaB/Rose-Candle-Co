@@ -6,6 +6,7 @@ import {
   Package,
   Truck,
   CheckCircle,
+  Star
 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -30,11 +31,113 @@ const Input = ({ className = "", ...props }) => (
   />
 );
 
+const OrderDetailModal = ({ order, onClose }) => {
+  if (!order) return null;
+
+  const lastState = order.shippingState?.at(-1)?.state.toLowerCase() || "desconocido";
+  //  Importante: Asume que 'isValued' es un campo que viene de tu backend
+  const canBeValued = lastState === "completado" && !order.isValued;
+  const isValued = order.isValued;
+
+  //  Función que redirige al formulario de valoración (tu frontend)
+  // El token debería ser recuperado desde el objeto de la orden de tu backend
+  const handleValuationClick = () => {
+    //  RECUERDA: Necesitas que tu backend devuelva el token al frontend
+    // para que puedas construir esta URL. Si no tienes el token aquí,
+    // puedes redirigir a una ruta simple, ej: /valoracion/:order_id, y que la
+    // página de valoración genere el token en ese momento (menos seguro) o
+    // lo pida al backend.
+
+    // Por simplicidad en el frontend, asumiremos que tienes el token disponible:
+    const token = order.valuationToken || "FALLBACK_TOKEN_TEST";
+
+    // Redirige a la ruta de valoración con el token único
+    window.location.href = `/valorar-experiencia?token=${token}`;
+  };
+
+  return (
+    // Backdrop del modal
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      {/* Contenedor principal del modal */}
+      <div
+        className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl transition-all duration-300 transform scale-100 opacity-100 border-t-4 border-rose-500"
+        onClick={(e) => e.stopPropagation()} // Evita que al hacer clic dentro se cierre
+      >
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Detalles del Pedido <span className="text-rose-500">#{order._id.slice(-8).toUpperCase()}</span>
+          </h2>
+          <Button
+            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full h-8 w-8"
+            onClick={onClose}
+          >
+            &times;
+          </Button>
+        </div>
+
+        <div className="space-y-3 mb-6 border-t pt-4">
+          <p className="text-gray-700">
+            <strong className="font-semibold">Estado Actual:</strong>{" "}
+            <span className={`capitalize font-medium ${lastState === 'entregado' ? 'text-green-600' : 'text-orange-600'}`}>
+              {lastState}
+            </span>
+          </p>
+          <p className="text-gray-700">
+            <strong className="font-semibold">Total Pagado:</strong> <span className="text-lg text-rose-600 font-bold">${order.total}</span>
+          </p>
+          <p className="text-gray-700">
+            <strong className="font-semibold">Productos:</strong> {order.idShoppingCart.products.length} artículos
+          </p>
+
+          {/* Aquí podrías mapear la lista completa de productos */}
+          <ul className="list-disc list-inside text-sm text-gray-600 max-h-32 overflow-y-auto">
+            {order.idShoppingCart.products.map((p, i) => (
+              <li key={i}>{p.idProduct.name} (x{p.quantity})</li>
+            ))}
+          </ul>
+
+        </div>
+
+        {/* Lógica y Botón de Valoración */}
+        {/*
+        {canBeValued && (
+          <Button
+            className="w-full py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl shadow-lg transition-all duration-300"
+            onClick={handleValuationClick}
+          >
+            <Star className="w-5 h-5 mr-2" />
+            ¡Valora tu Experiencia y Gana un Descuento!
+          </Button>
+        )}
+
+        {isValued && (
+          <div className="flex items-center justify-center p-3 bg-gray-100 text-gray-600 rounded-xl">
+            <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
+            Gracias, este pedido ya ha sido valorado.
+          </div>
+        )}
+
+        {!canBeValued && !isValued && (
+          <div className="flex items-center justify-center p-3 bg-yellow-50 text-yellow-700 rounded-xl">
+            <Truck className="w-5 h-5 mr-2" />
+            El pedido debe estar en estado 'Entregado' para poder valorarlo.
+          </div>
+        )}
+         */}
+      </div>
+    </div>
+  );
+};
+
 export default function OrdersSection() {
 
   const { ordersClient, isLoading } = useClientOrders();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("todos");
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   // Filtrado por búsqueda y estado
   const filteredOrders = useMemo(() => {
@@ -57,7 +160,7 @@ export default function OrdersSection() {
   }, [ordersClient, filterStatus, searchTerm]);
 
 
-  // ✅ Estadísticas
+  //  Estadísticas
   const stats = useMemo(
     () => [
       {
@@ -70,7 +173,7 @@ export default function OrdersSection() {
         label: "En Proceso",
         value: ordersClient.filter((p) => {
           const lastState = p.shippingState?.at(-1)?.state.toLowerCase() || "";
-          return lastState === "pendiente" || lastState === "en proceso";
+          return lastState === "pendiente" || lastState === "en proceso" || lastState === "enviado";
         }).length,
         icon: Truck,
         color: "from-yellow-500 to-orange-500",
@@ -79,7 +182,7 @@ export default function OrdersSection() {
         label: "Completados",
         value: ordersClient.filter((p) => {
           const lastState = p.shippingState?.at(-1)?.state.toLowerCase() || "";
-          return lastState === "entregado";
+          return lastState === "completado";
         }).length,
         icon: CheckCircle,
         color: "from-green-500 to-green-600",
@@ -89,7 +192,7 @@ export default function OrdersSection() {
   );
 
 
-  // ✅ Render principal
+  //  Render principal
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -128,7 +231,7 @@ export default function OrdersSection() {
               <option value="pendiente">Pendiente</option>
               <option value="en proceso">En Proceso</option>
               <option value="enviado">Enviado</option>
-              <option value="entregado">Entregado</option>
+              <option value="completado">Completado</option>
               <option value="cancelado">Cancelado</option>
             </select>
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
@@ -151,6 +254,8 @@ export default function OrdersSection() {
                   <div
                     key={order._id}
                     className="w-3xs bg-white rounded-2xl overflow-hidden shadow-md border border-rose-100 hover:shadow-xl transition-transform transform hover:scale-105 duration-300 max-w-md"
+                    // 💡 EVENTO CLIC: Abre el detalle al hacer clic en cualquier parte del card
+                    onClick={() => setSelectedOrder(order)}
                   >
                     <img
                       src={order.idShoppingCart.products?.[0]?.idProduct?.images?.[0]}
@@ -170,6 +275,21 @@ export default function OrdersSection() {
                       <p className="text-sm text-gray-500">
                         Método de pago: {order.paymentMethod}
                       </p>
+                      {/* <Button
+                        className={`w-full mt-3 py-2 text-white text-xs ${order.isValued // Asume que este campo existe
+                          ? "bg-gray-400 hover:bg-gray-500 cursor-default"
+                          : "bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                          }`}
+                        disabled={order.isValued}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Evita que se dispare el onClick del div
+                          setSelectedOrder(order); // Abrir el modal para confirmar la valoración
+                        }}
+                      >
+                        <Star className="w-4 h-4 mr-2" />
+                        {order.isValued ? "Ya Valorado" : "Valorar Servicio"}
+                      </Button>
+                       */}
                     </div>
                   </div>
                 ))}
@@ -215,6 +335,15 @@ export default function OrdersSection() {
           </div>
         </>
       )}
+
+      {/* 💡 RENDER DEL MODAL DE DETALLE */}
+      {selectedOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
+
     </div>
   );
 }

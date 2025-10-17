@@ -515,14 +515,16 @@ salesOrderController.getUserCartWithProducts = async (req, res) => {
 
   try {
     // Buscar todas las órdenes y poblar solo los carritos que pertenecen a este usuario
-    const order = await SalesOrderModel.find().populate({
-      path: "idShoppingCart",
-      match: { idUser: userId }, // filtra carritos por usuario
-      populate: [
-        { path: "idUser", select: "name" },
-        { path: "products.idProduct", select: "name images" },
-      ],
-    });
+    const order = await SalesOrderModel.find()
+      .populate({
+        path: "idShoppingCart",
+        match: { idUser: userId }, // filtra carritos por usuario
+        populate: [
+          { path: "idUser", select: "name" },
+          { path: "products.idProduct", select: "name images" },
+        ],
+      })
+      .sort({ saleDate: -1 });
 
     // Opcional: filtrar en el resultado los que no tengan carrito coincidente
     const filteredOrder = order.filter((o) => o.idShoppingCart !== null);

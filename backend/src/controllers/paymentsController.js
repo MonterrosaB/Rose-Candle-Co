@@ -31,7 +31,7 @@ export const getToken = async (req, res) => {
   }
 };
 
-// 🔹 Pago de prueba
+//  Pago de prueba
 export const testPayment = async (req, res) => {
   try {
     const { token, formData } = req.body;

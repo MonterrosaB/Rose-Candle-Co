@@ -61,7 +61,6 @@ export const useProfile = () => {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(sendData),
       });
 

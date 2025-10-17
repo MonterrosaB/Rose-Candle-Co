@@ -2,29 +2,55 @@ import productionCostHistoryModel from "../models/ProductionCostHistory.js"; // 
 import Product from "../models/Products.js";
 const productionCostHistoryController = {};
 
-// GET - Obtener todo el historial de costos de producción
 productionCostHistoryController.getProductionCostHistory = async (req, res) => {
   try {
-    // Buscar todos los registros y popular referencias a otras colecciones
     const productionCostHistory = await productionCostHistoryModel.aggregate([
+      // 1. Descomponer solo las VARIANTEs para poder identificar el registro MÁS RECIENTE por variante.
       { $unwind: "$variants" },
+
+      // 2. ORDENAR DESCENDENTEMENTE por fecha de creación (asumiendo que _id contiene un timestamp)
+      //    y luego por nombre de variante.
+      { $sort: { _id: -1, "variants.variantName": 1 } },
+
+      // 3. AGRUPAR para obtener el PRIMER (más reciente) documento completo por variante.
+      //    Esto elimina todos los registros antiguos.
+      {
+        $group: {
+          _id: {
+            idProduct: "$idProduct",
+            variantName: "$variants.variantName",
+          },
+          // Toma el documento más reciente (el 'primero' después de ordenar descendente)
+          latestDoc: { $first: "$$ROOT" },
+        },
+      },
+
+      // 4. REEMPLAZAR el documento para continuar con el pipeline como si fuera un registro individual
+      { $replaceRoot: { newRoot: "$latestDoc" } },
+
+      // 5. Ahora sí, descomponer los materiales crudos del registro MÁS RECIENTE
       { $unwind: "$variants.rawMaterialUsed" },
 
-      // Agrupar materias primas de cada variante
+      // 6. Agrupar para CONSOLIDAR COSTOS por Materia Prima, Producto y Variante.
+      //    (Este paso es necesario para aplanar los datos del material)
       {
         $group: {
           _id: {
             idProduct: "$idProduct",
             variantName: "$variants.variantName",
             idRawMaterial: "$variants.rawMaterialUsed.idRawMaterial",
-            unit: "$variants.rawMaterialUsed.unit",
           },
-          totalAmount: { $sum: "$variants.rawMaterialUsed.amount" },
+          // Suma el costo total (subtotal) de la materia prima usada.
+          // (Aunque es solo un registro, mantiene la estructura)
           totalCost: { $sum: "$variants.rawMaterialUsed.subtotal" },
+          totalAmount: { $sum: "$variants.rawMaterialUsed.amount" },
+          unit: { $last: "$variants.rawMaterialUsed.unit" },
         },
       },
 
-      // Reagrupar por producto+variante
+      // Los pasos siguientes (7 al 11) se mantienen casi idénticos a tu lógica original.
+
+      // 7. Reagrupar por Producto + Variante, llevando los materiales como un array
       {
         $group: {
           _id: {
@@ -34,7 +60,7 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
           materials: {
             $push: {
               idRawMaterial: "$_id.idRawMaterial",
-              unit: "$_id.unit",
+              unit: "$unit",
               totalAmount: "$totalAmount",
               totalCost: "$totalCost",
             },
@@ -42,7 +68,7 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
         },
       },
 
-      // Lookup para productos
+      // 8. Lookup para obtener el nombre del Producto
       {
         $lookup: {
           from: "products",
@@ -53,7 +79,7 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
       },
       { $unwind: "$product" },
 
-      // Lookup para materias primas
+      // 9. Lookup para obtener la información de las Materias Primas
       {
         $lookup: {
           from: "rawmaterials",
@@ -63,7 +89,7 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
         },
       },
 
-      // Mergear info de materias primas con cada objeto en materials
+      // 10. Mergear información de la Materia Prima con cada objeto en el array 'materials'
       {
         $addFields: {
           materials: {
@@ -91,26 +117,37 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
           },
         },
       },
+
+      // 11. Ordenar por nombre de producto y variante
       {
         $sort: {
           "product.name": 1,
           "_id.variantName": 1,
         },
       },
+
+      // 12. Proyectar el resultado final
       {
         $project: {
-          product: "$product.name", //  solo el nombre
+          _id: 0, // Omitir el _id
+          product: "$product.name",
+          variantName: "$_id.variantName",
           materials: {
             $map: {
               input: "$materials",
               as: "m",
               in: {
                 material: "$$m.idRawMaterial.name",
+                // Formato: Cantidad Total + Unidad (se usa la última unidad registrada)
                 quantity: {
                   $concat: [{ $toString: "$$m.totalAmount" }, " ", "$$m.unit"],
                 },
+                // Formato: $ + Costo Total Consolidado (Redondeado a 2 decimales)
                 cost: {
-                  $concat: [{ $literal: "$" }, { $toString: "$$m.totalCost" }],
+                  $concat: [
+                    { $literal: "$" },
+                    { $toString: { $round: ["$$m.totalCost", 2] } },
+                  ],
                 },
               },
             },
@@ -123,8 +160,8 @@ productionCostHistoryController.getProductionCostHistory = async (req, res) => {
     res.status(200).json(productionCostHistory); // Respuesta exitosa
   } catch (error) {
     // Capturar y mostrar error en consola
-    console.log("error " + error);
-    res.status(500).json("Internal server error"); // Error del servidor
+    console.error("Error al obtener historial de costos: ", error);
+    res.status(500).json({ error: "Internal server error" }); // Error del servidor
   }
 };
 
@@ -294,8 +331,6 @@ productionCostHistoryController.restoreProductionCostHistory = async (
 productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
   try {
     const result = await Product.aggregate([
-      { $match: { deleted: false } }, // solo productos activos
-
       //  Lookup para traer historial de producción
       {
         $lookup: {

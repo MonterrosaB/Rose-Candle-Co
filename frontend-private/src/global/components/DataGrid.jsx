@@ -206,51 +206,64 @@ const DataGrid = ({
               </td>
             </tr>
           ) : (
-            paginatedRows.map((row, index) => (
-              <tr key={row._id || index} className="odd:bg-[#F0ECE6] even:bg-white">
-                {Object.entries(columns).map(([columnName, columnKey], colIndex) => {
-                  const value = getNestedValue(row, columnKey);
-                  const isBadgeColumn = columnName === "Estado" && typeof value === "string" && isNaN(value);
-                  return (
-                    <td key={colIndex} className="px-6 py-4">
-                      {isBadgeColumn ? <StatusBadge status={value} /> : String(value)}
-                    </td>
-                  );
-                })}
-                {editable && (
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center items-center gap-4">
-                      {showMore &&
-                        <Receipt
-                          onClick={() => showMore(row)}
-                          className="cursor-pointer"
-                        />
-                      }
-                      {row.deleted
-                        ? <ArchiveRestore onClick={() => restoreRow(row)} className="cursor-pointer" />
-                        : <Pencil onClick={() => updateRow(row)} className="cursor-pointer" />
-                      }
-                      {showDelete && (
-                        row.deleted ? (
-                          user.role === "super_admin" && (
-                            <Trash
-                              onClick={() => deleteRow(row)} // Esta función debe llamar al HARD DELETE en el backend
+            paginatedRows.map((row, index) => {
+              // Definimos la condición de cancelación
+              const isCancelled = row.shippingState?.toLowerCase() === "cancelado";
+
+              return (
+                <tr key={row._id || index} className="odd:bg-[#F0ECE6] even:bg-white">
+                  {Object.entries(columns).map(([columnName, columnKey], colIndex) => {
+                    const value = getNestedValue(row, columnKey);
+                    const isBadgeColumn = columnName === "Estado" && typeof value === "string" && isNaN(value);
+                    return (
+                      <td key={colIndex} className="px-6 py-4">
+                        {isBadgeColumn ? <StatusBadge status={value} /> : String(value)}
+                      </td>
+                    );
+                  })}
+                  {editable && (
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center items-center gap-4">
+
+                        {/* 1. ICONO VER FACTURA (showMore) - Se OCULTA si está CANCELADO */}
+                        {showMore && !isCancelled &&
+                          <Receipt
+                            onClick={() => showMore(row)}
+                            className="cursor-pointer"
+                            title="Ver Factura"
+                          />
+                        }
+
+                        {/* 2. ICONO EDITAR (Pencil) / RESTAURAR (ArchiveRestore) */}
+                        {row.deleted
+                          ? <ArchiveRestore onClick={() => restoreRow(row)} className="cursor-pointer" title="Restaurar" />
+                          : !isCancelled && <Pencil onClick={() => updateRow(row)} className="cursor-pointer" title="Editar" /> // Se OCULTA si está CANCELADO
+                        }
+
+                        {/* 3. ICONO ELIMINAR (SoftDelete/HardDelete) - Se mantiene la lógica original */}
+                        {showDelete && (
+                          row.deleted ? (
+                            user.role === "super_admin" && (
+                              <Trash
+                                onClick={() => deleteRow(row)}
+                                className="cursor-pointer"
+                                title="Borrar Permanentemente (Solo Super Admin)"
+                              />
+                            )
+                          ) : (
+                            <ArchiveX
+                              onClick={() => softDelete(row)}
                               className="cursor-pointer"
-                              title="Borrar Permanentemente (Solo Super Admin)"
+                              title="Archivar"
                             />
                           )
-                        ) : (
-                          <ArchiveX
-                            onClick={() => softDelete(row)}
-                            className="cursor-pointer"
-                          />
-                        )
-                      )}
-                    </div>
-                  </td>
-                )}
-              </tr>
-            ))
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              )
+            }) // <--- Asegúrate de cerrar la función map y la llamada
           )}
         </tbody>
       </table>

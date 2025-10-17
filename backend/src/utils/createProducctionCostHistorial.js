@@ -11,19 +11,18 @@ export const createProductionCostHistory = async ({ idProduct, variants }) => {
       idRawMaterial: rm.idRawMaterial,
       amount: rm.amount,
       unit: rm.unit,
-      unitPrice: rm.unitPrice,
+      unitPrice: rm.unitPrice.toFixed(2),
       subtotal: +(rm.amount * rm.unitPrice).toFixed(2),
     }));
 
-    const productionCost = rawMaterialUsed.reduce(
-      (acc, rm) => acc + rm.subtotal,
-      0
-    );
+    const productionCost = rawMaterialUsed
+      .reduce((acc, rm) => acc + rm.subtotal, 0)
+      .toFixed(2);
 
     return {
       variantName: v.variantName,
       amount: v.amount || 1,
-      unitPrice: v.unitPrice,
+      unitPrice: v.unitPrice.toFixed(2),
       productionCost,
       rawMaterialUsed,
     };

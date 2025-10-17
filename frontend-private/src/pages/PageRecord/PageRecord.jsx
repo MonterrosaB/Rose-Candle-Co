@@ -188,7 +188,7 @@ const PageRecord = () => {
           </ResponsiveContainer>
         </ChartCard>
       </div>
-
+      Hola
       <DataGrid columns={tableColumns} rows={materialCost || []} editable={false} />
 
       <div className="flex justify-center items-center">
