@@ -271,33 +271,46 @@ shoppingCartController.removeProduct = async (req, res) => {
   }
 };
 
-// PUT/POST - Vaciar todos los productos del carrito
+// PATCH - Vaciar todos los productos del carrito
 shoppingCartController.emptyCart = async (req, res) => {
   try {
+    // Asumo que req.customer.id contiene el ID del usuario autenticado
     const userId = req.customer.id;
-    const cartId = req.params.idCart;
+    const cartId = req.params.idCart; // Definimos la actualización parcial (PATCH)
 
-    const cart = await shoppingCartModel.findOne({
-      _id: cartId,
-      idUser: userId,
-      status: "active",
-    });
+    const updateOperation = {
+      products: [], // Vacía el arreglo de productos
+      total: 0, // Resetea el total
+    };
+
+    const options = {
+      new: true, // Devuelve el documento modificado después de la actualización
+    }; // Buscar el carrito activo del usuario y aplicar la operación PATCH
+
+    const cart = await shoppingCartModel.findOneAndUpdate(
+      {
+        _id: cartId,
+        idUser: userId,
+        status: "active",
+      },
+      updateOperation,
+      options
+    );
+
     if (!cart) {
-      return res.status(404).json({ message: "Carrito no encontrado" });
-    }
+      return res.status(404).json({
+        message: "Carrito no encontrado o no activo para el usuario",
+      });
+    } // Confirmar vaciado
 
-    // Vaciar arreglo de productos y resetear total
-    cart.products = [];
-    cart.total = 0;
-
-    // Guardar cambios en BD
-    await cart.save();
-
-    // Confirmar vaciado
-    res.status(200).json({ message: "Shopping cart emptied", cart });
+    res
+      .status(200)
+      .json({ message: "Shopping cart emptied (PATCH successful)", cart });
   } catch (error) {
-    console.log("error " + error);
-    res.status(500).json("Internal server error");
+    console.error("Error al vaciar el carrito:", error);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor", error: error.message });
   }
 };
 

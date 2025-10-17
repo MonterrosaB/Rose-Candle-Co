@@ -27,8 +27,10 @@ const Cart = () => {
     setShowCheckout(false);
   };
 
-  const handleContinue = () => {
-    setShowCheckout(true);
+  const handleContinue = (cartItems) => {
+    if (cartItems.length > 0) {
+      setShowCheckout(true);
+    }
   };
 
   //  Si está en checkout, renderiza el componente
@@ -148,7 +150,7 @@ const Cart = () => {
               background: "linear-gradient(135deg, #A3A380 0%, #D2CFCB 100%)",
               boxShadow: "0 0 15px rgba(163, 163, 128, 0.5)",
             }}
-            onClick={handleContinue}
+            onClick={() => handleContinue(cartItems)}
           >
             <span className="relative z-10">CONTINUAR</span>
             <motion.div
@@ -159,7 +161,7 @@ const Cart = () => {
 
           {/* Botón limpiar carrito */}
           <motion.div whileHover={{ scale: 1.05 }} className="w-full">
-            <ClearButton cartId={cartId} onClear={handleClear} />
+            <ClearButton cartId={cartId} onClear={() => handleClear(cartItems)} />
           </motion.div>
         </div>
       </motion.div>

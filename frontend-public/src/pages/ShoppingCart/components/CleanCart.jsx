@@ -1,29 +1,8 @@
 import React from "react";
-import { useAuth } from "../../../global/hooks/useAuth";
 
-const ClearButton = ({ cartId, onClear }) => {
+const ClearButton = ({ onClear }) => {
 
-  const { API } = useAuth();
 
-  const clearCart = async () => {
-    try {
-      const response = await fetch(API + `/cart/empty/${cartId}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
-      }
-
-      onClear();
-      alert("Carrito vaciado correctamente");
-    } catch (error) {
-      console.error("Error al vaciar el carrito:", error);
-      alert("No se pudo vaciar el carrito");
-    }
-  };
 
   return (
     <button

@@ -79,36 +79,62 @@ const useCart = () => {
         }
     };
 
-    const handleClear = async () => {
+    const handleClear = async (cartItems) => {
+        // Verificar si existe el ID del carrito
         if (!idCart) return;
 
         try {
-            const res = await fetch(API + `/cart/empty/${idCart}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
+            if (cartItems.length > 0) {
 
-            if (!res.ok) throw new Error("Error al vaciar el carrito");
+                // 1. Mostrar SweetAlert para CONFIRMACIÓN
+                const result = await Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "Esta acción vaciará completamente tu carrito de compras.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, ¡vaciar carrito!",
+                    cancelButtonText: "Cancelar"
+                });
 
-            setCartItems([]);
+                // Si el usuario cancela la operación, salimos de la función
+                if (!result.isConfirmed) {
+                    return;
+                }
+                // 2. Si el usuario confirma, procedemos con el PATCH al servidor
+                const res = await fetch(API + `/cart/empty/${idCart}`, {
+                    method: "PATCH",
+                    credentials: "include"
+                });
 
-            await Swal.fire({
-                icon: "success",
-                title: "Carrito vaciado",
-                text: "El carrito se vació correctamente.",
-            });
+                if (!res.ok) throw new Error("Error al vaciar el carrito");
+
+                // 3. Actualización de estado local tras éxito
+                setCartItems([]);
+
+                // 4. Mostrar SweetAlert de ÉXITO
+                await Swal.fire({
+                    icon: "success",
+                    title: "Carrito vaciado",
+                    text: "El carrito se vació correctamente.",
+                });
+            }
+            // Si el carrito ya estaba vacío, simplemente sale sin hacer fetch
+            return;
+
         } catch (error) {
             console.error("Error al vaciar carrito:", error);
 
+            // 5. Mostrar SweetAlert de ERROR
             await Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "No se pudo vaciar el carrito.",
+                text: "No se pudo vaciar el carrito. Inténtalo de nuevo.",
             });
         }
     };
+
 
     const increaseProduct = async (idProductToIncrease, quantityRecived, indexRecived) => {
         if (!idProductToIncrease) return;

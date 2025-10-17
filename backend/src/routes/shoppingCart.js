@@ -22,7 +22,7 @@ router.put(
 );
 
 // Rutas específicas
-router.put("/empty/:idCart", auth, shoppingCartController.emptyCart);
+router.patch("/empty/:idCart", auth, shoppingCartController.emptyCart);
 // Completar carrito y generar orden automáticamente
 router.post("/complete", auth, shoppingCartController.completeCart);
 
