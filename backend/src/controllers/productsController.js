@@ -357,6 +357,12 @@ productsController.updateProduct = async (req, res) => {
           newVar.components
         );
 
+        // Falta calcular la suma de subtotales
+        const totalProductionCost = mappedComponents.reduce(
+          (acc, rm) => acc + rm.subtotal,
+          0
+        );
+
         // Si la variante no existía antes → registrar como nueva
         if (!oldVar) {
           await createProductionCostHistory({
@@ -366,6 +372,7 @@ productsController.updateProduct = async (req, res) => {
                 variantName: newVar.variant,
                 amount: newVar.amount,
                 unitPrice: newVar.variantPrice,
+                productionCost: totalProductionCost,
                 rawMaterialUsed: mappedComponents, // Usamos los datos completos
               },
             ],

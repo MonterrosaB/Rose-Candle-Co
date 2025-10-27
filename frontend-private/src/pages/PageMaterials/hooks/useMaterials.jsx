@@ -53,7 +53,7 @@ const useMaterials = (methods) => {
       return data.map((mat) => ({
         _id: mat._id,
         name: mat.name,
-        label: mat.name,
+        label: `${mat.idRawMaterialCategory.name} ${mat.name}`,
         unit: mat.unit,
         stock: `${mat.currentStock} ${mat.unit}`,
         currentStock: mat.currentStock,

@@ -11,7 +11,7 @@
   "edit": "Editar",
 
   "confirmDeleteTitle": "¿Eliminar permanentemente \"{{name}}\"?",
-  "confirmDeleteText": "Esta acción eliminará de forma permanente la {{itemType}} y no se podrá deshacer.",
+  "confirmDeleteText": "Esta acción eliminará de forma permanente la materia prima y no se podrá deshacer.",
   "confirmDeleteButton": "Sí, eliminar permanentemente",
   "deletedTitle": "Eliminada",
   "deletedText": "\"{{name}}\" ha sido eliminada con éxito.",

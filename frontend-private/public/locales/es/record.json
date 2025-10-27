@@ -1,0 +1,26 @@
+{
+  "page_title": "Historial | Rosé Candle Co.",
+  "loading_data": "Cargando datos...",
+
+  "section_material": "Materia Prima",
+  "label_material": "Material",
+  "chart_title_purchase_price": "Precio de Compra",
+  "line_name_unit_price": "Precio Unitario",
+  "chart_title_material_balance": "Balance de Materia",
+
+  "datagrid_title_material_cost_breakdown": "Costo de Materia Prima por Producto",
+  "datagrid_col_product": "Producto",
+  "datagrid_col_variant": "Variante",
+  "datagrid_col_raw_material": "Materia Prima",
+  "datagrid_col_quantity": "Cantidad",
+  "datagrid_col_cost": "Costo",
+
+  "widget_title_current_inventory": "Inventario Actual",
+  "section_products": "Productos",
+  "label_product": "Producto",
+  "chart_title_product_price": "Precio de Producto",
+  "no_price_historial": "No hay historial de precios",
+  "widget_title_product_production": "Producción de Productos",
+
+  "date_format_tooltip": "Fecha"
+}

@@ -27,7 +27,7 @@ import { useHasEmployees } from "../../pages/Login/hooks/useHasEmployees.jsx";
 
 function Navigation() {
   const navigate = useNavigate();
-  const location = useLocation(); // Se obtiene la ruta actual
+  const location = useLocation();
 
   const { isAuthenticated, user } = useAuth();
   const { hasEmployees } = useHasEmployees();
@@ -41,9 +41,10 @@ function Navigation() {
 
   // Redirección automática si el usuario ya está autenticado
   useEffect(() => {
-    const noRedirectPaths = ["/", "/login", "/start"]; // Solo redirige desde estas rutas
+    // Redirige a /home si está autenticado y está en la página inicial o de autenticación.
+    const noRedirectPaths = ["/", "/login", "/start"];
     if (isAuthenticated && user && noRedirectPaths.includes(location.pathname)) {
-      navigate("/home", { replace: true }); // Redirige a home sin acumular historial
+      navigate("/home", { replace: true });
     }
   }, [isAuthenticated, user, navigate, location.pathname]);
 
@@ -70,48 +71,42 @@ function Navigation() {
           {/* Ruta de login */}
           <Route path="/login" element={<Login />} />
 
-          {/* Ruta raíz: redirige según autenticación */}
+          {/* 1. Ruta raíz: redirige según autenticación Y si hay empleados */}
           <Route
             path="/"
             element={<Navigate to={isAuthenticated ? "/home" : redirectPath} replace />}
           />
 
-          <Route>
-            {/* Rutas protegidas || Rutas de Empleados */}
-            <Route
-              element={<PrivateRoute allowedRoles={["admin", "employee"]}
-              />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/stock" element={<Stock />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/order" element={<Orders />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/materials" element={<Materials />} />
-
-            </Route>
-
-            {/*Rutas Protegidas || Rutas de Admin */}
-            <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/stock" element={<Stock />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/supplies" element={<Suppliers />} />
-              <Route path="/colections" element={<Collections />} />
-              <Route path="/materials" element={<Materials />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/order" element={<Orders />} />
-              <Route path="/record" element={<Record />} />
-              <Route path="/employees" element={<Employees />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/personalize" element={<Personalize />} />
-              <Route path="/categories-materia" element={<CategoriesMateria />} />
-            </Route>
+          {/* Rutas protegidas para Empleados y Admin */}
+          <Route element={<PrivateRoute allowedRoles={["admin", "employee"]} />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/stock" element={<Stock />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/order" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/materials" element={<Materials />} />
           </Route>
-          {/* Ruta comodín: redirige a home o login según autenticación */}
+
+          {/* Rutas protegidas SOLO para Admin */}
+          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+            {/* Las rutas de abajo solo aparecerán si no se han definido en el bloque anterior 
+            y si el rol es 'admin'. Si se repiten, el enrutador usará la primera coincidencia, 
+            que es la del rol más permisivo ("admin", "employee"). Solo se incluyen rutas exclusivas de admin. */}
+
+            <Route path="/record" element={<Record />} />
+            <Route path="/employees" element={<Employees />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/personalize" element={<Personalize />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/supplies" element={<Suppliers />} />
+            <Route path="/colections" element={<Collections />} />
+            <Route path="/categories-materia" element={<CategoriesMateria />} />
+          </Route>
+
+          {/* 2. Ruta comodín: redirige a home o a la ruta de inicio (login/start) */}
           <Route
             path="*"
-            element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />}
+            element={<Navigate to={isAuthenticated ? "/home" : redirectPath} replace />}
           />
         </Routes>
       </main>

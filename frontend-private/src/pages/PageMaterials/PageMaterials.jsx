@@ -32,11 +32,11 @@ const PageMaterials = () => {
   };
 
   // ELIMINACIÓN PERMANENTE (Función Genérica)
-  const handleDelete = async (item, deleteFunction, itemType = "material") => {
+  const handleDelete = async (item) => {
     const result = await Swal.fire({
       // Usa claves de eliminación permanente
       title: t("confirmDeleteTitle", { name: item.name }),
-      text: t("confirmDeleteText", { itemType }),
+      text: t("confirmDeleteText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -46,7 +46,7 @@ const PageMaterials = () => {
     });
 
     if (result.isConfirmed) {
-      await deleteFunction(item._id);
+      await deleteMaterial(item._id);
       Swal.fire({
         title: t("deletedTitle"),
         text: t("deletedText", { name: item.name }),
@@ -125,11 +125,10 @@ const PageMaterials = () => {
       [t("columns.date")]: "date",
     }
     : {
-      [t("columns.name")]: "name",
+      [t("columns.name")]: "label",
       [t("columns.stock")]: "stock",
       [t("columns.minStock")]: "minimum",
       [t("columns.price")]: "price",
-      [t("columns.category")]: "category",
       [t("columns.supplier")]: "supplier",
     };
 
@@ -161,7 +160,7 @@ const PageMaterials = () => {
             setRegistroActual(row);
             setOpenDialogMaterial(true);
           }}
-          deleteRow={(row) => handleDelete(row, deleteMaterial, "material")}
+          deleteRow={handleDelete}
           softDelete={handleSoftDelete}
           restoreRow={handleRestore}
           showStatus={true}

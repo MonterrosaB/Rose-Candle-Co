@@ -56,7 +56,7 @@ const FirstUser = () => {
     if (success) {
       await refetchHasEmployees(); // vuelve a contar los empleados
       setTimeout(() => {
-        window.location.reload(); // recarga la página después del toast
+        navigate("/");
       }, 2000);
     }
   };

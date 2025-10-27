@@ -11,7 +11,7 @@
   "edit": "Edit",
 
   "confirmDeleteTitle": "Delete \"{{name}}\" permanently?",
-  "confirmDeleteText": "This action will permanently delete the {{itemType}}.",
+  "confirmDeleteText": "This action will permanently delete the material.",
   "confirmDeleteButton": "Yes, delete permanently",
   "deletedTitle": "Deleted",
   "deletedText": "\"{{name}}\" has been successfully deleted.",

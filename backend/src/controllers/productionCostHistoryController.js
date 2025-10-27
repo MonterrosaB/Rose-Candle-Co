@@ -330,60 +330,175 @@ productionCostHistoryController.restoreProductionCostHistory = async (
 
 productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
   try {
-    const result = await Product.aggregate([
-      //  Lookup para traer historial de producción
+    const productionCostHistory = await productionCostHistoryModel.aggregate([
+      // 1-4: (Igual al original) Encontrar el documento más reciente por variante
+      { $unwind: "$variants" },
+      { $sort: { _id: -1, "variants.variantName": 1 } },
       {
-        $lookup: {
-          from: "productioncosthistories",
-          let: { productId: "$_id" },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$idProduct", "$$productId"] } } },
-            { $sort: { date: -1 } }, // último registro
-            { $limit: 1 },
-          ],
-          as: "costHistory",
+        $group: {
+          _id: {
+            idProduct: "$idProduct",
+            variantName: "$variants.variantName",
+          },
+          latestDoc: { $first: "$$ROOT" },
         },
       },
-      { $unwind: { path: "$costHistory", preserveNullAndEmptyArrays: true } },
+      { $replaceRoot: { newRoot: "$latestDoc" } },
 
-      //  Desanidar variantes del producto
-      { $unwind: "$variant" },
-
-      //  Tomar el costo de producción correspondiente a la variante
+      // 5. NUEVO: Preservar el precio de venta y el costo de producción para cálculos
       {
         $addFields: {
-          variantCost: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: { $ifNull: ["$costHistory.variants", []] },
-                  cond: { $eq: ["$$this.variantName", "$variant.variant"] },
+          latestSalePrice: "$variants.unitPrice",
+          latestProductionCost: "$variants.productionCost",
+        },
+      },
+
+      // 6. NUEVO: Lookup para obtener el HISTORIAL COMPLETO de precios de venta
+      {
+        $lookup: {
+          from: "productpricehistories", // Colección de historial de precios
+          let: { prodId: "$idProduct", varName: "$variants.variantName" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$idProduct", "$$prodId"] },
+                    { $eq: ["$variantName", "$$varName"] },
+                  ],
                 },
               },
-              0,
-            ],
+            },
+            { $sort: { date: 1 } }, // Ordenar por fecha ascendente para la gráfica
+            { $project: { _id: 0, unitPrice: 1, date: 1, reference: 1 } },
+          ],
+          as: "priceHistory", // Array con el historial de precios
+        },
+      },
+
+      // 7. (Antiguo 5) Descomponer los materiales crudos
+      { $unwind: "$variants.rawMaterialUsed" },
+
+      // 8. (Antiguo 6) Agrupar para CONSOLIDAR COSTOS por Materia Prima, Producto y Variante.
+      //    **IMPORTANTE: Preservar los nuevos campos**
+      {
+        $group: {
+          _id: {
+            idProduct: "$idProduct",
+            variantName: "$variants.variantName",
+            idRawMaterial: "$variants.rawMaterialUsed.idRawMaterial",
+          },
+          totalCost: { $sum: "$variants.rawMaterialUsed.subtotal" },
+          totalAmount: { $sum: "$variants.rawMaterialUsed.amount" },
+          unit: { $last: "$variants.rawMaterialUsed.unit" },
+          // Preservar los campos del paso 5 y 6
+          latestSalePrice: { $first: "$latestSalePrice" },
+          latestProductionCost: { $first: "$latestProductionCost" },
+          priceHistory: { $first: "$priceHistory" },
+        },
+      },
+
+      // 9-13: (Antiguos 7-11) Reagrupar, Lookups y Ordenamiento (Mantienen la estructura de materiales)
+      // ... (Asegúrese de agregar `latestSalePrice`, `latestProductionCost` y `priceHistory`
+      //       a los `$first` en el siguiente `$group`)
+
+      {
+        $group: {
+          _id: {
+            idProduct: "$_id.idProduct",
+            variantName: "$_id.variantName",
+          },
+          latestSalePrice: { $first: "$latestSalePrice" },
+          latestProductionCost: { $first: "$latestProductionCost" },
+          priceHistory: { $first: "$priceHistory" },
+          materials: {
+            $push: {
+              idRawMaterial: "$_id.idRawMaterial",
+              unit: "$unit",
+              totalAmount: "$totalAmount",
+              totalCost: "$totalCost",
+            },
           },
         },
       },
 
-      //  Calcular costo y % ganancia
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.idProduct",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+
+      {
+        $lookup: {
+          from: "rawmaterials",
+          localField: "materials.idRawMaterial",
+          foreignField: "_id",
+          as: "rawMaterialsInfo",
+        },
+      },
+
       {
         $addFields: {
-          productionCost: { $ifNull: ["$variantCost.productionCost", 0] },
+          materials: {
+            $map: {
+              input: "$materials",
+              as: "mat",
+              in: {
+                unit: "$$mat.unit",
+                totalAmount: "$$mat.totalAmount",
+                totalCost: "$$mat.totalCost",
+                idRawMaterial: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$rawMaterialsInfo",
+                        as: "info",
+                        cond: { $eq: ["$$info._id", "$$mat.idRawMaterial"] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          "product.name": 1,
+          "_id.variantName": 1,
+        },
+      },
+
+      // 14. PROYECCIÓN FINAL: Incluye Ganancia y Historial
+      {
+        $project: {
+          _id: 0,
+          product: "$product.name",
+          variantName: "$_id.variantName",
+          salePrice: "$latestSalePrice",
+          productionCost: "$latestProductionCost",
+
+          // CALCULAR GANANCIA (%)
           profitPercent: {
             $cond: [
-              { $gt: ["$variant.variantPrice", 0] },
+              { $gt: ["$latestSalePrice", 0] },
               {
                 $multiply: [
                   {
                     $divide: [
                       {
                         $subtract: [
-                          "$variant.variantPrice",
-                          { $ifNull: ["$variantCost.productionCost", 0] },
+                          "$latestSalePrice",
+                          "$latestProductionCost",
                         ],
                       },
-                      "$variant.variantPrice",
+                      "$latestSalePrice",
                     ],
                   },
                   100,
@@ -392,27 +507,50 @@ productionCostHistoryController.getProductsCostAndProfit = async (req, res) => {
               0,
             ],
           },
+          // DATOS DE GRÁFICA/TABLA DE PRECIOS
+          priceHistory: 1,
+
+          // Desglose de materiales (igual a su original)
+          materialsBreakdown: {
+            $map: {
+              input: "$materials",
+              as: "m",
+              in: {
+                material: "$$m.idRawMaterial.name",
+                quantity: {
+                  $concat: [{ $toString: "$$m.totalAmount" }, " ", "$$m.unit"],
+                },
+                cost: {
+                  $concat: [
+                    { $literal: "$" },
+                    { $toString: { $round: ["$$m.totalCost", 2] } },
+                  ],
+                },
+              },
+            },
+          },
         },
       },
 
-      //  Dar formato final
+      // 15. Redondeo final de Ganancia
       {
         $project: {
           _id: 0,
-          Product: {
-            $concat: ["$name", " - ", "$variant.variant"],
-          },
-          salePrice: "$variant.variantPrice",
-          productionCost: "$productionCost",
-          Earnigs: { $round: ["$profitPercent", 2] },
+          product: 1,
+          variantName: 1,
+          salePrice: 1,
+          productionCost: 1,
+          profitPercent: { $round: ["$profitPercent", 2] },
+          priceHistory: 1,
+          materialsBreakdown: 1,
         },
       },
     ]);
 
-    res.json(result);
+    res.status(200).json(productionCostHistory);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener resumen de productos" });
+    console.error("Error al obtener historial de costos: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

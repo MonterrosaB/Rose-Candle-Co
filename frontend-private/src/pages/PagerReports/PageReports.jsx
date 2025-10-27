@@ -43,10 +43,10 @@ const PageReports = () => {
   } = useSales();
 
   const columns = {
-    [t("product")]: "Product",
+    [t("product")]: "product",
     [t("sale_price")]: "salePrice",
     [t("production_cost")]: "productionCost",
-    [t("earnings")]: "Earnigs"
+    [t("earnings")]: "profitPercent"
   };
 
   const productTableColumns = {
@@ -75,7 +75,7 @@ const PageReports = () => {
               />
               <Widget
                 title={t("abandoned_carts")}
-                value={carts}
+                value={carts || 0}
                 bgColor="#F7F5EE"
                 textColor="#333"
                 variant="compact"
@@ -177,6 +177,19 @@ const PageReports = () => {
               </ResponsiveContainer>
             </div>
           </div>
+
+          <div className="bg-white p-4 rounded-xl shadow">
+            <h3 className="text-lg font-semibold mb-4 text-center">
+              {t("earnings_by_product")}
+            </h3>
+            <DataGrid
+              columns={columns}
+              rows={productProfit}
+              editable={false}
+            />
+          </div>
+
+
 
           {/* Más y menos vendidos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

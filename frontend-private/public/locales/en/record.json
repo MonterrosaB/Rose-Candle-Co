@@ -1,0 +1,26 @@
+{
+  "page_title": "Record | Rosé Candle Co.",
+  "loading_data": "Loading data...",
+
+  "section_material": "Raw Material",
+  "label_material": "Material",
+  "chart_title_purchase_price": "Purchase Price",
+  "line_name_unit_price": "Unit Price",
+  "chart_title_material_balance": "Material Balance",
+
+  "datagrid_title_material_cost_breakdown": "Raw Material Cost Per Product",
+  "datagrid_col_product": "Product",
+  "datagrid_col_variant": "Variant",
+  "datagrid_col_raw_material": "Raw Material",
+  "datagrid_col_quantity": "Quantity",
+  "datagrid_col_cost": "Cost",
+
+  "widget_title_current_inventory": "Current Inventory",
+  "section_products": "Products",
+  "label_product": "Product",
+  "chart_title_product_price": "Product Price",
+  "no_price_historial": "No price historial available",
+  "widget_title_product_production": "Product Production",
+
+  "date_format_tooltip": "Date"
+}

@@ -93,49 +93,6 @@ const useEmployees = () => {
 
             const data = await response.json();
 
-            // Errores por validaciones del backend
-            if (!response.ok) {
-                const msg = data?.message || "Error desconocido";
-                const backendErrors = {};
-
-                // Si viene un objeto de errores (ValidationError)
-                if (data.errors) {
-                    Object.entries(data.errors).forEach(([field, info]) => {
-                        backendErrors[field] = info.message;
-                    });
-                } else {
-                    // Casos personalizados por string
-                    if (msg.includes("Employee already exists")) {
-                        backendErrors.email = "Este correo ya está registrado";
-                    }
-
-                    if (msg.includes("Too short")) {
-                        if (name.length < 3) backendErrors.name = "Nombre muy corto";
-                        if (surnames.length < 3)
-                            backendErrors.surnames = "Apellido muy corto";
-                        if (password.length < 8)
-                            backendErrors.password = "Contraseña muy corta";
-                        if (phone.length < 9) backendErrors.phone = "Teléfono muy corto";
-                        if (dui.length < 10) backendErrors.dui = "DUI muy corto";
-                    }
-
-                    if (msg.includes("Too large")) {
-                        if (name.length > 100)
-                            backendErrors.name = "Nombre muy largo";
-                        if (surnames.length > 100)
-                            backendErrors.surnames = "Apellido muy largo";
-                    }
-
-                    if (msg.includes("Please complete all the fields")) {
-                        toast.error("Todos los campos son obligatorios");
-                    }
-                }
-
-                setErrors(backendErrors);
-                toast.error(msg);
-                return false;
-            }
-
             // Todo bien
             toast.success("¡Cuenta creada con éxito!");
             setSuccess("¡Cuenta creada con éxito!");
@@ -161,7 +118,6 @@ const useEmployees = () => {
                 throw new Error("Network response was not ok");
             }
             const data = await response.json();
-            console.log(data);
             setEmployees(data);
         } catch (error) {
             console.error("Error fetching data:", error);
